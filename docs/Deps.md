@@ -2,7 +2,7 @@
 
 To build Eden, you MUST have a C++ compiler.
 
-* On Linux, this is usually [GCC](https://gcc.gnu.org/) 11+ or [Clang](https://clang.llvm.org/) v14+
+* On Linux, this is usually [GCC](https://gcc.gnu.org/) 11+ or [Clang](https://clang.llvm.org/) v19+ (x86-64 builds pass `-mtls-dialect=gnu2`, which older Clang rejects)
   * GCC 12 also requires Clang 14+
 * On Windows, we support:
   * **[MSVC](https://visualstudio.microsoft.com/downloads/)** (default)
