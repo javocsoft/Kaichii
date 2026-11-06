@@ -6,11 +6,13 @@ To contribute to this fork, see [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 This contains documentation created by developers, build instructions, guidelines, instructions/layouts for [cool stuff we made](./CPMUtil.md), and more.
 
+- **[Documentation for agents](./ai/README.md)**: architecture map, Linux builds in Docker, testing and recipes
 - **[General Build Instructions](./Build.md)**
 - **[CMake Options](./Options.md)**
 - **[Cross Compiling](./CrossCompile.md)**
 - **[Development Guidelines](./Development.md)**
 - **[Dependencies](./Deps.md)**
+- **[CI and releases](./CI.md)**
 - **[Debug Guidelines](./Debug.md)**
   - **[RenderDoc](./Debug.md#renderdoc)**
 - **[CPM - CMake Package Manager](./CPMUtil.md)**
