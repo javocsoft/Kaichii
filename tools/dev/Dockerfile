@@ -38,3 +38,4 @@ RUN curl -fsSLo /tmp/actionlint.tar.gz \
 ENV PATH=/opt/venv/bin:/usr/lib/llvm-${LLVM_VERSION}/bin:$PATH
 ENV QT_ROOT_DIR=/opt/qt/${QT_VERSION}/gcc_64
 ENV CCACHE_COMPILERCHECK=content
+ENV CXX=g++-13
