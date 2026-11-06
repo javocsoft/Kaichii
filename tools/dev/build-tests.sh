@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Configures, builds and runs the C++ tests with the flags .github/workflows/linux-extended.yml uses.
-# Meant for the container, where a first build takes about 40 minutes on 12 jobs:
+# Meant for the container, where a first build takes about 15 minutes on 12 jobs:
 #
 #   tools/dev/in-docker.sh tools/dev/build-tests.sh [gcc|clang] [ctest arguments]
 #

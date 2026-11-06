@@ -14,7 +14,7 @@ two separately, and never call a game fixed because the tests pass.
 | C++ tests | `tools/dev/in-docker.sh tools/dev/build-tests.sh` | `tests`, `dynarmic_tests`, `config_tests`, `update_checker_tests`, `compatibility_report` | 20 s to run, after the build |
 | Shader tools | See `.github/workflows/linux-extended.yml` | `shader-sweep`, `nup-shader-export`, the fixtures in `tools/shader-sweep/fixtures` | Seconds |
 | Shader sweep | `tools/nx2/shader_sweep.py`, see `tools/nx2/shader-sweep.md` | Every captured native program through `spirv-val`. Needs your own dumps | Minutes |
-| FSR3 shaders | `tools/nx2/test_fsr3_shaders.py`, see `tools/nx2/fsr3-shader-tests.md` | Real shaders on software Vulkan | Minutes |
+| Vulkan shaders | `tools/nx2/test_fsr3_shaders.py`, `tools/nx2/test_buffer_host_visibility.py`; `.github/workflows/linux-extended.yml` shows how | Production shaders and barriers on Mesa's software Vulkan, with validation layers | Seconds |
 | Debug server | `docs/nx2/debug-mcp.md` | Live state of a running game | Interactive |
 | Playing the game | A person | What players see | The only proof of a game fix |
 
@@ -86,4 +86,26 @@ This builds with Clang source coverage in `build/coverage`, runs `ctest`, and pr
 area and the files where recent change lands on untested lines. The total is a poor goal, because much of
 the tree only runs with a GPU or a game. Use the ranking to choose what to test next.
 
-COVERAGE_SNAPSHOT
+### Where the gaps are
+
+Measured on 2026-11-07, `ctest` only: 18.1% of 312,643 instrumented lines.
+
+| Area | Lines covered |
+|---|---:|
+| `src/shader_recompiler/ir_opt` | 53% |
+| `src/shader_recompiler/frontend` | 49% |
+| `src/common` | 47% |
+| `src/dynarmic` | 32% |
+| `src/video_core/buffer_cache` | 31% |
+| `src/core/file_sys` | 26% |
+| `src/core/hle/kernel` | 20% |
+| `src/video_core/engines` | 13% |
+| `src/video_core/texture_cache` | 6% |
+| `src/audio_core` | 3% |
+| `src/video_core/renderer_vulkan` | 1% |
+| `src/core/hle/service/nx2_gsv.h` | 0% |
+
+The riskiest code is the least tested, and that is not an oversight. `nx2_gsv.h`, `vk_rasterizer.cpp` and
+`texture_cache.h` change the most and sit near 0%, because they need `Core::System`, a Vulkan device or a
+running game. Treat changes there as untested: read them closely, keep them small, and test them in the
+game. Moving a decision out of them into a small header, as described above, is what lets that improve.
