@@ -6,6 +6,16 @@
 
 add_executable(tests
     common/addon_config.cpp
+    core/ips_layer.cpp
+    core/network_packet.cpp
+    core/partition_filesystem.cpp
+    core/program_metadata.cpp
+    core/romfs.cpp
+    video_core/ampere_program_override.cpp
+    video_core/macro_memo.cpp
+    video_core/native_qmd.cpp
+    video_core/nx2_page_tracking.cpp
+    video_core/pixel_format_lookup.cpp
     video_core/buffer_cache_ports.cpp
     video_core/unswizzle_workers.cpp
     video_core/aftermath_dump.cpp
