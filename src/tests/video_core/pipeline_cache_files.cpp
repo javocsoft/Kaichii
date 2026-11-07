@@ -121,6 +121,40 @@ TEST_CASE("Task and mesh disk environments roundtrip all translation state and r
     REQUIRE(read == 3);
 }
 
+TEST_CASE("The newest compatible pipeline cache migrates to the current version",
+          "[pipeline_cache_files]") {
+    TempDir temp;
+    constexpr std::array<u32, 2> Sources{53, 52};
+    constexpr u32 Current = 54;
+    const auto write = [&](u32 version) {
+        const auto path = VideoCommon::VersionedPipelineCachePath(temp.path, "vulkan", version);
+        SerializedEnvironment source{Shader::Stage::Fragment};
+        const std::array<const VideoCommon::GenericEnvironment*, 1> envs{&source};
+        VideoCommon::SerializePipeline(u64{version}, envs, path, version);
+        return path;
+    };
+    const auto migrate = [&] {
+        return VideoCommon::MigratePipelineCache(temp.path, "vulkan", Magic, Sources, Current);
+    };
+    CHECK_FALSE(migrate().has_value());
+    write(52);
+    const auto newest = ReadAll(write(53));
+    CHECK(migrate() == 53);
+    const auto current = VideoCommon::VersionedPipelineCachePath(temp.path, "vulkan", Current);
+    CHECK(ReadAll(current).substr(12) == newest.substr(12));
+    // A file of this version wins, so a cache that grew since is never replaced.
+    CHECK_FALSE(migrate().has_value());
+}
+
+TEST_CASE("The compatible pipeline cache versions are older than this build's",
+          "[pipeline_cache_files]") {
+    for (const u32 version : VideoCommon::CompatibleVulkanPipelineCacheVersions) {
+        CHECK(version < VideoCommon::VulkanPipelineCacheVersion);
+    }
+    CHECK(VideoCommon::CompatibleVulkanPipelineCacheVersions.front() ==
+          VideoCommon::VulkanPipelineCacheVersion - 1);
+}
+
 TEST_CASE("Compatible v52 pipelines migrate without changing or discarding the old warm cache",
           "[pipeline_cache_files][mesh_serialization]") {
     TempDir temp;

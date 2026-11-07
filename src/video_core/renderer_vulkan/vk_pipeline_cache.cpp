@@ -850,13 +850,18 @@ void PipelineCache::LoadDiskResources(u64 title_id, std::stop_token stop_loading
     used_pipelines_filename =
         VideoCommon::VersionedPipelineCachePath(base_dir, "vulkan_used", CACHE_VERSION);
     constexpr std::array<char, 8> shader_magic{'y', 'u', 'z', 'u', 'c', 'a', 'c', 'h'};
-    VideoCommon::CopyCompatiblePipelineCache(
-        VideoCommon::VersionedPipelineCachePath(base_dir, "vulkan", 52), pipeline_cache_filename,
-        shader_magic, 52, CACHE_VERSION);
-    std::error_code migration_error;
-    std::filesystem::copy_file(VideoCommon::VersionedPipelineCachePath(base_dir, "vulkan_used", 52),
-                               used_pipelines_filename, std::filesystem::copy_options::none,
-                               migration_error);
+    const auto migrated_from =
+        VideoCommon::MigratePipelineCache(base_dir, "vulkan", shader_magic,
+                                          VideoCommon::CompatibleVulkanPipelineCacheVersions,
+                                          CACHE_VERSION);
+    if (migrated_from) {
+        LOG_INFO(Render_Vulkan, "Migrated the pipeline cache from version {} to {}", *migrated_from,
+                 CACHE_VERSION);
+        std::error_code migration_error;
+        std::filesystem::copy_file(
+            VideoCommon::VersionedPipelineCachePath(base_dir, "vulkan_used", *migrated_from),
+            used_pipelines_filename, std::filesystem::copy_options::none, migration_error);
+    }
     used_pipelines = LoadUsedPipelines(used_pipelines_filename, MaxUsedPipelineAge(device));
     used_pipelines_saved = std::chrono::steady_clock::now();
     size_t skipped_pipelines = 0;
@@ -866,9 +871,9 @@ void PipelineCache::LoadDiskResources(u64 title_id, std::stop_token stop_loading
     if (use_vulkan_pipeline_cache) {
         vulkan_pipeline_cache_filename =
             VideoCommon::VersionedPipelineCachePath(base_dir, "vulkan_pipelines", CACHE_VERSION);
-        VideoCommon::CopyCompatiblePipelineCache(
-            VideoCommon::VersionedPipelineCachePath(base_dir, "vulkan_pipelines", 52),
-            vulkan_pipeline_cache_filename, VULKAN_CACHE_MAGIC_NUMBER, 52, CACHE_VERSION);
+        VideoCommon::MigratePipelineCache(base_dir, "vulkan_pipelines", VULKAN_CACHE_MAGIC_NUMBER,
+                                          VideoCommon::CompatibleVulkanPipelineCacheVersions,
+                                          CACHE_VERSION);
         vulkan_pipeline_cache =
             LoadVulkanPipelineCache(vulkan_pipeline_cache_filename, CACHE_VERSION);
     }

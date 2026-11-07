@@ -4,6 +4,8 @@
 #include <array>
 #include <filesystem>
 #include <fstream>
+#include <optional>
+#include <span>
 #include <string_view>
 #include <system_error>
 
@@ -15,6 +17,9 @@ namespace VideoCommon {
 
 inline constexpr u32 OpenGLPipelineCacheVersion = 48;
 inline constexpr u32 VulkanPipelineCacheVersion = 54;
+/// Older Vulkan versions with this build's file format, newest first. A bump that only changes the
+/// generated SPIR-V goes here: the files hold guest programs and keys, not the translation.
+inline constexpr std::array<u32, 2> CompatibleVulkanPipelineCacheVersions{53, 52};
 
 // Official Eglantine (cache version 18 at c0cb3325) and this fork (a different version) both
 // used <shader dir>/<title>/vulkan.bin and vulkan_pipelines.bin. Each build deletes a file
@@ -90,6 +95,22 @@ inline bool CopyCompatiblePipelineCache(const std::filesystem::path& source,
         return false;
     }
     return true;
+}
+
+/// Copies the newest cache of the versions in `sources` to `version`'s name, unless that file
+/// exists. Returns the version it copied, and leaves the old file for builds that still read it.
+inline std::optional<u32> MigratePipelineCache(const std::filesystem::path& directory,
+                                               std::string_view stem,
+                                               const std::array<char, 8>& magic,
+                                               std::span<const u32> sources, u32 version) {
+    for (const u32 source : sources) {
+        if (CopyCompatiblePipelineCache(VersionedPipelineCachePath(directory, stem, source),
+                                        VersionedPipelineCachePath(directory, stem, version), magic,
+                                        source, version)) {
+            return source;
+        }
+    }
+    return std::nullopt;
 }
 
 } // namespace VideoCommon
