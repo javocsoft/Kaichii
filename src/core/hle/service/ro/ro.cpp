@@ -30,7 +30,7 @@ namespace {
 
 // Atmosphere defines as follows:
 // Sessions = 0x03, NrrInfos = 0x40, NroInfos = 0x40
-// This may not be enough for some mods (plugin.nro dependant games) like SSBU
+// This may not be enough for some mods (plugin.nro dependent games) like SSBU
 // Suppose someone loads like 64 plugins of these, now what?
 constexpr size_t MaxSessions = 0x03; // No change
 constexpr size_t MaxNrrInfos = 0x100; // Up to 256 NRRs

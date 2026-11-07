@@ -136,7 +136,7 @@ protected:
 
     template <bool ContinuousCheck, bool RangeCheck, typename F>
     Result OperatePerEntry(s64 offset, s64 size, F func);
-    // Launching another game makes the original storage inaccessable.
+    // Launching another game makes the original storage inaccessible.
     // This is a helper for multi-nca games.
     void ReportMissingOriginal(s64 offset, s64 size);
 
