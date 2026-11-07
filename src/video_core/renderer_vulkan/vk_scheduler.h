@@ -179,24 +179,26 @@ public:
     /// Send work to a separate thread.
     template <typename T>
         requires std::is_invocable_v<T, vk::CommandBuffer, vk::CommandBuffer>
-    void RecordWithUploadBuffer(T&& command) {
+    void RecordWithUploadBuffer(T&& command,
+                                std::source_location location = std::source_location::current()) {
         if (VideoCommon::GpuSplit::check_owner) [[unlikely]] {
             VideoCommon::GpuSplit::CheckOwner("Scheduler::Record");
         }
-        if (chunk->Record(command)) {
+        if (chunk->Record(command, location)) {
             return;
         }
         DispatchWork();
-        (void)chunk->Record(command);
+        (void)chunk->Record(command, location);
     }
 
     template <typename T>
         requires std::is_invocable_v<T, vk::CommandBuffer>
-    void Record(T&& c) {
+    void Record(T&& c, std::source_location location = std::source_location::current()) {
         this->RecordWithUploadBuffer(
             [command = std::move(c)](vk::CommandBuffer cmdbuf, vk::CommandBuffer) {
                 command(cmdbuf);
-            });
+            },
+            location);
     }
 
     /// Whether the recording thread submitted `tick` within 20 ms.
@@ -328,6 +330,9 @@ private:
             next = next_;
         }
 
+        /// Where the command was recorded, for the GPU time of sampled frames.
+        std::source_location location;
+
     private:
         Command* next = nullptr;
     };
@@ -352,10 +357,11 @@ private:
 
     class CommandChunk final {
     public:
-        void ExecuteAll(vk::CommandBuffer cmdbuf, vk::CommandBuffer upload_cmdbuf);
+        void ExecuteAll(vk::CommandBuffer cmdbuf, vk::CommandBuffer upload_cmdbuf,
+                        Scheduler& scheduler);
 
         template <typename T>
-        bool Record(T& command) {
+        bool Record(T& command, std::source_location location) {
             using FuncType = TypedCommand<T>;
             static_assert(sizeof(FuncType) < sizeof(data), "Lambda is too large");
 
@@ -365,6 +371,7 @@ private:
             }
             Command* const current_last = last;
             last = new (data.data() + command_offset) FuncType(std::move(command));
+            last->location = location;
 
             if (current_last) {
                 current_last->SetNext(last);
@@ -478,6 +485,13 @@ private:
     vk::QueryPool trace_work_pool;
     std::vector<WorkTrace> trace_work_items;
     u32 trace_work_count{};
+    /// Every recorded command of a sampled frame, by where it was recorded: what the GPU spends
+    /// on copies, clears and barriers that no draw or dispatch accounts for.
+    static constexpr u32 TraceMaxCommands = 16384;
+    vk::QueryPool trace_command_pool;
+    std::vector<std::source_location> trace_command_sites;
+    u32 trace_command_count{};
+    void ReportCommandTimes();
     Common::DkbFrameTrace::RateLimit trace_gpu_rate;
     u64 trace_gpu_tick{};
     u64 trace_frame_end{};
