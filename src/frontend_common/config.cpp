@@ -301,7 +301,10 @@ void Config::ReadDataStorageValues() {
     using namespace Common::FS;
 
     const auto setPath = [this](const EdenPath& path, const char* setting) {
-        SetEdenPath(path, ReadStringSetting(std::string(setting)));
+        // A first run has no value yet, and the default path stands.
+        if (const auto value = ReadStringSetting(std::string(setting)); !value.empty()) {
+            SetEdenPath(path, value);
+        }
     };
 
     setPath(EdenPath::NANDDir, "nand_directory");
