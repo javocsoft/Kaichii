@@ -128,6 +128,9 @@ TEST_CASE("Partition lists more entries than a 16-bit counter holds",
 }
 
 TEST_CASE("Damaged partition headers are rejected", "[core][partition_filesystem]") {
+    SECTION("no file") {
+        CHECK(PartitionFilesystem{nullptr}.GetStatus() == ResultStatus::ErrorBadPFSHeader);
+    }
     SECTION("shorter than the header") {
         CHECK(PartitionFilesystem{File(std::vector<u8>(HeaderSize - 1))}.GetStatus() ==
               ResultStatus::ErrorBadPFSHeader);

@@ -55,6 +55,24 @@ bool NSOHeader::IsSegmentCompressed(size_t segment_num) const {
     return ((flags >> segment_num) & 1) != 0;
 }
 
+u64 NSOHeader::SegmentsEnd() const {
+    u64 end = 0;
+    for (const auto& segment : segments) {
+        end = (std::max)(end, u64{segment.location} + segment.size);
+    }
+    return end;
+}
+
+bool NSOHeader::HasValidSegments() const {
+    for (std::size_t i = 0; i < segments.size(); ++i) {
+        if (!IsSegmentCompressed(i) && segments[i].size > segments_compressed_size[i]) {
+            return false;
+        }
+    }
+    constexpr u64 MaxImageSize = 0xFFFF'F000;
+    return SegmentsEnd() + segments[2].bss_size + NSO_ARGUMENT_DATA_ALLOCATION_SIZE <= MaxImageSize;
+}
+
 AppLoader_NSO::AppLoader_NSO(FileSys::VirtualFile file_) : AppLoader(std::move(file_)) {}
 
 FileType AppLoader_NSO::IdentifyType(const FileSys::VirtualFile& in_file) {
@@ -80,6 +98,8 @@ std::optional<VAddr> AppLoader_NSO::LoadModule(Kernel::KProcess& process, Core::
         return std::nullopt;
     if (nso_header.segments.empty())
         return std::nullopt;
+    if (!nso_header.HasValidSegments())
+        return std::nullopt;
 
     // Allocate some space at the beginning if we are patching in PreText mode.
     const size_t module_start = [&]() -> size_t {
@@ -96,17 +116,19 @@ std::optional<VAddr> AppLoader_NSO::LoadModule(Kernel::KProcess& process, Core::
         return 0;
     }();
 
-    auto const last_segment_it = &nso_header.segments[nso_header.segments.size() - 1];
     // Build program image directly in codeset memory :)
     Kernel::CodeSet codeset;
-    codeset.memory.resize(module_start + last_segment_it->location + last_segment_it->size);
+    codeset.memory.resize(module_start + nso_header.SegmentsEnd());
     {
         std::vector<u8> compressed_data(*std::ranges::max_element(nso_header.segments_compressed_size));
         std::vector<u8> decompressed_size(std::ranges::max_element(nso_header.segments, [](auto const& a, auto const& b) {
             return a.size < b.size;
         })->size);
         for (std::size_t i = 0; i < nso_header.segments.size(); ++i) {
-            nso_file.Read(compressed_data.data(), nso_header.segments_compressed_size[i], nso_header.segments[i].offset);
+            if (nso_file.Read(compressed_data.data(), nso_header.segments_compressed_size[i],
+                              nso_header.segments[i].offset) != nso_header.segments_compressed_size[i]) {
+                return std::nullopt;
+            }
             if (nso_header.IsSegmentCompressed(i)) {
                 if (nso_header.IsZBICCompressed()) {
                     // ZBIC compression
@@ -114,7 +136,9 @@ std::optional<VAddr> AppLoader_NSO::LoadModule(Kernel::KProcess& process, Core::
                         std::span<u8>{decompressed_size}.first(nso_header.segments[i].size),
                         std::span<const u8>{compressed_data}.first(nso_header.segments_compressed_size[i])
                     );
-                    ASSERT(r > 0);
+                    if (r <= 0) {
+                        return std::nullopt;
+                    }
                 } else {
                     // LZ4 compression
                     int r = Common::Compression::DecompressDataLZ4(
@@ -123,7 +147,9 @@ std::optional<VAddr> AppLoader_NSO::LoadModule(Kernel::KProcess& process, Core::
                         compressed_data.data(),
                         nso_header.segments_compressed_size[i]
                     );
-                    ASSERT(r == int(nso_header.segments[i].size));
+                    if (r != int(nso_header.segments[i].size)) {
+                        return std::nullopt;
+                    }
                 }
 
                 std::memcpy(

@@ -59,6 +59,9 @@ public:
 
     Loader::ResultStatus GetStatus() const;
 
+    /// Bytes this KIP takes in its file: the header and the compressed sections.
+    u64 GetFileSize() const;
+
     std::string GetName() const;
     u64 GetTitleID() const;
     std::vector<u8> GetSectionDecompressed(u8 index) const;

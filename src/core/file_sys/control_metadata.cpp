@@ -4,6 +4,7 @@
 // SPDX-FileCopyrightText: Copyright 2018 yuzu Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstring>
@@ -88,15 +89,17 @@ NACP::NACP(VirtualFile file)
 {
     file->ReadObject(&raw);
     if (raw.titles_data_format == TitleDataFormat::Compressed) {
-        const u16 compressed_size = raw.language_entries.compressed_data.buffer_size;
-        std::span<const u8> compressed_payload{raw.language_entries.compressed_data.buffer,
-                                               compressed_size};
+        const auto& compressed_data = raw.language_entries.compressed_data;
+        const std::size_t compressed_size =
+            (std::min)(std::size_t{compressed_data.buffer_size}, sizeof(compressed_data.buffer));
+        std::span<const u8> compressed_payload{compressed_data.buffer, compressed_size};
 
         std::vector<u8> decompressed;
         if (InflateRawDeflate(compressed_payload, decompressed)) {
             const size_t entry_count = decompressed.size() / sizeof(LanguageEntry);
             language_entries.resize(entry_count);
-            std::memcpy(language_entries.data(), decompressed.data(), decompressed.size());
+            std::memcpy(language_entries.data(), decompressed.data(),
+                        entry_count * sizeof(LanguageEntry));
         }
     } else {
         language_entries.resize(16);

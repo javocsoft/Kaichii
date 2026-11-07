@@ -178,7 +178,7 @@ std::optional<u8> VfsFile::ReadByte(std::size_t offset) const {
 std::vector<u8> VfsFile::ReadBytes(std::size_t size, std::size_t offset) const {
     // Sizes often come from file headers, so a corrupt one must not decide the allocation.
     const std::size_t file_size = GetSize();
-    if (offset >= file_size) {
+    if (size == 0 || offset >= file_size) {
         return {};
     }
     std::vector<u8> out((std::min)(size, file_size - offset));

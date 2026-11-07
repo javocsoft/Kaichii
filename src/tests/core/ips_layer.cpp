@@ -96,6 +96,16 @@ TEST_CASE("IPS record cut off by the end of the patch is refused", "[core][ips]"
     CHECK(PatchIPS(File(Base), File(std::move(ips))) == nullptr);
 }
 
+TEST_CASE("IPSwitch ignores a build id line with no id", "[core][ips]") {
+    const IPSwitchCompiler compiler{Text("@nso\n@enabled\n00000001 AA\n")};
+    CHECK(Patched(compiler.Apply(File(Base)))[1] == 0xAA);
+}
+
+TEST_CASE("IPSwitch reads a last line with no newline", "[core][ips]") {
+    const IPSwitchCompiler compiler{Text("@enabled\n00000001 AABB")};
+    CHECK(Patched(compiler.Apply(File(Base)))[1] == 0xAA);
+}
+
 TEST_CASE("IPS leaves the base file unchanged", "[core][ips]") {
     const auto base = File(Base);
     REQUIRE(PatchIPS(base, File(Ips({0, 0, 0, 0, 1, 0xAA}))) != nullptr);
