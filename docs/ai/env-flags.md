@@ -93,6 +93,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_HYBRID_CORES` | A/B | Windows only. `=0` stops keeping time-critical threads on the performance cores of hybrid CPUs. |
 | `EDEN_NX2_AUDIO_LEVEL` | diag | Output peak about every two seconds. |
 | `EDEN_NX2_VDEC_TRACE` | diag | Video decoder submit, decode and composite trace. |
+| `EDEN_NX2_MOVIE_CLOCK` | diag | `=1`: logs wall and guest time, presents, video takes and audio counters once a second, to check a movie against its sound. |
 | `EDEN_NX2_VDEC_DUMP` | diag | `=<dir>`: luma of every 120th decoded frame at quarter size. |
 | `EDEN_NX2_FPS_LOG` | diag | `eden-cli`: logs the title-bar performance line. |
 | `EDEN_NX2_GPU_PROFILE` | diag | GPU thread time per second by zone, and split drains by site. |

@@ -65,7 +65,8 @@ tools/dev/in-docker.sh build/clang/bin/tests '[ampere]'
 ## Running the emulator
 
 You can build `lichii` and `eden-cli` here, but running a game needs your own legally obtained game
-files, keys and firmware, plus a GPU with a recent Vulkan driver. The container has neither a GPU nor a
-display. Run the binaries on the host, or in a container with GPU access set up by hand.
+files, plus a GPU with a recent Vulkan driver, and keys and firmware for anything but a `.nup`. The
+container has neither a GPU nor a display, so run the binaries on the host. [Testing](testing.md#running-a-game)
+shows how to do that without touching a player's data.
 
 Windows is not built here. See the [Windows steps](../Build.md).
