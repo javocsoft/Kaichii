@@ -22,9 +22,9 @@ identifiers so that saves and settings keep working. Do not rename them in passi
 | `eden` directory, `EDEN_*` | The user data directory and the switch prefix, unchanged on purpose |
 | Front, back, the split | The two halves of the GPU thread |
 | DKB | Donkey Kong Bananza |
-| Title 1, 2, 3, 4 in comments and `NX2_NOTES.md` | Mario Kart World, Pokémon Pokopia, Kirby Air Riders Global Test Ride, Raiders |
+| Title 1, 2, 3, 4 in comments and `docs/nx2/notes.md` | Mario Kart World, Pokémon Pokopia, Kirby Air Riders Global Test Ride, Raiders |
 
-`NX2_NOTES.md` opens with paths from an early local experiment; its blockers table is still the best
+`docs/nx2/notes.md` opens with paths from an early local experiment; its blockers table is still the best
 history of why each Switch 2 boot quirk exists.
 
 ## Source map
@@ -65,7 +65,7 @@ Ampere chip. `g_nx2_ampere` gates command stream behaviour in `src/video_core/dm
 authentication, `LDAPR` and more, added under `src/dynarmic/src/dynarmic/frontend/A64`. `svc` calls land
 in `src/core/hle/kernel/svc.cpp`. The kernel emulates six cores (`NUM_CPU_CORES`), and thread creation
 folds any core id past them back onto the low ones. `docs/HosKernel.md` and the early rows of
-`NX2_NOTES.md` still say four.
+`docs/nx2/notes.md` still say four.
 
 **Services.** `src/core/hle/service` reimplements system services. Switch 2 only sessions live in the
 header-only `src/core/hle/service/nx2_gsv.h`, at 4,000 lines the largest file on this path: GPU memory,
@@ -76,7 +76,7 @@ syncpoints, `vi2` presentation, video and the graphics system. Unknown commands 
 snapshot of pushbuffer words because games reuse submitted memory. `src/video_core/dma_pusher.cpp` parses
 them, and `src/video_core/gpu_split.h` optionally runs the work as two threads. The front parses commands
 and runs macros against mirrored registers; the back executes engine methods and owns the rasterizer. See
-`NX2_GPU_THREAD_SPLIT.md`. Most draws then reach `src/video_core/renderer_vulkan/vk_rasterizer.cpp`.
+`docs/nx2/gpu-thread-split.md`. Most draws then reach `src/video_core/renderer_vulkan/vk_rasterizer.cpp`.
 
 **Shaders.** `src/video_core/shader_environment.cpp` captures native programs from guest memory.
 `src/shader_recompiler/frontend/ampere/lower_to_maxwell.h` rewrites each one into Maxwell instructions.

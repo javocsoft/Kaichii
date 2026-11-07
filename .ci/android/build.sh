@@ -89,9 +89,6 @@ case "$TYPE" in
 	*) die "Invalid build type $TYPE."
 esac
 
-LOWER_FLAVOR=$(echo "$FLAVOR" | sed 's/./\L&/')
-LOWER_TYPE=$(echo "$TYPE" | sed 's/./\L&/')
-
 if [ -n "${ANDROID_KEYSTORE_B64}" ]; then
     export ANDROID_KEYSTORE_FILE="${GITHUB_WORKSPACE}/ks.jks"
     echo "${ANDROID_KEYSTORE_B64}" | base64 --decode > "${ANDROID_KEYSTORE_FILE}"

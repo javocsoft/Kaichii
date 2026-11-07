@@ -4,25 +4,9 @@
 
 All commits must have proper license header accreditation.
 
-You can easily add all necessary license headers by running:
-
-```sh
-git fetch origin master:master
-.ci/license-header.sh -u -c
-git push
-```
-
-Alternatively, you may omit `-c` and do an amend commit:
-
-```sh
-git fetch origin master:master
-.ci/license-header.sh
-git commit --amend -a --no-edit
-```
+`tools/ci/quick-checks.sh` reports any changed file without one.
 
 If the work is licensed/vendored from other people or projects, you may omit the license headers. Additionally, if you wish to retain authorship over a piece of code, you may attribute it to yourself; however, the code may be changed at any given point and brought under the attribution of Eden.
-
-For more information on the license header script, run `.ci/license-header.sh -h`.
 
 ## Pull Requests
 

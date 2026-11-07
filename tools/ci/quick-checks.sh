@@ -36,22 +36,15 @@ for suite in tools/ci/test_*.py tools/nx2/test_*.py; do
     fi
 done
 
-# The inherited tree fails these (791 codespell hits, 11 shell scripts), so they cover changed files.
-changed=$(git diff --name-only --diff-filter=ACMR "$base...HEAD" -- \
-    ':!externals' ':!.patch' ':!dist' ':!src/android/app/src/main/res')
-
-scripts=$(for file in $changed; do
-    case "$file" in
-        *.sh | hooks/*) echo "$file" ;;
-    esac
-done)
-
 if command -v shellcheck >/dev/null; then
-    # shellcheck disable=SC2086
-    [ -z "$scripts" ] || shellcheck -S warning $scripts || fail shellcheck
+    tools/shellcheck.sh || fail shellcheck
 else
     echo "-- shellcheck not installed, skipped"
 fi
+
+# The inherited tree has 791 codespell hits, so this covers changed files only.
+changed=$(git diff --name-only --diff-filter=ACMR "$base...HEAD" -- \
+    ':!externals' ':!.patch' ':!dist' ':!src/android/app/src/main/res')
 
 if command -v codespell >/dev/null; then
     # shellcheck disable=SC2086

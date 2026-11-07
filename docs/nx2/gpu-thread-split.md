@@ -4,7 +4,7 @@ Title 1 (Mario Kart World) is bound by one host thread, the GPU thread: ~100% bu
 host GPU is 20-40% busy and the game's own CPU thread mostly polls the counter. Per second of
 3D scenes (profiled, 2026-10-29): command processing and register writes ~335 ms, macros
 ~200 ms (1.3 million calls), draw setup ~345 ms (55,000 draws), compute ~70 ms. Speeding up the
-pieces (NX2_NOTES rows 123-139) took frames from ~22-38 ms to ~18-26 ms; a locked 60 fps on the
+pieces (notes.md rows 123-139) took frames from ~22-38 ms to ~18-26 ms; a locked 60 fps on the
 heavy courses needs work on more than one core.
 
 ## Split point: method calls
@@ -56,8 +56,8 @@ heavy courses needs work on more than one core.
 
 Stages 1-3 are in (babd395, `gpu_split.h`), off by default: `EDEN_NX2_SPLIT=1` runs engine methods
 on the back, `EDEN_NX2_SPLIT=2` also runs the 3D and compute macros on the front against register
-copies. Measured in title 1 (NX2_NOTES rows 142-144): ~44,000 draws a second on one thread, ~47,400
+copies. Measured in title 1 (notes.md rows 142-144): ~44,000 draws a second on one thread, ~47,400
 with stage 2, 50,000-66,500 with stage 3. The front waits ~4,000-5,000 times a second (semaphore
 acquires, MME DMA reads); the back still spends ~200 ms a second outside its zones (ring dispatch,
-method sink). Clean A/B (NX2_NOTES row 145): 1.46x throughput, frames 17% shorter; on by
+method sink). Clean A/B (notes.md row 145): 1.46x throughput, frames 17% shorter; on by
 default since. The back is ~92% busy, ~53% of it draw setup: the next step is there, not the ring.

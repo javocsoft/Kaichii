@@ -134,7 +134,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 
 | Switch | Kind | Effect |
 |---|---|---|
-| `EDEN_NX2_SPLIT` | A/B | GPU thread split mode: `2` (default) macros on the front, `1` macros on the back, anything else off. Only with Vulkan and neither safe DMA nor high GPU accuracy. See `NX2_GPU_THREAD_SPLIT.md`. |
+| `EDEN_NX2_SPLIT` | A/B | GPU thread split mode: `2` (default) macros on the front, `1` macros on the back, anything else off. Only with Vulkan and neither safe DMA nor high GPU accuracy. See `docs/nx2/gpu-thread-split.md`. |
 | `EDEN_NX2_SPLIT_CHECK` | diag | Reports scheduler use from the wrong thread. |
 | `EDEN_NX2_SPLIT_SKIP` | A/B | `=0`: send state writes that keep the register's value too. |
 | `EDEN_NX2_SPLIT_VERIFY` | diag | `=1`: every 4096 front macro calls, compare front and back registers. |
