@@ -51,6 +51,18 @@ The game's constants (shader hashes, program keys, the cb0 offset) are in
 | Game | ~41 | sharpened, halos |
 | No sharpening | ~50 | clean; edges aliased as rendered, pairs with resolution scaling |
 
+On a weak GPU the gain is larger in proportion. RTX 3050 Laptop (4 GB), Link's house, docked, three
+15 s windows each, same save and caches:
+
+| Mode | Resolution | fps | Median frame |
+|---|---|---|---|
+| Game | 1x | 14.3 | 71 ms |
+| No sharpening | 1x | 16.6 | 61 ms |
+| Game | 1/2x | 21.1 | 49 ms |
+| No sharpening | 1/2x | 29.4 | 34 ms |
+
+Windows of the same run differ by about 1 fps.
+
 ## Caveats
 
 - Hashes, keys and the offset are specific to the game's main with build id
