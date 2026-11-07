@@ -6,7 +6,10 @@
 
 add_executable(tests
     common/addon_config.cpp
+    core/control_metadata.cpp
+    core/executable_headers.cpp
     core/ips_layer.cpp
+    core/kernel_executable.cpp
     core/network_packet.cpp
     core/partition_filesystem.cpp
     core/program_metadata.cpp
@@ -120,6 +123,7 @@ add_executable(tests
     common/fibers.cpp
     common/game_presets.cpp
     common/host_memory.cpp
+    common/multi_level_page_table.cpp
     common/page_table.cpp
     common/param_package.cpp
     common/range_map.cpp
