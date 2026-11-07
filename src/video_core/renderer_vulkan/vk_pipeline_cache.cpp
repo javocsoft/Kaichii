@@ -27,6 +27,7 @@
 #include "core/core.h"
 #include "shader_recompiler/backend/spirv/emit_spirv.h"
 #include "shader_recompiler/environment.h"
+#include "shader_recompiler/exception.h"
 #include "shader_recompiler/frontend/maxwell/control_flow.h"
 #include "shader_recompiler/frontend/maxwell/translate_program.h"
 #include "shader_recompiler/ir_opt/passes.h"
@@ -45,6 +46,7 @@
 #include "video_core/renderer_vulkan/pipeline_statistics.h"
 #include "video_core/renderer_vulkan/vertex_repack.h"
 #include "video_core/renderer_vulkan/vk_compute_pipeline.h"
+#include "video_core/renderer_vulkan/vk_cooperative_hmma_test.h"
 #include "video_core/renderer_vulkan/vk_descriptor_pool.h"
 #include "video_core/renderer_vulkan/vk_pipeline_cache.h"
 #include "video_core/renderer_vulkan/vk_scheduler.h"
@@ -250,6 +252,9 @@ Shader::RuntimeInfo MakeRuntimeInfo(std::span<const Shader::IR::Program> program
         break;
     case Shader::Stage::Mesh:
         info.convert_depth_mode = gl_ndc;
+        if (program.mesh.topology == 0) {
+            info.fixed_state_point_size = point_size;
+        }
         break;
     case Shader::Stage::Geometry:
         if (program.output_topology == Shader::OutputTopology::PointList) {
@@ -562,6 +567,7 @@ PipelineCache::PipelineCache(Tegra::MaxwellDeviceMemoryManager& device_memory_,
         .has_broken_unsigned_image_offsets = false,
         .has_broken_signed_operations = false,
         .has_broken_fp16_float_controls = driver_id == VK_DRIVER_ID_NVIDIA_PROPRIETARY,
+        .max_compute_shared_memory_size = device.GetMaxComputeSharedMemorySize(),
         .has_broken_fp32_denorm_flush = driver_id == VK_DRIVER_ID_QUALCOMM_PROPRIETARY,
         .ignore_nan_fp_comparisons = false,
         .has_broken_spirv_subgroup_mask_vector_extract_dynamic =
@@ -575,6 +581,13 @@ PipelineCache::PipelineCache(Tegra::MaxwellDeviceMemoryManager& device_memory_,
         .min_ssbo_alignment = device.GetStorageBufferAlignment(),
         .max_user_clip_distances = device.GetMaxUserClipDistances()
     };
+    profile.support_cooperative_hmma =
+        device.IsCooperativeHmmaSupported() && TestCooperativeHmma(device);
+    profile.support_cooperative_hmma_16x16x16 =
+        !profile.support_cooperative_hmma && device.IsCooperativeHmma16x16x16Supported();
+    if (profile.support_cooperative_hmma_16x16x16) {
+        LOG_INFO(Render_Vulkan, "Guest tensor operations run on 16x16x16 cooperative matrices");
+    }
 
     host_info = Shader::HostTranslateInfo{
         .min_ssbo_alignment = device.GetStorageBufferAlignment(),
@@ -1326,11 +1339,14 @@ void PipelineCache::EvictUnusedPipelines() {
     }
     const u64 cutoff = frame_count - EvictAfterFrames;
     std::vector<std::pair<u64, GraphicsPipelineCacheKey>> candidates;
+    size_t kept_prebuilt = 0;
     for (const auto& [key, pipeline] : graphics_cache) {
-        if (pipeline != nullptr && pipeline.get() != current_pipeline && pipeline->IsBuilt() &&
-            pipeline->LastUse() < cutoff) {
-            candidates.emplace_back(pipeline->LastUse(), key);
+        if (pipeline == nullptr || pipeline.get() == current_pipeline || !pipeline->IsBuilt() ||
+            pipeline->LastUse() >= cutoff ||
+            VideoCommon::KeepsUnusedPrebuiltPipeline(pipeline->WasUsed(), kept_prebuilt)) {
+            continue;
         }
+        candidates.emplace_back(pipeline->LastUse(), key);
     }
     const size_t evicted =
         VideoCommon::GraphicsPipelinesToEvict(graphics_cache.size(), candidates.size(), budget);
@@ -1565,6 +1581,22 @@ std::unique_ptr<GraphicsPipeline> PipelineCache::CreateGraphicsPipeline(
             }
         }
     }
+    // Each stage stays within the limit on its own; together they share one descriptor set.
+    if (const u32 set_limit = host_info.max_descriptor_set_storage_buffers; set_limit != 0) {
+        size_t storage_buffers{};
+        for (size_t index = uses_vertex_a && uses_vertex_b ? 1 : 0;
+             index < Maxwell::MaxShaderProgram; ++index) {
+            if (key.unique_hashes[index] != 0) {
+                storage_buffers +=
+                    Shader::NumDescriptors(programs[index].info.storage_buffers_descriptors);
+            }
+        }
+        if (storage_buffers > set_limit) {
+            throw Shader::NotImplementedException(
+                "Binding {} storage buffers to a pipeline whose descriptor set binds {}",
+                storage_buffers, set_limit);
+        }
+    }
     std::array<const Shader::Info*, Maxwell::MaxShaderStage> infos{};
     std::array<vk::ShaderModule, Maxwell::MaxShaderStage> modules;
     std::array<std::optional<Shader::RuntimeInfo>, Maxwell::MaxShaderStage> deferred_runtime_infos;
@@ -1627,13 +1659,13 @@ std::unique_ptr<GraphicsPipeline> PipelineCache::CreateGraphicsPipeline(
                                          hashes[stage + 1], stage, job->reference_spirv[stage]);
                 }
             }
-            auto pools = std::move(job->pools);
+            auto completed_pools = std::move(job->pools);
             job.reset();
-            pools->ReleaseContents();
+            completed_pools->ReleaseContents();
             {
                 std::scoped_lock lock{spare_pools_mutex};
                 if (spare_pools.size() < 4) {
-                    spare_pools.push_back(std::move(pools));
+                    spare_pools.push_back(std::move(completed_pools));
                 }
             }
             AddRuntimeSpirvTime(1, begin);

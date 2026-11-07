@@ -36,6 +36,21 @@ TEST_CASE("Graphics pipelines are evicted only past the budget", "[video_core][p
     }
 }
 
+TEST_CASE("Unused prebuilt pipelines stay out of eviction up to a budget",
+          "[video_core][pipeline_cache]") {
+    size_t kept = 0;
+    CHECK_FALSE(KeepsUnusedPrebuiltPipeline(true, kept));
+    CHECK(kept == 0);
+    for (size_t i = 0; i < MaxUnusedPrebuiltPipelines; ++i) {
+        REQUIRE(KeepsUnusedPrebuiltPipeline(false, kept));
+    }
+    CHECK(kept == MaxUnusedPrebuiltPipelines);
+    // Past the budget they are candidates like the rest.
+    CHECK_FALSE(KeepsUnusedPrebuiltPipeline(false, kept));
+    CHECK_FALSE(KeepsUnusedPrebuiltPipeline(true, kept));
+    CHECK(kept == MaxUnusedPrebuiltPipelines);
+}
+
 TEST_CASE("Vertex attribute mask follows the header's input map", "[video_core][pipeline_cache]") {
     std::array<std::array<bool, 4>, 32> inputs{};
     CHECK(VertexAttributeMask(inputs) == 0);

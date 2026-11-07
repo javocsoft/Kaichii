@@ -119,12 +119,16 @@ namespace Core {
 
 /// Frames the guest has presented (Switch 2 vi2 present calls); input replay is locked to it.
 extern std::atomic<u64> g_nx2_present_count;
-
 /// The last presents' steady clock times and fence waits (ns), for the debug server's frame time
 /// statistics. Written by the present thread only; entry n % size is present n.
 inline constexpr size_t Nx2PresentHistory = 4096;
 extern std::array<std::atomic<u64>, Nx2PresentHistory> g_nx2_present_times;
 extern std::array<std::atomic<u64>, Nx2PresentHistory> g_nx2_present_fence_ns;
+
+/// The steady clock time of present `number`, counted from 1 as g_nx2_present_count counts them.
+inline std::atomic<u64>& Nx2PresentTime(u64 number) {
+    return g_nx2_present_times[(number - 1) % Nx2PresentHistory];
+}
 
 class CpuManager;
 class Debugger;
@@ -150,6 +154,7 @@ enum class SystemResultStatus : u32 {
     ErrorVideoCore,      ///< Error in the video core
     ErrorUnknown,        ///< Any other error
     ErrorLoader,         ///< The base for loader errors (too many to repeat)
+    ErrorMemoryAllocation = 0x10007, ///< Outside ErrorLoader plus the u16 loader result range
 };
 
 class System {
@@ -169,8 +174,10 @@ public:
     /**
      * Initializes the system
      * This function will initialize core functionality used for system emulation
+     * Returns whether guest memory is available. Frontend services remain available on
+     * allocation failure, and Load retries guest memory before initializing the kernel.
      */
-    void Initialize();
+    bool Initialize();
 
     /**
      * Run the OS and Application
