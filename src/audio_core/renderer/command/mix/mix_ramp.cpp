@@ -6,7 +6,7 @@
 
 #include "audio_core/adsp/apps/audio_renderer/command_list_processor.h"
 #include "audio_core/renderer/command/mix/mix_ramp.h"
-#include "common/fixed_point.h"
+#include "audio_core/renderer/command/mix/mix_sample.h"
 #include "common/logging.h"
 
 namespace AudioCore::Renderer {
@@ -14,23 +14,23 @@ namespace AudioCore::Renderer {
 template <size_t Q>
 s32 ApplyMixRamp(std::span<s32> output, std::span<const s32> input, const f32 volume_,
                  const f32 ramp_, const u32 sample_count) {
-    Common::FixedPoint<64 - Q, Q> volume{volume_};
-    Common::FixedPoint<64 - Q, Q> sample{0};
+    s64 volume = MixVolume<Q>(volume_);
+    s64 sample = 0;
 
     if (ramp_ == 0.0f) {
         for (u32 i = 0; i < sample_count; i++) {
-            sample = input[i] * volume;
-            output[i] = (output[i] + sample).to_int();
+            sample = MixProduct(input[i], volume);
+            output[i] = MixToInt<Q>(static_cast<s64>(output[i]) * (s64{1} << Q) + sample);
         }
     } else {
-        Common::FixedPoint<64 - Q, Q> ramp{ramp_};
+        const s64 ramp = MixVolume<Q>(ramp_);
         for (u32 i = 0; i < sample_count; i++) {
-            sample = input[i] * volume;
-            output[i] = (output[i] + sample).to_int();
+            sample = MixProduct(input[i], volume);
+            output[i] = MixToInt<Q>(static_cast<s64>(output[i]) * (s64{1} << Q) + sample);
             volume += ramp;
         }
     }
-    return sample.to_int();
+    return MixToInt<Q>(sample);
 }
 
 template s32 ApplyMixRamp<15>(std::span<s32>, std::span<const s32>, f32, f32, u32);

@@ -7,7 +7,7 @@
 
 #include "audio_core/adsp/apps/audio_renderer/command_list_processor.h"
 #include "audio_core/renderer/command/mix/mix.h"
-#include "common/fixed_point.h"
+#include "audio_core/renderer/command/mix/mix_sample.h"
 
 namespace AudioCore::Renderer {
 /**
@@ -22,9 +22,9 @@ namespace AudioCore::Renderer {
 template <size_t Q>
 static void ApplyMix(std::span<s32> output, std::span<const s32> input, const f32 volume_,
                      const u32 sample_count) {
-    const Common::FixedPoint<64 - Q, Q> volume{volume_};
+    const s64 volume = MixVolume<Q>(volume_);
     for (u32 i = 0; i < sample_count; i++) {
-        output[i] = (output[i] + input[i] * volume).to_int();
+        output[i] = MixSample<Q>(output[i], input[i], volume);
     }
 }
 
