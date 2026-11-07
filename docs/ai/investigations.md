@@ -55,4 +55,5 @@ commits.
 | 456, 387, 253 | Three overlapping DLSS integrations for Ocarina: features, not fixes. |
 | 418, 278, 259, 235, 231, 243, 270 | Experiments behind switches, which do not merge to `nx2`. |
 | 365, 377, 451, 431, 199, 186, 195 | Windows or MinGW only features and tweaks, not fixes. |
-| 345, 264, 296, 204, 189, 192, 221, 246, 320, 330, 335, 467, 213, 255, 267, 214, 219, 228, 411 | Not reviewed in depth yet. |
+| 345 | Ported and measured on top of the presets branch, Ocarina on an RTX 3050 Laptop: the split front's waits for its back fell from 450 to 166 ms a second, but the game ran at 31.2 against 30.7 fps at 1x and 38.1 against 40.4 at 0.5x. Those waits overlapped other work, so about 1,000 lines of split synchronization bought nothing measurable here. |
+| 264, 296, 204, 189, 192, 221, 246, 320, 330, 335, 467, 213, 255, 267, 214, 219, 228, 411 | Not reviewed in depth yet. |
