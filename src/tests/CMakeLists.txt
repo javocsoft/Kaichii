@@ -11,6 +11,7 @@ add_executable(tests
     core/ips_layer.cpp
     core/kernel_executable.cpp
     core/network_packet.cpp
+    core/network_room.cpp
     core/partition_filesystem.cpp
     core/program_metadata.cpp
     core/romfs.cpp
@@ -178,7 +179,7 @@ add_executable(tests
 
 create_target_directory_groups(tests)
 
-target_link_libraries(tests PRIVATE common core audio_core input_common video_core frontend_common)
+target_link_libraries(tests PRIVATE common core audio_core input_common video_core frontend_common network enet::enet)
 target_link_libraries(tests PRIVATE ${PLATFORM_LIBRARIES} Catch2::Catch2WithMain Threads::Threads)
 
 if (TARGET dynarmic::dynarmic)
