@@ -142,8 +142,10 @@ private:
             Common::SetCurrentThreadName("Debugger");
 
             try {
-                // Initialize the listening socket and accept a new client.
-                tcp::endpoint endpoint{boost::asio::ip::address_v4::any(), port};
+                // Initialize the listening socket and accept a new client. A client can read and
+                // write guest memory with no authentication, so this stays on this machine: reach
+                // it from another one through a tunnel, such as ssh -L or adb forward.
+                tcp::endpoint endpoint{boost::asio::ip::address_v4::loopback(), port};
                 tcp::acceptor acceptor{io_context, endpoint};
 
                 AsyncAccept(acceptor, [&](auto&& peer) { AcceptConnection(std::move(peer)); });
