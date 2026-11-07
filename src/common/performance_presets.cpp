@@ -59,6 +59,13 @@ VramUsageMode VramModeFor(const HostProfile& host) {
                                            : VramUsageMode::Conservative;
 }
 
+/// Where ASTC textures are decoded when the GPU can't sample them. On the GPU the decode competes
+/// with the game: in Ocarina of Time on an RTX 3050 Laptop it took 19 of every 35 ms at half
+/// resolution, and decoding on the CPU in the background took it from 29 to 40 fps.
+AstcDecodeMode AstcModeFor(const HostProfile& host) {
+    return host.cpu_threads >= 8 ? AstcDecodeMode::CpuAsynchronous : AstcDecodeMode::Gpu;
+}
+
 } // Anonymous namespace
 
 HardwareTier ClassifyHost(const HostProfile& host) {
@@ -116,6 +123,7 @@ std::vector<PresetEntry> PerformancePresetEntries(Values& values, PerformancePre
         entry(values.gpu_accuracy, GpuAccuracy::Low),
         entry(values.use_asynchronous_shaders, true),
         entry(values.vram_usage_mode, VramModeFor(host)),
+        entry(values.accelerate_astc, AstcModeFor(host)),
     };
 }
 

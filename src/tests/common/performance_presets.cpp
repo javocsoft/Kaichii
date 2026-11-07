@@ -66,10 +66,22 @@ TEST_CASE("A preset sets its values, per game or globally, and is recognised aft
         CHECK(values.gpu_accuracy.GetValue() == GpuAccuracy::Low);
         CHECK(values.use_asynchronous_shaders.GetValue());
         CHECK(values.vram_usage_mode.GetValue() == VramUsageMode::Conservative);
+        CHECK(values.accelerate_astc.GetValue() == AstcDecodeMode::CpuAsynchronous);
         // What the preset does not name stays the player's.
         CHECK(values.use_docked_mode.GetValue() == ConsoleMode::Handheld);
         CHECK(MatchingPerformancePreset(values, laptop) == PerformancePreset::Performance);
     }
+}
+
+TEST_CASE("ASTC decodes on the CPU only where there are threads to spare",
+          "[common][performance_presets]") {
+    Values values;
+    ApplyPerformancePreset(values, PerformancePreset::Performance,
+                           Host("NVIDIA GeForce RTX 3050 Laptop GPU", 4, false, 4), false);
+    CHECK(values.accelerate_astc.GetValue() == AstcDecodeMode::Gpu);
+    ApplyPerformancePreset(values, PerformancePreset::Performance,
+                           Host("NVIDIA GeForce RTX 3050 Laptop GPU", 4, false, 20), false);
+    CHECK(values.accelerate_astc.GetValue() == AstcDecodeMode::CpuAsynchronous);
 }
 
 TEST_CASE("Preset entries are what the settings write and read back",
