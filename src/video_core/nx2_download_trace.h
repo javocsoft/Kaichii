@@ -15,8 +15,9 @@
 
 // EDEN_NX2_DOWNLOAD_TRACE: what the buffer cache copies back to guest memory at fences. Every
 // 10 s it logs the GPU writes that queued the most bytes for download (by written range), the
-// 64 KiB regions copied back the most, and the first 2000 guest CPU reads of GPU-written ranges
-// (a Preflushable mark sends later GPU writes over the range to a download at every fence).
+// 64 KiB regions copied back the most and the pages whose guest CPU reads of GPU-written data
+// flushed or marked the most, and the first 2000 of those reads (a Preflushable mark sends later
+// GPU writes over the range to a download at every fence).
 namespace VideoCommon::Nx2DownloadTrace {
 
 inline const bool g_enabled = std::getenv("EDEN_NX2_DOWNLOAD_TRACE") != nullptr;
@@ -29,6 +30,7 @@ struct Totals {
 struct State {
     std::unordered_map<u64, Totals> writes;  ///< (address << 24 | size) of the GPU write
     std::unordered_map<u64, Totals> regions; ///< 64 KiB region copied back
+    std::unordered_map<u64, Totals> reads;   ///< Page a CPU read of GPU-written data started at
     std::chrono::steady_clock::time_point last{std::chrono::steady_clock::now()};
     u64 marks{};
 };
@@ -38,7 +40,9 @@ inline State& Get() {
     return state;
 }
 
-inline void LogTop(const char* title, const std::unordered_map<u64, Totals>& map, bool write_keys) {
+enum class KeyKind { Write, Region, Page };
+
+inline void LogTop(const char* title, const std::unordered_map<u64, Totals>& map, KeyKind kind) {
     std::vector<std::pair<u64, Totals>> sorted(map.begin(), map.end());
     std::sort(sorted.begin(), sorted.end(),
               [](const auto& a, const auto& b) { return a.second.bytes > b.second.bytes; });
@@ -50,12 +54,19 @@ inline void LogTop(const char* title, const std::unordered_map<u64, Totals>& map
              sorted.size());
     for (size_t i = 0; i < (std::min<size_t>)(sorted.size(), 16); ++i) {
         const auto& [key, totals] = sorted[i];
-        if (write_keys) {
+        switch (kind) {
+        case KeyKind::Write:
             LOG_INFO(HW_GPU, "  write [{:#x} +{:#x}): {} KiB in {}", key >> 24, key & 0xffffff,
                      totals.bytes / 1024, totals.count);
-        } else {
+            break;
+        case KeyKind::Region:
             LOG_INFO(HW_GPU, "  region {:#x}: {} KiB in {} copies", key << 16, totals.bytes / 1024,
                      totals.count);
+            break;
+        case KeyKind::Page:
+            LOG_INFO(HW_GPU, "  page {:#x}: {} reads over {} KiB", key << 12, totals.count,
+                     totals.bytes / 1024);
+            break;
         }
     }
 }
@@ -67,10 +78,12 @@ inline void MaybeReport() {
         return;
     }
     state.last = now;
-    LogTop("queued by GPU write", state.writes, true);
-    LogTop("copied back by region", state.regions, false);
+    LogTop("queued by GPU write", state.writes, KeyKind::Write);
+    LogTop("copied back by region", state.regions, KeyKind::Region);
+    LogTop("read by the CPU by page", state.reads, KeyKind::Page);
     state.writes.clear();
     state.regions.clear();
+    state.reads.clear();
 }
 
 /// A GPU write over [address, address + size) queued `queued` bytes for the next fence.
@@ -88,12 +101,19 @@ inline void Copied(u64 address, u64 size) {
     MaybeReport();
 }
 
-/// A guest CPU read of GPU-written [address, address + size): marked Preflushable, or flushed.
-inline void Marked(u64 address, u64 size, bool preflush) {
-    if (Get().marks++ < 2000) {
+/// A guest CPU read of GPU-written [address, address + size) that flushes: the first one there,
+/// or one that came before the download a fence took of the Preflushable range landed.
+inline void Marked(u64 address, u64 size, bool preflushable) {
+    auto& state = Get();
+    if (state.marks++ < 2000) {
         LOG_INFO(HW_GPU, "Download trace: CPU read of GPU-written [{:#x} +{:#x}) {}", address,
-                 size, preflush ? "marked preflushable" : "flushed");
+                 size, preflushable ? "before its fence download landed" : "for the first time");
     }
+    auto& totals = state.reads[address >> 12];
+    totals.bytes += size;
+    ++totals.count;
+    // Native titles download nothing at fences, so Copied never reports for them.
+    MaybeReport();
 }
 
 } // namespace VideoCommon::Nx2DownloadTrace

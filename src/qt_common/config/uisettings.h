@@ -110,6 +110,9 @@ struct Values {
                                                            true};
 
     Setting<bool> first_start{linkage, true, "firstStart", Category::Ui};
+    // Whether the hardware-based performance preset was offered once already.
+    Setting<bool> performance_preset_offered{linkage, false, "performancePresetOffered",
+                                             Category::Ui};
     Setting<bool> pause_when_in_background{linkage,
                                            false,
                                            "pauseWhenInBackground",

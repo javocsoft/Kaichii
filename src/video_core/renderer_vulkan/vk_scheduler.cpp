@@ -12,6 +12,7 @@
 #include <string_view>
 #include <string>
 #include <map>
+#include <tuple>
 #include <mutex>
 #include <thread>
 #include <utility>
@@ -45,17 +46,25 @@ std::atomic<u64> g_profile_finish_ns{};
 std::atomic<u64> g_profile_window_start{};
 std::mutex g_profile_end_mutex;
 std::map<std::string, u64> g_profile_ends;
+/// Per source line: submissions, and Finish calls with the time each waited for the GPU.
+std::map<std::string, u64> g_profile_flush_sites;
+std::map<std::string, std::pair<u64, u64>> g_profile_finish_sites;
+std::map<std::string, std::pair<u64, u64>> g_profile_read_sites;
+
+std::string SiteName(const char* file, u32 line) {
+    std::string_view name{file};
+    if (const auto slash = name.find_last_of("/\\"); slash != std::string_view::npos) {
+        name.remove_prefix(slash + 1);
+    }
+    return fmt::format("{}:{}", name, line);
+}
 
 void CountRenderPassEnd(const char* file, u32 line) {
     if (!VideoCommon::Nx2Profile::Enabled()) {
         return;
     }
-    std::string_view name{file};
-    if (const auto slash = name.find_last_of('/'); slash != std::string_view::npos) {
-        name.remove_prefix(slash + 1);
-    }
     std::scoped_lock lock{g_profile_end_mutex};
-    ++g_profile_ends[fmt::format("{}:{}", name, line)];
+    ++g_profile_ends[SiteName(file, line)];
 }
 
 void ReportSubmitCounts() {
@@ -90,15 +99,66 @@ void ReportSubmitCounts() {
         LOG_INFO(Render_Vulkan, "Render pass ends {:.0f}/s at {}",
                  static_cast<double>(ends[i].first) / seconds, ends[i].second);
     }
+    // Each submission and each wait for the GPU can leave the GPU idle until the next one.
+    std::vector<std::pair<u64, std::string>> flushes;
+    std::vector<std::tuple<u64, u64, std::string>> finishes;
+    std::vector<std::tuple<u64, u64, std::string>> reads;
+    {
+        std::scoped_lock lock{g_profile_end_mutex};
+        for (const auto& [site, count] : g_profile_flush_sites) {
+            flushes.emplace_back(count, site);
+        }
+        for (const auto& [site, entry] : g_profile_finish_sites) {
+            finishes.emplace_back(entry.second, entry.first, site);
+        }
+        for (const auto& [site, entry] : g_profile_read_sites) {
+            reads.emplace_back(entry.second, entry.first, site);
+        }
+        g_profile_flush_sites.clear();
+        g_profile_finish_sites.clear();
+        g_profile_read_sites.clear();
+    }
+    std::sort(flushes.rbegin(), flushes.rend());
+    for (size_t i = 0; i < flushes.size() && i < 8; ++i) {
+        LOG_INFO(Render_Vulkan, "Submissions {:.0f}/s from {}",
+                 static_cast<double>(flushes[i].first) / seconds, flushes[i].second);
+    }
+    std::sort(finishes.rbegin(), finishes.rend());
+    for (size_t i = 0; i < finishes.size() && i < 8; ++i) {
+        const auto& [ns, count, site] = finishes[i];
+        LOG_INFO(Render_Vulkan, "Finishes {:.1f}/s waiting {:.1f} ms/s at {}",
+                 static_cast<double>(count) / seconds, static_cast<double>(ns) / 1e6 / seconds,
+                 site);
+    }
+    std::sort(reads.rbegin(), reads.rend());
+    for (size_t i = 0; i < reads.size() && i < 8; ++i) {
+        const auto& [ns, count, site] = reads[i];
+        LOG_INFO(Render_Vulkan, "Buffer reads {:.1f}/s taking {:.1f} ms/s from {}",
+                 static_cast<double>(count) / seconds, static_cast<double>(ns) / 1e6 / seconds,
+                 site);
+    }
 }
 }
 
 void Scheduler::CommandChunk::ExecuteAll(vk::CommandBuffer cmdbuf,
-                                         vk::CommandBuffer upload_cmdbuf) {
+                                         vk::CommandBuffer upload_cmdbuf, Scheduler& scheduler) {
     auto command = first;
     while (command != nullptr) {
         auto next = command->GetNext();
+        const bool timed = scheduler.trace_gpu_recording && scheduler.trace_command_pool &&
+                           scheduler.trace_command_count < TraceMaxCommands;
+        const u32 query = scheduler.trace_command_count * 2;
+        if (timed) {
+            scheduler.trace_command_sites[scheduler.trace_command_count++] = command->location;
+            cmdbuf.WriteTimestamp(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                                  *scheduler.trace_command_pool, query);
+        }
         command->Execute(cmdbuf, upload_cmdbuf);
+        // A submission ends the command buffer and stops recording: its end stays unwritten.
+        if (timed && scheduler.trace_gpu_recording) {
+            cmdbuf.WriteTimestamp(VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                                  *scheduler.trace_command_pool, query + 1);
+        }
         command->~Command();
         command = next;
     }
@@ -138,6 +198,15 @@ Scheduler::Scheduler(const Device& device_, StateTracker& state_tracker_)
                     .pipelineStatistics = 0,
                 });
                 trace_work_items.resize(TraceMaxWork);
+                trace_command_pool = device.GetLogical().CreateQueryPool({
+                    .sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO,
+                    .pNext = nullptr,
+                    .flags = 0,
+                    .queryType = VK_QUERY_TYPE_TIMESTAMP,
+                    .queryCount = TraceMaxCommands * 2,
+                    .pipelineStatistics = 0,
+                });
+                trace_command_sites.resize(TraceMaxCommands);
             } catch (const vk::Exception& error) {
                 LOG_WARNING(Render_Vulkan, "DKB gpu_timestamp unavailable: {}", error.what());
             }
@@ -170,6 +239,10 @@ u64 Scheduler::Flush(VkSemaphore signal_semaphore, VkSemaphore wait_semaphore,
     }
     if (VideoCommon::GpuSplit::check_owner) [[unlikely]] {
         VideoCommon::GpuSplit::CheckOwner("Scheduler::Flush");
+    }
+    if (VideoCommon::Nx2Profile::Enabled()) {
+        std::scoped_lock lock{g_profile_end_mutex};
+        ++g_profile_flush_sites[SiteName(location.file_name(), location.line())];
     }
     // When flushing, we only send data to the worker thread; no waiting is necessary.
     const u64 signal_value = SubmitExecution(signal_semaphore, wait_semaphore);
@@ -254,9 +327,13 @@ void Scheduler::Finish(VkSemaphore signal_semaphore, VkSemaphore wait_semaphore,
     last_flush = std::chrono::steady_clock::now();
     flush_pending = false;
     if (profile) {
+        const u64 waited = VideoCommon::Nx2Profile::Now() - start;
         g_profile_finishes.fetch_add(1, std::memory_order_relaxed);
-        g_profile_finish_ns.fetch_add(VideoCommon::Nx2Profile::Now() - start,
-                                      std::memory_order_relaxed);
+        g_profile_finish_ns.fetch_add(waited, std::memory_order_relaxed);
+        std::scoped_lock lock{g_profile_end_mutex};
+        auto& [count, ns] = g_profile_finish_sites[SiteName(location.file_name(), location.line())];
+        ++count;
+        ns += waited;
     }
 }
 
@@ -540,7 +617,7 @@ void Scheduler::WorkerThread(std::stop_token stop_token) {
             // Perform the work, tracking whether the chunk was a submission
             // before executing.
             const bool has_submit = work->HasSubmit();
-            work->ExecuteAll(current_cmdbuf, current_upload_cmdbuf);
+            work->ExecuteAll(current_cmdbuf, current_upload_cmdbuf, *this);
 
             // If the chunk was a submission, reallocate the command buffer.
             if (has_submit) {
@@ -686,6 +763,69 @@ void Scheduler::ReportWorkTimes() {
              trace_sample_frame, count, total_ms, slowest);
 }
 
+void Scheduler::ProfileHostRead(std::source_location location, u64 ns) {
+    std::scoped_lock lock{g_profile_end_mutex};
+    auto& [count, total] = g_profile_read_sites[SiteName(location.file_name(), location.line())];
+    ++count;
+    total += ns;
+}
+
+void Scheduler::ReportCommandTimes() {
+    const u32 count = trace_command_count;
+    trace_command_count = 0;
+    if (count == 0) {
+        return;
+    }
+    struct Result {
+        u64 timestamp;
+        u64 available;
+    };
+    std::vector<Result> results(size_t{count} * 2);
+    // A submission leaves its command's end unwritten, so some queries are never available: the
+    // call then returns VK_NOT_READY, but still writes the others with their availability.
+    const VkResult result = device.GetLogical().GetQueryResults(
+        *trace_command_pool, 0, count * 2, results.size() * sizeof(Result), results.data(),
+        sizeof(Result), VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WITH_AVAILABILITY_BIT);
+    if (result != VK_SUCCESS && result != VK_NOT_READY) {
+        return;
+    }
+    struct Totals {
+        double total_ms{};
+        u32 count{};
+    };
+    std::map<std::string, Totals> by_site;
+    double total_ms{};
+    for (u32 i = 0; i < count; ++i) {
+        if (results[i * 2].available == 0 || results[i * 2 + 1].available == 0) {
+            continue;
+        }
+        const double ms = static_cast<double>(Common::DkbFrameTrace::TimestampDelta(
+                              results[i * 2].timestamp, results[i * 2 + 1].timestamp,
+                              trace_timestamp_bits)) *
+                          trace_timestamp_period / 1e6;
+        std::string_view file{trace_command_sites[i].file_name()};
+        if (const auto slash = file.find_last_of("/\\"); slash != std::string_view::npos) {
+            file.remove_prefix(slash + 1);
+        }
+        Totals& totals = by_site[fmt::format("{}:{}", file, trace_command_sites[i].line())];
+        totals.total_ms += ms;
+        ++totals.count;
+        total_ms += ms;
+    }
+    std::vector<std::pair<std::string, Totals>> sorted(by_site.begin(), by_site.end());
+    std::ranges::sort(sorted, std::greater<>{},
+                      [](const auto& entry) { return entry.second.total_ms; });
+    if (sorted.size() > 16) {
+        sorted.resize(16);
+    }
+    std::string sites;
+    for (const auto& [site, totals] : sorted) {
+        sites += fmt::format(" {}={:.3f}ms/{}x", site, totals.total_ms, totals.count);
+    }
+    LOG_INFO(Render_Vulkan, "DKB gpu_commands renderer_frame={} timed={} timed_sum_ms={:.3f} by site:{}",
+             trace_sample_frame, count, total_ms, sites);
+}
+
 void Scheduler::TraceGpuSubmission() {
     if (trace_gpu_pending) {
         master_semaphore->Refresh();
@@ -755,6 +895,7 @@ void Scheduler::TraceGpuSubmission() {
                      work.dispatch_attempts, shaders, work.untracked_uses);
         }
         ReportWorkTimes();
+        ReportCommandTimes();
         trace_gpu_tick = 0;
         trace_gpu_count = 0;
         trace_gpu_skipped = 0;
@@ -768,6 +909,9 @@ void Scheduler::TraceGpuSubmission() {
     if (trace_gpu_count == 0 && trace_work_pool) {
         // Draws are timed inside render passes, where queries cannot be reset.
         current_upload_cmdbuf.ResetQueryPool(*trace_work_pool, 0, TraceMaxWork * 2);
+        if (trace_command_pool) {
+            current_upload_cmdbuf.ResetQueryPool(*trace_command_pool, 0, TraceMaxCommands * 2);
+        }
     }
     current_upload_cmdbuf.WriteTimestamp(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, *trace_query_pool,
                                         trace_gpu_count * 2);

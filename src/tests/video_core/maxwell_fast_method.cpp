@@ -798,3 +798,54 @@ TEST_CASE("Maxwell3D takes its macros back from the split's front once the split
     CHECK(engine.shadow_state.reg_array[state] == 0x1234);
     CHECK(engine.GetNativeMacroPositions()[0] == 0x40);
 }
+
+TEST_CASE("Maxwell3D's split front uploads macro code sent as one multi-method run",
+          "[video_core][gpu_split_dependencies]") {
+    using Access = VideoCommon::GpuSplitTestAccess;
+    Fixture f;
+    VideoCommon::GpuSplit split;
+    Access::Initialize(split, f.system);
+    auto& engine = f.fast;
+    engine.SetNativeTuringMacroMode(true);
+    // GCC 13's loop unswitching dropped these words from the front's per-word loop (#500).
+    constexpr u32 pointer = 0x262;
+    constexpr std::array<u32, 6> code{0x740003, 0x18c00000, 0x318c0001,
+                                      0x740003, 0x18c00000, 0x318c0000};
+    engine.FrontCallMethod(f.system, split, MAXWELL3D_REG_INDEX(load_mme.instruction_ptr), pointer,
+                           true);
+    engine.FrontCallMultiMethod(f.system, split, MAXWELL3D_REG_INDEX(load_mme.instruction),
+                                code.data(), code.size(), code.size());
+    const auto& macros = engine.GetNativeMacroEngine();
+    REQUIRE(macros.native_write_offset == pointer * 3 + code.size());
+    CHECK(std::equal(code.begin(), code.end(), macros.native_code.begin() + pointer * 3));
+}
+
+TEST_CASE("Maxwell3D's split front drops the instance loop writes the back ignores",
+          "[video_core][gpu_split_dependencies]") {
+    using Access = VideoCommon::GpuSplitTestAccess;
+    Fixture f;
+    VideoCommon::GpuSplit split;
+    Access::Initialize(split, f.system);
+    auto& engine = f.fast;
+    const auto sent = [&](u32 method, u32 value) {
+        const u64 before = Access::End(split);
+        engine.FrontCallMethod(f.system, split, method, value, true);
+        return Access::End(split) != before;
+    };
+    constexpr u32 Count = MAXWELL3D_REG_INDEX(vertex_buffer.count);
+    constexpr u32 Begin = MAXWELL3D_REG_INDEX(draw.begin);
+    constexpr u32 End = MAXWELL3D_REG_INDEX(draw.end);
+    constexpr u32 Subsequent = 1U << 26;
+    CHECK(sent(Count, 3));
+    CHECK_FALSE(sent(Count, 3));
+    CHECK(sent(Count, 4));
+    // Instance id First: draw.end draws, whatever value it writes.
+    CHECK(sent(Begin, 0));
+    CHECK(sent(End, 0));
+    CHECK(sent(End, 0));
+    // Subsequent: an instance loop, where draw.end draws nothing.
+    CHECK(sent(Begin, Subsequent));
+    CHECK_FALSE(sent(End, 0));
+    CHECK(sent(Begin, 0));
+    CHECK(sent(End, 0));
+}

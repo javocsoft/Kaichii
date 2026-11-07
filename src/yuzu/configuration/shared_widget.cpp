@@ -804,8 +804,16 @@ Widget* Builder::BuildWidget(Settings::BasicSetting* setting,
         return nullptr;
     }
 
-    return new Widget(setting, *translations, *combobox_translations, parent, runtime_lock,
-                      apply_funcs, request, managed, multiplier, other_setting, suffix);
+    auto* const widget = new Widget(setting, *translations, *combobox_translations, parent,
+                                    runtime_lock, apply_funcs, request, managed, multiplier,
+                                    other_setting, suffix);
+    built_widgets[setting->Id()] = widget;
+    return widget;
+}
+
+Widget* Builder::FindWidget(const Settings::BasicSetting& setting) const {
+    const auto it = built_widgets.find(setting.Id());
+    return it == built_widgets.end() ? nullptr : it->second.data();
 }
 
 Widget* Builder::BuildWidget(Settings::BasicSetting* setting,
@@ -813,6 +821,32 @@ Widget* Builder::BuildWidget(Settings::BasicSetting* setting,
                              Settings::BasicSetting* other_setting, RequestType request,
                              const QString& suffix) const {
     return BuildWidget(setting, apply_funcs, request, true, 1.0f, other_setting, suffix);
+}
+
+bool Widget::ShowValue(const std::string& value) {
+    const u32 wanted = static_cast<u32>(std::strtoul(value.c_str(), nullptr, 0));
+    if (combobox != nullptr && combobox->isEnabled()) {
+        const int index = combobox->findData(wanted);
+        if (index < 0) {
+            return false;
+        }
+        combobox->setCurrentIndex(index);
+        emit combobox->activated(index);
+        return true;
+    }
+    for (const auto& [id, button] : radio_buttons) {
+        if (id == wanted && button->isEnabled()) {
+            button->setChecked(true);
+            emit button->clicked(true);
+            return true;
+        }
+    }
+    if (checkbox != nullptr && checkbox->isEnabled()) {
+        checkbox->setChecked(value == "true");
+        emit checkbox->clicked(checkbox->isChecked());
+        return true;
+    }
+    return false;
 }
 
 const ComboboxTranslationMap& Builder::ComboboxTranslations() const {

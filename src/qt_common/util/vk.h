@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 #include "common/common_types.h"
+#include "common/performance_presets.h"
 #include "common/settings_enums.h"
 #include "vulkan/vulkan_core.h"
 
@@ -64,8 +65,19 @@ public:
     const std::string name;
     const std::vector<VkPresentModeKHR> vsync_support;
     const bool has_broken_compute;
+
+    // What performance presets need to class the device.
+    std::string device_name;
+    u32 vendor_id{};
+    bool integrated{};
+    u64 device_local_bytes{}; ///< The largest device-local memory heap
 };
 
 // TODO(crueter): Port some configure_graphics.cpp stuff
 void PopulateRecords(std::vector<Record>& records, QWindow* window);
+
+/// The machine as performance presets see it: the device at `device_index` (the one the emulator
+/// renders with), the CPU threads and the RAM.
+[[nodiscard]] Settings::HostProfile DetectHostProfile(const std::vector<Record>& records,
+                                                      int device_index);
 } // namespace VkDeviceInfo

@@ -1,0 +1,75 @@
+// SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#pragma once
+
+#include <array>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "common/common_types.h"
+#include "common/settings.h"
+
+namespace Settings {
+
+/// What the frontend knows about the machine: the Vulkan device the emulator renders with, and the
+/// CPU and RAM. Unknown values stay zero and count as the weakest choice.
+struct HostProfile {
+    std::string gpu_name;
+    u32 gpu_vendor_id = 0;    ///< PCI vendor id: 0x10DE NVIDIA, 0x1002 AMD, 0x8086 Intel
+    bool gpu_integrated = false;
+    u64 gpu_memory_bytes = 0; ///< The largest device-local heap
+    u32 cpu_threads = 0;
+    u64 ram_bytes = 0;
+};
+
+enum class HardwareTier : u8 {
+    Entry,      ///< Integrated GPUs and cards up to 4 GB: laptops and older desktops
+    Mid,        ///< 6 to 8 GB
+    High,       ///< 10 to 12 GB
+    Enthusiast, ///< 16 GB and more
+};
+
+enum class PerformancePreset : u8 {
+    Performance, ///< Half resolution: for Entry hardware in Switch 2 games
+    Balanced,    ///< Three quarters resolution
+    Quality,     ///< Native resolution
+    Ultra,       ///< One and a half times native
+};
+
+inline constexpr std::array AllPerformancePresets{
+    PerformancePreset::Performance, PerformancePreset::Balanced, PerformancePreset::Quality,
+    PerformancePreset::Ultra};
+
+/// The hardware's class. Laptop GPUs are capped at High: with the same memory they run well
+/// behind their desktop namesakes. A CPU with fewer than 8 threads or less than 12 GB of RAM caps
+/// it at Mid, since Switch 2 games then wait on the CPU or on paging, not on the GPU.
+[[nodiscard]] HardwareTier ClassifyHost(const HostProfile& host);
+
+[[nodiscard]] PerformancePreset RecommendedPreset(const HostProfile& host);
+
+/// One setting a preset sets, and the value it sets, as the setting serializes it.
+struct PresetEntry {
+    BasicSetting* setting;
+    std::string value;
+};
+
+/// What a preset sets in `values`. A frontend can show these in its widgets before saving.
+[[nodiscard]] std::vector<PresetEntry> PerformancePresetEntries(Values& values,
+                                                                PerformancePreset preset,
+                                                                const HostProfile& host);
+
+/// Writes a preset's settings, as per-game values when `per_game`. Settings a preset does not
+/// name keep their values, so a player's other choices survive.
+void ApplyPerformancePreset(Values& values, PerformancePreset preset, const HostProfile& host,
+                            bool per_game);
+
+/// The preset whose settings `values` holds, if any.
+[[nodiscard]] std::optional<PerformancePreset> MatchingPerformancePreset(Values& values,
+                                                                         const HostProfile& host);
+
+[[nodiscard]] std::string_view PerformancePresetKey(PerformancePreset preset);
+
+} // namespace Settings

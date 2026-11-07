@@ -63,7 +63,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_PIPELINE_DIFF` | diag | For a new pipeline reusing an earlier one's shaders, logs which fixed state differs. Finds state that splits the same program. |
 | `EDEN_NX2_PENDING_WRITE_TRACE` | diag | Reports shaders reading buffer bytes that guest CPU writes have not reached yet. |
 | `EDEN_NX2_TABLE_POINTER_TRACE` | diag | Logs table-pointer slot changes and whether guest and host copies can differ. |
-| `EDEN_NX2_DOWNLOAD_TRACE` | diag | What the buffer cache copies back at fences, every 10 s. |
+| `EDEN_NX2_DOWNLOAD_TRACE` | diag | What the buffer cache copies back at fences, and the pages whose CPU reads had to flush, every 10 s. |
 | `EDEN_NX2_QUERY_TRACE` | diag | Query cache activity. |
 | `EDEN_NX2_QUERY_DMA_TRACE` | diag | MME DMA reads of reports whose host result is not in guest memory yet. |
 | `EDEN_NX2_QMD_TRACE` | diag | QMD scheduler loads, dependency counts and launches. |

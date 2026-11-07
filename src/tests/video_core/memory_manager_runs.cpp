@@ -32,7 +32,7 @@ public:
     void SignalReference() override {}
     void ReleaseFences(bool) override {}
     void FlushAll() override {}
-    void FlushRegion(DAddr, u64, VideoCommon::CacheType) override {}
+    void FlushRegion(DAddr, u64, VideoCommon::CacheType, std::source_location) override {}
     bool MustFlushRegion(DAddr, u64, VideoCommon::CacheType) override {
         return false;
     }

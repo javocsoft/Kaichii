@@ -25,6 +25,7 @@ class ConfigureDebugTab;
 class ConfigureFilesystem;
 class ConfigureGeneral;
 class ConfigureGraphics;
+class ConfigurePerformance;
 class ConfigureGraphicsAdvanced;
 class ConfigureGraphicsExtensions;
 class ConfigureHotkeys;
@@ -91,6 +92,7 @@ private:
     std::unique_ptr<ConfigureGraphicsExtensions> graphics_extensions_tab;
     std::unique_ptr<ConfigureUi> ui_tab;
     std::unique_ptr<ConfigureGraphics> graphics_tab;
+    std::unique_ptr<ConfigurePerformance> performance_tab;
     std::unique_ptr<ConfigureHotkeys> hotkeys_tab;
     std::unique_ptr<ConfigureInput> input_tab;
     std::unique_ptr<ConfigureNetwork> network_tab;

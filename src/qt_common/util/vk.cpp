@@ -4,6 +4,8 @@
 // SPDX-FileCopyrightText: 2023 yuzu Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <algorithm>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -11,6 +13,7 @@
 
 #include "common/dynamic_library.h"
 #include "common/logging.h"
+#include "common/memory_detect.h"
 #include "qt_common/util/vk.h"
 #include "video_core/vulkan_common/vulkan_device.h"
 #include "video_core/vulkan_common/vulkan_instance.h"
@@ -41,7 +44,14 @@ void PopulateRecords(std::vector<Record>& records, QWindow* window) try {
     const auto library = OpenLibrary();
     const vk::Instance instance = CreateInstance(*library, dld, VK_API_VERSION_1_1, wsi.type);
     const std::vector<VkPhysicalDevice> physical_devices = instance.EnumeratePhysicalDevices();
-    vk::SurfaceKHR surface = CreateSurface(instance, wsi);
+    // Without a surface (a platform that can't present, such as VNC) the devices are still
+    // listed, with the default present modes: performance presets class the machine from them.
+    vk::SurfaceKHR surface;
+    try {
+        surface = CreateSurface(instance, wsi);
+    } catch (const Vulkan::vk::Exception& exception) {
+        LOG_WARNING(Frontend, "Listing Vulkan devices without a surface: {}", exception.what());
+    }
 
     records.clear();
     records.reserve(physical_devices.size());
@@ -50,7 +60,7 @@ void PopulateRecords(std::vector<Record>& records, QWindow* window) try {
         std::string name = physical_device.GetProperties().deviceName;
 
         const std::vector<VkPresentModeKHR> present_modes =
-            physical_device.GetSurfacePresentModesKHR(*surface);
+            surface ? physical_device.GetSurfacePresentModesKHR(*surface) : default_present_modes;
 
         VkPhysicalDeviceDriverProperties driver_properties{};
         driver_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
@@ -72,10 +82,37 @@ void PopulateRecords(std::vector<Record>& records, QWindow* window) try {
 
         name = fmt::format("{} ({})", name, driver_string);
 
-        records.push_back(VkDeviceInfo::Record(name, present_modes, has_broken_compute));
+        Record& record = records.emplace_back(name, present_modes, has_broken_compute);
+        record.device_name = properties.properties.deviceName;
+        record.vendor_id = properties.properties.vendorID;
+        record.integrated =
+            properties.properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
+        const VkPhysicalDeviceMemoryProperties memory =
+            physical_device.GetMemoryProperties().memoryProperties;
+        for (u32 heap = 0; heap < memory.memoryHeapCount; ++heap) {
+            if ((memory.memoryHeaps[heap].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0) {
+                record.device_local_bytes =
+                    (std::max)(record.device_local_bytes, u64{memory.memoryHeaps[heap].size});
+            }
+        }
     }
 } catch (const Vulkan::vk::Exception& exception) {
     LOG_ERROR(Frontend, "Failed to enumerate devices with error: {}", exception.what());
+}
+
+Settings::HostProfile DetectHostProfile(const std::vector<Record>& records, int device_index) {
+    Settings::HostProfile host{
+        .cpu_threads = std::thread::hardware_concurrency(),
+        .ram_bytes = Common::GetMemInfo().TotalPhysicalMemory,
+    };
+    if (device_index >= 0 && static_cast<size_t>(device_index) < records.size()) {
+        const Record& record = records[static_cast<size_t>(device_index)];
+        host.gpu_name = record.device_name;
+        host.gpu_vendor_id = record.vendor_id;
+        host.gpu_integrated = record.integrated;
+        host.gpu_memory_bytes = record.device_local_bytes;
+    }
+    return host;
 }
 
 } // namespace VkDeviceInfo

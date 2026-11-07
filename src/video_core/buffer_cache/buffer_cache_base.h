@@ -280,6 +280,15 @@ public:
 
     std::optional<VideoCore::RasterizerDownloadArea> GetFlushArea(DAddr device_addr, u64 size);
 
+    /// The core consumed the read traps of these pages for a read the texture cache answered:
+    /// the next GPU write here must arm them again (GetFlushArea forgets them otherwise).
+    void ForgetReadTraps(DAddr device_addr, u64 size) {
+        read_trapped_ranges.Subtract(
+            Common::AlignDown(device_addr, Core::DEVICE_PAGESIZE),
+            Common::AlignUp(device_addr + size, Core::DEVICE_PAGESIZE) -
+                Common::AlignDown(device_addr, Core::DEVICE_PAGESIZE));
+    }
+
     /// Without downloads at every fence, a guest CPU read is the only way GPU-written buffer
     /// data reaches guest memory, so reads must ask the buffer cache (GetFlushArea).
     bool FlushesOnCpuRead() const {
@@ -709,16 +718,11 @@ private:
         return gpu_memory == nullptr || !gpu_memory->UsesNativeTiling();
     }
 
-    /// Whether a GPU write to this range is copied back at the next fence. Ranges the guest CPU
-    /// has read (Preflushable, set by the first reactive flush) always are: later reads skip the
-    /// flush and rely on these downloads, e.g. collision meshes skinned by compute shaders.
-    bool DownloadsAtFence(DAddr device_addr, u64 size) noexcept {
-        return AsyncBufferDownloads() || memory_tracker.IsRegionPreflushable(device_addr, size);
-    }
-
-    /// Queues a GPU write for download at the next fence where DownloadsAtFence holds. With only
-    /// Preflushable marks, just the marked pages are queued: a write that covers one marked page
-    /// of a large buffer would otherwise copy the whole buffer back at every fence.
+    /// Queues a GPU write for download at the next fence: all of it with AsyncBufferDownloads,
+    /// otherwise only the pages the guest CPU has read (Preflushable, set by a read that had to
+    /// flush), where later reads then find the data once the download landed, e.g. collision
+    /// meshes skinned by compute shaders. A write that covers one marked page of a large buffer
+    /// would otherwise copy the whole buffer back at every fence.
     void QueueFenceDownload(DAddr device_addr, u64 size) {
         static const bool exact = [] {
             const char* value = std::getenv("EDEN_NX2_EXACT_PREFLUSH");
@@ -728,11 +732,12 @@ private:
             uncommitted_gpu_modified_ranges.Add(device_addr, size);
             return;
         }
+        // Queued pages are trapped too: the guest CPU can read them before their download lands
+        // (fences release semaphores before the host GPU runs the work at low GPU accuracy).
+        ArmReadTraps(device_addr, size);
         if (!exact) {
             if (memory_tracker.IsRegionPreflushable(device_addr, size)) {
                 uncommitted_gpu_modified_ranges.Add(device_addr, size);
-            } else {
-                ArmReadTraps(device_addr, size);
             }
             return;
         }
@@ -746,23 +751,22 @@ private:
                 queued += upper - lower;
             }
         });
-        if (queued < size) {
-            ArmReadTraps(device_addr, size);
-        }
         if (Nx2DownloadTrace::g_enabled && queued != 0) [[unlikely]] {
             Nx2DownloadTrace::Queued(device_addr, size, queued);
         }
     }
 
-    /// GPU writes that are not downloaded at fences: trap the guest CPU's next read of their
-    /// pages, which flushes them on demand (or marks them Preflushable with preflushing enabled).
+    /// Traps the guest CPU's next read of GPU-written pages. A read before the GPU's data is in
+    /// guest memory flushes it (and marks the pages Preflushable); a read after a fence download
+    /// landed it only drops the trap.
     void ArmReadTraps(DAddr device_addr, u64 size) {
         const DAddr begin = Common::AlignDown(device_addr, Core::DEVICE_PAGESIZE);
         const DAddr end = Common::AlignUp(device_addr + size, Core::DEVICE_PAGESIZE);
-        if (!read_trapped_ranges.Arm(begin, end - begin)) {
-            return;
-        }
-        device_memory.ArmReadTraps(begin, end - begin);
+        // Only the parts not armed yet: the core visits each page it is given, and a buffer the
+        // GPU rewrites every frame is mostly still armed (the guest read a few of its pages).
+        read_trapped_ranges.Arm(begin, end - begin, [this](DAddr part, u64 part_size) {
+            device_memory.ArmReadTraps(part, part_size);
+        });
     }
 
     ReadTrapTracker read_trapped_ranges;

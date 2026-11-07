@@ -82,6 +82,9 @@ struct Runtime {
         return true;
     }
     void WaitSubmittedTick(u64) {}
+    u64 CurrentTick() const {
+        return 1;
+    }
     bool CanReorderUpload(const Buffer&, std::span<VideoCommon::BufferCopy>) const {
         return false;
     }
@@ -155,6 +158,8 @@ struct Runtime {
         ++host_read_barriers;
         Finish();
     }
+    void PreCopyBarrier() {}
+    void PostCopyBarrier() {}
     void BindUniformBuffer(Buffer&, u32, u32) {}
     std::span<u8> BindMappedUniformBuffer(size_t, u32, u32 size) {
         stream.resize(size);
@@ -275,6 +280,18 @@ struct BufferCacheTestAccess {
     static std::vector<std::pair<DAddr, u64>> DeferredRanges(Cache& cache) {
         std::scoped_lock lock{cache.deferred_page_writes_mutex};
         return cache.deferred_page_writes;
+    }
+    static void UseMemory(Cache& cache, Tegra::MemoryManager& memory) {
+        cache.gpu_memory = &memory;
+    }
+    static void GpuWrite(Cache& cache, BufferId id, DAddr address, u32 size) {
+        cache.MarkWrittenBuffer(id, address, size);
+    }
+    static bool Trapped(Cache& cache, DAddr address, u64 size) {
+        return cache.read_trapped_ranges.IsArmed(address, size);
+    }
+    static bool Preflushable(Cache& cache, DAddr address, u64 size) {
+        return cache.memory_tracker.IsRegionPreflushable(address, size);
     }
 };
 
@@ -949,4 +966,58 @@ TEST_CASE("A failure on the owner thread reaches the test and leaves the owner u
     bool ran = false;
     owner.Do([&] { ran = VideoCommon::GpuSplit::OwnsScheduler(); });
     CHECK(ran);
+}
+
+TEST_CASE("A CPU read of a preflushed range waits only until the fence download lands",
+          "[buffer_ports][cpu_readback]") {
+    Fixture f;
+    f.memory->EnableNativeTiling();
+    Access::UseMemory(*f.cache, *f.memory);
+    REQUIRE(f.cache->FlushesOnCpuRead());
+    constexpr DAddr Page = 0x21000;
+    const auto id = Access::Add(*f.cache, 0x20000, 0x4000);
+    auto& gpu_bytes = Access::Get(*f.cache, id).bytes;
+    const auto read = [&] { return f.cache->GetFlushArea(Page + 0x10, 4)->preemtive; };
+
+    // The first read after a GPU write flushes, and teaches the cache that the CPU reads here.
+    std::fill_n(gpu_bytes.begin() + 0x1000, 0x1000, u8{0x11});
+    Access::GpuWrite(*f.cache, id, Page, 0x1000);
+    REQUIRE(Access::Trapped(*f.cache, Page, 0x1000));
+    REQUIRE_FALSE(read());
+    REQUIRE_FALSE(Access::Trapped(*f.cache, Page, 0x1000));
+    REQUIRE(Access::Preflushable(*f.cache, Page, 0x1000));
+    f.cache->DownloadMemory(Page, 0x1000);
+    REQUIRE(f.bytes[0x11010] == 0x11);
+    REQUIRE(read());
+
+    // Later GPU writes are downloaded at the next fence, and stay trapped until that lands.
+    std::fill_n(gpu_bytes.begin() + 0x1000, 0x1000, u8{0x22});
+    Access::GpuWrite(*f.cache, id, Page, 0x1000);
+    REQUIRE(f.cache->HasUncommittedFlushes());
+    REQUIRE(Access::Trapped(*f.cache, Page, 0x1000));
+    REQUIRE_FALSE(read());
+    f.cache->CommitAsyncFlushes();
+    REQUIRE_FALSE(read());
+    REQUIRE(f.bytes[0x11010] == 0x11);
+    f.runtime.Finish();
+    f.cache->PopAsyncFlushes();
+    REQUIRE(f.bytes[0x11010] == 0x22);
+    REQUIRE(read());
+    REQUIRE(f.runtime.downloads == 2);
+}
+
+TEST_CASE("A read the texture cache answered lets the next GPU write arm its pages again",
+          "[buffer_ports][read_traps]") {
+    Fixture f;
+    f.memory->EnableNativeTiling();
+    Access::UseMemory(*f.cache, *f.memory);
+    const auto id = Access::Add(*f.cache, 0x20000, 0x4000);
+    Access::GpuWrite(*f.cache, id, 0x20000, 0x3000);
+    REQUIRE(Access::Trapped(*f.cache, 0x20000, 0x3000));
+    f.cache->ForgetReadTraps(0x21010, 4);
+    REQUIRE_FALSE(Access::Trapped(*f.cache, 0x21000, 0x1000));
+    REQUIRE(Access::Trapped(*f.cache, 0x20000, 0x1000));
+    REQUIRE(Access::Trapped(*f.cache, 0x22000, 0x1000));
+    Access::GpuWrite(*f.cache, id, 0x20000, 0x3000);
+    REQUIRE(Access::Trapped(*f.cache, 0x20000, 0x3000));
 }

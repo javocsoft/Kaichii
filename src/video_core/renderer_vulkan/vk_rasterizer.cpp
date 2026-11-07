@@ -1578,7 +1578,8 @@ void RasterizerVulkan::FlushGpuWrittenCommandListPages(std::span<const DAddr> pa
     buffer_cache.Nx2FlushListPages(pages);
 }
 
-void RasterizerVulkan::FlushRegion(DAddr addr, u64 size, VideoCommon::CacheType which) {
+void RasterizerVulkan::FlushRegion(DAddr addr, u64 size, VideoCommon::CacheType which,
+                                   std::source_location location) {
     if (addr == 0 || size == 0) {
         return;
     }
@@ -1594,8 +1595,15 @@ void RasterizerVulkan::FlushRegion(DAddr addr, u64 size, VideoCommon::CacheType 
         texture_cache.DownloadMemory(addr, size);
     }
     if ((True(which & VideoCommon::CacheType::BufferCache))) {
-        std::scoped_lock lock{buffer_cache.mutex};
-        buffer_cache.DownloadMemory(addr, size);
+        const bool profile = VideoCommon::Nx2Profile::Enabled();
+        const u64 start = profile ? VideoCommon::Nx2Profile::Now() : 0;
+        {
+            std::scoped_lock lock{buffer_cache.mutex};
+            buffer_cache.DownloadMemory(addr, size);
+        }
+        if (profile) {
+            Scheduler::ProfileHostRead(location, VideoCommon::Nx2Profile::Now() - start);
+        }
     }
     if ((True(which & VideoCommon::CacheType::QueryCache))) {
         query_cache.FlushRegion(addr, size);
@@ -1628,12 +1636,19 @@ bool RasterizerVulkan::HasPendingQueries(DAddr addr, u64 size) {
 }
 
 VideoCore::RasterizerDownloadArea RasterizerVulkan::GetFlushArea(DAddr addr, u64 size) {
+    std::optional<VideoCore::RasterizerDownloadArea> texture_area;
     {
         std::scoped_lock lock{texture_cache.mutex};
-        auto area = texture_cache.GetFlushArea(addr, size);
-        if (area) {
-            return *area;
-        }
+        texture_area = texture_cache.GetFlushArea(addr, size);
+    }
+    if (texture_area) {
+        // The core disarmed the read's pages before asking, and skips later reads in this area,
+        // even through another device alias of those pages. The buffer cache arms only pages it
+        // doesn't count as armed, so it must forget the whole area.
+        std::scoped_lock lock{buffer_cache.mutex};
+        buffer_cache.ForgetReadTraps(texture_area->start_address,
+                                     texture_area->end_address - texture_area->start_address);
+        return *texture_area;
     }
     if (buffer_cache.FlushesOnCpuRead()) {
         std::scoped_lock lock{buffer_cache.mutex};

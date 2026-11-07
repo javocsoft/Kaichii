@@ -335,42 +335,31 @@ std::optional<VideoCore::RasterizerDownloadArea> BufferCache<P>::GetFlushArea(DA
                                                                               u64 size) {
     std::optional<VideoCore::RasterizerDownloadArea> area{};
     area.emplace();
-    DAddr device_addr_start_aligned = Common::AlignDown(device_addr, Core::DEVICE_PAGESIZE);
-    DAddr device_addr_end_aligned = Common::AlignUp(device_addr + size, Core::DEVICE_PAGESIZE);
+    const DAddr device_addr_start_aligned = Common::AlignDown(device_addr, Core::DEVICE_PAGESIZE);
+    const DAddr device_addr_end_aligned = Common::AlignUp(device_addr + size, Core::DEVICE_PAGESIZE);
+    const u64 aligned_size = device_addr_end_aligned - device_addr_start_aligned;
     area->start_address = device_addr_start_aligned;
     area->end_address = device_addr_end_aligned;
-    if (memory_tracker.IsRegionPreflushable(device_addr, size)) {
-        area->preemtive = true;
+    // The core consumed this trap before GetFlushArea. Forget it so the next GPU write really
+    // rearms the core instead of being skipped by the deduplication cache.
+    read_trapped_ranges.Subtract(device_addr_start_aligned, aligned_size);
+    // Guest memory holds the GPU's last write: nothing was written since the last flush, or the
+    // download a fence took of a Preflushable range has landed (its pop clears the range).
+    area->preemtive = !IsRegionGpuModified(device_addr_start_aligned, aligned_size);
+    if (area->preemtive) {
         return area;
-    };
-    area->preemtive = !IsRegionGpuModified(device_addr_start_aligned,
-                                           device_addr_end_aligned - device_addr_start_aligned);
-    // A preflushable mark persists and downloads later GPU writes at every fence. Native titles
-    // instead keep read traps and flush on demand.
-    const bool preflush = !Tegra::g_nx2_ampere.load(std::memory_order_relaxed);
-    if (!area->preemtive) {
-        if (Nx2DownloadTrace::g_enabled) [[unlikely]] {
-            Nx2DownloadTrace::Marked(device_addr_start_aligned,
-                                     device_addr_end_aligned - device_addr_start_aligned, preflush);
-        }
-        if (preflush) {
-            memory_tracker.MarkRegionAsPreflushable(
-                device_addr_start_aligned, device_addr_end_aligned - device_addr_start_aligned);
-        } else {
-            if constexpr (USE_MEMORY_MAPS) {
-                cpu_read_ranges.Add(area->start_address, area->end_address - area->start_address);
-                download_cpu_read_ranges = true;
-            }
-            // The core consumed this trap before GetFlushArea. Forget it so the next GPU write
-            // really rearms the core instead of being skipped by the deduplication cache.
-            read_trapped_ranges.Subtract(
-                device_addr_start_aligned, device_addr_end_aligned - device_addr_start_aligned);
-        }
-    } else {
-        // The core keeps this area and has no mark. The next GPU write here must arm the range
-        // again, which ends the area and sets the trap.
-        read_trapped_ranges.Subtract(device_addr_start_aligned,
-                                     device_addr_end_aligned - device_addr_start_aligned);
+    }
+    if (Nx2DownloadTrace::g_enabled) [[unlikely]] {
+        Nx2DownloadTrace::Marked(device_addr_start_aligned, aligned_size,
+                                 memory_tracker.IsRegionPreflushable(device_addr, size));
+    }
+    // From now on GPU writes here are downloaded at the next fence, and a read after that
+    // download landed costs no wait. Reads are still trapped (QueueFenceDownload): one before
+    // the download landed flushes here instead of reading older bytes.
+    memory_tracker.MarkRegionAsPreflushable(device_addr_start_aligned, aligned_size);
+    if constexpr (USE_MEMORY_MAPS) {
+        cpu_read_ranges.Add(area->start_address, area->end_address - area->start_address);
+        download_cpu_read_ranges = true;
     }
     return area;
 }

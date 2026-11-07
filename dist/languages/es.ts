@@ -2843,6 +2843,10 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
 <context>
     <name>ConfigureDialog</name>
     <message>
+        <source>Performance</source>
+        <translation>Rendimiento</translation>
+    </message>
+    <message>
         <location filename="../../src/yuzu/configuration/configure.ui" line="20"/>
         <source>Eden Configuration</source>
         <translation>Configuración de Eden</translation>
@@ -4680,6 +4684,10 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
 </context>
 <context>
     <name>ConfigurePerGame</name>
+    <message>
+        <source>Performance</source>
+        <translation>Rendimiento</translation>
+    </message>
     <message>
         <location filename="../../src/yuzu/configuration/configure_per_game.ui" line="20"/>
         <source>Dialog</source>
@@ -6903,6 +6911,38 @@ Mensaje de depuración:</translation>
 </context>
 <context>
     <name>MainWindow</name>
+    <message>
+        <source>Performance preset</source>
+        <translation>Ajuste predefinido de rendimiento</translation>
+    </message>
+    <message>
+        <source>Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of memory.
+
+Use the %5 preset? It sets the resolution and the graphics options that matter most for speed on this computer, for every game without its own settings.
+
+You can change it at any time under Configure, Performance.</source>
+        <translation>Lichii ha detectado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria.
+
+¿Desea usar el ajuste predefinido %5? Configura la resolución y las opciones gráficas que más influyen en la velocidad en este equipo, para todos los juegos sin configuración propia.
+
+Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
+    </message>
+    <message>
+        <source>Performance</source>
+        <translation>Rendimiento</translation>
+    </message>
+    <message>
+        <source>Balanced</source>
+        <translation>Equilibrado</translation>
+    </message>
+    <message>
+        <source>Quality</source>
+        <translation>Calidad</translation>
+    </message>
+    <message>
+        <source>Ultra</source>
+        <translation>Ultra</translation>
+    </message>
     <message>
         <location filename="../../src/yuzu/main.ui" line="14"/>
         <source>yuzu</source>
@@ -10766,6 +10806,149 @@ Código de error: %3</translation>
         <location filename="../../src/yuzu/updater/update_dialog.cpp" line="173"/>
         <source>Successfully downloaded %1. Would you like to open it?</source>
         <translation>%1 descargado con éxito. ¿Desea abrirlo?</translation>
+    </message>
+</context>
+<context>
+    <name>ConfigurePerformance</name>
+    <message>
+        <source>This computer</source>
+        <translation>Este equipo</translation>
+    </message>
+    <message>
+        <source>Graphics:</source>
+        <translation>Gráficos:</translation>
+    </message>
+    <message>
+        <source>Not detected</source>
+        <translation>No detectado</translation>
+    </message>
+    <message>
+        <source>Video memory:</source>
+        <translation>Memoria de vídeo:</translation>
+    </message>
+    <message>
+        <source>%1 GB, %2</source>
+        <translation>%1 GB, %2</translation>
+    </message>
+    <message>
+        <source>shared with the system</source>
+        <translation>compartida con el sistema</translation>
+    </message>
+    <message>
+        <source>dedicated</source>
+        <translation>dedicada</translation>
+    </message>
+    <message>
+        <source>Processor:</source>
+        <translation>Procesador:</translation>
+    </message>
+    <message>
+        <source>%1 threads</source>
+        <translation>%1 hilos</translation>
+    </message>
+    <message>
+        <source>Memory:</source>
+        <translation>Memoria:</translation>
+    </message>
+    <message>
+        <source>%1 GB</source>
+        <translation>%1 GB</translation>
+    </message>
+    <message>
+        <source>System:</source>
+        <translation>Sistema:</translation>
+    </message>
+    <message>
+        <source>Entry level</source>
+        <translation>Gama de entrada</translation>
+    </message>
+    <message>
+        <source>Mid range</source>
+        <translation>Gama media</translation>
+    </message>
+    <message>
+        <source>High end</source>
+        <translation>Gama alta</translation>
+    </message>
+    <message>
+        <source>Enthusiast</source>
+        <translation>Entusiasta</translation>
+    </message>
+    <message>
+        <source>Class:</source>
+        <translation>Clase:</translation>
+    </message>
+    <message>
+        <source>Presets</source>
+        <translation>Ajustes predefinidos</translation>
+    </message>
+    <message>
+        <source>Performance</source>
+        <translation>Rendimiento</translation>
+    </message>
+    <message>
+        <source>Balanced</source>
+        <translation>Equilibrado</translation>
+    </message>
+    <message>
+        <source>Quality</source>
+        <translation>Calidad</translation>
+    </message>
+    <message>
+        <source>Ultra</source>
+        <translation>Ultra</translation>
+    </message>
+    <message>
+        <source>Half resolution with FSR upscaling. For integrated graphics, laptops and cards with 4 GB or less. In Ocarina of Time it also skips the game's sharpening pass.</source>
+        <translation>Resolución a la mitad con reescalado FSR. Para gráficos integrados, portátiles y tarjetas de 4 GB o menos. En Ocarina of Time también omite la pasada de nitidez del juego.</translation>
+    </message>
+    <message>
+        <source>Three-quarter resolution with FSR upscaling. For cards with 6 to 8 GB.</source>
+        <translation>Resolución al 75 % con reescalado FSR. Para tarjetas de 6 a 8 GB.</translation>
+    </message>
+    <message>
+        <source>Native resolution. For cards with 10 to 12 GB.</source>
+        <translation>Resolución nativa. Para tarjetas de 10 a 12 GB.</translation>
+    </message>
+    <message>
+        <source>One and a half times native resolution. For cards with 16 GB or more.</source>
+        <translation>Resolución 1,5 veces la nativa. Para tarjetas de 16 GB o más.</translation>
+    </message>
+    <message>
+        <source>%1 (recommended for this computer)</source>
+        <translation>%1 (recomendado para este equipo)</translation>
+    </message>
+    <message>
+        <source>Every preset uses fast GPU accuracy and asynchronous shaders, sizes texture memory to the card, and decodes ASTC textures on the processor when it has 8 threads or more. Other settings are left as they are.</source>
+        <translation>Todos los ajustes predefinidos usan la precisión de GPU rápida y shaders asíncronos, ajustan la memoria de texturas a la tarjeta y descomprimen las texturas ASTC en el procesador si tiene 8 hilos o más. El resto de ajustes no se modifica.</translation>
+    </message>
+    <message>
+        <source>Use this preset</source>
+        <translation>Usar este ajuste predefinido</translation>
+    </message>
+    <message>
+        <source>Presets set here apply to every game without its own settings.</source>
+        <translation>Los ajustes predefinidos aplicados aquí afectan a todos los juegos sin configuración propia.</translation>
+    </message>
+    <message>
+        <source>Presets set here apply to this game only.</source>
+        <translation>Los ajustes predefinidos aplicados aquí solo afectan a este juego.</translation>
+    </message>
+    <message>
+        <source>The saved settings match the %1 preset.</source>
+        <translation>Los ajustes guardados coinciden con el ajuste predefinido %1.</translation>
+    </message>
+    <message>
+        <source>The saved settings match no preset.</source>
+        <translation>Los ajustes guardados no coinciden con ningún ajuste predefinido.</translation>
+    </message>
+    <message>
+        <source>The preset is now set in the Graphics pages. Press OK to save it.</source>
+        <translation>El ajuste predefinido se ha aplicado en las páginas de Gráficos. Pulse Aceptar para guardarlo.</translation>
+    </message>
+    <message>
+        <source>%1 of %2 settings were set in the Graphics pages; the others can't change while a game runs. Press OK to save.</source>
+        <translation>Se han aplicado %1 de %2 ajustes en las páginas de Gráficos; el resto no se puede cambiar mientras se ejecuta un juego. Pulse Aceptar para guardar.</translation>
     </message>
 </context>
 </TS>
