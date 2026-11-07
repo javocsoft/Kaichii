@@ -21,7 +21,7 @@ namespace Service::PSC::Time {
 
 class SteadyClock final : public ServiceFramework<SteadyClock> {
 public:
-    explicit SteadyClock(Core::System& system, std::shared_ptr<TimeManager> manager,
+    explicit SteadyClock(Core::System& system, const std::shared_ptr<TimeManager>& manager,
                          bool can_write_steady_clock, bool can_write_uninitialized_clock);
 
     ~SteadyClock() override = default;

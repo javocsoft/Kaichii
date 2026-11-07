@@ -15,7 +15,7 @@ namespace Service::FileSystem {
 
 class IFile final : public ServiceFramework<IFile> {
 public:
-    explicit IFile(Core::System& system_, FileSys::VirtualFile file_);
+    explicit IFile(Core::System& system_, const FileSys::VirtualFile& file_);
 
 private:
     std::unique_ptr<FileSys::Fsa::IFile> backend;

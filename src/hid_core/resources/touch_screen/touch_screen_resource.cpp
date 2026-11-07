@@ -16,6 +16,8 @@
 #include "hid_core/resources/touch_screen/touch_screen_driver.h"
 #include "hid_core/resources/touch_screen/touch_screen_resource.h"
 
+#include <utility>
+
 namespace Service::HID {
 constexpr auto GestureUpdatePeriod = std::chrono::nanoseconds{4 * 1000 * 1000}; // (4ms, 1000Hz)
 
@@ -196,12 +198,12 @@ bool TouchResource::IsGestureActive() const {
 }
 
 void TouchResource::SetTouchDriver(std::shared_ptr<TouchDriver> driver) {
-    touch_driver = driver;
+    touch_driver = std::move(driver);
 }
 
 void TouchResource::SetAppletResource(std::shared_ptr<AppletResource> shared,
                                       std::recursive_mutex* mutex) {
-    applet_resource = shared;
+    applet_resource = std::move(shared);
     shared_mutex = mutex;
 }
 
@@ -211,11 +213,11 @@ void TouchResource::SetInputEvent(Kernel::KEvent* event, std::mutex* mutex) {
 }
 
 void TouchResource::SetHandheldConfig(std::shared_ptr<HandheldConfig> config) {
-    handheld_config = config;
+    handheld_config = std::move(config);
 }
 
 void TouchResource::SetTimerEvent(std::shared_ptr<Core::Timing::EventType> event) {
-    timer_event = event;
+    timer_event = std::move(event);
 }
 
 Result TouchResource::SetTouchScreenAutoPilotState(const AutoPilotState& auto_pilot_state) {

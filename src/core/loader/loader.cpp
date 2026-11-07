@@ -37,7 +37,7 @@ namespace Loader {
 namespace {
 
 template <std::derived_from<AppLoader> T>
-std::optional<FileType> IdentifyFileLoader(FileSys::VirtualFile file) {
+std::optional<FileType> IdentifyFileLoader(const FileSys::VirtualFile& file) {
     const auto file_type = T::IdentifyType(file);
     if (file_type != FileType::Error) {
         return file_type;
@@ -77,7 +77,7 @@ std::optional<IndexedProgram> ResolveIndexedProgram(Core::System& system, u64 pr
     return std::nullopt;
 }
 
-std::shared_ptr<FileSys::NSP> OpenContainerAsNsp(FileSys::VirtualFile file, FileType type,
+std::shared_ptr<FileSys::NSP> OpenContainerAsNsp(const FileSys::VirtualFile& file, FileType type,
                                                  u64 program_id = 0,
                                                  std::size_t program_index = 0) {
     if (!file) {
@@ -126,7 +126,7 @@ bool HasApplicationProgramContent(const std::shared_ptr<FileSys::NSP>& nsp) {
 
 } // namespace
 
-FileType IdentifyFile(FileSys::VirtualFile file) {
+FileType IdentifyFile(const FileSys::VirtualFile& file) {
     if (const auto nsp_type = IdentifyFileLoader<AppLoader_NSP>(file)) {
         return *nsp_type;
     } else if (const auto xci_type = IdentifyFileLoader<AppLoader_XCI>(file)) {
@@ -156,7 +156,7 @@ bool IsContainerType(FileType type) {
            type == FileType::XCZ || type == FileType::NUP;
 }
 
-bool IsBootableGameContainer(FileSys::VirtualFile file, FileType type, u64 program_id,
+bool IsBootableGameContainer(const FileSys::VirtualFile& file, FileType type, u64 program_id,
                              std::size_t program_index) {
     if (!file) {
         return false;

@@ -8,6 +8,8 @@
 #include "core/core.h"
 #include "core/hle/service/caps/caps_manager.h"
 #include "core/hle/service/caps/caps_su.h"
+
+#include <utility>
 #include "core/hle/service/caps/caps_types.h"
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/ipc_helpers.h"
@@ -17,7 +19,7 @@ namespace Service::Capture {
 
 IScreenShotApplicationService::IScreenShotApplicationService(
     Core::System& system_, std::shared_ptr<AlbumManager> album_manager)
-    : ServiceFramework{system_, "caps:su"}, manager{album_manager} {
+    : ServiceFramework{system_, "caps:su"}, manager{std::move(album_manager)} {
     // clang-format off
     static const FunctionInfo functions[] = {
         {32, C<&IScreenShotApplicationService::SetShimLibraryVersion>, "SetShimLibraryVersion"},

@@ -95,7 +95,7 @@ void ConvertDepth(EmitContext& ctx, Id vertex) {
     const Id slot{ctx.OpBitwiseAnd(ctx.U32[1], vertex, ctx.Const(31U))};
     const Id first{ctx.OpIAdd(ctx.U32[1], ctx.OpIMul(ctx.U32[1], group, ctx.Const(num_lines * 32)),
                               slot)};
-    const auto read = [&](auto line) {
+    const auto read = [&](const auto& line) {
         const u32 offset{static_cast<u32>(line - lines.begin()) * 32};
         return ctx.OpBitcast(ctx.F32[1],
                              ctx.OpLoad(ctx.U32[1], SharedWord(ctx, ctx.mesh_attributes,

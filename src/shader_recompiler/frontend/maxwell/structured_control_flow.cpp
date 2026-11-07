@@ -94,7 +94,7 @@ struct IndirectBranchCond {};
 struct Statement : ListBaseHook {
     Statement(const Flow::Block* block_, Statement* up_)
         : block{block_}, up{up_}, type{StatementType::Code} {}
-    Statement(Goto, Statement* cond_, Node label_, Statement* up_)
+    Statement(Goto, Statement* cond_, const Node& label_, Statement* up_)
         : label{label_}, cond{cond_}, up{up_}, type{StatementType::Goto} {}
     Statement(Label, u32 id_, Statement* up_) : id{id_}, up{up_}, type{StatementType::Label} {}
     Statement(If, Statement* cond_, Tree&& children_, Statement* up_)
@@ -232,7 +232,7 @@ void SanitizeNoBreaks(const Tree& tree) {
     }
 }
 
-size_t Level(Node stmt) {
+size_t Level(const Node& stmt) {
     size_t level{0};
     Statement* node{stmt->up};
     while (node) {
@@ -242,7 +242,7 @@ size_t Level(Node stmt) {
     return level;
 }
 
-bool IsDirectlyRelated(Node goto_stmt, Node label_stmt) {
+bool IsDirectlyRelated(const Node& goto_stmt, const Node& label_stmt) {
     const size_t goto_level{Level(goto_stmt)};
     const size_t label_level{Level(label_stmt)};
     size_t min_level;
@@ -267,11 +267,11 @@ bool IsDirectlyRelated(Node goto_stmt, Node label_stmt) {
     return min->up == max->up;
 }
 
-bool IsIndirectlyRelated(Node goto_stmt, Node label_stmt) {
+bool IsIndirectlyRelated(const Node& goto_stmt, const Node& label_stmt) {
     return goto_stmt->up != label_stmt->up && !IsDirectlyRelated(goto_stmt, label_stmt);
 }
 
-[[maybe_unused]] bool AreSiblings(Node goto_stmt, Node label_stmt) noexcept {
+[[maybe_unused]] bool AreSiblings(const Node& goto_stmt, const Node& label_stmt) noexcept {
     Node it{goto_stmt};
     do {
         if (it == label_stmt) {
@@ -288,7 +288,7 @@ bool IsIndirectlyRelated(Node goto_stmt, Node label_stmt) {
     return false;
 }
 
-Node SiblingFromNephew(Node uncle, Node nephew) noexcept {
+Node SiblingFromNephew(const Node& uncle, const Node& nephew) noexcept {
     Statement* const parent{uncle->up};
     Statement* it{&*nephew};
     while (it->up != parent) {
@@ -297,7 +297,7 @@ Node SiblingFromNephew(Node uncle, Node nephew) noexcept {
     return Tree::s_iterator_to(*it);
 }
 
-bool AreOrdered(Node left_sibling, Node right_sibling) noexcept {
+bool AreOrdered(const Node& left_sibling, const Node& right_sibling) noexcept {
     if (left_sibling == right_sibling) {
         return false;
     }
@@ -320,7 +320,7 @@ bool AreOrdered(Node left_sibling, Node right_sibling) noexcept {
     }
 }
 
-bool NeedsLift(Node goto_stmt, Node label_stmt) noexcept {
+bool NeedsLift(const Node& goto_stmt, const Node& label_stmt) noexcept {
     const Node sibling{SiblingFromNephew(goto_stmt, label_stmt)};
     return AreOrdered(sibling, goto_stmt);
 }
@@ -410,7 +410,7 @@ private:
     }
 
     void BuildTree(Flow::CFG& cfg, Flow::Function& function, u32& label_id,
-                   std::vector<Node>& gotos, Node function_insert_point,
+                   std::vector<Node>& gotos, const Node& function_insert_point,
                    std::optional<Node> return_label) {
         Statement* const false_stmt{pool.Create(Identity{}, IR::Condition{false}, &root_stmt)};
         Tree& root{root_stmt.children};
@@ -506,7 +506,7 @@ private:
         }
     }
 
-    void EliminateAsConditional(Node goto_stmt, Node label_stmt) {
+    void EliminateAsConditional(const Node& goto_stmt, const Node& label_stmt) {
         Tree& body{goto_stmt->up->children};
         Tree if_body;
         if_body.splice(if_body.begin(), body, std::next(goto_stmt), label_stmt);
@@ -517,7 +517,7 @@ private:
         body.erase(goto_stmt);
     }
 
-    void EliminateAsLoop(Node goto_stmt, Node label_stmt) {
+    void EliminateAsLoop(const Node& goto_stmt, const Node& label_stmt) {
         Tree& body{goto_stmt->up->children};
         Tree loop_body;
         loop_body.splice(loop_body.begin(), body, label_stmt, goto_stmt);
@@ -528,7 +528,7 @@ private:
         body.erase(goto_stmt);
     }
 
-    [[nodiscard]] Node MoveOutward(Node goto_stmt) {
+    [[nodiscard]] Node MoveOutward(const Node& goto_stmt) {
         switch (goto_stmt->up->type) {
         case StatementType::If:
             return MoveOutwardIf(goto_stmt);
@@ -539,7 +539,7 @@ private:
         }
     }
 
-    [[nodiscard]] Node MoveInward(Node goto_stmt) {
+    [[nodiscard]] Node MoveInward(const Node& goto_stmt) {
         Statement* const parent{goto_stmt->up};
         Tree& body{parent->children};
         const Node label{goto_stmt->label};
@@ -577,7 +577,7 @@ private:
         return nested_tree.insert(nested_tree.begin(), *new_goto);
     }
 
-    [[nodiscard]] Node Lift(Node goto_stmt) {
+    [[nodiscard]] Node Lift(const Node& goto_stmt) {
         Statement* const parent{goto_stmt->up};
         Tree& body{parent->children};
         const Node label{goto_stmt->label};
@@ -603,7 +603,7 @@ private:
         return new_goto_node;
     }
 
-    Node MoveOutwardIf(Node goto_stmt) {
+    Node MoveOutwardIf(const Node& goto_stmt) {
         const Node parent{Tree::s_iterator_to(*goto_stmt->up)};
         Tree& body{parent->children};
         const u32 label_id{goto_stmt->label->id};
@@ -628,7 +628,7 @@ private:
         return parent_tree.insert(std::next(parent), *new_goto);
     }
 
-    Node MoveOutwardLoop(Node goto_stmt) {
+    Node MoveOutwardLoop(const Node& goto_stmt) {
         Statement* const parent{goto_stmt->up};
         Tree& body{parent->children};
         const u32 label_id{goto_stmt->label->id};

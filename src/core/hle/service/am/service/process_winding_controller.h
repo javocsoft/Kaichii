@@ -25,13 +25,13 @@ private:
     Result GetLaunchReason(Out<AppletProcessLaunchReason> out_launch_reason);
     Result OpenCallingLibraryApplet(
         Out<SharedPointer<ILibraryAppletAccessor>> out_calling_library_applet);
-    Result PushContext(SharedPointer<IStorage> in_context);
+    Result PushContext(const SharedPointer<IStorage>& in_context);
     Result PopContext(Out<SharedPointer<IStorage>> out_context);
     Result CancelWindingReservation();
     Result WindAndDoReserved();
     Result ReserveToStartAndWaitAndUnwindThis(
-        SharedPointer<ILibraryAppletAccessor> reserved_applet_accessor);
-    Result ReserveToStartAndWait(SharedPointer<ILibraryAppletAccessor> reserved_applet_accessor);
+        const SharedPointer<ILibraryAppletAccessor>& reserved_applet_accessor);
+    Result ReserveToStartAndWait(const SharedPointer<ILibraryAppletAccessor>& reserved_applet_accessor);
 
     const std::shared_ptr<Applet> m_applet;
 };

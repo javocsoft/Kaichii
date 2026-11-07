@@ -43,7 +43,7 @@ public:
 
     /// Yields control from Fiber 'from' to Fiber 'to'
     /// Fiber 'from' must be the currently running fiber.
-    static void YieldTo(std::weak_ptr<Fiber> weak_from, Fiber& to);
+    static void YieldTo(const std::weak_ptr<Fiber>& weak_from, Fiber& to);
     [[nodiscard]] static std::shared_ptr<Fiber> ThreadToFiber();
     void SetRewindPoint(std::function<void()>&& rewind_func);
     /// Only call from main thread's fiber

@@ -38,13 +38,13 @@ public:
      * @param function The function that gets called
      * @return A handle that can be used the unbind the function
      */
-    CallbackHandle BindErrorCallback(std::function<void(const WebService::WebResult&)> function);
+    CallbackHandle BindErrorCallback(const std::function<void(const WebService::WebResult&)>& function);
 
     /**
      * Unbind a function from the error callbacks
      * @param handle The handle for the function that should get unbind
      */
-    void UnbindErrorCallback(CallbackHandle handle);
+    void UnbindErrorCallback(const CallbackHandle& handle);
 
     /**
      * Registers a room to web services
@@ -83,7 +83,7 @@ public:
     void UpdateCredentials();
 
 private:
-    void UpdateBackendData(std::shared_ptr<Network::Room> room);
+    void UpdateBackendData(const std::shared_ptr<Network::Room>& room);
 
     Common::Event shutdown_event;
     std::set<CallbackHandle> error_callbacks;

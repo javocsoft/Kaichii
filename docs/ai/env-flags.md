@@ -76,6 +76,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_CMDPAGE_DIAG` | diag | For command list pages GPU work writes: whether it writes the lists' words or only other bytes. |
 | `EDEN_NX2_PB_CHECK` | diag | Counts pushbuffer entries that change between submit and parse. |
 | `EDEN_NX2_TC_LOG` | diag | Device memory against the collector's thresholds, every 600 frames. |
+| `EDEN_NX2_TC_SKIP_STALE` | A/B | `=0`: uploads guest memory into new images even over pages a dropped GPU image left stale. |
 | `EDEN_NX2_MME_LOG` | diag | Every macro call. Very high volume. |
 | `EDEN_NX2_MME_MEMO_STATS` | diag | Macro memo counters every 2^24 calls. |
 | `EDEN_DKB_INDIRECT_READBACK` | diag | `=1`: reads back indirect draw records while `EDEN_DKB_FRAME_TRACE` is on. |
@@ -93,6 +94,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_HYBRID_CORES` | A/B | Windows only. `=0` stops keeping time-critical threads on the performance cores of hybrid CPUs. |
 | `EDEN_NX2_AUDIO_LEVEL` | diag | Output peak about every two seconds. |
 | `EDEN_NX2_VDEC_TRACE` | diag | Video decoder submit, decode and composite trace. |
+| `EDEN_NX2_MOVIE_CLOCK` | diag | `=1`: logs wall and guest time, presents, video takes and audio counters once a second, to check a movie against its sound. |
 | `EDEN_NX2_VDEC_DUMP` | diag | `=<dir>`: luma of every 120th decoded frame at quarter size. |
 | `EDEN_NX2_FPS_LOG` | diag | `eden-cli`: logs the title-bar performance line. |
 | `EDEN_NX2_GPU_PROFILE` | diag | GPU thread time per second by zone, and split drains by site. |

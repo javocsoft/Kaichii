@@ -28,7 +28,7 @@ size_t GetRoundUpDifference(T* x, size_t align) {
 
 } // namespace
 
-size_t AlignmentMatchingStorageImpl::Read(VirtualFile base_storage, char* work_buf,
+size_t AlignmentMatchingStorageImpl::Read(const VirtualFile& base_storage, char* work_buf,
                                           size_t work_buf_size, size_t data_alignment,
                                           size_t buffer_alignment, s64 offset, u8* buffer,
                                           size_t size) {
@@ -123,7 +123,7 @@ size_t AlignmentMatchingStorageImpl::Read(VirtualFile base_storage, char* work_b
     return size;
 }
 
-size_t AlignmentMatchingStorageImpl::Write(VirtualFile base_storage, char* work_buf,
+size_t AlignmentMatchingStorageImpl::Write(const VirtualFile& base_storage, char* work_buf,
                                            size_t work_buf_size, size_t data_alignment,
                                            size_t buffer_alignment, s64 offset, const u8* buffer,
                                            size_t size) {

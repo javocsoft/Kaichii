@@ -271,7 +271,7 @@ extern const std::array<const char*, size_t(Language::Count)> LANGUAGE_NAMES;
 class NACP {
 public:
     explicit NACP();
-    explicit NACP(VirtualFile file);
+    explicit NACP(const VirtualFile& file);
     ~NACP();
 
     [[nodiscard]] const LanguageEntry& GetLanguageEntry() const;

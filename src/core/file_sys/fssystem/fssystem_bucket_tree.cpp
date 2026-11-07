@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <type_traits>
+#include <utility>
 #include "core/file_sys/errors.h"
 #include "core/file_sys/fssystem/fssystem_bucket_tree.h"
 #include "core/file_sys/fssystem/fssystem_bucket_tree_utils.h"
@@ -121,7 +122,7 @@ public:
         m_index = static_cast<s32>(pos - m_start) - 1;
     }
 
-    Result Find(VirtualFile storage, s64 virtual_address) {
+    Result Find(const VirtualFile& storage, s64 virtual_address) {
         s32 end = m_count;
         auto pos = m_start;
 
@@ -175,7 +176,7 @@ Result BucketTree::NodeHeader::Verify(s32 node_index, size_t node_size, size_t e
     R_SUCCEED();
 }
 
-Result BucketTree::Initialize(VirtualFile node_storage, VirtualFile entry_storage, size_t node_size,
+Result BucketTree::Initialize(const VirtualFile& node_storage, VirtualFile entry_storage, size_t node_size,
                               size_t entry_size, s32 entry_count) {
     // Validate preconditions.
     ASSERT(entry_size >= sizeof(s64));
@@ -218,7 +219,7 @@ Result BucketTree::Initialize(VirtualFile node_storage, VirtualFile entry_storag
 
     // Set member variables.
     m_node_storage = node_storage;
-    m_entry_storage = entry_storage;
+    m_entry_storage = std::move(entry_storage);
     m_node_size = node_size;
     m_entry_size = entry_size;
     m_entry_count = entry_count;

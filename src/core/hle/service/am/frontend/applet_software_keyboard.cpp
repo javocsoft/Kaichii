@@ -9,6 +9,8 @@
 #include "core/frontend/applets/software_keyboard.h"
 #include "core/hle/service/am/am.h"
 #include "core/hle/service/am/frontend/applet_software_keyboard.h"
+
+#include <utility>
 #include "core/hle/service/am/service/storage.h"
 
 namespace Service::AM::Frontend {
@@ -48,7 +50,7 @@ void SetReplyBase(std::vector<u8>& reply, SwkbdState state, SwkbdReplyType reply
 SoftwareKeyboard::SoftwareKeyboard(Core::System& system_, std::shared_ptr<Applet> applet_,
                                    LibraryAppletMode applet_mode_,
                                    Core::Frontend::SoftwareKeyboardApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend{frontend_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend{frontend_} {}
 
 SoftwareKeyboard::~SoftwareKeyboard() = default;
 
@@ -109,7 +111,7 @@ void SoftwareKeyboard::Execute() {
     ShowNormalKeyboard();
 }
 
-void SoftwareKeyboard::SubmitTextNormal(SwkbdResult result, std::u16string submitted_text,
+void SoftwareKeyboard::SubmitTextNormal(SwkbdResult result, const std::u16string& submitted_text,
                                         bool confirmed) {
     if (complete) {
         return;
@@ -572,7 +574,7 @@ void SoftwareKeyboard::InitializeFrontendNormalKeyboard() {
     frontend.InitializeKeyboard(
         false, std::move(initialize_parameters),
         [this](SwkbdResult result, std::u16string submitted_text, bool confirmed) {
-            SubmitTextNormal(result, submitted_text, confirmed);
+            SubmitTextNormal(result, std::move(submitted_text), confirmed);
         },
         {});
 }
@@ -582,7 +584,7 @@ void SoftwareKeyboard::InitializeFrontendInlineKeyboard(
     frontend.InitializeKeyboard(
         true, std::move(initialize_parameters), {},
         [this](SwkbdReplyType reply_type, std::u16string submitted_text, s32 cursor_position) {
-            SubmitTextInline(reply_type, submitted_text, cursor_position);
+            SubmitTextInline(reply_type, std::move(submitted_text), cursor_position);
         });
 }
 

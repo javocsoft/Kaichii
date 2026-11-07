@@ -10,6 +10,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "video_core/pipeline_cache_files.h"
+#include "video_core/pipeline_cache_policy.h"
+#include "video_core/shader_cache.h"
 #include "video_core/renderer_vulkan/vk_pipeline_cache.h"
 #include "video_core/shader_environment.h"
 
@@ -119,6 +121,61 @@ TEST_CASE("Task and mesh disk environments roundtrip all translation state and r
             REQUIRE(restored_key == key);
         });
     REQUIRE(read == 3);
+}
+
+TEST_CASE("The newest compatible pipeline cache migrates to the current version",
+          "[pipeline_cache_files]") {
+    TempDir temp;
+    constexpr std::array<u32, 2> Sources{53, 52};
+    constexpr u32 Current = 54;
+    const auto write = [&](u32 version) {
+        const auto path = VideoCommon::VersionedPipelineCachePath(temp.path, "vulkan", version);
+        SerializedEnvironment source{Shader::Stage::Fragment};
+        const std::array<const VideoCommon::GenericEnvironment*, 1> envs{&source};
+        VideoCommon::SerializePipeline(u64{version}, envs, path, version);
+        return path;
+    };
+    const auto migrate = [&] {
+        return VideoCommon::MigratePipelineCache(temp.path, "vulkan", Magic, Sources, Current);
+    };
+    CHECK_FALSE(migrate().has_value());
+    write(52);
+    const auto newest = ReadAll(write(53));
+    CHECK(migrate() == 53);
+    const auto current = VideoCommon::VersionedPipelineCachePath(temp.path, "vulkan", Current);
+    CHECK(ReadAll(current).substr(12) == newest.substr(12));
+    // A file of this version wins, so a cache that grew since is never replaced.
+    CHECK_FALSE(migrate().has_value());
+}
+
+TEST_CASE("Cached programs key the attributes that live programs do", "[pipeline_cache_files]") {
+    // A cached pipeline is found through the key a draw builds. If the two disagreed, every pipeline
+    // of a migrated cache would be built again in game, as if the cache were not there.
+    SerializedEnvironment fragment{Shader::Stage::Fragment};
+    CHECK(VideoCommon::ProgramAttributeMask(fragment) == ~u64{0});
+    SerializedEnvironment mesh{Shader::Stage::Mesh};
+    CHECK(VideoCommon::ProgramAttributeMask(mesh) == 0);
+    SerializedEnvironment task{Shader::Stage::Task};
+    CHECK(VideoCommon::ProgramAttributeMask(task) == 0);
+    // Only a native vertex program's input map is trusted.
+    SerializedEnvironment vertex{Shader::Stage::VertexB};
+    CHECK(VideoCommon::ProgramAttributeMask(vertex) == ~u64{0});
+
+    const std::array<u64, 6> hashes{0, 0x11, 0, 0, 0, 0x22};
+    const std::array<u64, 6> masks{0, 0b0011, 0, 0, 0, ~u64{0}};
+    CHECK(VideoCommon::KeyedAttributeTypes(0b1110, hashes, masks) == 0b0010);
+    // Two keys that differ only in a register the program does not read fold into one.
+    CHECK(VideoCommon::KeyedAttributeTypes(0b1110, hashes, masks) ==
+          VideoCommon::KeyedAttributeTypes(0b0110, hashes, masks));
+}
+
+TEST_CASE("The compatible pipeline cache versions are older than this build's",
+          "[pipeline_cache_files]") {
+    for (const u32 version : VideoCommon::CompatibleVulkanPipelineCacheVersions) {
+        CHECK(version < VideoCommon::VulkanPipelineCacheVersion);
+    }
+    CHECK(VideoCommon::CompatibleVulkanPipelineCacheVersions.front() ==
+          VideoCommon::VulkanPipelineCacheVersion - 1);
 }
 
 TEST_CASE("Compatible v52 pipelines migrate without changing or discarding the old warm cache",

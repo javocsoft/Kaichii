@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <utility>
 
 #include "common/assert.h"
 #include "common/logging.h"
@@ -53,7 +54,7 @@ static Core::Frontend::ControllerParameters ConvertToFrontendParameters(
 Controller::Controller(Core::System& system_, std::shared_ptr<Applet> applet_,
                        LibraryAppletMode applet_mode_,
                        const Core::Frontend::ControllerApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend{frontend_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend{frontend_} {}
 
 Controller::~Controller() = default;
 

@@ -25,7 +25,7 @@ std::mutex event_names_mutex;
 std::unordered_map<const Kernel::KEvent*, std::string> event_names;
 } // namespace
 
-ServiceContext::ServiceContext(Core::System& system_, std::string name_)
+ServiceContext::ServiceContext(Core::System& system_, const std::string& name_)
     : kernel(system_.Kernel())
 {
     if (process = Kernel::GetCurrentProcessPointer(kernel); process != nullptr) {

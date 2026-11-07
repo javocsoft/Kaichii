@@ -10,7 +10,7 @@
 
 namespace Service::FileSystem {
 
-IFile::IFile(Core::System& system_, FileSys::VirtualFile file_)
+IFile::IFile(Core::System& system_, const FileSys::VirtualFile& file_)
     : ServiceFramework{system_, "IFile"}, backend{std::make_unique<FileSys::Fsa::IFile>(file_)} {
     // clang-format off
     static const FunctionInfo functions[] = {

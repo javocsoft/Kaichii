@@ -13,7 +13,7 @@
 
 namespace Service::FileSystem {
 
-IFileSystem::IFileSystem(Core::System& system_, FileSys::VirtualDir dir_, SizeGetter size_getter_)
+IFileSystem::IFileSystem(Core::System& system_, const FileSys::VirtualDir& dir_, SizeGetter size_getter_)
     : ServiceFramework{system_, "IFileSystem"}, backend{std::make_unique<FileSys::Fsa::IFileSystem>(
                                                     dir_)},
       size_getter{std::move(size_getter_)} {

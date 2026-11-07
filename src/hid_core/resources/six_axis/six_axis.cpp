@@ -14,10 +14,12 @@
 #include "hid_core/resources/shared_memory_format.h"
 #include "hid_core/resources/six_axis/six_axis.h"
 
+#include <utility>
+
 namespace Service::HID {
 
 SixAxis::SixAxis(Core::HID::HIDCore& hid_core_, std::shared_ptr<NPad> npad_)
-    : ControllerBase{hid_core_}, npad{npad_} {
+    : ControllerBase{hid_core_}, npad{std::move(npad_)} {
     for (std::size_t i = 0; i < controller_data.size(); ++i) {
         auto& controller = controller_data[i];
         controller.device = hid_core.GetEmulatedControllerByIndex(i);

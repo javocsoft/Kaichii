@@ -10,6 +10,8 @@
 #include "common/alignment.h"
 #include "core/file_sys/fssystem/fssystem_integrity_verification_storage.h"
 
+#include <utility>
+
 namespace FileSys {
 
 constexpr inline u32 ILog2(u32 val) {
@@ -23,8 +25,8 @@ void IntegrityVerificationStorage::Initialize(VirtualFile hs, VirtualFile ds, s6
     ASSERT(verif_block_size >= HashSize);
 
     // Set storages.
-    m_hash_storage = hs;
-    m_data_storage = ds;
+    m_hash_storage = std::move(hs);
+    m_data_storage = std::move(ds);
 
     // Set verification block sizes.
     m_verification_block_size = verif_block_size;

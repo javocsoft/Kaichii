@@ -38,8 +38,8 @@ or a signal 9 in the log, not as a compiler error.
   file with `unsupported argument 'gnu2' to option '-mtls-dialect='`.
 - **CMake 3.31 or newer.** Ubuntu 24.04 ships 3.28, which fails at configure.
 - `DYNARMIC_TESTS` does not follow `BUILD_TESTING` in practice. Pass it explicitly.
-- **System OpenSSL headers.** Without them (`libssl-dev`), CMake builds OpenSSL from source and the first
-  configure passes, but every later one fails with `Could NOT find OpenSSL (missing: Crypto SSL)`.
+- **`gcc` on the `PATH` without `libssl-dev`.** CMake then builds OpenSSL from source, and that build
+  runs `gcc` whatever `CMAKE_C_COMPILER` says, so a machine with only `gcc-13` stops with error 127.
 
 ## Targets
 
@@ -65,7 +65,8 @@ tools/dev/in-docker.sh build/clang/bin/tests '[ampere]'
 ## Running the emulator
 
 You can build `lichii` and `eden-cli` here, but running a game needs your own legally obtained game
-files, keys and firmware, plus a GPU with a recent Vulkan driver. The container has neither a GPU nor a
-display. Run the binaries on the host, or in a container with GPU access set up by hand.
+files, plus a GPU with a recent Vulkan driver, and keys and firmware for anything but a `.nup`. The
+container has neither a GPU nor a display, so run the binaries on the host. [Testing](testing.md#running-a-game)
+shows how to do that without touching a player's data.
 
 Windows is not built here. See the [Windows steps](../Build.md).

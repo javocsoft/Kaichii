@@ -26,7 +26,7 @@ class IDirectory;
 
 class IFileSystem final : public ServiceFramework<IFileSystem> {
 public:
-    explicit IFileSystem(Core::System& system_, FileSys::VirtualDir dir_, SizeGetter size_getter_);
+    explicit IFileSystem(Core::System& system_, const FileSys::VirtualDir& dir_, SizeGetter size_getter_);
 
     Result CreateFile(const InLargeData<FileSys::Sf::Path, BufferAttr_HipcPointer> path, s32 option,
                       s64 size);

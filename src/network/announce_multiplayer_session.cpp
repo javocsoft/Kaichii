@@ -55,7 +55,7 @@ void AnnounceMultiplayerSession::Start() {
     }
     announce_multiplayer_thread.emplace([&](std::stop_token stoken) {
         // Invokes all current bound error callbacks.
-        const auto ErrorCallback = [this](WebService::WebResult result) {
+        const auto ErrorCallback = [this](const WebService::WebResult& result) {
             std::lock_guard lock(callback_mutex);
             for (auto callback : error_callbacks)
                 (*callback)(result);
@@ -109,14 +109,14 @@ void AnnounceMultiplayerSession::Stop() {
 }
 
 AnnounceMultiplayerSession::CallbackHandle AnnounceMultiplayerSession::BindErrorCallback(
-    std::function<void(const WebService::WebResult&)> function) {
+    const std::function<void(const WebService::WebResult&)>& function) {
     std::lock_guard lock(callback_mutex);
     auto handle = std::make_shared<std::function<void(const WebService::WebResult&)>>(function);
     error_callbacks.insert(handle);
     return handle;
 }
 
-void AnnounceMultiplayerSession::UnbindErrorCallback(CallbackHandle handle) {
+void AnnounceMultiplayerSession::UnbindErrorCallback(const CallbackHandle& handle) {
     std::lock_guard lock(callback_mutex);
     error_callbacks.erase(handle);
 }
@@ -125,7 +125,7 @@ AnnounceMultiplayerSession::~AnnounceMultiplayerSession() {
     Stop();
 }
 
-void AnnounceMultiplayerSession::UpdateBackendData(std::shared_ptr<Network::Room> room) {
+void AnnounceMultiplayerSession::UpdateBackendData(const std::shared_ptr<Network::Room>& room) {
     Network::RoomInformation room_information = room->GetRoomInformation();
     std::vector<AnnounceMultiplayerRoom::Member> memberlist = room->GetRoomMemberList();
     backend->SetRoomInformation(room_information.name, room_information.description,

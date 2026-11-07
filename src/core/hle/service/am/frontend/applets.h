@@ -50,7 +50,7 @@ namespace Frontend {
 
 class FrontendApplet {
 public:
-    explicit FrontendApplet(Core::System& system_, std::shared_ptr<Applet> applet_,
+    explicit FrontendApplet(Core::System& system_, const std::shared_ptr<Applet>& applet_,
                             LibraryAppletMode applet_mode_);
     virtual ~FrontendApplet();
 

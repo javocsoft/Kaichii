@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "hid_core/resources/touch_screen/gesture.h"
+
+#include <utility>
 #include "hid_core/resources/touch_screen/touch_screen_resource.h"
 
 namespace Service::HID {
 
-Gesture::Gesture(std::shared_ptr<TouchResource> resource) : touch_resource{resource} {}
+Gesture::Gesture(std::shared_ptr<TouchResource> resource) : touch_resource{std::move(resource)} {}
 
 Gesture::~Gesture() = default;
 

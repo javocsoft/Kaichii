@@ -22,7 +22,7 @@ class AppLoader_NCA;
 /// Loads a NAX file
 class AppLoader_NAX final : public AppLoader {
 public:
-    explicit AppLoader_NAX(FileSys::VirtualFile file_);
+    explicit AppLoader_NAX(const FileSys::VirtualFile& file_);
     ~AppLoader_NAX() override;
 
     /**

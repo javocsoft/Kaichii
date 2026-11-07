@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 #include "common/logging.h"
@@ -20,7 +21,7 @@ ProgramMetadata::ProgramMetadata() = default;
 
 ProgramMetadata::~ProgramMetadata() = default;
 
-Loader::ResultStatus ProgramMetadata::Load(VirtualFile file) {
+Loader::ResultStatus ProgramMetadata::Load(const VirtualFile& file) {
     const std::size_t total_size = file->GetSize();
     if (total_size < sizeof(Header)) {
         return Loader::ResultStatus::ErrorBadNPDMHeader;
@@ -132,7 +133,7 @@ Loader::ResultStatus ProgramMetadata::Reload(VirtualFile file) {
         aci_header.title_id = original_program_id;
     };
 
-    return this->Load(file);
+    return this->Load(std::move(file));
 }
 
 /*static*/ ProgramMetadata ProgramMetadata::GetDefault() {

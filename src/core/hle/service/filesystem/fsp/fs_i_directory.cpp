@@ -11,7 +11,7 @@
 
 namespace Service::FileSystem {
 
-IDirectory::IDirectory(Core::System& system_, FileSys::VirtualDir directory_,
+IDirectory::IDirectory(Core::System& system_, const FileSys::VirtualDir& directory_,
                        FileSys::OpenDirectoryMode mode)
     : ServiceFramework{system_, "IDirectory"},
       backend(std::make_unique<FileSys::Fsa::IDirectory>(directory_, mode)) {

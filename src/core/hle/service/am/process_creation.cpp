@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <optional>
+#include <utility>
 #include "core/core.h"
 #include "core/file_sys/content_archive.h"
 #include "core/file_sys/nca_metadata.h"
@@ -42,7 +43,7 @@ namespace {
 
 [[nodiscard]] inline std::unique_ptr<Process> CreateProcessImpl(std::unique_ptr<Loader::AppLoader>& out_loader, Loader::ResultStatus& out_load_result, Core::System& system, FileSys::VirtualFile file, u64 program_id, u64 program_index) {
     // Get the appropriate loader to parse this NCA.
-    out_loader = Loader::GetLoader(system, file, program_id, program_index);
+    out_loader = Loader::GetLoader(system, std::move(file), program_id, program_index);
     // Ensure we have a loader which can parse the NCA.
     if (out_loader) {
         // Try to load the process.
@@ -86,7 +87,7 @@ std::unique_ptr<Process> CreateProcess(Core::System& system, u64 program_id, u8 
 }
 
 std::unique_ptr<Process> CreateApplicationProcess(std::vector<u8>& out_control, std::unique_ptr<Loader::AppLoader>& out_loader, Loader::ResultStatus& out_load_result, Core::System& system, FileSys::VirtualFile file, u64 program_id, u64 program_index) {
-    if (auto process = CreateProcessImpl(out_loader, out_load_result, system, file, program_id, program_index); process) {
+    if (auto process = CreateProcessImpl(out_loader, out_load_result, system, std::move(file), program_id, program_index); process) {
         FileSys::NACP nacp;
         if (out_loader->ReadControlData(nacp) == Loader::ResultStatus::Success) {
             out_control = nacp.GetRawBytes();

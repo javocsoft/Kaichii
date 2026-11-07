@@ -7,6 +7,8 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
+#include <utility>
+
 #include "common/scope_exit.h"
 #include "core/hle/kernel/k_process.h"
 
@@ -28,7 +30,7 @@ namespace {
 
 // Atmosphere defines as follows:
 // Sessions = 0x03, NrrInfos = 0x40, NroInfos = 0x40
-// This may not be enough for some mods (plugin.nro dependant games) like SSBU
+// This may not be enough for some mods (plugin.nro dependent games) like SSBU
 // Suppose someone loads like 64 plugins of these, now what?
 constexpr size_t MaxSessions = 0x03; // No change
 constexpr size_t MaxNrrInfos = 0x100; // Up to 256 NRRs
@@ -568,7 +570,7 @@ class RoInterface : public ServiceFramework<RoInterface> {
 public:
     explicit RoInterface(Core::System& system_, const char* name_, std::shared_ptr<RoContext> ro,
                          NrrKind nrr_kind)
-        : ServiceFramework{system_, name_}, m_ro(ro), m_context_id(InvalidContextId),
+        : ServiceFramework{system_, name_}, m_ro(std::move(ro)), m_context_id(InvalidContextId),
           m_nrr_kind(nrr_kind) {
 
         // clang-format off

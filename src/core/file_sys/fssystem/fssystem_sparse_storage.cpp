@@ -29,7 +29,7 @@ size_t SparseStorage::Read(u8* buffer, size_t size, size_t offset) const {
     } else {
         self->OperatePerEntry<false, true>(
             offset, size,
-            [=](VirtualFile storage, s64 data_offset, s64 cur_offset, s64 cur_size) -> Result {
+            [=](const VirtualFile& storage, s64 data_offset, s64 cur_offset, s64 cur_size) -> Result {
                 storage->Read(reinterpret_cast<u8*>(buffer) + (cur_offset - offset),
                               static_cast<size_t>(cur_size), data_offset);
                 R_SUCCEED();

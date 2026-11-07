@@ -22,12 +22,12 @@ void Block::AppendNewInst(Opcode op, std::initializer_list<Value> args) {
     PrependNewInst(instructions.end(), op, args);
 }
 
-Block::iterator Block::PrependNewInst(iterator insertion_point, const Inst& base_inst) {
+Block::iterator Block::PrependNewInst(const iterator& insertion_point, const Inst& base_inst) {
     Inst* const inst{inst_pool->Create(base_inst)};
     return instructions.insert(insertion_point, *inst);
 }
 
-Block::iterator Block::PrependNewInst(iterator insertion_point, Opcode op,
+Block::iterator Block::PrependNewInst(const iterator& insertion_point, Opcode op,
                                       std::initializer_list<Value> args, u32 flags) {
     Inst* const inst{inst_pool->Create(op, flags)};
     const auto result_it{instructions.insert(insertion_point, *inst)};

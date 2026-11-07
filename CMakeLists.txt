@@ -209,7 +209,7 @@ endif()
 
 # Disable Warnings as Errors for MSVC
 if (MSVC AND NOT CXX_CLANG)
-    # This was dripping into spirv, being overriden, and causing cl flag override warning
+    # This was dripping into spirv, being overridden, and causing cl flag override warning
     # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX-")
     set(CMAKE_CXX_FLAGS_INIT "${CMAKE_CXX_FLAGS_INIT} /W3 /WX-")
 endif()
@@ -410,6 +410,11 @@ if (YUZU_USE_BUNDLED_OPENSSL)
     set(BUILD_SHARED_LIBS OFF)
     AddJsonPackage(openssl-ci)
 else()
+    # openssl-cmake leaves OPENSSL_FOUND in the cache, so the next configure would take the copy it
+    # built here for a system package, skip openssl-cmake and fail on the first real lookup.
+    if (OPENSSL_MAKEFILE)
+        set(OpenSSL_FORCE_BUNDLED ON)
+    endif()
     AddJsonPackage(openssl)
     set(OPENSSL_BUILD_VERBOSE ON)
     set(OPENSSL_CONFIGURE_VERBOSE ON)

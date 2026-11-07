@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <thread>
+#include <utility>
 
 #include "common/logging.h"
 #include "common/string_util.h"
@@ -130,7 +131,7 @@ void DefaultSoftwareKeyboardApplet::ExitKeyboard() const {
 }
 
 void DefaultSoftwareKeyboardApplet::SubmitNormalText(std::u16string text) const {
-    submit_normal_callback(Service::AM::Frontend::SwkbdResult::Ok, text, true);
+    submit_normal_callback(Service::AM::Frontend::SwkbdResult::Ok, std::move(text), true);
 }
 
 void DefaultSoftwareKeyboardApplet::SubmitInlineText(std::u16string_view text) const {

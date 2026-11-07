@@ -960,7 +960,7 @@ void Room::RoomImpl::HandleChatPacket(const ENetEvent* event) {
     in_packet.IgnoreBytes(sizeof(u8)); // Ignore the message type
     std::string message;
     in_packet.Read(message);
-    auto CompareNetworkAddress = [event](const Member member) -> bool {
+    auto CompareNetworkAddress = [event](const Member& member) -> bool {
         return member.peer == event->peer;
     };
 
@@ -1074,7 +1074,7 @@ Room::~Room() = default;
 bool Room::Create(const std::string& name, const std::string& description,
                   const std::string& server_address, u16 server_port, const std::string& password,
                   const u32 max_connections, const std::string& host_username,
-                  const GameInfo preferred_game,
+                  const GameInfo& preferred_game,
                   std::unique_ptr<VerifyUser::Backend> verify_backend,
                   const Room::BanList& ban_list) {
     ENetAddress address;

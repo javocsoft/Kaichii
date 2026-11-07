@@ -495,7 +495,7 @@ u64 FileSystemController::GetTotalSpaceSize(FileSys::StorageId id) const {
     return 0;
 }
 
-void FileSystemController::SetGameCard(FileSys::VirtualFile file) {
+void FileSystemController::SetGameCard(const FileSys::VirtualFile& file) {
     gamecard = std::make_unique<FileSys::XCI>(file);
     const auto dir = gamecard->ConcatenatedPseudoDirectory();
     gamecard_registered = std::make_unique<FileSys::RegisteredCache>(dir);

@@ -10,11 +10,11 @@ workflow added, renamed or removed must be updated here in the same commit.
 | `quick-checks.yml` | PRs and pushes to `nx2` | Everything in `tools/ci/quick-checks.sh`. Takes minutes and compiles no emulator code. | Yes |
 | `build-check.yml` | PRs and pushes to `nx2` | Linux GCC 13 production build with `-Werror`, `ctest`, and the debug adapter, ThreadWorker and switch discovery suites. | Yes |
 | `linux-extended.yml` | PRs and pushes to `nx2` | Linux Clang 20 build with `DYNARMIC_TESTS` and `ENABLE_DEBUG_TOOLS`, `ctest`, the shader tool suites, and production shaders on Mesa's software Vulkan driver. | Yes |
-| `sanitizers.yml` | PRs and pushes to `nx2` | AddressSanitizer on `tests` and `dynarmic_tests`, with UBSan logging. Stops at the first memory error. | No |
+| `sanitizers.yml` | PRs and pushes to `nx2` | AddressSanitizer on `tests` and `dynarmic_tests`, with UBSan logging. Stops at the first memory error. | Yes |
 | `release-binaries.yml` | Manual, or pushes to `nx2-experimental` that change build inputs | Builds every platform and publishes a `build-<run number>` GitHub release. | No |
 | `label-issues.yml` | New issues | Labels issues from their form fields. | No |
 
-Merge blocking is a repository setting. `nx2` in `javocsoft/Lichii` requires all three checks on an
+Merge blocking is a repository setting. `nx2` in `javocsoft/Lichii` requires all four checks on an
 up-to-date branch, for admins too, and allows no force pushes. So every change reaches `nx2` through
 a pull request, including a sync from another repository. `zortos293/Lichii` has no branch protection.
 
@@ -43,7 +43,8 @@ tools/dev/in-docker.sh tools/ci/quick-checks.sh
 ## Running on a fork
 
 Actions are off on a new fork. Enable them on its Actions tab, and enable branch protection on `nx2`
-if you want the checks to block merges. `build-check.yml` and `linux-extended.yml` need no secrets.
+if you want the checks to block merges. `build-check.yml`, `linux-extended.yml` and `sanitizers.yml`
+need no secrets.
 Their first runs start with an empty cache: the build alone took 41 minutes with GCC and 35 with Clang
 on a fork's first run.
 

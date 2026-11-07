@@ -8,6 +8,8 @@
 #include "core/file_sys/savedata_factory.h"
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/filesystem/fsp/fs_i_save_data_info_reader.h"
+
+#include <utility>
 #include "core/hle/service/filesystem/save_data_controller.h"
 
 namespace Service::FileSystem {
@@ -16,7 +18,7 @@ ISaveDataInfoReader::ISaveDataInfoReader(Core::System& system_,
                                          std::shared_ptr<SaveDataController> save_data_controller_,
                                          FileSys::SaveDataSpaceId space)
     : ServiceFramework{system_, "ISaveDataInfoReader"}, save_data_controller{
-                                                            save_data_controller_} {
+                                                            std::move(save_data_controller_)} {
     static const FunctionInfo functions[] = {
         {0, D<&ISaveDataInfoReader::ReadSaveDataInfo>, "ReadSaveDataInfo"},
     };

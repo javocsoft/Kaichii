@@ -9,10 +9,10 @@ namespace FileSys {
 
 // Converts a RomFS binary blob to VFS Filesystem
 // Returns nullptr on failure
-VirtualDir ExtractRomFS(VirtualFile file);
+VirtualDir ExtractRomFS(const VirtualFile& file);
 
 // Converts a VFS filesystem into a RomFS binary
 // Returns nullptr on failure
-VirtualFile CreateRomFS(VirtualDir dir, VirtualDir ext = nullptr);
+VirtualFile CreateRomFS(const VirtualDir& dir, VirtualDir ext = nullptr);
 
 } // namespace FileSys

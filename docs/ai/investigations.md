@@ -15,7 +15,7 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 | Fire Emblem: Fortune's Weave | 04007EF01F8AE000 | [Upscale stand-in](../FE_UPSCALE_STANDIN.md), [DLSS replacement](../native-dlss-replacement.md) |
 | The Duskbloods network test | 0400D1D02399A000 | [Bindless surfaces](../duskbloods-bindless-surfaces.md), [uniform shift](../duskbloods-uniform-immediate-shift.md) |
 | Mario Kart World | 0400C3F00006E000 | [Integration test](../performance/MKW-INTEGRATION.md), `docs/nx2/notes.md`, `docs/nx2/gpu-thread-split.md` |
-| The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md) |
+| The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md), [network bypass](../nx2/oot-network-bypass.md) |
 
 ## By subject
 
@@ -37,6 +37,22 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 
 | Change | Why it is not here |
 |---|---|
-| `8820bb79aa`, storage buffers sized from the mapping only in DLSS passes | Reverted and restored upstream, so its effect is contested. It changes the binding size of every Switch 2 compute shader, and nothing here can validate that without running games. |
+| `8820bb79aa`, storage buffers sized from the mapping only in DLSS passes | Tested in Ocarina of Time on top of Zortos PR 415, on an RTX 3050 Laptop: the Deku Tree intro rendered the same, and Link's house ran at 13.8 fps against 14.3 without it, inside the 1 fps the runs vary by. Its reason, every native dispatch marking an 8 MiB binding GPU-written, is what PR 415 fixes at the root: the binding keeps its size and only the range the shader's stores reach is marked. It also takes the word after a pointer as a size, which a native program does not promise. |
 | `6dd4781249`, `0ca2032bff`, data directory and translations renamed to Eglantine | Would strand the saves and settings in the `eden` directory. |
 | `587633debe`, Star Fox support | Reverted upstream by `e87ad31068`. |
+
+Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
+commits.
+
+| Pull requests | Why they are not here |
+|---|---|
+| 353 | Changes pipeline keys and has no tests. |
+| 216 | Patches the same instruction as the built-in Dynamic FPS add-on, which 299 now keeps at real speed down to 10 fps. |
+| 313 | The same eviction problem as 408, whose budget was taken. |
+| 182 | Replaced by 445, frame times in `status`. |
+| 206 | Already in the tree as `68caa6c75e`. |
+| 437, 448, 300, 378, 354, 329, 223 | Fixes for AMD or Intel GPUs, which nothing here can run. |
+| 456, 387, 253 | Three overlapping DLSS integrations for Ocarina: features, not fixes. |
+| 418, 278, 259, 235, 231, 243, 270 | Experiments behind switches, which do not merge to `nx2`. |
+| 365, 377, 451, 431, 199, 186, 195 | Windows or MinGW only features and tweaks, not fixes. |
+| 345, 264, 296, 204, 189, 192, 221, 246, 320, 330, 335, 467, 213, 255, 267, 214, 219, 228, 411 | Not reviewed in depth yet. |

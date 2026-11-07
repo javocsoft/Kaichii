@@ -170,7 +170,7 @@ private:
     std::atomic<u32> next_handle_id{HandleIdIncrement};
     Tegra::Host1x::Host1x& host1x;
 
-    void AddHandle(std::shared_ptr<Handle> handle);
+    void AddHandle(const std::shared_ptr<Handle>& handle);
 
     /**
      * @brief Unmaps and frees the SMMU memory region a handle is mapped to

@@ -40,7 +40,7 @@ class StaticService final : public ServiceFramework<StaticService> {
 public:
     explicit StaticService(Core::System& system,
                            Service::PSC::Time::StaticServiceSetupInfo setup_info,
-                           std::shared_ptr<TimeManager> time, const char* name);
+                           const std::shared_ptr<TimeManager>& time, const char* name);
 
     ~StaticService() override = default;
 

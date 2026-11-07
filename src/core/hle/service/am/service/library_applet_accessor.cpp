@@ -12,6 +12,8 @@
 #include "core/hle/service/am/frontend/applets.h"
 #include "core/hle/service/am/library_applet_storage.h"
 #include "core/hle/service/am/service/library_applet_accessor.h"
+
+#include <utility>
 #include "core/hle/service/am/service/storage.h"
 #include "core/hle/service/cmif_serialization.h"
 
@@ -142,7 +144,7 @@ Result ILibraryAppletAccessor::Unknown90() {
     R_SUCCEED();
 }
 
-Result ILibraryAppletAccessor::PushInData(SharedPointer<IStorage> storage) {
+Result ILibraryAppletAccessor::PushInData(const SharedPointer<IStorage>& storage) {
     LOG_DEBUG(Service_AM, "called");
 
     // Special case for ProfileSelect applet, to enable single user play as
@@ -187,7 +189,7 @@ Result ILibraryAppletAccessor::PopOutData(Out<SharedPointer<IStorage>> out_stora
 
 Result ILibraryAppletAccessor::PushInteractiveInData(SharedPointer<IStorage> storage) {
     LOG_DEBUG(Service_AM, "called");
-    m_broker->GetInteractiveInData().Push(system.Kernel(), storage);
+    m_broker->GetInteractiveInData().Push(system.Kernel(), std::move(storage));
     FrontendExecuteInteractive();
     R_SUCCEED();
 }

@@ -88,11 +88,11 @@ public:
     // - LayeredFS
     [[nodiscard]] VirtualFile PatchRomFS(const NCA* base_nca, VirtualFile base_romfs,
                                          ContentRecordType type = ContentRecordType::Program,
-                                         VirtualFile packed_update_raw = nullptr,
+                                         const VirtualFile& packed_update_raw = nullptr,
                                          bool apply_layeredfs = true) const;
 
     // Returns a vector of patches
-    [[nodiscard]] std::vector<Patch> GetPatches(VirtualFile update_raw = nullptr) const;
+    [[nodiscard]] std::vector<Patch> GetPatches(const VirtualFile& update_raw = nullptr) const;
 
     // If the game update exists, returns the u32 version field in its Meta-type NCA. If that fails,
     // it will fallback to the Meta-type NCA of the base game. If that fails, the result will be

@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstring>
 #include <span>
+#include <utility>
 
 #include "common/assert.h"
 #include "common/hex_util.h"
@@ -74,7 +75,9 @@ constexpr std::array<u8, 4> DYNAMIC_FPS_CALL{0x4F, 0x7D, 0xD5, 0x94};
 constexpr std::array<u8, 120> DYNAMIC_FPS_ROUTINE{
     0x28, 0x18, 0x20, 0x1E, 0xCA, 0x92, 0x00, 0xB0, 0x4A, 0x01, 0x38, 0x91, 0x2B, 0xE0, 0x3B,
     0xD5, 0x4C, 0x01, 0x40, 0xF9, 0x4B, 0x01, 0x00, 0xF9, 0xCC, 0x02, 0x00, 0xB4, 0x6B, 0x01,
-    0x0C, 0xCB, 0x0D, 0xE0, 0x3B, 0xD5, 0x8E, 0x02, 0x80, 0xD2, 0xAE, 0x09, 0xCE, 0x9A, 0x7F,
+    // Local: the original routine caps the measured delta at CNTFRQ / 20 (50 ms). Use /10
+    // (100 ms) so Ocarina keeps real speed down to 10 fps with EDEN_NX2_FRAMES_AHEAD=0.
+    0x0C, 0xCB, 0x0D, 0xE0, 0x3B, 0xD5, 0x4E, 0x01, 0x80, 0xD2, 0xAE, 0x09, 0xCE, 0x9A, 0x7F,
     0x01, 0x0E, 0xEB, 0xCB, 0x81, 0x8B, 0x9A, 0x4C, 0x05, 0x40, 0xF9, 0x4C, 0x00, 0x00, 0xB5,
     0xEC, 0x03, 0x0B, 0xAA, 0x6E, 0x01, 0x0C, 0xCB, 0x8C, 0x0D, 0x8E, 0x8B, 0x4C, 0x05, 0x00,
     0xF9, 0x82, 0x01, 0x23, 0x9E, 0xA3, 0x01, 0x23, 0x9E, 0x42, 0x18, 0x23, 0x1E, 0x42, 0x08,
@@ -129,7 +132,7 @@ std::string FormatTitleVersion(u32 version,
 
 // Returns a directory with name matching name case-insensitive. Returns nullptr if directory
 // doesn't have a directory with name.
-VirtualDir FindSubdirectoryCaseless(const VirtualDir dir, std::string_view name) {
+VirtualDir FindSubdirectoryCaseless(const VirtualDir& dir, std::string_view name) {
 #ifdef _WIN32
     return dir->GetSubdirectory(name);
 #else
@@ -763,7 +766,7 @@ void PatchManager::ApplyLayeredFS(VirtualFile& romfs, ContentRecordType type) co
 }
 
 VirtualFile PatchManager::PatchRomFS(const NCA* base_nca, VirtualFile base_romfs,
-                                     ContentRecordType type, VirtualFile packed_update_raw,
+                                     ContentRecordType type, const VirtualFile& packed_update_raw,
                                      bool apply_layeredfs) const {
     const auto log_string = fmt::format("Patching RomFS for title_id={:016X}, type={:02X}",
                                         title_id, static_cast<u8>(type));
@@ -773,7 +776,7 @@ VirtualFile PatchManager::PatchRomFS(const NCA* base_nca, VirtualFile base_romfs
         LOG_DEBUG(Loader, "{}", log_string);
     }
 
-    auto romfs = base_romfs;
+    auto romfs = std::move(base_romfs);
 
     // Game Updates
     const auto update_tid = GetUpdateTitleID(title_id);
@@ -890,7 +893,7 @@ VirtualFile PatchManager::PatchRomFS(const NCA* base_nca, VirtualFile base_romfs
     return romfs;
 }
 
-std::vector<Patch> PatchManager::GetPatches(VirtualFile update_raw) const {
+std::vector<Patch> PatchManager::GetPatches(const VirtualFile& update_raw) const {
     if (title_id == 0) {
         return {};
     }

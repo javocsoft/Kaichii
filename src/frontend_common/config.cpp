@@ -53,7 +53,7 @@ void Config::Initialize(const std::string& config_name) {
     }
 }
 
-void Config::Initialize(const std::optional<std::string> config_path) {
+void Config::Initialize(const std::optional<std::string>& config_path) {
     const std::filesystem::path default_sdl_config_path =
         FS::GetEdenPath(FS::EdenPath::ConfigDir) / "sdl2-config.ini";
     config_loc = config_path.value_or(FS::PathToUTF8String(default_sdl_config_path));
@@ -301,7 +301,10 @@ void Config::ReadDataStorageValues() {
     using namespace Common::FS;
 
     const auto setPath = [this](const EdenPath& path, const char* setting) {
-        SetEdenPath(path, ReadStringSetting(std::string(setting)));
+        // A first run has no value yet, and the default path stands.
+        if (const auto value = ReadStringSetting(std::string(setting)); !value.empty()) {
+            SetEdenPath(path, value);
+        }
     };
 
     setPath(EdenPath::NANDDir, "nand_directory");
@@ -824,7 +827,7 @@ double Config::ReadDoubleSetting(const std::string& key,
 }
 
 std::string Config::ReadStringSetting(const std::string& key,
-                                      const std::optional<std::string> default_value) {
+                                      const std::optional<std::string>& default_value) {
     std::string result;
     std::string full_key = GetFullKey(key, false);
     if (!default_value.has_value()) {

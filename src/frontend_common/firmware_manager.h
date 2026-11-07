@@ -38,7 +38,7 @@ enum KeyInstallResult {
  * @param expected_extension What extension the file should have.
  * @return A result code for the operation.
  */
-KeyInstallResult InstallKeys(std::string location, std::string expected_extension);
+KeyInstallResult InstallKeys(const std::string& location, const std::string& expected_extension);
 
 /**
  * \brief Check if the specified program requires firmware to run properly.

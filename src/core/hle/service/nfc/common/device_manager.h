@@ -92,7 +92,7 @@ private:
 
     Result GetDeviceHandle(u64 handle, std::shared_ptr<NfcDevice>& device) const;
     Result VerifyDeviceResult(std::shared_ptr<NfcDevice> device, Result operation_result);
-    Result CheckDeviceState(std::shared_ptr<NfcDevice> device) const;
+    Result CheckDeviceState(const std::shared_ptr<NfcDevice>& device) const;
 
     std::optional<std::shared_ptr<NfcDevice>> GetNfcDevice(u64 handle);
     const std::optional<std::shared_ptr<NfcDevice>> GetNfcDevice(u64 handle) const;

@@ -68,7 +68,7 @@ Result IProcessWindingController::OpenCallingLibraryApplet(
     R_SUCCEED();
 }
 
-Result IProcessWindingController::PushContext(SharedPointer<IStorage> context) {
+Result IProcessWindingController::PushContext(const SharedPointer<IStorage>& context) {
     LOG_INFO(Service_AM, "called");
     m_applet->context_stack.push(context);
     R_SUCCEED();
@@ -136,7 +136,7 @@ Result IProcessWindingController::WindAndDoReserved() {
 }
 
 Result IProcessWindingController::ReserveToStartAndWaitAndUnwindThis(
-    SharedPointer<ILibraryAppletAccessor> reserved_applet_accessor) {
+    const SharedPointer<ILibraryAppletAccessor>& reserved_applet_accessor) {
     LOG_INFO(Service_AM, "called");
 
     if (reserved_applet_accessor == nullptr) {
@@ -152,7 +152,7 @@ Result IProcessWindingController::ReserveToStartAndWaitAndUnwindThis(
 }
 
 Result IProcessWindingController::ReserveToStartAndWait(
-    SharedPointer<ILibraryAppletAccessor> reserved_applet_accessor) {
+    const SharedPointer<ILibraryAppletAccessor>& reserved_applet_accessor) {
     LOG_INFO(Service_AM, "called");
 
     if (reserved_applet_accessor == nullptr) {

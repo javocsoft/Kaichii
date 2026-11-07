@@ -1166,7 +1166,7 @@ Result KServerSession::ReceiveRequest(KernelCore& kernel, uintptr_t server_messa
         u32* cmd_buf{reinterpret_cast<u32*>(memory.GetPointer(client_message))};
         *out_context =
             std::make_shared<Service::HLERequestContext>(kernel, memory, this, client_thread);
-        (*out_context)->SetSessionRequestManager(manager);
+        (*out_context)->SetSessionRequestManager(std::move(manager));
         (*out_context)->PopulateFromIncomingCommandBuffer(cmd_buf);
         // We succeeded.
         R_SUCCEED();

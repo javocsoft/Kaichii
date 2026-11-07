@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <span>
+#include <type_traits>
 
 #include "common/common_types.h"
 
@@ -24,7 +25,7 @@ class Out {
 public:
     using Type = T;
 
-    /* implicit */ Out(const Out& t) : raw(t.raw) {}
+    /* implicit */ Out(const Out&) = default;
     /* implicit */ Out(AutoOut<Type>& t) : raw(&t.raw) {}
     /* implicit */ Out(Type* t) : raw(t) {}
     Out& operator=(const Out&) = delete;
@@ -129,7 +130,7 @@ class OutCopyHandle {
 public:
     using Type = T*;
 
-    /* implicit */ OutCopyHandle(const OutCopyHandle& t) : raw(t.raw) {}
+    /* implicit */ OutCopyHandle(const OutCopyHandle&) = default;
     /* implicit */ OutCopyHandle(AutoOut<Type>& t) : raw(&t.raw) {}
     /* implicit */ OutCopyHandle(Type* t) : raw(t) {}
     OutCopyHandle& operator=(const OutCopyHandle&) = delete;
@@ -159,7 +160,7 @@ class OutMoveHandle {
 public:
     using Type = T*;
 
-    /* implicit */ OutMoveHandle(const OutMoveHandle& t) : raw(t.raw) {}
+    /* implicit */ OutMoveHandle(const OutMoveHandle&) = default;
     /* implicit */ OutMoveHandle(AutoOut<Type>& t) : raw(&t.raw) {}
     /* implicit */ OutMoveHandle(Type* t) : raw(t) {}
     OutMoveHandle& operator=(const OutMoveHandle&) = delete;
@@ -276,7 +277,7 @@ public:
     static constexpr BufferAttr Attr = static_cast<BufferAttr>(A | BufferAttr_Out | BufferAttr_FixedSize);
     using Type = T;
 
-    /* implicit */ OutLargeData(const OutLargeData& t) : raw(t.raw) {}
+    /* implicit */ OutLargeData(const OutLargeData&) = default;
     /* implicit */ OutLargeData(Type* t) : raw(t) {}
     /* implicit */ OutLargeData(AutoOut<T>& t) : raw(&t.raw) {}
     OutLargeData& operator=(const OutLargeData&) = delete;
@@ -301,5 +302,11 @@ private:
     Type* raw;
 };
 // clang-format on
+
+// These are one pointer each, and a trivial copy passes them in a register.
+static_assert(std::is_trivially_copyable_v<Out<u32>>);
+static_assert(std::is_trivially_copyable_v<OutCopyHandle<u32>>);
+static_assert(std::is_trivially_copyable_v<OutMoveHandle<u32>>);
+static_assert(std::is_trivially_copyable_v<OutLargeData<u32, BufferAttr_HipcPointer>>);
 
 } // namespace Service

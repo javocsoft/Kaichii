@@ -10,7 +10,7 @@ namespace FileSys {
 
 OffsetVfsFile::OffsetVfsFile(VirtualFile file_, std::size_t size_, std::size_t offset_,
                              std::string name_)
-    : file(file_), offset(offset_), size(size_), name(std::move(name_)) {}
+    : file(std::move(file_)), offset(offset_), size(size_), name(std::move(name_)) {}
 
 OffsetVfsFile::~OffsetVfsFile() = default;
 

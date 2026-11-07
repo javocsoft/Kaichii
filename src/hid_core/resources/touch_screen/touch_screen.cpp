@@ -3,11 +3,13 @@
 
 #include "hid_core/hid_types.h"
 #include "hid_core/resources/touch_screen/touch_screen.h"
+
+#include <utility>
 #include "hid_core/resources/touch_screen/touch_screen_resource.h"
 
 namespace Service::HID {
 
-TouchScreen::TouchScreen(std::shared_ptr<TouchResource> resource) : touch_resource{resource} {}
+TouchScreen::TouchScreen(std::shared_ptr<TouchResource> resource) : touch_resource{std::move(resource)} {}
 
 TouchScreen::~TouchScreen() = default;
 

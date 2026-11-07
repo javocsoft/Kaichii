@@ -60,7 +60,7 @@ private:
 
 struct InputSubsystem::Impl {
     template <typename Engine>
-    void RegisterEngine(std::string name, std::shared_ptr<Engine>& engine) {
+    void RegisterEngine(const std::string& name, std::shared_ptr<Engine>& engine) {
         MappingCallback mapping_callback{[this](const MappingData& data) { RegisterInput(data); }};
 
         engine = std::make_shared<Engine>(name);

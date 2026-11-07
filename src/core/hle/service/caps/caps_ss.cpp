@@ -7,6 +7,8 @@
 #include "common/logging.h"
 #include "core/hle/service/caps/caps_manager.h"
 #include "core/hle/service/caps/caps_ss.h"
+
+#include <utility>
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/ipc_helpers.h"
 
@@ -14,7 +16,7 @@ namespace Service::Capture {
 
 IScreenShotService::IScreenShotService(Core::System& system_,
                                        std::shared_ptr<AlbumManager> album_manager)
-    : ServiceFramework{system_, "caps:ss"}, manager{album_manager} {
+    : ServiceFramework{system_, "caps:ss"}, manager{std::move(album_manager)} {
     // clang-format off
     static const FunctionInfo functions[] = {
         {201, nullptr, "SaveScreenShot"},

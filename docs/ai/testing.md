@@ -18,7 +18,7 @@ two separately, and never call a game fixed because the tests pass.
 | Sanitizers | `LICHII_SANITIZE=asan tools/dev/build-tests.sh`, see below | Memory errors and undefined behaviour in everything the C++ tests reach | 20 minutes to build |
 | Static analysis | `tools/dev/in-docker.sh tools/dev/tidy.sh` | The checks in `.clang-tidy`: bugs, not style. Findings go to `build/clang/tidy.log` | 20 minutes |
 | Debug server | `docs/nx2/debug-mcp.md` | Live state of a running game | Interactive |
-| Playing the game | A person | What players see | The only proof of a game fix |
+| Playing the game | A person, or an agent through the debug server, see below | What players see | The only proof of a game fix |
 
 ## Which checks a change needs
 
@@ -98,6 +98,38 @@ Two settings are easy to get wrong:
 - `-fsanitize=function` stays off. It reads the 8 bytes before every call target, which faults when
   generated code starts a mapping, as the macro JIT and dynarmic's spin lock can. The result looks like
   a crash that depends on which tests ran first.
+
+## Running a game
+
+A machine with a GPU and your own legally obtained game can run one without anyone at the controls.
+`eden-cli` from the container runs on an Ubuntu 24.04 host as it is; `lichii` needs the container's
+Qt. A `.nup` boots with no keys or firmware.
+
+Point every data directory somewhere else first, even for `--help`, or the run writes into the
+player's own configuration and saves. Set the audio to null so nothing plays on their machine.
+
+```sh
+export XDG_DATA_HOME=$PWD/run/data XDG_CONFIG_HOME=$PWD/run/config XDG_CACHE_HOME=$PWD/run/cache
+EDEN_NX2_DEBUG_SERVER=127.0.0.1:6545 EDEN_NX2_GPU_PROFILE=1 build/gcc/bin/eden-cli -g game.nup &
+
+python3 tools/nx2/debug_mcp.py --server 127.0.0.1:6545 \
+    --call '{"method":"input_sequence","params":{"steps":[{"buttons":["A"],"frames":6},{"frames":60}]}}'
+python3 tools/nx2/debug_mcp.py --server 127.0.0.1:6545 --call '{"method":"screenshot"}' --out shot.png
+python3 tools/nx2/debug_mcp.py --server 127.0.0.1:6545 \
+    --call '{"method":"status","params":{"fps_window_ms":10000}}'
+```
+
+- The server answers one request at a time. While `input_sequence` runs, `status` waits, which looks
+  like a hang.
+- Keep a copy of `nand/user/save` once you reach a useful spot, and restore it for each run, so that
+  every comparison starts from the same place.
+- Check what you are looking at. A cinematic can be a movie: `nx2:vdecsvc frame` in the log and few
+  draws per second mean the picture says nothing about rendering, and the frame rate nothing about
+  the GPU.
+- Compare binaries, not recollections: same save, same steps, one change between them, and the
+  frame times from `status`. The first visit to an area also builds its pipelines, so run the
+  sequence twice and compare the second.
+- Screenshots, saves and shader caches come from the game, so they never go in the repository.
 
 ## Coverage
 

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <array>
+#include <atomic>
 #include <bit>
 #include <functional>
 #include <memory>
@@ -66,7 +67,7 @@ constexpr u32 NUM_COMPUTE_UNIFORM_BUFFERS = 8;
 // Native shaders can reference more than 16 storage buffers. Dropping a binding
 // shifts all following descriptor payloads into the wrong descriptor types.
 constexpr u32 NUM_STORAGE_BUFFERS = Shader::Info::MAX_SSBOS;
-static_assert(NUM_STORAGE_BUFFERS <= 32, "storage binding masks must fit u32");
+static_assert(NUM_STORAGE_BUFFERS <= 64, "storage binding masks must fit u64");
 constexpr u32 NUM_TEXTURE_BUFFERS = 32;
 constexpr u32 NUM_STAGES = 5;
 
@@ -152,10 +153,14 @@ public:
     const UniformBufferSizes* uniform_buffer_sizes{};
     const ComputeUniformBufferSizes* compute_uniform_buffer_sizes{};
 
-    std::array<u32, NUM_STAGES> enabled_storage_buffers{};
-    std::array<u32, NUM_STAGES> written_storage_buffers{};
-    u32 enabled_compute_storage_buffers = 0;
-    u32 written_compute_storage_buffers = 0;
+    std::array<u64, NUM_STAGES> enabled_storage_buffers{};
+    std::array<u64, NUM_STAGES> written_storage_buffers{};
+    u64 enabled_compute_storage_buffers = 0;
+    u64 written_compute_storage_buffers = 0;
+    // Bound by a native (Switch 2) compute program, whose pointers carry no size.
+    u64 native_compute_storage_buffers = 0;
+    // Bytes from each compute storage binding's start that a dispatch marks GPU-written.
+    std::array<u32, NUM_STORAGE_BUFFERS> compute_storage_write_marks{};
 
     u32 total_graphics_storage_buffers = 0;
     u32 total_compute_storage_buffers = 0;
@@ -235,10 +240,13 @@ public:
 
     ~BufferCache();
 
+    /// Per-frame upkeep on the scheduler owner: deferred page writes, garbage collection and
+    /// delayed destruction.
     void TickFrame();
 
     bool BindMultiRangeStorage(const Binding& binding, bool is_written,
-                               std::span<const MultiRangeSegment> pool);
+                               std::span<const MultiRangeSegment> pool,
+                               u64 write_mark_limit = ~u64{0});
 
     void ResolveMultiRangeStorage(Binding& binding, bool is_written,
                                   std::vector<MultiRangeSegment>& pool);
@@ -251,6 +259,8 @@ public:
     /// when the memory is going away).
     void WriteMemory(DAddr device_addr, u64 size, bool keep_page_gpu_data = true);
 
+    /// A GPU-side cached write: uploads the guest bytes into GPU-written buffers in place,
+    /// otherwise behaves as WriteMemory.
     void CachedWriteMemory(DAddr device_addr, u64 size);
 
     /// Cancels pending downloads over the range, so a fence can't write them over newer bytes.
@@ -265,6 +275,7 @@ public:
 
     bool OnCPUWrite(DAddr device_addr, u64 size);
 
+    /// Writes the GPU-written bytes of the range back to guest memory, waiting for the GPU.
     void DownloadMemory(DAddr device_addr, u64 size);
 
     std::optional<VideoCore::RasterizerDownloadArea> GetFlushArea(DAddr device_addr, u64 size);
@@ -281,8 +292,10 @@ public:
 
     void DisableGraphicsUniformBuffer(size_t stage, u32 index);
 
+    /// Finds or creates and synchronizes the buffers the next draw binds.
     void UpdateGraphicsBuffers(bool is_indexed);
 
+    /// Finds or creates and synchronizes the buffers the next dispatch binds.
     void UpdateComputeBuffers();
 
     void BindHostGeometryBuffers(bool is_indexed);
@@ -308,18 +321,23 @@ public:
 
     void UnbindComputeStorageBuffers();
 
+    /// write_extent: how far the program's stores reach past the pointer (native programs).
     void BindComputeStorageBuffer(size_t ssbo_index, u32 cbuf_index, u32 cbuf_offset,
-                                  bool is_written, u32 indirect_offset = ~0U);
+                                  bool is_written, u32 indirect_offset = ~0U,
+                                  const Shader::StorageWriteExtent& write_extent = {});
 
     void UnbindComputeTextureBuffers();
 
     void BindComputeTextureBuffer(size_t tbo_index, GPUVAddr gpu_addr, u32 size, PixelFormat format,
                                   bool is_written, bool is_image);
 
+    /// The buffer holding [gpu_addr, gpu_addr + size) and the offset there, synchronized as
+    /// `sync_info` asks; the null buffer when the address is unmapped.
     [[nodiscard]] std::pair<Buffer*, u32> ObtainBuffer(GPUVAddr gpu_addr, u32 size,
                                                        ObtainBufferSynchronize sync_info,
                                                        ObtainBufferOperation post_op);
 
+    /// ObtainBuffer for a device address.
     [[nodiscard]] std::pair<Buffer*, u32> ObtainCPUBuffer(DAddr gpu_addr, u32 size,
                                                           ObtainBufferSynchronize sync_info,
                                                           ObtainBufferOperation post_op);
@@ -353,8 +371,12 @@ public:
     void PopAsyncFlushes();
     void PopAsyncBuffers();
 
+    /// Copies between cached buffers on the GPU; false when neither range is cached (or one is
+    /// unmapped) and the caller copies guest memory.
     bool DMACopy(GPUVAddr src_address, GPUVAddr dest_address, u64 amount);
 
+    /// Clears a cached buffer range on the GPU; false when it isn't cached (or is unmapped) and
+    /// the caller clears guest memory.
     bool DMAClear(GPUVAddr src_address, u64 amount, u32 value);
 
     /// Switch 2 GPU-written command lists (nx2.h, g_nx2_command_list_pages). While collecting (a
@@ -467,8 +489,8 @@ public:
     std::unordered_set<DAddr> native_indirect_uniforms_this_frame;
 
 private:
-    template <typename Func>
-    static void ForEachEnabledBit(u32 enabled_mask, Func&& func) {
+    template <typename Mask, typename Func>
+    static void ForEachEnabledBit(Mask enabled_mask, Func&& func) {
         for (u32 index = 0; enabled_mask != 0; ++index, enabled_mask >>= 1) {
             const int disabled_bits = std::countr_zero(enabled_mask);
             index += disabled_bits;
@@ -596,7 +618,19 @@ private:
     /// Downloads the GPU-written data of several buffers with one wait for the GPU.
     void DownloadBuffersMemory(std::span<const BufferId> buffer_ids);
 
+    /// DownloadMemory for several ranges with one wait for the GPU.
     void DownloadRangesMemory(std::span<const std::pair<DAddr, u64>> ranges);
+
+    /// Downloads the GPU-written bytes sharing the written pages, then marks them CPU-modified.
+    /// Scheduler owner only (it may record and submit).
+    void PreservePageGpuData(DAddr device_addr, u64 size);
+
+    /// Applies the writes WriteMemory deferred from threads that don't own the scheduler. Called
+    /// by the owner where no Buffer reference is held, before it uploads or downloads.
+    void ApplyDeferredPageWrites();
+
+    /// Queues a write for ApplyDeferredPageWrites, merged with a queued range it overlaps.
+    void DeferPageWrite(DAddr device_addr, u64 size);
 
     void DeleteBuffer(BufferId buffer_id, bool do_not_mark = false);
 
@@ -737,6 +771,11 @@ private:
     Common::RangeSet<DAddr> cpu_read_ranges;
     bool download_cpu_read_ranges{};
     Common::RangeSet<DAddr> gpu_modified_ranges;
+    /// Writes over pages holding GPU-written bytes, made by threads that don't own the scheduler.
+    /// Own lock: OpenGL compute dispatches update buffers without `mutex`.
+    std::vector<std::pair<DAddr, u64>> deferred_page_writes;
+    std::mutex deferred_page_writes_mutex;
+    std::atomic<bool> has_deferred_page_writes{};
     std::deque<Common::RangeSet<DAddr>> committed_gpu_modified_ranges;
 
     // Async Buffers

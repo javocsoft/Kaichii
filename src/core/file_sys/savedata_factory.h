@@ -39,7 +39,7 @@ public:
     VirtualDir GetSaveDataSpaceDirectory(SaveDataSpaceId space) const;
 
     static std::string GetSaveDataSpaceIdPath(SaveDataSpaceId space);
-    static std::string GetFullPath(ProgramId program_id, VirtualDir dir, SaveDataSpaceId space,
+    static std::string GetFullPath(ProgramId program_id, const VirtualDir& dir, SaveDataSpaceId space,
                                    SaveDataType type, u64 title_id, u128 user_id, u64 save_id);
     static std::string GetUserGameSaveDataRoot(u128 user_id, bool future);
 

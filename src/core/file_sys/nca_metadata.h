@@ -89,7 +89,7 @@ static_assert(sizeof(CNMTHeader) == 0x20, "CNMTHeader has incorrect size.");
 // meta0.ncd. These describe which NCA's belong with which titles in the registered cache.
 class CNMT {
 public:
-    explicit CNMT(VirtualFile file);
+    explicit CNMT(const VirtualFile& file);
     CNMT(CNMTHeader header_, OptionalHeader opt_header_,
          std::vector<ContentRecord> content_records_, std::vector<MetaRecord> meta_records_);
     ~CNMT();

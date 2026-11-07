@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <cstring>
+#include <utility>
 
 #include "common/assert.h"
 #include "common/string_util.h"
@@ -20,7 +21,7 @@ namespace Service::AM::Frontend {
 ProfileSelect::ProfileSelect(Core::System& system_, std::shared_ptr<Applet> applet_,
                              LibraryAppletMode applet_mode_,
                              const Core::Frontend::ProfileSelectApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend{frontend_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend{frontend_} {}
 
 ProfileSelect::~ProfileSelect() = default;
 

@@ -133,7 +133,7 @@ Result Alarms::UpdateClosestAndSignal(Kernel::KernelCore& kernel) {
     R_SUCCEED();
 }
 
-IAlarmService::IAlarmService(Core::System& system_, std::shared_ptr<TimeManager> manager)
+IAlarmService::IAlarmService(Core::System& system_, const std::shared_ptr<TimeManager>& manager)
     : ServiceFramework{system_, "time:al"}
     , m_alarms{manager->m_alarms}
 {

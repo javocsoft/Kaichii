@@ -89,7 +89,7 @@ public:
     u64 GetFreeSpaceSize(FileSys::StorageId id) const;
     u64 GetTotalSpaceSize(FileSys::StorageId id) const;
 
-    void SetGameCard(FileSys::VirtualFile file);
+    void SetGameCard(const FileSys::VirtualFile& file);
     FileSys::XCI* GetGameCard() const;
 
     FileSys::RegisteredCache* GetSystemNANDContents() const;

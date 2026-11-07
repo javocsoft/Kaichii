@@ -26,7 +26,7 @@ namespace Service::Glue::Time {
 
 StaticService::StaticService(Core::System& system_,
                              Service::PSC::Time::StaticServiceSetupInfo setup_info,
-                             std::shared_ptr<TimeManager> time, const char* name)
+                             const std::shared_ptr<TimeManager>& time, const char* name)
     : ServiceFramework{system_, name}, m_system{system_}, m_time_m{time->m_time_m},
       m_setup_info{setup_info}, m_time_sm{time->m_time_sm},
       m_file_timestamp_worker{time->m_file_timestamp_worker},

@@ -109,8 +109,8 @@ static u64 romfs_get_hash_table_count(u64 num_entries) {
     return count;
 }
 
-void RomFSBuildContext::VisitDirectory(VirtualDir romfs_dir, VirtualDir ext_dir,
-                                       std::shared_ptr<RomFSBuildDirectoryContext> parent) {
+void RomFSBuildContext::VisitDirectory(const VirtualDir& romfs_dir, const VirtualDir& ext_dir,
+                                       const std::shared_ptr<RomFSBuildDirectoryContext>& parent) {
     for (auto& child_romfs_file : romfs_dir->GetFiles()) {
         const auto name = child_romfs_file->GetName();
         const auto child = std::make_shared<RomFSBuildFileContext>();
@@ -165,7 +165,7 @@ void RomFSBuildContext::VisitDirectory(VirtualDir romfs_dir, VirtualDir ext_dir,
     }
 }
 
-bool RomFSBuildContext::AddDirectory(std::shared_ptr<RomFSBuildDirectoryContext> parent_dir_ctx,
+bool RomFSBuildContext::AddDirectory(const std::shared_ptr<RomFSBuildDirectoryContext>& parent_dir_ctx,
                                      std::shared_ptr<RomFSBuildDirectoryContext> dir_ctx) {
     // Add a new directory.
     num_dirs++;
@@ -177,7 +177,7 @@ bool RomFSBuildContext::AddDirectory(std::shared_ptr<RomFSBuildDirectoryContext>
     return true;
 }
 
-bool RomFSBuildContext::AddFile(std::shared_ptr<RomFSBuildDirectoryContext> parent_dir_ctx,
+bool RomFSBuildContext::AddFile(const std::shared_ptr<RomFSBuildDirectoryContext>& parent_dir_ctx,
                                 std::shared_ptr<RomFSBuildFileContext> file_ctx) {
     // Add a new file.
     num_files++;

@@ -13,6 +13,8 @@
 #include "core/hle/service/am/applet_manager.h"
 #include "core/hle/service/am/frontend/applets.h"
 #include "core/hle/service/am/service/library_applet_self_accessor.h"
+
+#include <utility>
 #include "core/hle/service/am/service/storage.h"
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/filesystem/filesystem.h"
@@ -98,7 +100,7 @@ Result ILibraryAppletSelfAccessor::PopInData(Out<SharedPointer<IStorage>> out_st
 
 Result ILibraryAppletSelfAccessor::PushOutData(SharedPointer<IStorage> storage) {
     LOG_INFO(Service_AM, "called");
-    m_broker->GetOutData().Push(system.Kernel(), storage);
+    m_broker->GetOutData().Push(system.Kernel(), std::move(storage));
     R_SUCCEED();
 }
 
@@ -109,7 +111,7 @@ Result ILibraryAppletSelfAccessor::PopInteractiveInData(Out<SharedPointer<IStora
 
 Result ILibraryAppletSelfAccessor::PushInteractiveOutData(SharedPointer<IStorage> storage) {
     LOG_INFO(Service_AM, "called");
-    m_broker->GetInteractiveOutData().Push(system.Kernel(), storage);
+    m_broker->GetInteractiveOutData().Push(system.Kernel(), std::move(storage));
     R_SUCCEED();
 }
 
@@ -235,7 +237,7 @@ Result ILibraryAppletSelfAccessor::ReportVisibleErrorWithErrorContext(
 
 Result ILibraryAppletSelfAccessor::UnpopInData(SharedPointer<IStorage> storage) {
     LOG_INFO(Service_AM, "called");
-    m_broker->GetInData().Unpop(system.Kernel(), storage);
+    m_broker->GetInData().Unpop(system.Kernel(), std::move(storage));
     R_SUCCEED();
 }
 

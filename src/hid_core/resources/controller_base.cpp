@@ -3,6 +3,8 @@
 
 #include "hid_core/resources/controller_base.h"
 
+#include <utility>
+
 namespace Service::HID {
 
 ControllerBase::ControllerBase(Core::HID::HIDCore& hid_core_) : hid_core(hid_core_) {}
@@ -34,7 +36,7 @@ bool ControllerBase::IsControllerActivated() const {
 
 void ControllerBase::SetAppletResource(std::shared_ptr<AppletResource> resource,
                                        std::recursive_mutex* resource_mutex) {
-    applet_resource = resource;
+    applet_resource = std::move(resource);
     shared_mutex = resource_mutex;
 }
 

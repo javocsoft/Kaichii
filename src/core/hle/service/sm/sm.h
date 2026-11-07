@@ -50,7 +50,7 @@ private:
     void AtmosphereHasService(HLERequestContext& ctx);
 
     Result GetServiceImpl(Kernel::KClientSession** out_client_session, HLERequestContext& ctx);
-    void RegisterServiceImpl(HLERequestContext& ctx, std::string name, u32 max_session_count,
+    void RegisterServiceImpl(HLERequestContext& ctx, const std::string& name, u32 max_session_count,
                              bool is_light);
 
     ServiceManager& service_manager;

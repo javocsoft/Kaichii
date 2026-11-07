@@ -985,7 +985,7 @@ Result NcaFileSystemDriver::CreateIndirectStorageMetaStorage(VirtualFile* out,
 
 Result NcaFileSystemDriver::CreateIndirectStorage(
     VirtualFile* out, std::shared_ptr<IndirectStorage>* out_ind, VirtualFile base_storage,
-    VirtualFile original_data_storage, VirtualFile meta_storage, const NcaPatchInfo& patch_info) {
+    const VirtualFile& original_data_storage, VirtualFile meta_storage, const NcaPatchInfo& patch_info) {
     // Validate preconditions.
     ASSERT(out != nullptr);
     ASSERT(base_storage != nullptr);

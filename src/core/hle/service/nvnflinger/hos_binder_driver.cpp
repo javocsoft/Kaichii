@@ -7,6 +7,8 @@
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/nvnflinger/binder.h"
 #include "core/hle/service/nvnflinger/hos_binder_driver.h"
+
+#include <utility>
 #include "core/hle/service/nvnflinger/hos_binder_driver_server.h"
 
 namespace Service::Nvnflinger {
@@ -14,8 +16,8 @@ namespace Service::Nvnflinger {
 IHOSBinderDriver::IHOSBinderDriver(Core::System& system_,
                                    std::shared_ptr<HosBinderDriverServer> server,
                                    std::shared_ptr<SurfaceFlinger> surface_flinger)
-    : ServiceFramework{system_, "IHOSBinderDriver"}, m_server(server),
-      m_surface_flinger(surface_flinger) {
+    : ServiceFramework{system_, "IHOSBinderDriver"}, m_server(std::move(server)),
+      m_surface_flinger(std::move(surface_flinger)) {
     static const FunctionInfo functions[] = {
         {0, C<&IHOSBinderDriver::TransactParcel>, "TransactParcel"},
         {1, C<&IHOSBinderDriver::AdjustRefcount>, "AdjustRefcount"},
