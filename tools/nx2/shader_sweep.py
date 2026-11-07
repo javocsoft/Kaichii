@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Replay native shader captures and v46-v53 pipeline caches without a GPU."""
 
 import argparse

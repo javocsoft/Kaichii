@@ -3,4 +3,6 @@
 
 [codespell]
 skip = ./.git,./build,./dist,./Doxyfile,./externals,./LICENSES,./src/android/app/src/main/res
-ignore-words-list = aci,allright,ba,canonicalizations,commitish,deques,fpr,froms,hda,inout,lod,masia,nam,nax,nce,nd,optin,pullrequests,pullrequest,te,transfered,unstall,uscaled,vas,zink
+ignore-words-list = aci,allright,ba,canonicalizations,commitish,deques,fpr,froms,hda,inout,lod,masia,nam,nax,nce,nd,optin,pullrequests,pullrequest,te,titel,transfered,unstall,uscaled,vas,zink
+; RFC 4648 base64 test vectors
+ignore-regex = encode\("fo"\)
