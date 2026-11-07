@@ -3,6 +3,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include "video_core/rasterizer_interface.h"
 #include "video_core/renderer_vulkan/samples_query_policy.h"
 
 TEST_CASE("Samples queries keep their count through gameplay windows",
@@ -15,4 +16,12 @@ TEST_CASE("Samples queries keep their count through gameplay windows",
     // Its title screen and file select, which count without ever resetting.
     STATIC_REQUIRE(DropsUnreportedSamples(Vulkan::MaxUnreportedSamplesSlots + 1));
     STATIC_REQUIRE(DropsUnreportedSamples(16384));
+}
+
+TEST_CASE("Skipping inner invalidation still reaches the texture cache",
+          "[video_core][inner_invalidation]") {
+    using VideoCore::RasterizerInterface;
+    using VideoCommon::CacheType;
+    STATIC_REQUIRE(RasterizerInterface::InnerInvalidationCaches(false) == CacheType::All);
+    STATIC_REQUIRE(RasterizerInterface::InnerInvalidationCaches(true) == CacheType::TextureCache);
 }
