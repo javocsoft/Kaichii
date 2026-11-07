@@ -90,7 +90,7 @@ VirtualFile PatchIPS(const VirtualFile& in, const VirtualFile& ips) {
             auto read = data_size;
             if (real_offset + read > in_data.size())
                 read = u16(in_data.size() - real_offset);
-            if (ips->Read(in_data.data() + real_offset, read, offset) != data_size)
+            if (ips->Read(in_data.data() + real_offset, read, offset) != read)
                 return nullptr;
             offset += data_size;
         }

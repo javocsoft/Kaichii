@@ -11,6 +11,7 @@ add_executable(tests
     core/partition_filesystem.cpp
     core/program_metadata.cpp
     core/romfs.cpp
+    core/vfs_files.cpp
     video_core/ampere_program_override.cpp
     video_core/macro_memo.cpp
     video_core/native_qmd.cpp

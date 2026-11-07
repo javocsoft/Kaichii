@@ -60,10 +60,14 @@ PartitionFilesystem::PartitionFilesystem(VirtualFile file) {
     std::size_t entries_offset = sizeof(Header);
     std::size_t strtab_offset = entries_offset + (pfs_header.num_entries * entry_size);
     content_offset = strtab_offset + pfs_header.strtab_size;
-    for (u16 i = 0; i < pfs_header.num_entries; i++) {
+    for (std::size_t i = 0; i < pfs_header.num_entries; i++) {
         FSEntry entry;
 
         memcpy(&entry, &file_data[entries_offset + (i * entry_size)], sizeof(FSEntry));
+        if (entry.strtab_offset >= pfs_header.strtab_size) {
+            status = Loader::ResultStatus::ErrorBadPFSHeader;
+            return;
+        }
         std::string name(
             reinterpret_cast<const char*>(&file_data[strtab_offset + entry.strtab_offset]));
 

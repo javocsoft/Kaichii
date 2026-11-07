@@ -77,14 +77,23 @@ TEST_CASE("IPS run-length record stops at the end of the file", "[core][ips]") {
     CHECK(result == Bytes{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x11, 0x11});
 }
 
-// [!shouldfail] marks a known bug (docs/ai/known-issues.md). When the bug is fixed this test passes,
-// which fails the suite until the tag is removed.
-TEST_CASE("IPS record stops at the end of the file like a run-length record",
-          "[core][ips][!shouldfail]") {
+TEST_CASE("IPS record stops at the end of the file like a run-length record", "[core][ips]") {
     const auto ips = Ips({0, 0, 7, 0, 3, 0xAA, 0xBB, 0xCC});
     const auto patched = PatchIPS(File(Base), File(ips));
     REQUIRE(patched != nullptr);
+    CHECK(patched->GetSize() == Base.size());
     CHECK(patched->ReadAllBytes()[7] == 0xAA);
+}
+
+TEST_CASE("IPS keeps reading records after one that was cut short", "[core][ips]") {
+    const auto ips = Ips({0, 0, 7, 0, 3, 0xAA, 0xBB, 0xCC, 0, 0, 0, 0, 1, 0x11});
+    CHECK(Patched(PatchIPS(File(Base), File(ips))) ==
+          Bytes{0x11, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xAA});
+}
+
+TEST_CASE("IPS record cut off by the end of the patch is refused", "[core][ips]") {
+    Bytes ips{'P', 'A', 'T', 'C', 'H', 0, 0, 0, 0, 4, 0xAA};
+    CHECK(PatchIPS(File(Base), File(std::move(ips))) == nullptr);
 }
 
 TEST_CASE("IPS leaves the base file unchanged", "[core][ips]") {
