@@ -6,6 +6,13 @@ Tools for Eden and other subprojects. When adding new scripts please use `#!/bin
 
 - [CPMUtil Scripts](./cpm)
 
+## CI and development
+
+- `ci/quick-checks.sh`: The fast CI gate. See [CI and releases](../docs/CI.md).
+- `ci/check_repo.py`: Checks test registration, doc links, the switch catalog and agent doc paths.
+- `dev/Dockerfile`, `dev/in-docker.sh`: Linux build environment matching CI, for hosts without the toolchain.
+- `dev/build-tests.sh`: Configures, builds and runs the C++ tests. See [building](../docs/ai/building.md).
+
 ## Binaries
 
 - `maxwell-spirv`: Converts Maxwell shaders (dumped from `.ash` files) into SPIR-V code (emitted into STDOUT).

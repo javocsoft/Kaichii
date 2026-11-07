@@ -1,0 +1,52 @@
+name: quick-checks
+
+on:
+  pull_request:
+    branches: [nx2]
+  push:
+    branches: [nx2]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quick-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ACTIONLINT_VERSION: "1.7.12"
+  ACTIONLINT_SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+
+jobs:
+  checks:
+    name: Repository, docs and Python checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          # The changed-file checks diff against the base commit.
+          fetch-depth: 0
+
+      - name: Install linters
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends shellcheck
+          pipx install codespell
+          curl -fsSLo actionlint.tar.gz \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          echo "${ACTIONLINT_SHA256}  actionlint.tar.gz" | sha256sum -c -
+          sudo tar -xzf actionlint.tar.gz -C /usr/local/bin actionlint
+          rm actionlint.tar.gz
+
+      - name: Run checks
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          case "$BASE" in
+            "" | 0000000000000000000000000000000000000000) BASE=$(git rev-parse HEAD^) ;;
+          esac
+          tools/ci/quick-checks.sh "$BASE"

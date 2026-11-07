@@ -248,9 +248,6 @@ void RunTestInstance(A64::Jit& jit,
     fmt::print("\n");
 
     fmt::print("interrupts:\n");
-    for (const auto& i : jit_env.interrupts) {
-        std::puts(i.c_str());
-    }
 
     fmt::print("===\n");
 }

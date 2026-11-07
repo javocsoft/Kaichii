@@ -120,7 +120,7 @@ The following are optional to define:
 - `bundled`: Force the usage of a bundled package. Useful for packages where the system package is broken or nonexistent; e.g. external fragment shaders or data archives.
   - Note that this will conflict with `CPMUTIL_FORCE_SYSTEM`; for this reason, when using non-library archives, it may be best to allow the user to download and extract the archive manually and specify a local directory to it.
 - `find_args`: Additional arguments passed to `find_package`, e.g. `MODULE`
-- `patches`: Array of in-tree patches to apply to the downloaded source code. See [#Patches](TODO).
+- `patches`: Array of in-tree patches to apply to the downloaded source code. See [#Patches](#patches).
 - `options`: Array of CMake options to apply before configuring the package, e.g. `"FMT_TEST ON"`.
 
 ### Versioning
@@ -344,7 +344,7 @@ Then, call `find_package(Qt6 ...)` and it will pull Qt from your downloaded sour
 
 ## Addendum: Package-Specific Overrides
 
-There are three variables that CPMUtil defines for each package; these can be overriden by the user or in your CMake. `package` refers either to the `package` value in the JSON, or the package's JSON key if unset (see `package` in [Common Properties](#common-properties)):
+There are three variables that CPMUtil defines for each package; these can be overridden by the user or in your CMake. `package` refers either to the `package` value in the JSON, or the package's JSON key if unset (see `package` in [Common Properties](#common-properties)):
 
 - `<package>_FORCE_BUNDLED`: Forcefully bundle the package. This has the same effect as `CPMUTIL_FORCE_BUNDLED`, but only for this package.
 - `<package>_FORCE_BUNDLED`: Forcefully use the system package, failing if it can't be found. This has the same effect as `SYSTEM`, but only for this package.
@@ -359,7 +359,7 @@ Many package managers suffer from the issue of supply chain security, specifical
 
 ### Checksumming
 
-CPMUtil *requires* SHA512 checksums for standard packages, and soon will for CI packages as well. If an attacker or compromised account slides a tag, overwrites a release artifact, or otherwise attempts to compromise anything that CPMUtil may fetch, **CPMUtil will not allow the download to continue!** This means that consumers of your build system can **only** download an artifact if the contents of the artifact are *exactly* indentical to what it was when it was configured--any changes at all will be rejected by CPMUtil.
+CPMUtil *requires* SHA512 checksums for standard packages, and soon will for CI packages as well. If an attacker or compromised account slides a tag, overwrites a release artifact, or otherwise attempts to compromise anything that CPMUtil may fetch, **CPMUtil will not allow the download to continue!** This means that consumers of your build system can **only** download an artifact if the contents of the artifact are *exactly* identical to what it was when it was configured--any changes at all will be rejected by CPMUtil.
 
 ### Caching
 

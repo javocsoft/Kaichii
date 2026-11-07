@@ -1,8 +1,44 @@
 # AGENTS
 
+Lichii is an experimental Nintendo Switch and Switch 2 emulator in C++20: a fork of Eglantine, Eden and yuzu. Current work is almost entirely the Switch 2 path, from the native shader lowering in `src/shader_recompiler/frontend/ampere` through the GPU in `src/video_core` to game-specific fixes.
+
 See `docs/Coding.md` for technical coding guidance.
 
 Keep comments to a reasonable level. Do not overexplain or add/remove comments from unrelated parts of the codebase.
+
+## Start here
+
+`docs/ai/README.md` indexes the pages written for agents. Read the one for your task:
+
+| Task | Page |
+|---|---|
+| Where something lives, and how a game reaches the GPU | `docs/ai/architecture.md` |
+| Compiling on Linux | `docs/ai/building.md` |
+| What to test and how | `docs/ai/testing.md` |
+| Common changes, and syncing the fork | `docs/ai/recipes.md` |
+| Whether a symptom was already investigated | `docs/ai/investigations.md` |
+| Any `EDEN_*` switch | `docs/ai/env-flags.md` |
+| CI runs and releases | `docs/CI.md` |
+
+## Commands
+
+```sh
+tools/dev/in-docker.sh tools/ci/quick-checks.sh       # The fast CI gate: minutes, no compile
+tools/dev/in-docker.sh tools/dev/build-tests.sh       # Build and run every C++ test
+python3 tools/ci/check_repo.py                        # Docs, switch catalog and test registration
+```
+
+Everything builds in the container from `tools/dev/Dockerfile`, so these work on a Linux machine with only Docker. Run the gate before every commit. Run the C++ tests when you touch anything under `src/`.
+
+## Rules that keep the project honest
+
+- Say what you verified. A passing build, passing tests and a game running correctly are three different claims. Unit tests and CI never run a game, so never report a game as fixed unless someone ran it.
+- Keep a failing check failing until you understand it. Do not weaken a test, a checker or a linter to get to green, and do not skip a check silently.
+- A rejected shader, a stub and a workaround are not fixes. Keep unknown instruction bits rejected rather than guessing: a logged failure is better than a silent wrong image.
+- Never commit game files, keys, firmware, save data, `.rdc` captures, or shader and texture dumps from retail games. Tests use synthetic data, or the short captured instruction words the tests already use.
+- Add a test with every behaviour change, in the same commit. See `docs/ai/testing.md` for what to do when the code cannot reach a test yet.
+- Keep the old names (`yuzu`, `eden`, `EDEN_*`, the `eden` data directory). They keep users' saves and settings working.
+- Add a row to `docs/ai/env-flags.md` with every new switch, and update `docs/CI.md` with every workflow change. The gate enforces both.
 
 ## Game bug reports
 
@@ -34,10 +70,14 @@ Add ids here when a report identifies a new game.
 
 Lichii is a fork of [Eglantine](https://github.com/Djihads80/Eglantine). Do not guess, and do not rewrite a fix upstream already has.
 
-1. `git remote add upstream https://github.com/Djihads80/Eglantine.git && git fetch upstream`.
+1. `git remote add upstream https://github.com/Djihads80/Eglantine.git && git fetch upstream`. `docs/ai/recipes.md` lists the remotes of a fork's clone.
 2. Check `upstream/nx2`, open and closed PRs, unmerged branches, and issues for the game and symptom (`gh pr list -R Djihads80/Eglantine --state all`, `gh issue list -R Djihads80/Eglantine --state all`, `gh pr diff <n>`). Read the diffs, not only the titles.
 3. If nx2 is behind `upstream/nx2`, merge upstream first. Port an existing upstream fix before writing a new one, and cite its PR or commit.
 4. Write a new fix only when nothing upstream addresses the root cause the log shows.
+
+## The owner's PC and this environment
+
+Everything below that names `C:/lx`, `C:/Users/Zortos`, `build-fix.sh`, a desktop shortcut or "the owner" describes the PC of the main project's owner, on Windows, where the games are. Those paths and scripts are not in this repository and do not exist on a Linux machine or on any fork. There, build with `tools/dev/in-docker.sh`, as `docs/ai/building.md` describes, and use the debug tools and live server only with a local build and game of your own. The rules in those sections still apply: use the tools before guessing, restore what you change, and never start or stop an emulator someone else is running.
 
 ## Live debug server
 
@@ -96,7 +136,7 @@ Use these before guessing. All are off unless the variable is set; pass them as 
 
 ## Builds
 
-- Cloud machines build with clang and Ninja for compile and unit-test checks.
+- Cloud machines build with clang and Ninja for compile and unit-test checks. Clang must be 19 or newer: older ones reject `-mtls-dialect=gnu2`.
 - The build the owner tests runs on the owner's Windows PC (DESKTOP-4UD89UT, Ryzen 9 5900X), built with clang using 12 jobs (`cmake --build <dir> --parallel 12`).
 - On the PC the toolchain is clang-cl (LLVM 22) with the VS 2022 SDK, Qt 6.8.3 in `C:/lx/qt`, Ninja and sccache. Source is `C:/lx/src`, the persistent build dir is `C:/lx/build`, and `C:/lx/configure.sh` holds the configure flags. Build and package a fix with one command: `bash C:/lx/build-fix.sh <branch> <build-name> "<Game> - <fix>" ["ENV=VAL ..."] ["log filter"]`.
 - Every fix gets its own debug build on that PC in `C:\Users\Zortos\.capy\work\lichii-debug\<build>\` and a desktop shortcut `Lichii Debug - <Game> - <fix>` that launches it with the owner's existing user data and keeps the log next to the build, so the owner can run it and send the log back.
