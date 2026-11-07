@@ -16,10 +16,11 @@
 namespace VideoCommon {
 
 inline constexpr u32 OpenGLPipelineCacheVersion = 48;
-inline constexpr u32 VulkanPipelineCacheVersion = 54;
+inline constexpr u32 VulkanPipelineCacheVersion = 55;
 /// Older Vulkan versions with this build's file format, newest first. A bump that only changes the
-/// generated SPIR-V goes here: the files hold guest programs and keys, not the translation.
-inline constexpr std::array<u32, 2> CompatibleVulkanPipelineCacheVersions{53, 52};
+/// generated SPIR-V goes here, since the files hold guest programs and keys, not the translation.
+/// So does a change to the key that LoadDiskResources can redo from those programs, as 55 did.
+inline constexpr std::array<u32, 3> CompatibleVulkanPipelineCacheVersions{54, 53, 52};
 
 // Official Eglantine (cache version 18 at c0cb3325) and this fork (a different version) both
 // used <shader dir>/<title>/vulkan.bin and vulkan_pipelines.bin. Each build deletes a file

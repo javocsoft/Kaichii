@@ -931,6 +931,20 @@ void PipelineCache::LoadDiskResources(u64 title_id, std::stop_token stop_loading
         GraphicsPipelineCacheKey key;
         file.read(reinterpret_cast<char*>(&key), sizeof(key));
 
+        if (key.state.dynamic_vertex_input != 0) {
+            // Caches before version 55 keyed every attribute register. Their programs are all here,
+            // so key them as a draw now would, which also folds the copies those registers split.
+            std::array<u64, Maxwell::MaxShaderProgram> attribute_masks{};
+            size_t env_index = 0;
+            for (size_t stage = 0; stage < attribute_masks.size(); ++stage) {
+                if (key.unique_hashes[stage] != 0 && env_index < envs.size()) {
+                    attribute_masks[stage] = VideoCommon::ProgramAttributeMask(envs[env_index++]);
+                }
+            }
+            key.state.attribute_types = VideoCommon::KeyedAttributeTypes(
+                key.state.attribute_types, key.unique_hashes, attribute_masks);
+        }
+
         if (!device.IsExtMeshShaderSupported() &&
             std::ranges::any_of(envs, [](const FileEnvironment& env) {
                 return env.ShaderStage() == Shader::Stage::Task ||

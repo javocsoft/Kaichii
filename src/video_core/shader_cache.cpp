@@ -38,6 +38,23 @@
 
 namespace VideoCommon {
 
+u64 ProgramAttributeMask(const Shader::Environment& env) {
+    const Shader::Stage stage = env.ShaderStage();
+    if (stage == Shader::Stage::VertexB && env.IsNativeProgram()) {
+        // The hardware only fetches the attributes in the input map, so a read outside it is
+        // never valid (none of Ocarina of Time's 1,250 cached vertex programs makes one).
+        std::array<std::array<bool, 4>, Tegra::Engines::Maxwell3D::Regs::NumVertexAttributes>
+            input_generic{};
+        for (size_t index = 0; index < input_generic.size(); ++index) {
+            input_generic[index] = env.SPH().vtg.InputGeneric(index);
+        }
+        return VertexAttributeMask(input_generic);
+    }
+    // Task and mesh pipelines have no vertex input (Ocarina of Time: 191 keys for 31 sets of
+    // shaders, split only by the attribute registers).
+    return stage == Shader::Stage::Task || stage == Shader::Stage::Mesh ? 0 : ~u64{0};
+}
+
 void ShaderCache::InvalidateRegion(VAddr addr, size_t size) {
     std::scoped_lock lock{invalidation_mutex};
     InvalidatePagesInRegion(addr, size);
@@ -498,21 +515,7 @@ const ShaderInfo* ShaderCache::MakeShaderInfo(GenericEnvironment& env, VAddr cpu
         info->size_bytes = env.ReadSizeBytes();
     }
     info->lowered_native = env.LoweredNative();
-    if (info->lowered_native && env.ShaderStage() == Shader::Stage::VertexB) {
-        // The hardware only fetches the attributes in the input map, so a read outside it is
-        // never valid (none of Ocarina of Time's 1,250 cached vertex programs makes one).
-        std::array<std::array<bool, 4>, Tegra::Engines::Maxwell3D::Regs::NumVertexAttributes>
-            input_generic{};
-        for (size_t index = 0; index < input_generic.size(); ++index) {
-            input_generic[index] = env.SPH().vtg.InputGeneric(index);
-        }
-        info->vertex_attribute_mask = VertexAttributeMask(input_generic);
-    } else if (env.ShaderStage() == Shader::Stage::Task ||
-               env.ShaderStage() == Shader::Stage::Mesh) {
-        // Task and mesh pipelines have no vertex input (Ocarina of Time: 191 keys for 31 sets of
-        // shaders, split only by the attribute registers).
-        info->vertex_attribute_mask = 0;
-    }
+    info->vertex_attribute_mask = ProgramAttributeMask(env);
     const size_t size_bytes{env.SourceSizeBytes() ? env.SourceSizeBytes() : info->size_bytes};
     const ShaderInfo* const result{info.get()};
     Register(std::move(info), cpu_addr, size_bytes);

@@ -36,6 +36,12 @@ namespace VideoCommon {
 
 class GenericEnvironment;
 
+/// Vertex attributes a program's pipelines depend on, two bits per attribute as in
+/// FixedPipelineState::attribute_types: the input map of a native vertex program, none for task and
+/// mesh programs, and all for any other. Live programs and cached ones share it, or a cached
+/// pipeline's key would not match the one the same draw asks for.
+[[nodiscard]] u64 ProgramAttributeMask(const Shader::Environment& env);
+
 struct ShaderInfo {
     u64 unique_hash{};
     size_t size_bytes{};
