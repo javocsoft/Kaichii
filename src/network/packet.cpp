@@ -135,23 +135,6 @@ Packet& Packet::Read(double& out_data) {
     return *this;
 }
 
-Packet& Packet::Read(char* out_data) {
-    // First extract string length
-    u32 length = 0;
-    Read(length);
-
-    if ((length > 0) && CheckSize(length)) {
-        // Then extract characters
-        std::memcpy(out_data, &data[read_pos], length);
-        out_data[length] = '\0';
-
-        // Update reading position
-        read_pos += length;
-    }
-
-    return *this;
-}
-
 Packet& Packet::Read(std::string& out_data) {
     // First extract string length
     u32 length = 0;

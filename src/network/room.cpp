@@ -106,6 +106,9 @@ public:
      */
     bool HasModPermission(const ENetPeer* client) const;
 
+    /// Returns whether a peer has joined the room, which connecting alone does not do.
+    bool IsMember(const ENetPeer* client) const;
+
     /**
      * Sends a ID_ROOM_IS_FULL message telling the client that the room is full.
      */
@@ -243,6 +246,10 @@ void Room::RoomImpl::StartLoop() {
             if (enet_host_service(server, &event, 5) > 0) {
                 switch (event.type) {
                 case ENET_EVENT_TYPE_RECEIVE:
+                    if (event.packet->dataLength == 0) {
+                        enet_packet_destroy(event.packet);
+                        break;
+                    }
                     switch (event.packet->data[0]) {
                     case IdJoinRequest:
                         HandleJoinRequest(&event);
@@ -290,6 +297,9 @@ void Room::RoomImpl::StartLoop() {
 }
 
 void Room::RoomImpl::HandleJoinRequest(const ENetEvent* event) {
+    if (IsMember(event->peer)) {
+        return;
+    }
     {
         std::lock_guard lock(member_mutex);
         if (members.size() >= room_information.member_slots) {
@@ -303,10 +313,10 @@ void Room::RoomImpl::HandleJoinRequest(const ENetEvent* event) {
     std::string nickname;
     packet.Read(nickname);
 
-    IPv4Address preferred_fake_ip;
+    IPv4Address preferred_fake_ip{};
     packet.Read(preferred_fake_ip);
 
-    u32 client_version;
+    u32 client_version{};
     packet.Read(client_version);
 
     std::string pass;
@@ -570,6 +580,12 @@ bool Room::RoomImpl::IsValidFakeIPAddress(const IPv4Address& address) const {
                        [&address](const auto& member) { return member.fake_ip != address; });
 }
 
+bool Room::RoomImpl::IsMember(const ENetPeer* client) const {
+    std::lock_guard lock(member_mutex);
+    return std::any_of(members.begin(), members.end(),
+                       [client](const auto& member) { return member.peer == client; });
+}
+
 bool Room::RoomImpl::HasModPermission(const ENetPeer* client) const {
     std::lock_guard lock(member_mutex);
     const auto sending_member =
@@ -817,6 +833,11 @@ IPv4Address Room::RoomImpl::GenerateFakeIPAddress() {
 }
 
 void Room::RoomImpl::HandleProxyPacket(const ENetEvent* event) {
+    // Connecting needs no password, joining does: only members may reach other members.
+    if (!IsMember(event->peer)) {
+        return;
+    }
+
     Packet in_packet;
     in_packet.Append(event->packet->data, event->packet->dataLength);
     in_packet.IgnoreBytes(sizeof(u8)); // Message type
@@ -826,13 +847,13 @@ void Room::RoomImpl::HandleProxyPacket(const ENetEvent* event) {
     in_packet.IgnoreBytes(sizeof(u16));         // Port
 
     in_packet.IgnoreBytes(sizeof(u8)); // Domain
-    IPv4Address remote_ip;
+    IPv4Address remote_ip{};
     in_packet.Read(remote_ip);          // IP
     in_packet.IgnoreBytes(sizeof(u16)); // Port
 
     in_packet.IgnoreBytes(sizeof(u8)); // Protocol
 
-    bool broadcast;
+    bool broadcast{};
     in_packet.Read(broadcast); // Broadcast
 
     Packet out_packet;
@@ -875,6 +896,10 @@ void Room::RoomImpl::HandleProxyPacket(const ENetEvent* event) {
 }
 
 void Room::RoomImpl::HandleLdnPacket(const ENetEvent* event) {
+    if (!IsMember(event->peer)) {
+        return;
+    }
+
     Packet in_packet;
     in_packet.Append(event->packet->data, event->packet->dataLength);
 
@@ -883,10 +908,10 @@ void Room::RoomImpl::HandleLdnPacket(const ENetEvent* event) {
     in_packet.IgnoreBytes(sizeof(u8));          // LAN packet type
     in_packet.IgnoreBytes(sizeof(IPv4Address)); // Local IP
 
-    IPv4Address remote_ip;
+    IPv4Address remote_ip{};
     in_packet.Read(remote_ip); // Remote IP
 
-    bool broadcast;
+    bool broadcast{};
     in_packet.Read(broadcast); // Broadcast
 
     Packet out_packet;

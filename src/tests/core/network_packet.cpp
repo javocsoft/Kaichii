@@ -124,3 +124,24 @@ TEST_CASE("IgnoreBytes skips ahead but not past the end", "[core][network_packet
     packet.IgnoreBytes(10);
     CHECK(packet.EndOfPacket());
 }
+
+TEST_CASE("Packet refuses a vector larger than what is left", "[core][network_packet]") {
+    Packet packet;
+    packet.Write(u32{0xFFFFFFFF});
+
+    std::vector<u32> list{1, 2, 3};
+    packet.Read(list);
+    CHECK(list.empty());
+    CHECK_FALSE(static_cast<bool>(packet));
+}
+
+TEST_CASE("Packet leaves zero in what it could not read", "[core][network_packet]") {
+    Packet packet;
+    u32 word = 0xFFFFFFFF;
+    packet.Read(word);
+    CHECK(word == 0);
+
+    std::array<u8, 4> fixed{1, 2, 3, 4};
+    packet.Read(fixed);
+    CHECK(fixed == std::array<u8, 4>{});
+}
