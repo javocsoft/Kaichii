@@ -484,7 +484,8 @@ void RasterizerOpenGL::DisableGraphicsUniformBuffer(size_t stage, u32 index) {
 
 void RasterizerOpenGL::FlushAll() {}
 
-void RasterizerOpenGL::FlushRegion(DAddr addr, u64 size, VideoCommon::CacheType which) {
+void RasterizerOpenGL::FlushRegion(DAddr addr, u64 size, VideoCommon::CacheType which,
+                                   std::source_location) {
     if (addr == 0 || size == 0) {
         return;
     }

@@ -9,6 +9,7 @@
 #include <array>
 #include <functional>
 #include <optional>
+#include <source_location>
 #include <span>
 #include <utility>
 #include "common/common_types.h"
@@ -108,8 +109,10 @@ public:
     virtual void FlushAll() = 0;
 
     /// Notify rasterizer that any caches of the specified region should be flushed to Switch memory
+    /// `location`: the caller, for EDEN_NX2_GPU_PROFILE's report of reads that wait for the GPU.
     virtual void FlushRegion(DAddr addr, u64 size,
-                             VideoCommon::CacheType which = VideoCommon::CacheType::All) = 0;
+                             VideoCommon::CacheType which = VideoCommon::CacheType::All,
+                             std::source_location location = std::source_location::current()) = 0;
 
     /// Switch 2, from the GPU thread's front: where a GPU-written command list's words are.
     enum class GpuWrittenList {

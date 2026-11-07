@@ -1578,7 +1578,8 @@ void RasterizerVulkan::FlushGpuWrittenCommandListPages(std::span<const DAddr> pa
     buffer_cache.Nx2FlushListPages(pages);
 }
 
-void RasterizerVulkan::FlushRegion(DAddr addr, u64 size, VideoCommon::CacheType which) {
+void RasterizerVulkan::FlushRegion(DAddr addr, u64 size, VideoCommon::CacheType which,
+                                   std::source_location location) {
     if (addr == 0 || size == 0) {
         return;
     }
@@ -1594,8 +1595,15 @@ void RasterizerVulkan::FlushRegion(DAddr addr, u64 size, VideoCommon::CacheType 
         texture_cache.DownloadMemory(addr, size);
     }
     if ((True(which & VideoCommon::CacheType::BufferCache))) {
-        std::scoped_lock lock{buffer_cache.mutex};
-        buffer_cache.DownloadMemory(addr, size);
+        const bool profile = VideoCommon::Nx2Profile::Enabled();
+        const u64 start = profile ? VideoCommon::Nx2Profile::Now() : 0;
+        {
+            std::scoped_lock lock{buffer_cache.mutex};
+            buffer_cache.DownloadMemory(addr, size);
+        }
+        if (profile) {
+            Scheduler::ProfileHostRead(location, VideoCommon::Nx2Profile::Now() - start);
+        }
     }
     if ((True(which & VideoCommon::CacheType::QueryCache))) {
         query_cache.FlushRegion(addr, size);

@@ -80,6 +80,9 @@ public:
     void WaitWorker();
 
     void MarkFrameEnd(u64 frame);
+    /// EDEN_NX2_GPU_PROFILE: a read of GPU-written buffer memory from `location`, and how long
+    /// its download took (mostly waiting for the GPU).
+    static void ProfileHostRead(std::source_location location, u64 ns);
     void TraceGraphicsPipeline(const std::array<u64, 6>& hashes);
     void TraceComputePipeline(u64 hash);
     /// Worker thread, inside a recorded command: timestamps one draw or dispatch of a sampled

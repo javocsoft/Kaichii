@@ -48,7 +48,8 @@ public:
     void DisableGraphicsUniformBuffer(size_t stage, u32 index) override;
     void FlushAll() override;
     void FlushRegion(DAddr addr, u64 size,
-                     VideoCommon::CacheType which = VideoCommon::CacheType::All) override;
+                     VideoCommon::CacheType which = VideoCommon::CacheType::All,
+                     std::source_location location = std::source_location::current()) override;
     bool MustFlushRegion(DAddr addr, u64 size,
                          VideoCommon::CacheType which = VideoCommon::CacheType::All) override;
     void InvalidateRegion(DAddr addr, u64 size,

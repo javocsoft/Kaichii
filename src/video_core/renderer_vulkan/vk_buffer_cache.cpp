@@ -528,7 +528,7 @@ bool BufferCacheRuntime::CanReorderUpload(const Buffer& buffer,
 
 void BufferCacheRuntime::CopyBuffer(VkBuffer dst_buffer, VkBuffer src_buffer,
                                     std::span<const VideoCommon::BufferCopy> copies, bool barrier,
-                                    bool can_reorder_upload) {
+                                    bool can_reorder_upload, std::source_location location) {
     if (dst_buffer == VK_NULL_HANDLE || src_buffer == VK_NULL_HANDLE) {
         return;
     }
@@ -549,25 +549,29 @@ void BufferCacheRuntime::CopyBuffer(VkBuffer dst_buffer, VkBuffer src_buffer,
     boost::container::small_vector<VkBufferCopy, 8> vk_copies(copies.size());
     std::ranges::transform(copies, vk_copies.begin(), MakeBufferCopy);
     if (src_buffer == staging_pool.StreamBuf() && can_reorder_upload) {
-        scheduler.RecordWithUploadBuffer([src_buffer, dst_buffer, vk_copies](
-                                             vk::CommandBuffer, vk::CommandBuffer upload_cmdbuf) {
-            upload_cmdbuf.CopyBuffer(src_buffer, dst_buffer, vk_copies);
-        });
+        scheduler.RecordWithUploadBuffer(
+            [src_buffer, dst_buffer, vk_copies](vk::CommandBuffer,
+                                                vk::CommandBuffer upload_cmdbuf) {
+                upload_cmdbuf.CopyBuffer(src_buffer, dst_buffer, vk_copies);
+            },
+            location);
         return;
     }
 
     scheduler.RequestOutsideRenderPassOperationContext();
-    scheduler.Record([src_buffer, dst_buffer, vk_copies, barrier](vk::CommandBuffer cmdbuf) {
-        if (barrier) {
-            cmdbuf.PipelineBarrier(vk::PIPELINE_STAGE_GRAPHICS_COMPUTE_TRANSFER,
-                                   VK_PIPELINE_STAGE_TRANSFER_BIT, 0, READ_BARRIER);
-        }
-        cmdbuf.CopyBuffer(src_buffer, dst_buffer, vk_copies);
-        if (barrier) {
-            cmdbuf.PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                   vk::PIPELINE_STAGE_GRAPHICS_COMPUTE, 0, WRITE_BARRIER);
-        }
-    });
+    scheduler.Record(
+        [src_buffer, dst_buffer, vk_copies, barrier](vk::CommandBuffer cmdbuf) {
+            if (barrier) {
+                cmdbuf.PipelineBarrier(vk::PIPELINE_STAGE_GRAPHICS_COMPUTE_TRANSFER,
+                                       VK_PIPELINE_STAGE_TRANSFER_BIT, 0, READ_BARRIER);
+            }
+            cmdbuf.CopyBuffer(src_buffer, dst_buffer, vk_copies);
+            if (barrier) {
+                cmdbuf.PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                       vk::PIPELINE_STAGE_GRAPHICS_COMPUTE, 0, WRITE_BARRIER);
+            }
+        },
+        location);
 }
 
 void BufferCacheRuntime::PreCopyBarrier() {

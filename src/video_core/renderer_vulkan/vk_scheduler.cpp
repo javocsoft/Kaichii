@@ -49,6 +49,7 @@ std::map<std::string, u64> g_profile_ends;
 /// Per source line: submissions, and Finish calls with the time each waited for the GPU.
 std::map<std::string, u64> g_profile_flush_sites;
 std::map<std::string, std::pair<u64, u64>> g_profile_finish_sites;
+std::map<std::string, std::pair<u64, u64>> g_profile_read_sites;
 
 std::string SiteName(const char* file, u32 line) {
     std::string_view name{file};
@@ -101,6 +102,7 @@ void ReportSubmitCounts() {
     // Each submission and each wait for the GPU can leave the GPU idle until the next one.
     std::vector<std::pair<u64, std::string>> flushes;
     std::vector<std::tuple<u64, u64, std::string>> finishes;
+    std::vector<std::tuple<u64, u64, std::string>> reads;
     {
         std::scoped_lock lock{g_profile_end_mutex};
         for (const auto& [site, count] : g_profile_flush_sites) {
@@ -109,8 +111,12 @@ void ReportSubmitCounts() {
         for (const auto& [site, entry] : g_profile_finish_sites) {
             finishes.emplace_back(entry.second, entry.first, site);
         }
+        for (const auto& [site, entry] : g_profile_read_sites) {
+            reads.emplace_back(entry.second, entry.first, site);
+        }
         g_profile_flush_sites.clear();
         g_profile_finish_sites.clear();
+        g_profile_read_sites.clear();
     }
     std::sort(flushes.rbegin(), flushes.rend());
     for (size_t i = 0; i < flushes.size() && i < 8; ++i) {
@@ -121,6 +127,13 @@ void ReportSubmitCounts() {
     for (size_t i = 0; i < finishes.size() && i < 8; ++i) {
         const auto& [ns, count, site] = finishes[i];
         LOG_INFO(Render_Vulkan, "Finishes {:.1f}/s waiting {:.1f} ms/s at {}",
+                 static_cast<double>(count) / seconds, static_cast<double>(ns) / 1e6 / seconds,
+                 site);
+    }
+    std::sort(reads.rbegin(), reads.rend());
+    for (size_t i = 0; i < reads.size() && i < 8; ++i) {
+        const auto& [ns, count, site] = reads[i];
+        LOG_INFO(Render_Vulkan, "Buffer reads {:.1f}/s taking {:.1f} ms/s from {}",
                  static_cast<double>(count) / seconds, static_cast<double>(ns) / 1e6 / seconds,
                  site);
     }
@@ -748,6 +761,13 @@ void Scheduler::ReportWorkTimes() {
     LOG_INFO(Render_Vulkan,
              "DKB gpu_work renderer_frame={} timed={} timed_sum_ms={:.3f} slowest:{}",
              trace_sample_frame, count, total_ms, slowest);
+}
+
+void Scheduler::ProfileHostRead(std::source_location location, u64 ns) {
+    std::scoped_lock lock{g_profile_end_mutex};
+    auto& [count, total] = g_profile_read_sites[SiteName(location.file_name(), location.line())];
+    ++count;
+    total += ns;
 }
 
 void Scheduler::ReportCommandTimes() {
