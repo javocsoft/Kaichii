@@ -21,7 +21,7 @@ IMultiCommitManager::IMultiCommitManager(Core::System& system_)
 
 IMultiCommitManager::~IMultiCommitManager() = default;
 
-Result IMultiCommitManager::Add(std::shared_ptr<IFileSystem> filesystem) {
+Result IMultiCommitManager::Add(const std::shared_ptr<IFileSystem>& filesystem) {
     LOG_WARNING(Service_FS, "(STUBBED) called");
 
     R_SUCCEED();

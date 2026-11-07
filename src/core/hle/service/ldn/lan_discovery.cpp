@@ -5,6 +5,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "core/hle/service/ldn/lan_discovery.h"
+
+#include <utility>
 #include "common/random.h"
 #include "core/internal_network/network.h"
 #include "core/internal_network/network_interface.h"
@@ -364,7 +366,7 @@ Result LANDiscovery::Initialize(LanEventFunc lan_event_, bool listening) {
     }
 
     connected_clients.clear();
-    lan_event = lan_event_;
+    lan_event = std::move(lan_event_);
 
     SetState(State::Initialized);
 

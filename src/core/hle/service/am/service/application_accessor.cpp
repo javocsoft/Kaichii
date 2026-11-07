@@ -98,7 +98,7 @@ Result IApplicationAccessor::GetAppletStateChangedEvent(
 }
 
 Result IApplicationAccessor::PushLaunchParameter(LaunchParameterKind kind,
-                                                 SharedPointer<IStorage> storage) {
+                                                 const SharedPointer<IStorage>& storage) {
     LOG_INFO(Service_AM, "called, kind={}", kind);
 
     switch (kind) {

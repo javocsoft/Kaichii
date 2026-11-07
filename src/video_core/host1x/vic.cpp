@@ -169,7 +169,7 @@ void Vic::Execute() noexcept {
     }
 }
 
-void Vic::ReadProgressiveY8__V8U8_N420(const SlotStruct& slot, std::span<const PlaneOffsets> offsets, std::shared_ptr<const FFmpeg::Frame> frame, bool planar, bool interlaced) noexcept {
+void Vic::ReadProgressiveY8__V8U8_N420(const SlotStruct& slot, std::span<const PlaneOffsets> offsets, const std::shared_ptr<const FFmpeg::Frame>& frame, bool planar, bool interlaced) noexcept {
     auto const out_luma_width = slot.surface_config.slot_surface_width + 1;
     auto const out_luma_height = (slot.surface_config.slot_surface_height + 1) * (interlaced ? 2 : 1);
     auto const out_luma_stride = out_luma_width;

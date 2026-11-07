@@ -243,7 +243,7 @@ struct ColorConsoleBackend final : public Backend {
 #ifndef __OPENORBIS__
 /// @brief Backend that writes to a file passed into the constructor
 struct FileBackend final : public Backend {
-    explicit FileBackend(const std::filesystem::path filename) noexcept {
+    explicit FileBackend(const std::filesystem::path& filename) noexcept {
         auto old_filename = filename;
         old_filename += ".old.txt";
         // Existence checks are done within the functions themselves.

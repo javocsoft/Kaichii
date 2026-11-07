@@ -271,7 +271,7 @@ void SM::RegisterServiceTipc(HLERequestContext& ctx) {
     this->RegisterServiceImpl(ctx, name, max_session_count, is_light);
 }
 
-void SM::RegisterServiceImpl(HLERequestContext& ctx, std::string name, u32 max_session_count,
+void SM::RegisterServiceImpl(HLERequestContext& ctx, const std::string& name, u32 max_session_count,
                              bool is_light) {
     LOG_DEBUG(Service_SM, "called with name={}, max_session_count={}, is_light={}", name,
               max_session_count, is_light);

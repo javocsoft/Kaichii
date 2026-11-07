@@ -34,7 +34,7 @@ bool ComputePipelineKey::operator==(const ComputePipelineKey& rhs) const noexcep
 
 ComputePipeline::ComputePipeline(const Device& device, TextureCache& texture_cache_,
                                  BufferCache& buffer_cache_, ProgramManager& program_manager_,
-                                 const Shader::Info& info_, std::string code,
+                                 const Shader::Info& info_, const std::string& code,
                                  std::vector<u32> code_v, bool force_context_flush)
     : texture_cache{texture_cache_}, buffer_cache{buffer_cache_},
       program_manager{program_manager_}, info{info_},

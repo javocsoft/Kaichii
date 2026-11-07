@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "common/common_types.h"
 #include "common/logging.h"
@@ -152,7 +153,7 @@ void ProcessDirectory(RomFSTraversalContext& ctx, u32 this_dir_offset,
 }
 } // Anonymous namespace
 
-VirtualDir ExtractRomFS(VirtualFile file) {
+VirtualDir ExtractRomFS(const VirtualFile& file) {
     auto root_container = std::make_shared<VectorVfsDirectory>();
     if (!file) {
         return root_container;
@@ -185,11 +186,11 @@ VirtualDir ExtractRomFS(VirtualFile file) {
     return root_container->GetSubdirectory("");
 }
 
-VirtualFile CreateRomFS(VirtualDir dir, VirtualDir ext) {
+VirtualFile CreateRomFS(const VirtualDir& dir, VirtualDir ext) {
     if (dir == nullptr)
         return nullptr;
 
-    RomFSBuildContext ctx{dir, ext};
+    RomFSBuildContext ctx{dir, std::move(ext)};
     return ConcatenatedVfsFile::MakeConcatenatedFile(0, dir->GetName(), ctx.Build());
 }
 

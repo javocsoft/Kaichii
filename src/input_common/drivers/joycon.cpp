@@ -114,7 +114,7 @@ bool Joycons::IsDeviceNew(SDL_hid_device_info* device_info) const {
         return false;
     }
 
-    auto is_handle_identical = [serial_number](std::shared_ptr<Joycon::JoyconDriver> device) {
+    auto is_handle_identical = [serial_number](const std::shared_ptr<Joycon::JoyconDriver>& device) {
         if (!device) {
             return false;
         }
@@ -520,7 +520,7 @@ void Joycons::OnCameraUpdate(std::size_t port, const std::vector<u8>& camera_dat
 }
 
 std::shared_ptr<Joycon::JoyconDriver> Joycons::GetHandle(PadIdentifier identifier) const {
-    auto is_handle_active = [&](std::shared_ptr<Joycon::JoyconDriver> device) {
+    auto is_handle_active = [&](const std::shared_ptr<Joycon::JoyconDriver>& device) {
         if (!device) {
             return false;
         }
@@ -587,7 +587,7 @@ Common::ParamPackage Joycons::GetParamPackage(std::size_t port, Joycon::Controll
 std::vector<Common::ParamPackage> Joycons::GetInputDevices() const {
     std::vector<Common::ParamPackage> devices{};
 
-    auto add_entry = [&](std::shared_ptr<Joycon::JoyconDriver> device) {
+    auto add_entry = [&](const std::shared_ptr<Joycon::JoyconDriver>& device) {
         if (!device) {
             return;
         }

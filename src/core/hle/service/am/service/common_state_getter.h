@@ -62,7 +62,7 @@ private:
                                     OutArray<AppletId, BufferAttr_HipcMapAlias> out_applet_ids);
     Result GetSettingsPlatformRegion(Out<Set::PlatformRegion> out_settings_platform_region);
     Result SetRequestExitToLibraryAppletAtExecuteNextProgramEnabled();
-    Result PushToGeneralChannel(SharedPointer<IStorage> storage); // cmd 20
+    Result PushToGeneralChannel(const SharedPointer<IStorage>& storage); // cmd 20
     Result GetHomeButtonReaderLockAccessor(Out<SharedPointer<ILockAccessor>> out_lock_accessor);
     Result SetHandlingHomeButtonShortPressedEnabled(bool enabled);
     Result Unknown610(u64 unk);

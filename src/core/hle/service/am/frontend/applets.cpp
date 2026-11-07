@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <cstring>
+#include <utility>
 
 #include "common/assert.h"
 #include "core/core.h"
@@ -34,7 +35,7 @@
 
 namespace Service::AM::Frontend {
 
-FrontendApplet::FrontendApplet(Core::System& system_, std::shared_ptr<Applet> applet_,
+FrontendApplet::FrontendApplet(Core::System& system_, const std::shared_ptr<Applet>& applet_,
                                LibraryAppletMode applet_mode_)
     : system{system_}, applet{std::move(applet_)}, applet_mode{applet_mode_} {}
 
@@ -64,11 +65,11 @@ std::shared_ptr<IStorage> FrontendApplet::PopInteractiveInData() {
 }
 
 void FrontendApplet::PushOutData(std::shared_ptr<IStorage> storage) {
-    applet.lock()->caller_applet_broker->GetOutData().Push(system.Kernel(), storage);
+    applet.lock()->caller_applet_broker->GetOutData().Push(system.Kernel(), std::move(storage));
 }
 
 void FrontendApplet::PushInteractiveOutData(std::shared_ptr<IStorage> storage) {
-    applet.lock()->caller_applet_broker->GetInteractiveOutData().Push(system.Kernel(), storage);
+    applet.lock()->caller_applet_broker->GetInteractiveOutData().Push(system.Kernel(), std::move(storage));
 }
 
 void FrontendApplet::Exit() {

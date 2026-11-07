@@ -38,12 +38,12 @@ private:
     u64 file_hash_table_size = 0;
     u64 file_partition_size = 0;
 
-    void VisitDirectory(VirtualDir filesys, VirtualDir ext_dir,
-                        std::shared_ptr<RomFSBuildDirectoryContext> parent);
+    void VisitDirectory(const VirtualDir& filesys, const VirtualDir& ext_dir,
+                        const std::shared_ptr<RomFSBuildDirectoryContext>& parent);
 
-    bool AddDirectory(std::shared_ptr<RomFSBuildDirectoryContext> parent_dir_ctx,
+    bool AddDirectory(const std::shared_ptr<RomFSBuildDirectoryContext>& parent_dir_ctx,
                       std::shared_ptr<RomFSBuildDirectoryContext> dir_ctx);
-    bool AddFile(std::shared_ptr<RomFSBuildDirectoryContext> parent_dir_ctx,
+    bool AddFile(const std::shared_ptr<RomFSBuildDirectoryContext>& parent_dir_ctx,
                  std::shared_ptr<RomFSBuildFileContext> file_ctx);
 };
 

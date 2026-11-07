@@ -35,7 +35,7 @@ private:
     Result RequestExit();
     Result Terminate();
     Result Unknown90();
-    Result PushInData(SharedPointer<IStorage> storage);
+    Result PushInData(const SharedPointer<IStorage>& storage);
     Result PopOutData(Out<SharedPointer<IStorage>> out_storage);
     Result PushInteractiveInData(SharedPointer<IStorage> storage);
     Result PopInteractiveOutData(Out<SharedPointer<IStorage>> out_storage);

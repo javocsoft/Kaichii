@@ -21,7 +21,7 @@
 
 namespace Loader {
 
-AppLoader_XCI::AppLoader_XCI(FileSys::VirtualFile file_,
+AppLoader_XCI::AppLoader_XCI(const FileSys::VirtualFile& file_,
                              const Service::FileSystem::FileSystemController& fsc,
                              const FileSys::ContentProvider& content_provider, u64 program_id,
                              std::size_t program_index)

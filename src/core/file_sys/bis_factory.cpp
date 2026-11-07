@@ -80,7 +80,7 @@ VirtualDir BISFactory::OpenPartition(BisPartitionId id) const {
 }
 
 VirtualFile BISFactory::OpenPartitionStorage(BisPartitionId id,
-                                             VirtualFilesystem file_system) const {
+                                             const VirtualFilesystem& file_system) const {
     auto& keys = Core::Crypto::KeyManager::Instance();
     Core::Crypto::PartitionDataManager pdm{file_system->OpenDirectory(
         Common::FS::GetEdenPathString(Common::FS::EdenPath::NANDDir), OpenMode::Read)};

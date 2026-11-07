@@ -85,7 +85,7 @@ std::string LanguageEntry::GetDeveloperName() const {
 
 NACP::NACP() = default;
 
-NACP::NACP(VirtualFile file)
+NACP::NACP(const VirtualFile& file)
 {
     file->ReadObject(&raw);
     if (raw.titles_data_format == TitleDataFormat::Compressed) {

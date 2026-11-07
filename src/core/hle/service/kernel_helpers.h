@@ -23,7 +23,7 @@ namespace Service::KernelHelpers {
 
 class ServiceContext {
 public:
-    ServiceContext(Core::System& system_, std::string name_);
+    ServiceContext(Core::System& system_, const std::string& name_);
     ~ServiceContext();
 
     Kernel::KEvent* CreateEvent(std::string&& name);

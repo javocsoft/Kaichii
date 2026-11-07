@@ -11,7 +11,7 @@
 
 namespace Service::PSC::Time {
 
-SteadyClock::SteadyClock(Core::System& system_, std::shared_ptr<TimeManager> manager,
+SteadyClock::SteadyClock(Core::System& system_, const std::shared_ptr<TimeManager>& manager,
                          bool can_write_steady_clock, bool can_write_uninitialized_clock)
     : ServiceFramework{system_, "ISteadyClock"}
     , m_clock_core{manager->m_standard_steady_clock}

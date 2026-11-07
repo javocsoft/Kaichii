@@ -50,7 +50,7 @@ class ComputePipeline {
 public:
     explicit ComputePipeline(const Device& device, TextureCache& texture_cache_,
                              BufferCache& buffer_cache_, ProgramManager& program_manager_,
-                             const Shader::Info& info_, std::string code, std::vector<u32> code_v,
+                             const Shader::Info& info_, const std::string& code, std::vector<u32> code_v,
                              bool force_context_flush = false);
 
     void Configure();

@@ -64,3 +64,7 @@ Checks: >
   performance-unnecessary-value-param
 HeaderFilterRegex: '^.*/src/(common|core|video_core|shader_recompiler|network|audio_core|hid_core|input_common|frontend_common)/.*'
 FormatStyle: none
+CheckOptions:
+  # A thread takes its stop token once, and by value is how the standard library hands it over.
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'std::stop_token'

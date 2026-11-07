@@ -5,6 +5,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "core/file_sys/fssystem/fssystem_aes_ctr_counter_extended_storage.h"
+
+#include <utility>
 #include "core/file_sys/fssystem/fssystem_aes_ctr_storage.h"
 #include "core/file_sys/fssystem/fssystem_nca_header.h"
 #include "core/file_sys/vfs/vfs_offset.h"
@@ -31,7 +33,7 @@ Result AesCtrCounterExtendedStorage::CreateSoftwareDecryptor(std::unique_ptr<IDe
 
 Result AesCtrCounterExtendedStorage::Initialize(const void* key, size_t key_size, u32 secure_value,
                                                 VirtualFile data_storage,
-                                                VirtualFile table_storage) {
+                                                const VirtualFile& table_storage) {
     // Read and verify the bucket tree header.
     BucketTree::Header header;
     table_storage->ReadObject(std::addressof(header), 0);
@@ -75,7 +77,7 @@ Result AesCtrCounterExtendedStorage::Initialize(const void* key, size_t key_size
     }
 
     // Set members.
-    m_data_storage = data_storage;
+    m_data_storage = std::move(data_storage);
     std::memcpy(m_key.data(), key, key_size);
     m_secure_value = secure_value;
     m_counter_offset = counter_offset;

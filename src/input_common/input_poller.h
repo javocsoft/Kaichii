@@ -220,7 +220,7 @@ private:
      *               - "pad": slot of the connected controller
      * @returns a unique input device with the parameters specified
      */
-    std::unique_ptr<Common::Input::InputDevice> CreateMotionDevice(Common::ParamPackage params);
+    std::unique_ptr<Common::Input::InputDevice> CreateMotionDevice(const Common::ParamPackage& params);
 
     /**
      * Creates a camera device from the parameters given.

@@ -62,7 +62,7 @@ public:
     /// we do not have an NPDM file
     static ProgramMetadata GetDefault();
 
-    Loader::ResultStatus Load(VirtualFile file);
+    Loader::ResultStatus Load(const VirtualFile& file);
     Loader::ResultStatus Reload(VirtualFile file);
 
     /// Load from parameters instead of NPDM file, used for KIP

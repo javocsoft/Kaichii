@@ -10,13 +10,15 @@
 #include "core/hle/service/am/am.h"
 #include "core/hle/service/am/applet_data_broker.h"
 #include "core/hle/service/am/frontend/applet_net_connect.h"
+
+#include <utility>
 #include "core/hle/service/am/service/storage.h"
 #include "core/reporter.h"
 
 namespace Service::AM::Frontend {
 
 NetConnect::NetConnect(Core::System& system_, std::shared_ptr<Applet> applet_, LibraryAppletMode applet_mode_, const Core::Frontend::NetConnectApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend{frontend_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend{frontend_} {}
 
 NetConnect::~NetConnect() = default;
 

@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <algorithm>
+#include <utility>
 
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/hid/hid_debug_server.h"
@@ -20,8 +21,8 @@ namespace Service::HID {
 
 IHidDebugServer::IHidDebugServer(Core::System& system_, std::shared_ptr<ResourceManager> resource,
                                  std::shared_ptr<HidFirmwareSettings> settings)
-    : ServiceFramework{system_, "hid:dbg"}, resource_manager{resource}, firmware_settings{
-                                                                            settings} {
+    : ServiceFramework{system_, "hid:dbg"}, resource_manager{std::move(resource)}, firmware_settings{
+                                                                            std::move(settings)} {
     // clang-format off
     static const FunctionInfo functions[] = {
         {0, nullptr, "DeactivateDebugPad"},

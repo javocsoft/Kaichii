@@ -23,7 +23,7 @@ namespace FileSys {
  */
 class PartitionFilesystem : public ReadOnlyVfsDirectory {
 public:
-    explicit PartitionFilesystem(VirtualFile file);
+    explicit PartitionFilesystem(const VirtualFile& file);
     ~PartitionFilesystem() override;
 
     Loader::ResultStatus GetStatus() const;

@@ -25,6 +25,8 @@
 #include "core/hle/result.h"
 #include "core/hle/service/am/am.h"
 #include "core/hle/service/am/frontend/applet_web_browser.h"
+
+#include <utility>
 #include "core/hle/service/am/service/storage.h"
 #include "core/hle/service/filesystem/filesystem.h"
 #include "core/hle/service/ns/platform_service_manager.h"
@@ -231,7 +233,7 @@ void ExtractSharedFonts(Core::System& system) {
 WebBrowser::WebBrowser(Core::System& system_, std::shared_ptr<Applet> applet_,
                        LibraryAppletMode applet_mode_,
                        const Core::Frontend::WebBrowserApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend(frontend_) {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend(frontend_) {}
 
 WebBrowser::~WebBrowser() = default;
 
@@ -587,7 +589,7 @@ void WebBrowser::ExecuteOffline() {
     frontend.OpenLocalWebPage(
         Common::FS::PathToUTF8String(offline_document), [this] { ExtractOfflineRomFS(); },
         [this](WebExitReason exit_reason, std::string last_url) {
-            WebBrowserExit(exit_reason, last_url);
+            WebBrowserExit(exit_reason, std::move(last_url));
         });
 }
 
@@ -604,7 +606,7 @@ void WebBrowser::ExecuteWeb() {
         if (exit_reason == WebExitReason::ExitRequested || exit_reason == WebExitReason::EndButtonPressed)
             exit_reason = (web_arg_header.shim_kind == ShimKind::Web || web_arg_header.shim_kind == ShimKind::Offline)
                 ? WebExitReason::ExitRequested : WebExitReason::EndButtonPressed;
-        WebBrowserExit(exit_reason, last_url);
+        WebBrowserExit(exit_reason, std::move(last_url));
     });
 }
 

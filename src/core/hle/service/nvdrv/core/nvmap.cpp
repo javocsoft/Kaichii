@@ -74,7 +74,7 @@ NvResult NvMap::Handle::Duplicate(bool internal_session) {
 
 NvMap::NvMap(Container& core_, Tegra::Host1x::Host1x& host1x_) : host1x{host1x_}, core{core_} {}
 
-void NvMap::AddHandle(std::shared_ptr<Handle> handle_description) {
+void NvMap::AddHandle(const std::shared_ptr<Handle>& handle_description) {
     std::scoped_lock lock(handles_lock);
 
     handles.emplace(handle_description->id, std::move(handle_description));

@@ -73,7 +73,7 @@ public:
         this->Finalize();
     }
 
-    Result Initialize(VirtualFile table_storage);
+    Result Initialize(const VirtualFile& table_storage);
     void Finalize();
 
     bool IsInitialized() const {

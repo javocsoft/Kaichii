@@ -104,7 +104,7 @@ public:
 
 private:
     Result Initialize(const void* key, size_t key_size, u32 secure_value, VirtualFile data_storage,
-                      VirtualFile table_storage);
+                      const VirtualFile& table_storage);
 
 private:
     mutable BucketTree m_table;

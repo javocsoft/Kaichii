@@ -230,7 +230,7 @@ public:
         this->Finalize();
     }
 
-    Result Initialize(VirtualFile node_storage, VirtualFile entry_storage, size_t node_size,
+    Result Initialize(const VirtualFile& node_storage, VirtualFile entry_storage, size_t node_size,
                       size_t entry_size, s32 entry_count);
     void Initialize(size_t node_size, s64 end_offset);
     void Finalize();

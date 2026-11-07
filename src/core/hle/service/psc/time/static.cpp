@@ -16,6 +16,8 @@
 #include "core/hle/service/psc/time/manager.h"
 #include "core/hle/service/psc/time/shared_memory.h"
 #include "core/hle/service/psc/time/static.h"
+
+#include <utility>
 #include "core/hle/service/psc/time/steady_clock.h"
 #include "core/hle/service/psc/time/system_clock.h"
 #include "core/hle/service/psc/time/time_zone.h"
@@ -35,7 +37,7 @@ constexpr Result GetTimeFromTimePointAndContext(s64* out_time, SteadyClockTimePo
 
 StaticService::StaticService(Core::System& system_, StaticServiceSetupInfo setup_info,
                              std::shared_ptr<TimeManager> time, const char* name)
-    : ServiceFramework{system_, name}, m_setup_info{setup_info}, m_time{time},
+    : ServiceFramework{system_, name}, m_setup_info{setup_info}, m_time{std::move(time)},
       m_local_system_clock{m_time->m_standard_local_system_clock},
       m_user_system_clock{m_time->m_standard_user_system_clock},
       m_network_system_clock{m_time->m_standard_network_system_clock},

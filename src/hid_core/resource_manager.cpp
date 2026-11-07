@@ -14,6 +14,8 @@
 #include "hid_core/hid_util.h"
 #include "hid_core/resource_manager.h"
 
+#include <utility>
+
 #include "hid_core/resources/applet_resource.h"
 #include "hid_core/resources/debug_pad/debug_pad.h"
 #include "hid_core/resources/digitizer/digitizer.h"
@@ -52,7 +54,7 @@ constexpr auto motion_update_ns = std::chrono::nanoseconds{5 * 1000 * 1000};    
 
 ResourceManager::ResourceManager(Core::System& system_,
                                  std::shared_ptr<HidFirmwareSettings> settings)
-    : firmware_settings{settings}, system{system_}, service_context{system_, "hid"} {
+    : firmware_settings{std::move(settings)}, system{system_}, service_context{system_, "hid"} {
     applet_resource = std::make_shared<AppletResource>(system);
 
     // Register update callbacks

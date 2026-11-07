@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <memory>
+#include <utility>
 
 #include "common/logging.h"
 #include "core/hle/service/cmif_serialization.h"
@@ -26,7 +27,7 @@ class IDatabaseService final : public ServiceFramework<IDatabaseService> {
 public:
     explicit IDatabaseService(Core::System& system_, std::shared_ptr<MiiManager> mii_manager,
                               bool is_system_)
-        : ServiceFramework{system_, "IDatabaseService"}, manager{mii_manager}, is_system{
+        : ServiceFramework{system_, "IDatabaseService"}, manager{std::move(mii_manager)}, is_system{
                                                                                    is_system_} {
         // clang-format off
         static const FunctionInfo functions[] = {
@@ -301,7 +302,7 @@ private:
 
 IStaticService::IStaticService(Core::System& system_, const char* name_,
                                std::shared_ptr<MiiManager> mii_manager, bool is_system_)
-    : ServiceFramework{system_, name_}, manager{mii_manager}, is_system{is_system_} {
+    : ServiceFramework{system_, name_}, manager{std::move(mii_manager)}, is_system{is_system_} {
     // clang-format off
     static const FunctionInfo functions[] = {
         {0, D<&IStaticService::GetDatabaseService>, "GetDatabaseService"},

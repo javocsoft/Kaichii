@@ -13,6 +13,8 @@
 #include "core/hle/service/am/am.h"
 #include "core/hle/service/am/applet_data_broker.h"
 #include "core/hle/service/am/frontend/applet_general.h"
+
+#include <utility>
 #include "core/hle/service/am/service/storage.h"
 #include "core/reporter.h"
 
@@ -20,7 +22,7 @@ namespace Service::AM::Frontend {
 
 constexpr Result ERROR_INVALID_PIN{ErrorModule::PCTL, 221};
 
-static void LogCurrentStorage(Kernel::KernelCore& kernel, std::shared_ptr<Applet> applet, std::string_view prefix) {
+static void LogCurrentStorage(Kernel::KernelCore& kernel, const std::shared_ptr<Applet>& applet, std::string_view prefix) {
     std::shared_ptr<IStorage> storage;
     while (R_SUCCEEDED(applet->caller_applet_broker->GetInData().Pop(kernel, &storage))) {
         const auto data = storage->GetData();
@@ -39,7 +41,7 @@ static void LogCurrentStorage(Kernel::KernelCore& kernel, std::shared_ptr<Applet
 
 Auth::Auth(Core::System& system_, std::shared_ptr<Applet> applet_, LibraryAppletMode applet_mode_,
            Core::Frontend::ParentalControlsApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend{frontend_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend{frontend_} {}
 
 Auth::~Auth() = default;
 
@@ -158,7 +160,7 @@ Result Auth::RequestExit() {
 PhotoViewer::PhotoViewer(Core::System& system_, std::shared_ptr<Applet> applet_,
                          LibraryAppletMode applet_mode_,
                          const Core::Frontend::PhotoViewerApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend{frontend_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend{frontend_} {}
 
 PhotoViewer::~PhotoViewer() = default;
 
@@ -211,7 +213,7 @@ Result PhotoViewer::RequestExit() {
 
 StubApplet::StubApplet(Core::System& system_, std::shared_ptr<Applet> applet_, AppletId id_,
                        LibraryAppletMode applet_mode_)
-    : FrontendApplet{system_, applet_, applet_mode_}, id{id_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, id{id_} {}
 
 StubApplet::~StubApplet() = default;
 

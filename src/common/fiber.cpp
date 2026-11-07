@@ -87,7 +87,7 @@ void Fiber::Exit() {
     }
 }
 
-void Fiber::YieldTo(std::weak_ptr<Fiber> weak_from, Fiber& to) {
+void Fiber::YieldTo(const std::weak_ptr<Fiber>& weak_from, Fiber& to) {
     to.impl->guard.lock();
     to.impl->previous_fiber = weak_from.lock();
 

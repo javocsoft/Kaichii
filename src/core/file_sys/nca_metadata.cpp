@@ -13,7 +13,7 @@
 
 namespace FileSys {
 
-CNMT::CNMT(VirtualFile file) {
+CNMT::CNMT(const VirtualFile& file) {
     if (file->ReadObject(&header) != sizeof(CNMTHeader))
         return;
 

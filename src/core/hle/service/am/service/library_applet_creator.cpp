@@ -139,7 +139,7 @@ AppletId NormalizeAppletId(AppletId id) {
 
 std::shared_ptr<ILibraryAppletAccessor> CreateGuestApplet(Core::System& system,
                                                           WindowSystem& window_system,
-                                                          std::shared_ptr<Applet> caller_applet,
+                                                          const std::shared_ptr<Applet>& caller_applet,
                                                           AppletId applet_id,
                                                           LibraryAppletMode mode) {
     const auto program_id = static_cast<u64>(AppletIdToProgramId(applet_id));
@@ -173,7 +173,7 @@ std::shared_ptr<ILibraryAppletAccessor> CreateGuestApplet(Core::System& system,
 
 std::shared_ptr<ILibraryAppletAccessor> CreateFrontendApplet(Core::System& system,
                                                              WindowSystem& window_system,
-                                                             std::shared_ptr<Applet> caller_applet,
+                                                             const std::shared_ptr<Applet>& caller_applet,
                                                              AppletId applet_id,
                                                              LibraryAppletMode mode) {
     const auto program_id = static_cast<u64>(AppletIdToProgramId(applet_id));

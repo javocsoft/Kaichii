@@ -5,6 +5,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "core/hle/service/hid/hid_system_server.h"
+
+#include <utility>
 #include "core/hle/service/ipc_helpers.h"
 #include "core/hle/service/set/settings_types.h"
 #include "hid_core/hid_result.h"
@@ -21,7 +23,7 @@ namespace Service::HID {
 IHidSystemServer::IHidSystemServer(Core::System& system_, std::shared_ptr<ResourceManager> resource,
                                    std::shared_ptr<HidFirmwareSettings> settings)
     : ServiceFramework{system_, "hid:sys"}, service_context{system_, service_name},
-      resource_manager{resource}, firmware_settings{settings} {
+      resource_manager{std::move(resource)}, firmware_settings{std::move(settings)} {
     // clang-format off
     static const FunctionInfo functions[] = {
         {31, nullptr, "SendKeyboardLockKeyEvent"},

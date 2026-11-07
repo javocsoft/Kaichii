@@ -325,7 +325,7 @@ private:
     Result CreateIndirectStorageMetaStorage(VirtualFile* out, VirtualFile base_storage,
                                             const NcaPatchInfo& patch_info);
     Result CreateIndirectStorage(VirtualFile* out, std::shared_ptr<IndirectStorage>* out_ind,
-                                 VirtualFile base_storage, VirtualFile original_data_storage,
+                                 VirtualFile base_storage, const VirtualFile& original_data_storage,
                                  VirtualFile meta_storage, const NcaPatchInfo& patch_info);
 
     Result CreatePatchMetaStorage(VirtualFile* out_aes_ctr_ex_meta, VirtualFile* out_indirect_meta,

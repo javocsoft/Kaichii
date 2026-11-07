@@ -20,7 +20,7 @@ namespace Service::FileSystem {
 
 class IDirectory final : public ServiceFramework<IDirectory> {
 public:
-    explicit IDirectory(Core::System& system_, FileSys::VirtualDir directory_,
+    explicit IDirectory(Core::System& system_, const FileSys::VirtualDir& directory_,
                         FileSys::OpenDirectoryMode mode);
 
 private:

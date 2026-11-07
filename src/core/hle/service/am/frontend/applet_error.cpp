@@ -6,6 +6,7 @@
 
 #include <array>
 #include <cstring>
+#include <utility>
 #include "common/assert.h"
 #include "common/logging.h"
 #include "common/string_util.h"
@@ -109,7 +110,7 @@ Result Decode64BitError(u64 error) {
 
 Error::Error(Core::System& system_, std::shared_ptr<Applet> applet_, LibraryAppletMode applet_mode_,
              const Core::Frontend::ErrorApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend{frontend_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend{frontend_} {}
 
 Error::~Error() = default;
 

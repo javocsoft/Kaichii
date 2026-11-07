@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstring>
 #include <span>
+#include <utility>
 
 #include "common/assert.h"
 #include "common/hex_util.h"
@@ -131,7 +132,7 @@ std::string FormatTitleVersion(u32 version,
 
 // Returns a directory with name matching name case-insensitive. Returns nullptr if directory
 // doesn't have a directory with name.
-VirtualDir FindSubdirectoryCaseless(const VirtualDir dir, std::string_view name) {
+VirtualDir FindSubdirectoryCaseless(const VirtualDir& dir, std::string_view name) {
 #ifdef _WIN32
     return dir->GetSubdirectory(name);
 #else
@@ -765,7 +766,7 @@ void PatchManager::ApplyLayeredFS(VirtualFile& romfs, ContentRecordType type) co
 }
 
 VirtualFile PatchManager::PatchRomFS(const NCA* base_nca, VirtualFile base_romfs,
-                                     ContentRecordType type, VirtualFile packed_update_raw,
+                                     ContentRecordType type, const VirtualFile& packed_update_raw,
                                      bool apply_layeredfs) const {
     const auto log_string = fmt::format("Patching RomFS for title_id={:016X}, type={:02X}",
                                         title_id, static_cast<u8>(type));
@@ -775,7 +776,7 @@ VirtualFile PatchManager::PatchRomFS(const NCA* base_nca, VirtualFile base_romfs
         LOG_DEBUG(Loader, "{}", log_string);
     }
 
-    auto romfs = base_romfs;
+    auto romfs = std::move(base_romfs);
 
     // Game Updates
     const auto update_tid = GetUpdateTitleID(title_id);
@@ -892,7 +893,7 @@ VirtualFile PatchManager::PatchRomFS(const NCA* base_nca, VirtualFile base_romfs
     return romfs;
 }
 
-std::vector<Patch> PatchManager::GetPatches(VirtualFile update_raw) const {
+std::vector<Patch> PatchManager::GetPatches(const VirtualFile& update_raw) const {
     if (title_id == 0) {
         return {};
     }

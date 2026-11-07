@@ -43,10 +43,10 @@ public:
     void AppendNewInst(Opcode op, std::initializer_list<Value> args);
 
     /// Prepends a copy of an instruction to this basic block before the insertion point.
-    iterator PrependNewInst(iterator insertion_point, const Inst& base_inst);
+    iterator PrependNewInst(const iterator& insertion_point, const Inst& base_inst);
 
     /// Prepends a new instruction to this basic block before the insertion point.
-    iterator PrependNewInst(iterator insertion_point, Opcode op,
+    iterator PrependNewInst(const iterator& insertion_point, Opcode op,
                             std::initializer_list<Value> args = {}, u32 flags = 0);
 
     /// Adds a new branch to this basic block.

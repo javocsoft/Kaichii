@@ -108,7 +108,7 @@ private:
 
 class IAlarmService final : public ServiceFramework<IAlarmService> {
 public:
-    explicit IAlarmService(Core::System& system, std::shared_ptr<TimeManager> manager);
+    explicit IAlarmService(Core::System& system, const std::shared_ptr<TimeManager>& manager);
     ~IAlarmService() override = default;
 
 private:

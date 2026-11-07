@@ -828,7 +828,7 @@ std::vector<u8> NupContainer::ReadExtentRaw(const FileNode& node) const {
 }
 
 Loader::ResultStatus NupContainer::VerifyIntegrity(
-    std::function<bool(std::size_t, std::size_t)> progress_callback) const {
+    const std::function<bool(std::size_t, std::size_t)>& progress_callback) const {
     const std::size_t total = files.size();
     for (std::size_t i = 0; i < total; ++i) {
         const FileNode& node = files[i];

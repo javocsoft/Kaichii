@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <algorithm>
+#include <utility>
 
 #include "common/logging.h"
 #include "core/core.h"
@@ -750,7 +751,7 @@ Result DeviceManager::VerifyDeviceResult(std::shared_ptr<NfcDevice> device,
     if (is_nfc_initialized.IsError()) {
         return is_nfc_initialized;
     }
-    const Result device_state = CheckDeviceState(device);
+    const Result device_state = CheckDeviceState(std::move(device));
     if (device_state.IsError()) {
         return device_state;
     }
@@ -772,7 +773,7 @@ Result DeviceManager::VerifyDeviceResult(std::shared_ptr<NfcDevice> device,
     return operation_result;
 }
 
-Result DeviceManager::CheckDeviceState(std::shared_ptr<NfcDevice> device) const {
+Result DeviceManager::CheckDeviceState(const std::shared_ptr<NfcDevice>& device) const {
     if (device == nullptr) {
         return ResultInvalidArgument;
     }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <utility>
 
 #include "common/common_types.h"
 #include "common/logging.h"
@@ -45,7 +46,7 @@ namespace Service::HID {
 
 IHidServer::IHidServer(Core::System& system_, std::shared_ptr<ResourceManager> resource,
                        std::shared_ptr<HidFirmwareSettings> settings)
-    : ServiceFramework{system_, "hid"}, resource_manager{resource}, firmware_settings{settings} {
+    : ServiceFramework{system_, "hid"}, resource_manager{std::move(resource)}, firmware_settings{std::move(settings)} {
     // clang-format off
     static const FunctionInfo functions[] = {
         {0, C<&IHidServer::CreateAppletResource>, "CreateAppletResource"},

@@ -51,7 +51,7 @@ protected:
     explicit Config(ConfigType config_type = ConfigType::GlobalConfig);
 
     void Initialize(const std::string& config_name = "config");
-    void Initialize(std::optional<std::string> config_path);
+    void Initialize(const std::optional<std::string>& config_path);
 
     void WriteToIni() const;
 
@@ -152,7 +152,7 @@ protected:
     double ReadDoubleSetting(const std::string& key,
                              std::optional<double> default_value = std::nullopt);
     std::string ReadStringSetting(const std::string& key,
-                                  std::optional<std::string> default_value = std::nullopt);
+                                  const std::optional<std::string>& default_value = std::nullopt);
 
     /**
      * Writes a setting to the qt_config.

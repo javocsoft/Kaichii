@@ -6,6 +6,8 @@
 
 #include "common/logging.h"
 #include "core/hle/service/caps/caps_a.h"
+
+#include <utility>
 #include "core/hle/service/caps/caps_manager.h"
 #include "core/hle/service/caps/caps_result.h"
 #include "core/hle/service/cmif_serialization.h"
@@ -15,7 +17,7 @@ namespace Service::Capture {
 
 IAlbumAccessorService::IAlbumAccessorService(Core::System& system_,
                                              std::shared_ptr<AlbumManager> album_manager)
-    : ServiceFramework{system_, "caps:a"}, manager{album_manager} {
+    : ServiceFramework{system_, "caps:a"}, manager{std::move(album_manager)} {
     // clang-format off
     static const FunctionInfo functions[] = {
         {0, nullptr, "GetAlbumFileCount"},

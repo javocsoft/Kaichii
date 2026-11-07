@@ -8,6 +8,8 @@
 #include "core/hle/kernel/k_shared_memory.h"
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/hid/applet_resource.h"
+
+#include <utility>
 #include "hid_core/resource_manager.h"
 
 namespace Service::HID {
@@ -15,7 +17,7 @@ namespace Service::HID {
 IAppletResource::IAppletResource(Core::System& system_, std::shared_ptr<ResourceManager> resource,
                                  u64 applet_resource_user_id)
     : ServiceFramework{system_, "IAppletResource"}, aruid{applet_resource_user_id},
-      resource_manager{resource} {
+      resource_manager{std::move(resource)} {
     static const FunctionInfo functions[] = {
         {0, C<&IAppletResource::GetSharedMemoryHandle>, "GetSharedMemoryHandle"},
     };

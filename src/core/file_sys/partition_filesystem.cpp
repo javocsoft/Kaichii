@@ -22,7 +22,7 @@ bool PartitionFilesystem::Header::HasValidMagicValue() const {
            magic == Common::MakeMagic('P', 'F', 'S', '0');
 }
 
-PartitionFilesystem::PartitionFilesystem(VirtualFile file) {
+PartitionFilesystem::PartitionFilesystem(const VirtualFile& file) {
     // At least be as large as the header
     if (file == nullptr || file->GetSize() < sizeof(Header)) {
         status = Loader::ResultStatus::ErrorBadPFSHeader;

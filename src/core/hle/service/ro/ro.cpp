@@ -7,6 +7,8 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
+#include <utility>
+
 #include "common/scope_exit.h"
 #include "core/hle/kernel/k_process.h"
 
@@ -568,7 +570,7 @@ class RoInterface : public ServiceFramework<RoInterface> {
 public:
     explicit RoInterface(Core::System& system_, const char* name_, std::shared_ptr<RoContext> ro,
                          NrrKind nrr_kind)
-        : ServiceFramework{system_, name_}, m_ro(ro), m_context_id(InvalidContextId),
+        : ServiceFramework{system_, name_}, m_ro(std::move(ro)), m_context_id(InvalidContextId),
           m_nrr_kind(nrr_kind) {
 
         // clang-format off

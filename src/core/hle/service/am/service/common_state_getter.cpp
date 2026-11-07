@@ -366,7 +366,7 @@ Result ICommonStateGetter::SetRequestExitToLibraryAppletAtExecuteNextProgramEnab
     R_SUCCEED();
 }
 
-Result ICommonStateGetter::PushToGeneralChannel(SharedPointer<IStorage> storage) {
+Result ICommonStateGetter::PushToGeneralChannel(const SharedPointer<IStorage>& storage) {
     LOG_DEBUG(Service_AM, "called");
     system.PushGeneralChannelData(storage->GetData());
     R_SUCCEED();

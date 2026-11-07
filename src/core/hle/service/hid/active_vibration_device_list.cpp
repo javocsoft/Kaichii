@@ -7,6 +7,8 @@
 #include "common/logging.h"
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/hid/active_vibration_device_list.h"
+
+#include <utility>
 #include "hid_core/hid_result.h"
 #include "hid_core/hid_util.h"
 #include "hid_core/resource_manager.h"
@@ -16,7 +18,7 @@ namespace Service::HID {
 
 IActiveVibrationDeviceList::IActiveVibrationDeviceList(Core::System& system_,
                                                        std::shared_ptr<ResourceManager> resource)
-    : ServiceFramework{system_, "IActiveVibrationDeviceList"}, resource_manager(resource) {
+    : ServiceFramework{system_, "IActiveVibrationDeviceList"}, resource_manager(std::move(resource)) {
     // clang-format off
         static const FunctionInfo functions[] = {
             {0, C<&IActiveVibrationDeviceList::ActivateVibrationDevice>, "ActivateVibrationDevice"},

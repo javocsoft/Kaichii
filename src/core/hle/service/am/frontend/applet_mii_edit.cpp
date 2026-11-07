@@ -10,6 +10,8 @@
 #include "core/frontend/applets/mii_edit.h"
 #include "core/hle/service/am/am.h"
 #include "core/hle/service/am/frontend/applet_mii_edit.h"
+
+#include <utility>
 #include "core/hle/service/am/service/storage.h"
 #include "core/hle/service/mii/mii.h"
 #include "core/hle/service/mii/mii_manager.h"
@@ -19,7 +21,7 @@ namespace Service::AM::Frontend {
 
 MiiEdit::MiiEdit(Core::System& system_, std::shared_ptr<Applet> applet_,
                  LibraryAppletMode applet_mode_, const Core::Frontend::MiiEditApplet& frontend_)
-    : FrontendApplet{system_, applet_, applet_mode_}, frontend{frontend_} {}
+    : FrontendApplet{system_, std::move(applet_), applet_mode_}, frontend{frontend_} {}
 
 MiiEdit::~MiiEdit() = default;
 

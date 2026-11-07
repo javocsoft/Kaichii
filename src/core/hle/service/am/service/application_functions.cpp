@@ -502,7 +502,7 @@ Result IApplicationFunctions::ClearUserChannel() {
     R_SUCCEED();
 }
 
-Result IApplicationFunctions::UnpopToUserChannel(SharedPointer<IStorage> storage) {
+Result IApplicationFunctions::UnpopToUserChannel(const SharedPointer<IStorage>& storage) {
     LOG_DEBUG(Service_AM, "called");
     m_applet->user_channel_launch_parameter.push_back(storage->GetData());
     R_SUCCEED();

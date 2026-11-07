@@ -1452,7 +1452,7 @@ GraphicsPipeline* PipelineCache::BuiltPipeline(GraphicsPipeline* pipeline) noexc
 std::unique_ptr<GraphicsPipeline> PipelineCache::CreateGraphicsPipeline(
     ShaderPools& pools, const GraphicsPipelineCacheKey& key,
     std::span<Shader::Environment* const> envs, PipelineStatistics* statistics,
-    bool build_in_parallel, std::shared_ptr<ShaderPools> emit_pools,
+    bool build_in_parallel, const std::shared_ptr<ShaderPools>& emit_pools,
     std::unique_ptr<EmissionBudget::Reservation> reservation) try {
     auto hash = key.Hash();
     LOG_DEBUG(Render_Vulkan, "{:#016x}", hash);

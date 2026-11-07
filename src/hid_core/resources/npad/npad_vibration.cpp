@@ -7,6 +7,8 @@
 #include "hid_core/hid_result.h"
 #include "hid_core/resources/npad/npad_vibration.h"
 
+#include <utility>
+
 namespace Service::HID {
 
 NpadVibration::NpadVibration() {}
@@ -32,7 +34,7 @@ Result NpadVibration::Deactivate() {
 
 Result NpadVibration::SetSettingsService(
     std::shared_ptr<Service::Set::ISystemSettingsServer> settings) {
-    m_set_sys = settings;
+    m_set_sys = std::move(settings);
     return ResultSuccess;
 }
 

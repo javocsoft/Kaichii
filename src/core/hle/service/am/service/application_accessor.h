@@ -30,7 +30,7 @@ private:
     Result Terminate();
     Result GetResult();
     Result GetAppletStateChangedEvent(OutCopyHandle<Kernel::KReadableEvent> out_event);
-    Result PushLaunchParameter(LaunchParameterKind kind, SharedPointer<IStorage> storage);
+    Result PushLaunchParameter(LaunchParameterKind kind, const SharedPointer<IStorage>& storage);
     Result GetApplicationControlProperty(OutBuffer<BufferAttr_HipcMapAlias> out_control_property);
     Result SetUsers(bool enable, InArray<Common::UUID, BufferAttr_HipcMapAlias> user_ids);
     Result GetCurrentLibraryApplet(Out<SharedPointer<ILibraryAppletAccessor>> out_accessor);

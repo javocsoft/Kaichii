@@ -56,7 +56,7 @@ enum class FileType {
  * @param file open file
  * @return FileType of file
  */
-FileType IdentifyFile(FileSys::VirtualFile file);
+FileType IdentifyFile(const FileSys::VirtualFile& file);
 
 /**
  * Returns whether the file type represents a container format that can bundle multiple titles
@@ -72,7 +72,7 @@ bool IsContainerType(FileType type);
  * @param program_id optional program id hint for multi-program containers.
  * @param program_index optional program index hint for multi-program containers.
  */
-bool IsBootableGameContainer(FileSys::VirtualFile file, FileType type = FileType::Unknown,
+bool IsBootableGameContainer(const FileSys::VirtualFile& file, FileType type = FileType::Unknown,
                              u64 program_id = 0, std::size_t program_index = 0);
 
 /**

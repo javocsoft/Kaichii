@@ -1059,7 +1059,7 @@ std::unique_ptr<Common::Input::InputDevice> InputFactory::CreateColorDevice(
 }
 
 std::unique_ptr<Common::Input::InputDevice> InputFactory::CreateMotionDevice(
-    Common::ParamPackage params) {
+    const Common::ParamPackage& params) {
     const PadIdentifier identifier = {
         .guid = Common::UUID{params.Get("guid", "")},
         .port = static_cast<std::size_t>(params.Get("port", 0)),

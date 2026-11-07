@@ -24,7 +24,7 @@ FileType IdentifyTypeImpl(const FileSys::NAX& nax) {
 }
 } // Anonymous namespace
 
-AppLoader_NAX::AppLoader_NAX(FileSys::VirtualFile file_)
+AppLoader_NAX::AppLoader_NAX(const FileSys::VirtualFile& file_)
     : AppLoader(file_), nax(std::make_unique<FileSys::NAX>(file_)),
       nca_loader(std::make_unique<AppLoader_NCA>(nax->GetDecrypted())) {}
 

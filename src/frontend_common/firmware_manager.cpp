@@ -20,7 +20,7 @@
 #endif
 
 FirmwareManager::KeyInstallResult
-FirmwareManager::InstallKeys(std::string location, std::string extension) {
+FirmwareManager::InstallKeys(const std::string& location, const std::string& extension) {
     LOG_INFO(Frontend, "Installing key files from {}", location);
 
     const auto keys_dir = Common::FS::GetEdenPath(Common::FS::EdenPath::KeysDir);

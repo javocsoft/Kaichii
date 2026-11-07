@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <cstring>
+#include <utility>
 
 #include "common/assert.h"
 #include "common/bit_field.h"
@@ -1128,14 +1129,14 @@ void NPad::SetNpadExternals(std::shared_ptr<AppletResource> resource,
                             std::shared_ptr<HandheldConfig> handheld_config,
                             Kernel::KEvent* input_event, std::mutex* input_mutex,
                             std::shared_ptr<Service::Set::ISystemSettingsServer> settings) {
-    applet_resource_holder.applet_resource = resource;
+    applet_resource_holder.applet_resource = std::move(resource);
     applet_resource_holder.shared_mutex = shared_mutex;
     applet_resource_holder.shared_npad_resource = &npad_resource;
-    applet_resource_holder.handheld_config = handheld_config;
+    applet_resource_holder.handheld_config = std::move(handheld_config);
     applet_resource_holder.input_event = input_event;
     applet_resource_holder.input_mutex = input_mutex;
 
-    vibration_handler.SetSettingsService(settings);
+    vibration_handler.SetSettingsService(std::move(settings));
 
     for (auto& abstract_pad : abstracted_pads) {
         abstract_pad.SetExternals(&applet_resource_holder, nullptr, nullptr, nullptr, nullptr,
