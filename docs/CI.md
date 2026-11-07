@@ -41,8 +41,8 @@ tools/dev/in-docker.sh tools/ci/quick-checks.sh
 
 Actions are off on a new fork. Enable them on its Actions tab, and enable branch protection on `nx2`
 if you want the checks to block merges. `build-check.yml` and `linux-extended.yml` need no secrets.
-Their first runs start with an empty cache and take far longer than later ones: see the
-`timeout-minutes` comment in `linux-extended.yml`.
+Their first runs start with an empty cache: the build alone took 41 minutes with GCC and 35 with Clang
+on a fork's first run.
 
 In `zortos293/Lichii`, a workflow run from a first-time contributor's PR stays at `action_required`
 until a maintainer approves it, so those PRs have had no CI yet.

@@ -18,8 +18,8 @@ jobs:
   clang:
     name: Linux Clang 20, dynarmic and shader tools
     runs-on: ubuntu-24.04
-    # An uncached build takes hours on four cores. The cache is saved even when this expires, so the
-    # next run continues from where this one stopped.
+    # An uncached build takes about 35 minutes, but one apt download took 86 on a throttled mirror.
+    # The cache is saved even when this expires, so the next run continues from where this one stopped.
     timeout-minutes: 240
     env:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
@@ -119,7 +119,8 @@ jobs:
         env:
           VK_DRIVER_FILES: /usr/share/vulkan/icd.d/lvp_icd.json
         run: |
-          python3 -m venv --system-site-packages "$RUNNER_TEMP/vulkan"
+          # Install Qt puts its own Python first in PATH, without the numpy and Pillow from apt.
+          /usr/bin/python3 -m venv --system-site-packages "$RUNNER_TEMP/vulkan"
           "$RUNNER_TEMP/vulkan/bin/pip" install vulkan==1.3.275.1
           "$RUNNER_TEMP/vulkan/bin/python" tools/nx2/test_fsr3_shaders.py \
             --out "$RUNNER_TEMP/fsr3" --build build
