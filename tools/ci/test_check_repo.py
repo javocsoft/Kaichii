@@ -51,6 +51,15 @@ class CheckRepo(unittest.TestCase):
         self.assertEqual(len(problems), 1)
         self.assertIn("forgotten.cpp", problems[0])
 
+    def test_jump_inside_assert_or_execute_is_reported(self):
+        self.write("src/a.cpp", "ASSERT_OR_EXECUTE(x != 0, { return; });\n"
+                                "ASSERT_OR_EXECUTE(f(y),\n    continue;);\n"
+                                "ASSERT_OR_EXECUTE_MSG(z, { break; }, \"z\");\n")
+        self.commit()
+        problems = check_repo.check_assert_jumps()
+        self.assertEqual(problems, ["src/a.cpp:2: continue or break inside ASSERT_OR_EXECUTE",
+                                    "src/a.cpp:4: continue or break inside ASSERT_OR_EXECUTE"])
+
     def test_doc_links(self):
         self.write("docs/guide.md", "[ok](other.md) [root](/docs/other.md) [web](https://a.b) "
                                     "[anchor](#top) [bad](missing.md)\n")

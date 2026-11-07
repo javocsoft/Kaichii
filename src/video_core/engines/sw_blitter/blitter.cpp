@@ -212,7 +212,7 @@ bool SoftwareBlitEngine::Blit(Fermi2D::Surface& src, Fermi2D::Surface& dst,
             return CalculateSize(true, bytes_per_pixel, surface.width, surface.height,
                                  surface.depth, surface.block_height, surface.block_depth);
         }
-        return static_cast<size_t>(surface.pitch * surface.height);
+        return size_t{surface.pitch} * surface.height;
     };
 
     const u32 src_extent_x = config.src_x1 - config.src_x0;

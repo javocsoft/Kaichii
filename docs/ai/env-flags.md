@@ -138,7 +138,6 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_SPLIT_CHECK` | diag | Reports scheduler use from the wrong thread. |
 | `EDEN_NX2_SPLIT_SKIP` | A/B | `=0`: send state writes that keep the register's value too. |
 | `EDEN_NX2_SPLIT_VERIFY` | diag | `=1`: every 4096 front macro calls, compare front and back registers. |
-| `EDEN_NX2_FRONT_VERIFY` | diag | Named only in the comment on `DrainSite::FrontVerify`. Nothing reads it; use `EDEN_NX2_SPLIT_VERIFY`. |
 | `EDEN_NX2_FETCH_DRAIN` | A/B | `=1`: wait for the back before every entry, as before the split overlapped. |
 | `EDEN_NX2_FRAMES_AHEAD` | A/B | `=1` always wait for the previous frame, `=0` always for this one. Default is per game. |
 | `EDEN_NX2_SYNC_SUBMIT` | A/B | Non-zero: synchronous GPFIFO submission. |

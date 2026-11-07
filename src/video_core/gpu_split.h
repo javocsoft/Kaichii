@@ -38,7 +38,7 @@ enum class DrainSite : u32 {
     GpSyncFence,    ///< A GP entry's sync bit (sync_memory_operations)
     Map,            ///< GPU memory maps before later command reads
     FrontStart,     ///< The front takes an engine's macros over
-    FrontVerify,    ///< EDEN_NX2_FRONT_VERIFY
+    FrontVerify,    ///< EDEN_NX2_SPLIT_VERIFY
     Count,
 };
 
@@ -48,7 +48,7 @@ inline constexpr std::array<const char*, static_cast<size_t>(DrainSite::Count)> 
     "gp sync fence", "map",           "front start", "front verify",
 };
 
-// Splits the GPU thread in two (NX2_GPU_THREAD_SPLIT.md). The GPU thread (the front) takes the
+// Splits the GPU thread in two (docs/nx2/gpu-thread-split.md). The GPU thread (the front) takes the
 // CPU's commands, parses command lists and runs the puller; engine method calls and everything
 // behind them (register state, macros, draws, the rasterizer and its caches) run in order on a
 // second thread (the back), fed through a single-producer single-consumer ring. Work the front

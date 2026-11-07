@@ -29,6 +29,8 @@ FLAG_RE = re.compile(r"(?:EDEN|EGLANTINE)_[A-Z0-9_]+")
 # Macros such as EDEN_DIR share the prefix, so outside the NX2 families only a quoted name counts.
 SOURCE_FLAG_RE = re.compile(r"EDEN_(?:NX2|DKB)_[A-Z0-9_]+|\"((?:EDEN|EGLANTINE)_[A-Z0-9_]+)\"")
 LINK_RE = re.compile(r"\]\(([^)\s]+)")
+ASSERT_EXECUTE_RE = re.compile(r"\bASSERT_OR_EXECUTE(?:_MSG)?\(")
+JUMP_RE = re.compile(r"\b(?:continue|break)\b")
 CODE_SPAN_RE = re.compile(r"`([^`\n]+)`")
 PATH_PREFIXES = ("src/", "tools/", "docs/", ".github/", ".ci/", "hooks/", "CMakeModules/", "dist/")
 SPDX_SUFFIXES = (".cpp", ".h", ".hpp", ".inc", ".c", ".kt", ".py", ".sh", ".cmake", ".ps1")
@@ -124,6 +126,25 @@ def changed_files(base):
     return [name for name in names.split("\n") if name and not is_external(name)]
 
 
+def check_assert_jumps():
+    """A jump inside ASSERT_OR_EXECUTE only leaves the macro's own do-while, not the caller's loop."""
+    problems = []
+    for path in tracked("src/*.cpp", "src/*.h", "src/*.inc"):
+        if is_external(path):
+            continue
+        text = read(path)
+        for match in ASSERT_EXECUTE_RE.finditer(text):
+            depth = 1
+            end = match.end()
+            while depth and end < len(text):
+                depth += {"(": 1, ")": -1}.get(text[end], 0)
+                end += 1
+            if JUMP_RE.search(text, match.end(), end):
+                line = text.count("\n", 0, match.start()) + 1
+                problems.append(f"{path}:{line}: continue or break inside ASSERT_OR_EXECUTE")
+    return problems
+
+
 def check_whitespace(base):
     """The policy of hooks/pre-commit, which nothing enforces unless a contributor installs it."""
     paths = ["src/", "CMakeLists.txt"]
@@ -164,6 +185,7 @@ def main():
         check_env_flags,
         check_agent_doc_paths,
         check_ci_doc,
+        check_assert_jumps,
     ]
     if args.base:
         checks += [lambda: check_whitespace(args.base), lambda: check_spdx(args.base)]
