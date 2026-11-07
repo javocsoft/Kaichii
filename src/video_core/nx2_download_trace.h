@@ -101,12 +101,13 @@ inline void Copied(u64 address, u64 size) {
     MaybeReport();
 }
 
-/// A guest CPU read of GPU-written [address, address + size): marked Preflushable, or flushed.
-inline void Marked(u64 address, u64 size, bool preflush) {
+/// A guest CPU read of GPU-written [address, address + size) that flushes: the first one there,
+/// or one that came before the download a fence took of the Preflushable range landed.
+inline void Marked(u64 address, u64 size, bool preflushable) {
     auto& state = Get();
     if (state.marks++ < 2000) {
         LOG_INFO(HW_GPU, "Download trace: CPU read of GPU-written [{:#x} +{:#x}) {}", address,
-                 size, preflush ? "marked preflushable" : "flushed");
+                 size, preflushable ? "before its fence download landed" : "for the first time");
     }
     auto& totals = state.reads[address >> 12];
     totals.bytes += size;

@@ -41,6 +41,15 @@ public:
         return Arm(address, size, [](DAddr, u64) {});
     }
 
+    /// Whether the core holds a trap on every page of this page-aligned range.
+    [[nodiscard]] bool IsArmed(DAddr address, u64 size) const {
+        u64 armed_bytes = 0;
+        ranges.ForEachInRange(address, size, [&](DAddr lower, DAddr upper) {
+            armed_bytes += upper - lower;
+        });
+        return armed_bytes == size;
+    }
+
     /// A CPU read consumes the core's trap; unmapping also forgets the range.
     void Subtract(DAddr address, u64 size) {
         ranges.Subtract(address, size);

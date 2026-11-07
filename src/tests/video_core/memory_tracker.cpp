@@ -626,6 +626,8 @@ TEST_CASE("A GPU write notifies the core of its unarmed pages only", "[cpu_readb
     parts.clear();
     REQUIRE_FALSE(traps.Arm(c, PAGE * 6, collect));
     REQUIRE(parts.empty());
+    REQUIRE(traps.IsArmed(c, PAGE * 6));
+    REQUIRE_FALSE(traps.IsArmed(c, PAGE * 7));
 }
 
 TEST_CASE("MemoryTracker: a GPU rewrite needs a fresh CPU readback", "[cpu_readback]") {
