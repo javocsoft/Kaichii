@@ -16,6 +16,7 @@ two separately, and never call a game fixed because the tests pass.
 | Shader sweep | `tools/nx2/shader_sweep.py`, see `tools/nx2/shader-sweep.md` | Every captured native program through `spirv-val`. Needs your own dumps | Minutes |
 | Vulkan shaders | `tools/nx2/test_fsr3_shaders.py`, `tools/nx2/test_buffer_host_visibility.py`; `.github/workflows/linux-extended.yml` shows how. Give `--build` a Clang tree: with GCC, `-Werror=missing-declarations` stops their probe | Production shaders and barriers on Mesa's software Vulkan, with validation layers | Seconds |
 | Sanitizers | `LICHII_SANITIZE=asan tools/dev/build-tests.sh`, see below | Memory errors and undefined behaviour in everything the C++ tests reach | 20 minutes to build |
+| Static analysis | `tools/dev/in-docker.sh tools/dev/tidy.sh` | The checks in `.clang-tidy`: bugs, not style. Findings go to `build/clang/tidy.log` | 20 minutes |
 | Debug server | `docs/nx2/debug-mcp.md` | Live state of a running game | Interactive |
 | Playing the game | A person | What players see | The only proof of a game fix |
 

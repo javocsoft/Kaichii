@@ -12,6 +12,8 @@ Tools for Eden and other subprojects. When adding new scripts please use `#!/bin
 - `ci/check_repo.py`: Checks test registration, doc links, the switch catalog and agent doc paths.
 - `dev/Dockerfile`, `dev/in-docker.sh`: Linux build environment matching CI, for hosts without the toolchain.
 - `dev/build-tests.sh`: Configures, builds and runs the C++ tests. See [building](../docs/ai/building.md).
+- `dev/tidy.sh`: Runs the checks in `.clang-tidy`. See [testing](../docs/ai/testing.md).
+- `dev/coverage.sh`: Measures test coverage and ranks files by risk.
 
 ## Binaries
 
