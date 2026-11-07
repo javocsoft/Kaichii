@@ -410,6 +410,11 @@ if (YUZU_USE_BUNDLED_OPENSSL)
     set(BUILD_SHARED_LIBS OFF)
     AddJsonPackage(openssl-ci)
 else()
+    # openssl-cmake leaves OPENSSL_FOUND in the cache, so the next configure would take the copy it
+    # built here for a system package, skip openssl-cmake and fail on the first real lookup.
+    if (OPENSSL_MAKEFILE)
+        set(OpenSSL_FORCE_BUNDLED ON)
+    endif()
     AddJsonPackage(openssl)
     set(OPENSSL_BUILD_VERBOSE ON)
     set(OPENSSL_CONFIGURE_VERBOSE ON)
