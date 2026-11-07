@@ -430,3 +430,29 @@ TEST_CASE("Ampere gathers from a second descriptor buffer lower to Maxwell TLD4.
     REQUIRE(same);
     REQUIRE((same.instructions[same.source_instruction_offsets[1] + 2] >> 56) == 0xc8);
 }
+
+TEST_CASE("Ampere offset gathers keep their coordinate pair below the reserved registers",
+          "[video_core][ampere][gather]") {
+    // The top byte of the first word is Ra: x and y are in Ra and Ra+1.
+    constexpr Instruction Gather{{0x001c7b63, 0x30000a2b, 0x041e1f16, 0x000f4200}};
+    // Any instruction reading the uniform bank claims the registers from 216 up.
+    constexpr Instruction BankUser{{0x16007f66, 0x3000080c, 0x089e01ff, 0x000fc200}};
+
+    for (const bool bank : {false, true}) {
+        const u32 limit = bank ? 216 : 246;
+        for (const u32 source : {limit - 2, limit - 1, 255U}) {
+            CAPTURE(bank, source);
+            auto gather = Gather;
+            gather.words[0] |= source << 24;
+            const auto lowered = bank ? LowerToMaxwell(std::array{BankUser, gather, Exit})
+                                      : LowerToMaxwell(std::array{gather, Exit});
+            INFO(lowered.error);
+            if (source == limit - 1) {
+                REQUIRE_FALSE(lowered);
+                REQUIRE(lowered.error == "native texture gather mode");
+            } else {
+                REQUIRE(lowered);
+            }
+        }
+    }
+}

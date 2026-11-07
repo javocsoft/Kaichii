@@ -30,3 +30,13 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 | Host driver bugs | [Driver bugs](../DriverBugs.md) |
 | Maxwell instruction set | [NVIDIA GPU](../NvidiaGpu.md) |
 | Compatibility reports | [Reporting](../compatibility-report.md) |
+
+## Upstream changes left out
+
+Eglantine changes reviewed and not taken. Check these before porting them.
+
+| Change | Why it is not here |
+|---|---|
+| `8820bb79aa`, storage buffers sized from the mapping only in DLSS passes | Reverted and restored upstream, so its effect is contested. It changes the binding size of every Switch 2 compute shader, and nothing here can validate that without running games. |
+| `6dd4781249`, `0ca2032bff`, data directory and translations renamed to Eglantine | Would strand the saves and settings in the `eden` directory. |
+| `587633debe`, Star Fox support | Reverted upstream by `e87ad31068`. |
