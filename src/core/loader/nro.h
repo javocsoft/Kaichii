@@ -4,6 +4,7 @@
 #pragma once
 
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 #include "common/common_types.h"
@@ -22,6 +23,9 @@ class KProcess;
 }
 
 namespace Loader {
+
+/// Whether an NRO image holds everything its header describes, before any of it is copied.
+bool IsNroImageValid(std::span<const u8> data);
 
 /// Loads an NRO file
 class AppLoader_NRO final : public AppLoader {

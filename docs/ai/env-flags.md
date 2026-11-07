@@ -90,6 +90,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_IPC_TRACE` | diag | Every dispatched service command and its result word. |
 | `EDEN_NX2_IPC_SUMMARY` | diag | Every 5 s, how often each command ran and with which result. Finds a game polling something that never becomes ready. |
 | `EDEN_NX2_MEM_TRACE` | diag | The title's memory layout and size queries. |
+| `EDEN_HYBRID_CORES` | A/B | Windows only. `=0` stops keeping time-critical threads on the performance cores of hybrid CPUs. |
 | `EDEN_NX2_AUDIO_LEVEL` | diag | Output peak about every two seconds. |
 | `EDEN_NX2_VDEC_TRACE` | diag | Video decoder submit, decode and composite trace. |
 | `EDEN_NX2_VDEC_DUMP` | diag | `=<dir>`: luma of every 120th decoded frame at quarter size. |
@@ -133,11 +134,10 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 
 | Switch | Kind | Effect |
 |---|---|---|
-| `EDEN_NX2_SPLIT` | A/B | GPU thread split mode: `2` (default) macros on the front, `1` macros on the back, anything else off. Only with Vulkan and neither safe DMA nor high GPU accuracy. See `NX2_GPU_THREAD_SPLIT.md`. |
+| `EDEN_NX2_SPLIT` | A/B | GPU thread split mode: `2` (default) macros on the front, `1` macros on the back, anything else off. Only with Vulkan and neither safe DMA nor high GPU accuracy. See `docs/nx2/gpu-thread-split.md`. |
 | `EDEN_NX2_SPLIT_CHECK` | diag | Reports scheduler use from the wrong thread. |
 | `EDEN_NX2_SPLIT_SKIP` | A/B | `=0`: send state writes that keep the register's value too. |
 | `EDEN_NX2_SPLIT_VERIFY` | diag | `=1`: every 4096 front macro calls, compare front and back registers. |
-| `EDEN_NX2_FRONT_VERIFY` | diag | Named only in the comment on `DrainSite::FrontVerify`. Nothing reads it; use `EDEN_NX2_SPLIT_VERIFY`. |
 | `EDEN_NX2_FETCH_DRAIN` | A/B | `=1`: wait for the back before every entry, as before the split overlapped. |
 | `EDEN_NX2_FRAMES_AHEAD` | A/B | `=1` always wait for the previous frame, `=0` always for this one. Default is per game. |
 | `EDEN_NX2_SYNC_SUBMIT` | A/B | Non-zero: synchronous GPFIFO submission. |

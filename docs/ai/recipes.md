@@ -16,13 +16,13 @@ skip here because the remote already exists.
 
 ```sh
 git fetch lichii
-git switch nx2
-git merge --ff-only lichii/nx2 && git push origin nx2
+git switch -c sync/zortos nx2
+git merge lichii/nx2
 ```
 
-If the fast-forward fails, the fork has its own commits on `nx2`: merge `lichii/nx2` on a branch instead
-and open a PR. `gh pr create` in a fork targets the parent repository by default, so pass
-`-R javocsoft/Lichii` unless you mean to open a PR on the main project.
+`nx2` is protected, so push the branch and open a PR. `gh pr create` in a fork targets the parent
+repository by default, so pass `-R javocsoft/Lichii`. The merge can bring switches or typos the gate
+rejects: fix those on the same branch.
 
 ## Lower a new Ampere instruction
 

@@ -12,6 +12,8 @@ Tools for Eden and other subprojects. When adding new scripts please use `#!/bin
 - `ci/check_repo.py`: Checks test registration, doc links, the switch catalog and agent doc paths.
 - `dev/Dockerfile`, `dev/in-docker.sh`: Linux build environment matching CI, for hosts without the toolchain.
 - `dev/build-tests.sh`: Configures, builds and runs the C++ tests. See [building](../docs/ai/building.md).
+- `dev/tidy.sh`: Runs the checks in `.clang-tidy`. See [testing](../docs/ai/testing.md).
+- `dev/coverage.sh`: Measures test coverage and ranks files by risk.
 
 ## Binaries
 
@@ -23,7 +25,7 @@ Tools for Eden and other subprojects. When adding new scripts please use `#!/bin
 
 - `generate_converters.py`: Generates converters for given formats of textures (C++ helper).
 - `svc_generator.py`: Generates the files `src/core/hle/kernel/svc.cpp` and `src/core/hle/kernel/svc.h` based off prototypes.
-- `shellcheck.sh`: Ensure POSIX compliance (and syntax sanity) for all tools in this directory and subdirectories.
+- `shellcheck.sh`: Checks every shell script. Part of the fast CI gate.
 - `llvmpipe-run.sh`: Sets environment variables needed to run any command (or Eden) with llvmpipe.
 - `optimize-assets.sh`: Optimizes PNG assets with OptiPng.
 - `update-cpm.sh`: Updates CPM.cmake to the latest version.

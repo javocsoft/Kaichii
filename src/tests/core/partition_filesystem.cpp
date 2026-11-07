@@ -116,7 +116,21 @@ TEST_CASE("Partition string table needs no final terminator", "[core][partition_
     CHECK(partition.GetFile("name") != nullptr);
 }
 
+TEST_CASE("Partition lists more entries than a 16-bit counter holds",
+          "[core][partition_filesystem]") {
+    Entries entries;
+    for (std::size_t i = 0; i < 0x10001; ++i) {
+        entries.emplace_back(std::to_string(i), std::vector<u8>{});
+    }
+    const PartitionFilesystem partition{File(MakePartition("PFS0", PfsEntrySize, entries))};
+    REQUIRE(partition.GetStatus() == ResultStatus::Success);
+    CHECK(partition.GetFiles().size() == entries.size());
+}
+
 TEST_CASE("Damaged partition headers are rejected", "[core][partition_filesystem]") {
+    SECTION("no file") {
+        CHECK(PartitionFilesystem{nullptr}.GetStatus() == ResultStatus::ErrorBadPFSHeader);
+    }
     SECTION("shorter than the header") {
         CHECK(PartitionFilesystem{File(std::vector<u8>(HeaderSize - 1))}.GetStatus() ==
               ResultStatus::ErrorBadPFSHeader);
@@ -131,6 +145,19 @@ TEST_CASE("Damaged partition headers are rejected", "[core][partition_filesystem
         Put<u32>(bytes, 4, 1000);
         CHECK(PartitionFilesystem{File(std::move(bytes))}.GetStatus() ==
               ResultStatus::ErrorIncorrectPFSFileSize);
+    }
+    SECTION("every bit set in the entry count") {
+        auto bytes = MakePartition("PFS0", HfsEntrySize, Files);
+        Put<u32>(bytes, 4, 0xFFFFFFFF);
+        CHECK(PartitionFilesystem{File(std::move(bytes))}.GetStatus() ==
+              ResultStatus::ErrorIncorrectPFSFileSize);
+    }
+    SECTION("name outside the string table") {
+        auto bytes = MakePartition("PFS0", PfsEntrySize, Files);
+        const auto strtab_size = static_cast<u32>(std::string_view{"main\0main.npdm\0rtld\0", 20}.size());
+        Put<u32>(bytes, HeaderSize + 0x10, strtab_size);
+        CHECK(PartitionFilesystem{File(std::move(bytes))}.GetStatus() ==
+              ResultStatus::ErrorBadPFSHeader);
     }
     SECTION("string table past the end of the file") {
         auto bytes = MakePartition("PFS0", PfsEntrySize, Files);

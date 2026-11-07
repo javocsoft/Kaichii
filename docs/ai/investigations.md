@@ -14,15 +14,15 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 | Star Fox | 0400E88025B1A000 | [Crashes](../STARFOX_COMMUNITY_CRASHES.md), [Aftermath diagnostic](../STARFOX_AFTERMATH_DIAGNOSTIC.md), [upscale stand-in](../STARFOX_UPSCALE_STANDIN.md) |
 | Fire Emblem: Fortune's Weave | 04007EF01F8AE000 | [Upscale stand-in](../FE_UPSCALE_STANDIN.md), [DLSS replacement](../native-dlss-replacement.md) |
 | The Duskbloods network test | 0400D1D02399A000 | [Bindless surfaces](../duskbloods-bindless-surfaces.md), [uniform shift](../duskbloods-uniform-immediate-shift.md) |
-| Mario Kart World | 0400C3F00006E000 | [Integration test](../performance/MKW-INTEGRATION.md), `NX2_NOTES.md`, `NX2_GPU_THREAD_SPLIT.md` |
+| Mario Kart World | 0400C3F00006E000 | [Integration test](../performance/MKW-INTEGRATION.md), `docs/nx2/notes.md`, `docs/nx2/gpu-thread-split.md` |
 | The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md) |
 
 ## By subject
 
 | Subject | Notes |
 |---|---|
-| Boot blockers, first Switch 2 bring-up | `NX2_NOTES.md` |
-| GPU thread split | `NX2_GPU_THREAD_SPLIT.md` |
+| Boot blockers, first Switch 2 bring-up | `docs/nx2/notes.md` |
+| GPU thread split | `docs/nx2/gpu-thread-split.md` |
 | Asynchronous native pipelines | [Worker emission](../nx2/async-native-pipelines.md) |
 | Offline shader sweeps | [Report](../shader-sweep-20261104.md), [before](../shader-sweep-before-20261104.md), [after](../shader-sweep-after-20261104.md), [library report](../shader-sweep-all-games-20261104.md), [library before](../shader-sweep-all-games-before-20261104.md), [library after](../shader-sweep-all-games-after-20261104.md) |
 | Video playback | [Debugging](../VideoPlaybackDebug.md), [upstream audit](../VideoPlaybackUpstreamAudit.md), [upstream inventory](../VideoPlaybackUpstreamInventory.md) |
@@ -30,3 +30,13 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 | Host driver bugs | [Driver bugs](../DriverBugs.md) |
 | Maxwell instruction set | [NVIDIA GPU](../NvidiaGpu.md) |
 | Compatibility reports | [Reporting](../compatibility-report.md) |
+
+## Upstream changes left out
+
+Eglantine changes reviewed and not taken. Check these before porting them.
+
+| Change | Why it is not here |
+|---|---|
+| `8820bb79aa`, storage buffers sized from the mapping only in DLSS passes | Reverted and restored upstream, so its effect is contested. It changes the binding size of every Switch 2 compute shader, and nothing here can validate that without running games. |
+| `6dd4781249`, `0ca2032bff`, data directory and translations renamed to Eglantine | Would strand the saves and settings in the `eden` directory. |
+| `587633debe`, Star Fox support | Reverted upstream by `e87ad31068`. |

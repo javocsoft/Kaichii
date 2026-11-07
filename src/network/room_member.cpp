@@ -168,6 +168,10 @@ void RoomMember::RoomMemberImpl::StartLoop() {
             if (enet_host_service(client, &event, 5) > 0) {
                 switch (event.type) {
                 case ENET_EVENT_TYPE_RECEIVE:
+                    if (event.packet->dataLength == 0) {
+                        enet_packet_destroy(event.packet);
+                        break;
+                    }
                     switch (event.packet->data[0]) {
                     case IdProxyPacket:
                         HandleProxyPackets(&event);
@@ -312,8 +316,11 @@ void RoomMember::RoomMemberImpl::HandleRoomInformationPacket(const ENetEvent* ev
     room_information.preferred_game = info.preferred_game;
     room_information.host_username = info.host_username;
 
-    u32 num_members;
+    u32 num_members{};
     packet.Read(num_members);
+    if (num_members > MaxConcurrentConnections) {
+        return;
+    }
     member_information.resize(num_members);
 
     for (auto& member : member_information) {
@@ -356,19 +363,19 @@ void RoomMember::RoomMemberImpl::HandleProxyPackets(const ENetEvent* event) {
     packet.IgnoreBytes(sizeof(u8)); // Ignore the message type
 
     // Parse the ProxyPacket from the packet
-    u8 local_family;
+    u8 local_family{};
     packet.Read(local_family);
     proxy_packet.local_endpoint.family = static_cast<Domain>(local_family);
     packet.Read(proxy_packet.local_endpoint.ip);
     packet.Read(proxy_packet.local_endpoint.portno);
 
-    u8 remote_family;
+    u8 remote_family{};
     packet.Read(remote_family);
     proxy_packet.remote_endpoint.family = static_cast<Domain>(remote_family);
     packet.Read(proxy_packet.remote_endpoint.ip);
     packet.Read(proxy_packet.remote_endpoint.portno);
 
-    u8 protocol_type;
+    u8 protocol_type{};
     packet.Read(protocol_type);
     proxy_packet.protocol = static_cast<Protocol>(protocol_type);
 
@@ -386,7 +393,7 @@ void RoomMember::RoomMemberImpl::HandleLdnPackets(const ENetEvent* event) {
     // Ignore the first byte, which is the message id.
     packet.IgnoreBytes(sizeof(u8)); // Ignore the message type
 
-    u8 packet_type;
+    u8 packet_type{};
     packet.Read(packet_type);
     ldn_packet.type = static_cast<LDNPacketType>(packet_type);
 

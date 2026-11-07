@@ -61,6 +61,10 @@ struct NSOHeader {
     std::array<SHA256Hash, 3> segment_hashes;
 
     bool IsSegmentCompressed(size_t segment_num) const;
+    /// Whether every segment fits in its compressed size, and the image in a 32-bit size.
+    bool HasValidSegments() const;
+    /// Bytes from the start of the image to the end of the segment that ends last.
+    u64 SegmentsEnd() const;
     bool IsZBICCompressed() const {
         return ((flags >> 7) & 1) != 0;
     }

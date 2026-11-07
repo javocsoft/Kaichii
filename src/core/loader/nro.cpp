@@ -4,6 +4,7 @@
 // SPDX-FileCopyrightText: Copyright 2018 yuzu Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstring>
@@ -152,25 +153,45 @@ static constexpr u32 PageAlignSize(u32 size) {
     return static_cast<u32>((size + Core::Memory::YUZU_PAGEMASK) & ~Core::Memory::YUZU_PAGEMASK);
 }
 
+bool IsNroImageValid(std::span<const u8> data) {
+    if (data.size() < sizeof(NroHeader)) {
+        return false;
+    }
+
+    NroHeader nro_header{};
+    std::memcpy(&nro_header, data.data(), sizeof(NroHeader));
+    if (nro_header.magic != Common::MakeMagic('N', 'R', 'O', '0') ||
+        nro_header.file_size > data.size() || nro_header.file_size > 0xFFFF'F000) {
+        return false;
+    }
+
+    const u64 mod_end = u64{nro_header.module_header_offset} + sizeof(ModHeader);
+    if (mod_end > PageAlignSize(nro_header.file_size)) {
+        return false;
+    }
+    if (mod_end > data.size()) {
+        return true;
+    }
+
+    ModHeader mod_header{};
+    std::memcpy(&mod_header, data.data() + nro_header.module_header_offset, sizeof(ModHeader));
+    return mod_header.magic != Common::MakeMagic('M', 'O', 'D', '0') ||
+           mod_header.bss_end_offset >= mod_header.bss_start_offset;
+}
+
 static bool LoadNroImpl(Core::System& system, Kernel::KProcess& process,
                         const std::vector<u8>& data) {
-    if (data.size() < sizeof(NroHeader)) {
+    if (!IsNroImageValid(data)) {
         return {};
     }
 
     // Read NSO header
     NroHeader nro_header{};
     std::memcpy(&nro_header, data.data(), sizeof(NroHeader));
-    if (nro_header.magic != Common::MakeMagic('N', 'R', 'O', '0')) {
-        return {};
-    }
 
     // Build program image
     std::vector<u8> program_image(PageAlignSize(nro_header.file_size));
-    std::memcpy(program_image.data(), data.data(), program_image.size());
-    if (program_image.size() != PageAlignSize(nro_header.file_size)) {
-        return {};
-    }
+    std::memcpy(program_image.data(), data.data(), (std::min)(program_image.size(), data.size()));
 
     Kernel::CodeSet codeset;
     for (std::size_t i = 0; i < nro_header.segments.size(); ++i) {

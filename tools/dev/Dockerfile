@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxkbcommon-x11-0 make mesa-common-dev mesa-vulkan-drivers nasm ninja-build patch perl \
     pkg-config python3 python3-numpy python3-pil python3-venv shellcheck spirv-headers \
     spirv-tools unzip vulkan-validationlayers xz-utils zip zlib1g-dev zstd \
-    clang-${LLVM_VERSION} lld-${LLVM_VERSION} llvm-${LLVM_VERSION} \
+    clang-${LLVM_VERSION} clang-tidy-${LLVM_VERSION} lld-${LLVM_VERSION} llvm-${LLVM_VERSION} \
     libclang-rt-${LLVM_VERSION}-dev \
     && rm -rf /var/lib/apt/lists/*
 

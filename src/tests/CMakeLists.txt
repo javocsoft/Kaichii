@@ -6,11 +6,15 @@
 
 add_executable(tests
     common/addon_config.cpp
+    core/control_metadata.cpp
+    core/executable_headers.cpp
     core/ips_layer.cpp
+    core/kernel_executable.cpp
     core/network_packet.cpp
     core/partition_filesystem.cpp
     core/program_metadata.cpp
     core/romfs.cpp
+    core/vfs_files.cpp
     video_core/ampere_program_override.cpp
     video_core/macro_memo.cpp
     video_core/native_qmd.cpp
@@ -61,6 +65,8 @@ add_executable(tests
     video_core/maxwell_permute_lod.cpp
     video_core/submission_policy.cpp
     video_core/framebuffer_clear_layers.cpp
+    video_core/framebuffer_limits.cpp
+    video_core/fragment_color_mask.cpp
     video_core/fire_emblem_upscale.cpp
     video_core/dlss_contract.cpp
     video_core/ampere_fast_fusion.cpp
@@ -75,6 +81,7 @@ add_executable(tests
     video_core/spirv_fragment_shuffle.cpp
     video_core/multi_range_refresh.cpp
     video_core/command_fetch_order.cpp
+    video_core/gpu_written_pages.cpp
     video_core/command_writer.cpp
     video_core/split_fence_wait.cpp
     video_core/command_snapshot_suspensions.cpp
@@ -85,6 +92,7 @@ add_executable(tests
     common/queue_lifetime.cpp
     common/queue_timed_wait.cpp
     common/range_set_move.cpp
+    common/range_set_subtract.cpp
     video_core/uniform_cache_history.cpp
     video_core/x8d24_conversion.cpp
     video_core/ampere_ported_half_compare.cpp
@@ -99,12 +107,15 @@ add_executable(tests
     video_core/pipeline_cache_files.cpp
     video_core/storage_binding_capacity.cpp
     video_core/native_indirect_reset.cpp
+    video_core/native_qmd_release.cpp
     video_core/gpu_command_safety.cpp
     video_core/syncpoint_actions.cpp
     video_core/nx2_video_render.cpp
     video_core/ampere_matrix.cpp
     video_core/spirv_software_matrix.cpp
     video_core/spirv_builtin_capabilities.cpp
+    video_core/spirv_min_max_denorms.cpp
+    video_core/spirv_nan_safe_min_max.cpp
     common/bit_field.cpp
     common/cityhash.cpp
     common/container_hash.cpp
@@ -112,6 +123,7 @@ add_executable(tests
     common/fibers.cpp
     common/game_presets.cpp
     common/host_memory.cpp
+    common/multi_level_page_table.cpp
     common/page_table.cpp
     common/param_package.cpp
     common/range_map.cpp
@@ -148,9 +160,11 @@ add_executable(tests
     video_core/ampere_bindless_surfaces.cpp
     video_core/native_macro_fifo.cpp
     video_core/uniform_stream_reuse.cpp
+    video_core/usage_tracker.cpp
     video_core/shader_invalidation.cpp
     video_core/descriptor_table.cpp
     video_core/global_address_tracking.cpp
+    video_core/global_atomic_routing.cpp
     video_core/nvn_storage_descriptor.cpp
     video_core/ampere_f2i.cpp
     video_core/ampere_ldc.cpp
@@ -172,6 +186,12 @@ endif()
 
 add_test(NAME tests COMMAND tests)
 
+if (TARGET SDL3::SDL3)
+    add_executable(sdl_window_state_tests yuzu_cmd/sdl_window_state.cpp)
+    target_link_libraries(sdl_window_state_tests PRIVATE SDL3::SDL3 Catch2::Catch2WithMain)
+    add_test(NAME sdl_window_state_tests COMMAND sdl_window_state_tests)
+endif()
+
 if (WIN32 AND ARCHITECTURE_x86_64)
     add_executable(event_wait_probe ../../tools/nx2/event_wait_probe.cpp)
     target_link_libraries(event_wait_probe PRIVATE common)
@@ -184,6 +204,9 @@ target_link_libraries(update_checker_tests PRIVATE common Catch2::Catch2WithMain
 add_test(NAME update_checker_tests COMMAND update_checker_tests)
 
 if (NOT ANDROID)
+    target_sources(tests PRIVATE input_common/joycon_subcommand_response.cpp)
+    target_link_libraries(tests PRIVATE SDL3::SDL3)
+
     add_executable(config_tests
         common/first_run_config.cpp
         ../frontend_common/config.cpp)

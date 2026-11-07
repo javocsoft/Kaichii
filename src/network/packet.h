@@ -75,7 +75,6 @@ public:
     Packet& Read(u64& out_data);
     Packet& Read(float& out_data);
     Packet& Read(double& out_data);
-    Packet& Read(char* out_data);
     Packet& Read(std::string& out_data);
     template <typename T>
     Packet& Read(std::vector<T>& out_data);
@@ -121,11 +120,16 @@ Packet& Packet::Read(std::vector<T>& out_data) {
     // First extract the size
     u32 size = 0;
     Read(size);
+    // Every element takes at least one byte, so a size past the end of the packet is malformed.
+    if (!CheckSize(size)) {
+        out_data.clear();
+        return *this;
+    }
     out_data.resize(size);
 
     // Then extract the data
     for (std::size_t i = 0; i < out_data.size(); ++i) {
-        T character;
+        T character{};
         Read(character);
         out_data[i] = character;
     }
@@ -135,7 +139,7 @@ Packet& Packet::Read(std::vector<T>& out_data) {
 template <typename T, std::size_t S>
 Packet& Packet::Read(std::array<T, S>& out_data) {
     for (std::size_t i = 0; i < out_data.size(); ++i) {
-        T character;
+        T character{};
         Read(character);
         out_data[i] = character;
     }

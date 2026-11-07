@@ -15,6 +15,8 @@ two separately, and never call a game fixed because the tests pass.
 | Shader tools | See `.github/workflows/linux-extended.yml` | `shader-sweep`, `nup-shader-export`, the fixtures in `tools/shader-sweep/fixtures` | Seconds |
 | Shader sweep | `tools/nx2/shader_sweep.py`, see `tools/nx2/shader-sweep.md` | Every captured native program through `spirv-val`. Needs your own dumps | Minutes |
 | Vulkan shaders | `tools/nx2/test_fsr3_shaders.py`, `tools/nx2/test_buffer_host_visibility.py`; `.github/workflows/linux-extended.yml` shows how. Give `--build` a Clang tree: with GCC, `-Werror=missing-declarations` stops their probe | Production shaders and barriers on Mesa's software Vulkan, with validation layers | Seconds |
+| Sanitizers | `LICHII_SANITIZE=asan tools/dev/build-tests.sh`, see below | Memory errors and undefined behaviour in everything the C++ tests reach | 20 minutes to build |
+| Static analysis | `tools/dev/in-docker.sh tools/dev/tidy.sh` | The checks in `.clang-tidy`: bugs, not style. Findings go to `build/clang/tidy.log` | 20 minutes |
 | Debug server | `docs/nx2/debug-mcp.md` | Live state of a running game | Interactive |
 | Playing the game | A person | What players see | The only proof of a game fix |
 
@@ -75,6 +77,27 @@ When a test exposes a bug you are not fixing now, tag the case `[!shouldfail]` a
 [Known issues](known-issues.md). Catch2 then reports it as an expected failure, and the suite fails once
 the bug is fixed, so the tag cannot go stale. Do not use this for tests that hang or read invalid memory:
 list those in the page only.
+
+## Sanitizers
+
+`LICHII_SANITIZE=asan` builds `tests` and `dynarmic_tests` with AddressSanitizer and UBSan in
+`build/clang-asan`, and `tsan` does the same with ThreadSanitizer. Run them with these options:
+
+```sh
+tools/dev/in-docker.sh env LICHII_SANITIZE=asan tools/dev/build-tests.sh
+tools/dev/in-docker.sh env \
+    ASAN_OPTIONS=detect_stack_use_after_return=0:detect_leaks=0:halt_on_error=0:allow_user_segv_handler=0:handle_segv=2:allocator_may_return_null=1:detect_odr_violation=0 \
+    UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=0 \
+    build/clang-asan/bin/tests
+```
+
+Two settings are easy to get wrong:
+
+- `allow_user_segv_handler=0` stops Catch2 catching the signal. Otherwise it re-raises it, and ASan
+  reports the wrong place and a fault address made of the process and user ids.
+- `-fsanitize=function` stays off. It reads the 8 bytes before every call target, which faults when
+  generated code starts a mapping, as the macro JIT and dynarmic's spin lock can. The result looks like
+  a crash that depends on which tests ran first.
 
 ## Coverage
 

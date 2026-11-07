@@ -90,7 +90,7 @@ VirtualFile PatchIPS(const VirtualFile& in, const VirtualFile& ips) {
             auto read = data_size;
             if (real_offset + read > in_data.size())
                 read = u16(in_data.size() - real_offset);
-            if (ips->Read(in_data.data() + real_offset, read, offset) != data_size)
+            if (ips->Read(in_data.data() + real_offset, read, offset) != read)
                 return nullptr;
             offset += data_size;
         }
@@ -111,7 +111,10 @@ struct IPSwitchCompiler::IPSwitchPatch {
 };
 
 IPSwitchCompiler::IPSwitchCompiler(VirtualFile patch_text_) : patch_text(std::move(patch_text_)) {
-    Parse(patch_text->ReadAllBytes());
+    // Parse hands lines to strtol, which needs a terminator after the last one.
+    auto bytes = patch_text->ReadAllBytes();
+    bytes.push_back('\0');
+    Parse(std::span<const u8>{bytes}.first(bytes.size() - 1));
 }
 
 IPSwitchCompiler::~IPSwitchCompiler() = default;
@@ -162,7 +165,10 @@ void IPSwitchCompiler::Parse(std::span<u8 const> bytes) {
             // yes, @nsobid too -- NSO Build ID Specifier
             case 'n':
             case 'N':
-                nso_build_id = Common::HexStringToArray<0x20>(fmt::format("{:0<64}", line.substr(8)));
+                if (line.size() > 8) {
+                    nso_build_id =
+                        Common::HexStringToArray<0x20>(fmt::format("{:0<64}", line.substr(8)));
+                }
                 break;
             // @stop
             case 's':

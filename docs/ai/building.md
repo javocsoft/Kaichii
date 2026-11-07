@@ -68,5 +68,4 @@ You can build `lichii` and `eden-cli` here, but running a game needs your own le
 files, keys and firmware, plus a GPU with a recent Vulkan driver. The container has neither a GPU nor a
 display. Run the binaries on the host, or in a container with GPU access set up by hand.
 
-Windows is the owner's test platform and is not built here. See the [Windows steps](../Build.md) and
-the Builds section of `AGENTS.md`.
+Windows is not built here. See the [Windows steps](../Build.md).

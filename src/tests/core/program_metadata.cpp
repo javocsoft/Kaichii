@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include "core/file_sys/program_metadata.h"
 #include "core/file_sys/vfs/vfs_vector.h"
@@ -113,9 +114,7 @@ TEST_CASE("NPDM without an ACID magic in either layout is rejected", "[core][pro
 
 TEST_CASE("Truncated NPDM blocks report which block is bad", "[core][program_metadata]") {
     const auto valid = MakeNpdm(Switch2SignatureSize);
-    // Exactly the end of the file: VectorVfsFile does not bounds-check an offset beyond it
-    // (docs/ai/known-issues.md).
-    const auto end = static_cast<u32>(valid.size());
+    const auto end = static_cast<u32>(GENERATE(0x800, 0x801, 0x7FFFFFFF));
 
     SECTION("header") {
         auto bytes = valid;
@@ -152,6 +151,39 @@ TEST_CASE("Truncated NPDM blocks report which block is bad", "[core][program_met
         Put<u32>(bytes, AciOffset + 0x34, end);
         CHECK(Load(std::move(bytes)) == ResultStatus::ErrorBadKernelCapabilityDescriptors);
     }
+}
+
+TEST_CASE("NPDM blocks need their magics", "[core][program_metadata]") {
+    const auto signature_size = GENERATE(Switch1SignatureSize, Switch2SignatureSize);
+
+    SECTION("META") {
+        auto bytes = MakeNpdm(signature_size);
+        bytes[0] = 'X';
+        CHECK(Load(std::move(bytes)) == ResultStatus::ErrorBadNPDMHeader);
+    }
+    SECTION("ACI0") {
+        auto bytes = MakeNpdm(signature_size);
+        bytes[AciOffset] = 'X';
+        CHECK(Load(std::move(bytes)) == ResultStatus::ErrorBadACIHeader);
+    }
+}
+
+TEST_CASE("NPDM kernel capability size is checked before it is allocated",
+          "[core][program_metadata]") {
+    auto bytes = MakeNpdm(Switch1SignatureSize);
+    Put<u32>(bytes, AciOffset + 0x34, 0xFFFFFFFC);
+    ProgramMetadata metadata;
+    CHECK(metadata.Load(File(std::move(bytes))) ==
+          ResultStatus::ErrorBadKernelCapabilityDescriptors);
+    CHECK(metadata.GetKernelCapabilities().empty());
+}
+
+TEST_CASE("NPDM layout follows the file loaded last", "[core][program_metadata]") {
+    ProgramMetadata metadata;
+    REQUIRE(metadata.Load(File(MakeNpdm(Switch2SignatureSize))) == ResultStatus::Success);
+    REQUIRE(metadata.IsSwitch2());
+    REQUIRE(metadata.Reload(File(MakeNpdm(Switch1SignatureSize))) == ResultStatus::Success);
+    CHECK_FALSE(metadata.IsSwitch2());
 }
 
 TEST_CASE("NPDM reload takes the update's metadata but keeps the base title id",

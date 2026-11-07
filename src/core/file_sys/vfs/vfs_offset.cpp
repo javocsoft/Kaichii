@@ -91,7 +91,7 @@ std::size_t OffsetVfsFile::GetOffset() const {
 }
 
 std::size_t OffsetVfsFile::TrimToFit(std::size_t r_size, std::size_t r_offset) const {
-    return std::clamp(r_size, std::size_t{0}, size - r_offset);
+    return r_offset < size ? (std::min)(r_size, size - r_offset) : 0;
 }
 
 } // namespace FileSys

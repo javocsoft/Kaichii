@@ -46,6 +46,9 @@ public:
     }
 
     std::size_t Read(u8* data, std::size_t length, std::size_t offset) const override {
+        if (offset >= size) {
+            return 0;
+        }
         const auto read = (std::min)(length, size - offset);
         std::fill(data, data + read, value);
         return read;

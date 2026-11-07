@@ -267,7 +267,7 @@ void GDBStub::ExecuteCommand(std::string_view packet, std::vector<DebuggerAction
         const auto mem_substr{std::string_view(command).substr(mem_sep)};
         const auto mem{Common::HexStringToVector(mem_substr, false)};
 
-        if (debug_process->GetMemory().WriteBlock(addr, mem.data(), size)) {
+        if (mem.size() >= size && debug_process->GetMemory().WriteBlock(addr, mem.data(), size)) {
             Core::InvalidateInstructionCacheRange(debug_process, addr, size);
             SendReply(GDB_STUB_REPLY_OK);
         } else {

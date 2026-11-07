@@ -275,10 +275,16 @@ public:
         ASSERT(count >= 0);
         for (int i = 0; i < count; i++) {
             X509* x509 = sk_X509_value(chain, i);
-            ASSERT_OR_EXECUTE(x509 != nullptr, { continue; });
+            if (x509 == nullptr) {
+                LOG_ERROR(Service_SSL, "Certificate {} of the chain is missing", i);
+                continue;
+            }
             unsigned char* buf = nullptr;
             int len = i2d_X509(x509, &buf);
-            ASSERT_OR_EXECUTE(len >= 0 && buf, { continue; });
+            if (len < 0 || buf == nullptr) {
+                LOG_ERROR(Service_SSL, "Certificate {} of the chain could not be encoded", i);
+                continue;
+            }
             out_certs->emplace_back(buf, buf + len);
             OPENSSL_free(buf);
         }

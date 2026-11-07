@@ -29,13 +29,19 @@ bool DecompressBLZ(std::vector<u8>& data) {
     std::memcpy(&init_index, data.data() + data_size + 0x4, sizeof(u32));
     std::memcpy(&additional_size, data.data() + data_size + 0x8, sizeof(u32));
 
-    const auto start_offset = data.size() - compressed_size;
-    data.resize(compressed_size + additional_size + start_offset);
+    if (compressed_size > data.size() || init_index > compressed_size) {
+        return false;
+    }
 
+    const auto start_offset = data.size() - compressed_size;
     std::size_t index = compressed_size - init_index;
-    std::size_t out_index = compressed_size + additional_size;
+    std::size_t out_index = std::size_t{compressed_size} + additional_size;
+    data.resize(out_index + start_offset);
 
     while (out_index > 0) {
+        if (index < 1) {
+            return false;
+        }
         --index;
         auto control = data[index + start_offset];
         for (size_t i = 0; i < 8; ++i) {
@@ -67,7 +73,7 @@ bool DecompressBLZ(std::vector<u8>& data) {
                         data[out_index + j + segment_offset + start_offset];
                 }
             } else {
-                if (out_index < 1) {
+                if (out_index < 1 || index < 1) {
                     return false;
                 }
                 --out_index;
@@ -121,6 +127,14 @@ KIP::KIP(const VirtualFile& file) : status(Loader::ResultStatus::Success) {
 
 Loader::ResultStatus KIP::GetStatus() const {
     return status;
+}
+
+u64 KIP::GetFileSize() const {
+    u64 size = sizeof(KIPHeader);
+    for (const auto& section : header.sections) {
+        size += section.compressed_size;
+    }
+    return size;
 }
 
 std::string KIP::GetName() const {
@@ -212,13 +226,16 @@ INI::INI(const VirtualFile& file) : status(Loader::ResultStatus::Success) {
     }
 
     u64 offset = sizeof(INIHeader);
-    for (std::size_t i = 0; i < header.kip_count; ++i) {
+    for (std::size_t i = 0; i < header.kip_count && offset < file->GetSize(); ++i) {
         const auto kip_file =
             std::make_shared<OffsetVfsFile>(file, file->GetSize() - offset, offset);
         KIP kip(kip_file);
-        if (kip.GetStatus() == Loader::ResultStatus::Success) {
-            kips.push_back(std::move(kip));
+        // A KIP that can't be read gives no way of finding the next one.
+        if (kip.GetStatus() != Loader::ResultStatus::Success) {
+            break;
         }
+        offset += kip.GetFileSize();
+        kips.push_back(std::move(kip));
     }
 }
 

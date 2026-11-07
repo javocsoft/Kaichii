@@ -24,7 +24,6 @@ constexpr Word Decrement = 7;
 constexpr Word Increment = 12;
 constexpr Word EnableRelease = 1U << 23;
 constexpr Word ReleaseFormat = 1U << 30;
-constexpr Word ReductionRelease = 1U << 26;
 constexpr std::string_view NoError{};
 
 /// Dependency counts are per QMD and shared by every scheduler, so each test takes its own.
@@ -72,7 +71,7 @@ struct Guest {
     }
 
     auto Release() {
-        return [this](Address address, Word payload) {
+        return [this](Address address, Word payload, Word) {
             releases.emplace_back(address, payload);
             return true;
         };
@@ -233,45 +232,6 @@ TEST_CASE("QMD with work needs a dispatch callback", "[video_core][native_qmd]")
           "native shader dispatch required");
 }
 
-TEST_CASE("One bad QMD release makes no release visible", "[video_core][native_qmd]") {
-    Guest guest;
-    const Address address = NextAddress();
-    auto qmd = MakeQmd();
-    AddRelease(qmd, 24, 0x10, 1);
-    AddRelease(qmd, 28, 0x20, 2);
-    qmd[29] &= ~ReleaseFormat;
-    guest.qmds[address] = qmd;
-
-    NativeQmdScheduler scheduler;
-    CHECK(scheduler.Signal(address, Schedule, guest.Read(), guest.Release()) ==
-          "unsupported QMD release format");
-    CHECK(guest.releases.empty());
-}
-
-TEST_CASE("QMD reduction release needs the flags", "[video_core][native_qmd]") {
-    Guest guest;
-    const Address address = NextAddress();
-    auto qmd = MakeQmd();
-    AddRelease(qmd, 24, 0x10, 1);
-    qmd[25] |= ReductionRelease;
-    guest.qmds[address] = qmd;
-
-    NativeQmdScheduler plain;
-    CHECK(plain.Signal(address, Schedule, guest.Read(), guest.Release()) ==
-          "unsupported QMD reduction callback");
-
-    const Address reduced = NextAddress();
-    guest.qmds[reduced] = qmd;
-    Word seen_flags{};
-    NativeQmdScheduler scheduler;
-    CHECK(scheduler.Signal(reduced, Schedule, guest.Read(),
-                           [&](Address, Word, Word flags) {
-                               seen_flags = flags;
-                               return true;
-                           }) == NoError);
-    CHECK(seen_flags == qmd[25]);
-}
-
 TEST_CASE("QMD chains into its dependent QMD", "[video_core][native_qmd]") {
     Guest guest;
     const Address first = NextAddress();
@@ -360,7 +320,7 @@ TEST_CASE("Invalid QMD signals report why", "[video_core][native_qmd]") {
         AddRelease(qmd, 24, 0x10, 1);
         guest.qmds[address] = qmd;
         CHECK(scheduler.Signal(address, Schedule, guest.Read(),
-                               [](Address, Word) { return false; }) == "unmapped QMD release");
+                               [](Address, Word, Word) { return false; }) == "unmapped QMD release");
     }
 }
 

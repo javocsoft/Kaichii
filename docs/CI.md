@@ -7,14 +7,16 @@ workflow added, renamed or removed must be updated here in the same commit.
 
 | Workflow | Runs on | What it does | Blocks a merge? |
 |---|---|---|---|
-| `quick-checks.yml` | PRs and pushes to `nx2` | Everything in `tools/ci/quick-checks.sh`. Takes minutes and compiles no emulator code. | Only with branch protection |
-| `build-check.yml` | PRs and pushes to `nx2` | Linux GCC 13 production build with `-Werror`, `ctest`, and the debug adapter, ThreadWorker and switch discovery suites. | Only with branch protection |
-| `linux-extended.yml` | PRs and pushes to `nx2` | Linux Clang 20 build with `DYNARMIC_TESTS` and `ENABLE_DEBUG_TOOLS`, `ctest`, the shader tool suites, and production shaders on Mesa's software Vulkan driver. | Only with branch protection |
+| `quick-checks.yml` | PRs and pushes to `nx2` | Everything in `tools/ci/quick-checks.sh`. Takes minutes and compiles no emulator code. | Yes |
+| `build-check.yml` | PRs and pushes to `nx2` | Linux GCC 13 production build with `-Werror`, `ctest`, and the debug adapter, ThreadWorker and switch discovery suites. | Yes |
+| `linux-extended.yml` | PRs and pushes to `nx2` | Linux Clang 20 build with `DYNARMIC_TESTS` and `ENABLE_DEBUG_TOOLS`, `ctest`, the shader tool suites, and production shaders on Mesa's software Vulkan driver. | Yes |
+| `sanitizers.yml` | PRs and pushes to `nx2` | AddressSanitizer on `tests` and `dynarmic_tests`, with UBSan logging. Stops at the first memory error. | No |
 | `release-binaries.yml` | Manual, or pushes to `nx2-experimental` that change build inputs | Builds every platform and publishes a `build-<run number>` GitHub release. | No |
 | `label-issues.yml` | New issues | Labels issues from their form fields. | No |
 
-Merge blocking is a repository setting. `nx2` has no branch protection in `zortos293/Lichii`, and a
-fork needs its own.
+Merge blocking is a repository setting. `nx2` in `javocsoft/Lichii` requires all three checks on an
+up-to-date branch, for admins too, and allows no force pushes. So every change reaches `nx2` through
+a pull request, including a sync from another repository. `zortos293/Lichii` has no branch protection.
 
 ## Reproducing CI locally
 
@@ -27,13 +29,14 @@ tools/dev/in-docker.sh tools/ci/quick-checks.sh
 
 ## What CI does not catch
 
-- **Windows, macOS and aarch64 only build when a release does.** Windows is where the owner tests
-  and no PR compiles it, so a break there can reach `nx2` unnoticed.
+- **Windows, macOS and aarch64 only build when a release does.** No PR compiles them, so a break
+  there can reach `nx2` unnoticed.
 - **Nothing runs a game.** CI has no game files, keys, firmware or GPU, and it never will: none of
   them may be uploaded. A green run shows that the code builds and that its unit tests pass, not
   that any game renders correctly. Say which of the two you checked when you report a change.
-- **Linters are not tree-wide.** `quick-checks.yml` runs whitespace, license header, `shellcheck`
-  and `codespell` checks on changed files only, because the inherited tree fails them.
+- **Some linters are not tree-wide.** `quick-checks.yml` runs `shellcheck` over the whole tree, but
+  whitespace, license header and `codespell` checks on changed files only, because the inherited
+  tree fails them.
 - **`clang-format` is not enforced.** `tools/clang-format.sh` only covers `src/qt_common` and
   `src/yuzu`.
 
@@ -63,17 +66,3 @@ to `nx2-experimental` that touches `src/` (other than `src/tests/`), `CMakeLists
 Each publish creates the tag `build-<run number>`. Releases configure with `BUILD_TESTING=OFF`, so a
 release proves nothing about the tests. Linux PGO needs a Clang at least as new as the one that wrote
 `eglantine.profdata`; `PGO_LLVM_VERSION` in the workflow records it.
-
-## Leftovers that do nothing
-
-These are inherited and not wired to anything. Do not read them as describing how this repository
-works, and do not spend time fixing them.
-
-- `.forgejo/workflows/` belongs to Eden's Forgejo. It targets `master` and a `source` runner that do
-  not exist here, so the license, translation, string and dependency jobs do not run.
-- `tools/ci/bump-version.sh`, `changelog-section.sh`, `prepare.sh`, `release-notes.sh` and
-  `slugify.sh` served a `ci` workflow removed in commit `f176172f45`. `VERSION` and `CHANGELOG.md` came
-  with it: releases use `build-<run number>`, and neither file changes them.
-- `.ci/license-header.sh` compares against a `master` branch this repository does not have. Use
-  `tools/ci/quick-checks.sh`, which applies a looser check to changed files.
-- `docs/CODEOWNERS` still names Eden's maintainers.
