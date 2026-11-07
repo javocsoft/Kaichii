@@ -711,7 +711,7 @@ std::bitset<32> PersistentCallerSavedRegs() {
     return PERSISTENT_REGISTERS & Common::X64::ABI_ALL_CALLER_SAVED;
 }
 
-/// @brief Must enforce W^X constraints, as we yet don't have a  global "NO_EXECUTE" support flag
+/// @brief Must enforce W^X constraints, as we yet don't have a global "NO_EXECUTE" support flag
 /// the speed loss is minimal, and in fact may be negligible, however for your peace of mind
 /// I simply included known OSes whom had W^X issues
 #if defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
