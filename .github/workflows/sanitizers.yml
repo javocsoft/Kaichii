@@ -1,0 +1,92 @@
+name: sanitizers
+
+on:
+  pull_request:
+    branches: [nx2]
+  push:
+    branches: [nx2]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sanitizers-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  asan:
+    name: AddressSanitizer and UBSan on the C++ tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 3000M
+      CCACHE_COMPILERCHECK: content
+    steps:
+      - name: Check out source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            autoconf clang-20 lld-20 llvm-20 libclang-rt-20-dev git glslang-tools libglu1-mesa-dev \
+            libpulse-dev libtool libudev-dev libxkbcommon-x11-0 \
+            mesa-common-dev nasm ninja-build qt6-base-private-dev \
+            qt6-charts-dev qt6-tools-dev libavfilter-dev libavcodec-dev \
+            libswscale-dev pkg-config zlib1g-dev libva-dev libvdpau-dev \
+            spirv-tools spirv-headers libusb-1.0-0-dev \
+            libboost-dev libboost-fiber-dev libboost-context-dev \
+            libopus-dev libasound2-dev ccache pipx \
+            libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+            libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 libxcb-xkb1
+          pipx install cmake==4.4.4
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06
+        with:
+          version: "6.8.3"
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          modules: qtcharts
+          cache: true
+
+      - name: Restore dependencies and compiler objects
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            .cache/cpm
+            .ccache
+          key: asan-qt683-${{ runner.os }}-${{ hashFiles('cpmfile.json') }}-${{ github.sha }}
+          restore-keys: |
+            asan-qt683-${{ runner.os }}-${{ hashFiles('cpmfile.json') }}-
+
+      - name: Build
+        env:
+          LICHII_SANITIZE: asan
+          LICHII_JOBS: 4
+        run: tools/dev/build-tests.sh
+
+      - name: Save dependencies and compiler objects
+        if: always()
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: |
+            .cache/cpm
+            .ccache
+          key: asan-qt683-${{ runner.os }}-${{ hashFiles('cpmfile.json') }}-${{ github.sha }}
+
+      - name: Run tests
+        env:
+          ASAN_OPTIONS: detect_stack_use_after_return=0:detect_leaks=0:halt_on_error=1:allow_user_segv_handler=0:handle_segv=2:allocator_may_return_null=1:detect_odr_violation=0
+          ASAN_SYMBOLIZER_PATH: /usr/bin/llvm-symbolizer-20
+          # UBSan reports problems inside Boost that are not this project's to fix, so it only logs.
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=0
+        run: |
+          build/clang-asan/bin/tests
+          build/clang-asan/bin/dynarmic_tests

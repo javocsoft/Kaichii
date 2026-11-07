@@ -10,6 +10,7 @@ workflow added, renamed or removed must be updated here in the same commit.
 | `quick-checks.yml` | PRs and pushes to `nx2` | Everything in `tools/ci/quick-checks.sh`. Takes minutes and compiles no emulator code. | Yes |
 | `build-check.yml` | PRs and pushes to `nx2` | Linux GCC 13 production build with `-Werror`, `ctest`, and the debug adapter, ThreadWorker and switch discovery suites. | Yes |
 | `linux-extended.yml` | PRs and pushes to `nx2` | Linux Clang 20 build with `DYNARMIC_TESTS` and `ENABLE_DEBUG_TOOLS`, `ctest`, the shader tool suites, and production shaders on Mesa's software Vulkan driver. | Yes |
+| `sanitizers.yml` | PRs and pushes to `nx2` | AddressSanitizer on `tests` and `dynarmic_tests`, with UBSan logging. Stops at the first memory error. | No |
 | `release-binaries.yml` | Manual, or pushes to `nx2-experimental` that change build inputs | Builds every platform and publishes a `build-<run number>` GitHub release. | No |
 | `label-issues.yml` | New issues | Labels issues from their form fields. | No |
 
