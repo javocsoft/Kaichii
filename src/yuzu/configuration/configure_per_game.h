@@ -36,6 +36,7 @@ class ConfigurePerGameAddons;
 class ConfigureAudio;
 class ConfigureCpu;
 class ConfigureGraphics;
+class ConfigurePerformance;
 class ConfigureGraphicsAdvanced;
 class ConfigureGraphicsExtensions;
 class ConfigureInputPerGame;
@@ -112,6 +113,7 @@ private:
     std::unique_ptr<ConfigureGraphicsAdvanced> graphics_advanced_tab;
     std::unique_ptr<ConfigureGraphicsExtensions> graphics_extensions_tab;
     std::unique_ptr<ConfigureGraphics> graphics_tab;
+    std::unique_ptr<ConfigurePerformance> performance_tab;
     std::unique_ptr<ConfigureInputPerGame> input_tab;
     std::unique_ptr<ConfigureSystem> system_tab;
     std::unique_ptr<ConfigureNetwork> network_tab;

@@ -118,6 +118,8 @@ add_executable(yuzu
     configuration/configure_per_game.cpp
     configuration/configure_per_game.h
     configuration/configure_per_game.ui
+    configuration/configure_performance.cpp
+    configuration/configure_performance.h
     configuration/configure_per_game_addons.cpp
     configuration/configure_per_game_addons.h
     configuration/configure_per_game_addons.ui

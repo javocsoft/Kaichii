@@ -12,6 +12,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include "common/fs/path_util.h"
 #include "common/game_presets.h"
+#include "common/performance_presets.h"
 #include "common/settings.h"
 #include "common/settings_enums.h"
 #include "frontend_common/settings_generator.h"
@@ -503,6 +504,7 @@ MainWindow::MainWindow(bool has_broken_vulkan)
         renderer_status_button->setChecked(false);
     } else {
         VkDeviceInfo::PopulateRecords(vk_device_records, this->window()->windowHandle());
+        QTimer::singleShot(0, this, &MainWindow::OfferPerformancePreset);
     }
 
     // On macOS, SDL video would pump AppKit events alongside Qt and disrupt native menus.
@@ -4882,6 +4884,36 @@ void MainWindow::UpdateStatusButtons() {
 }
 
 // TODO(crueter): Use this for game list stuff
+void MainWindow::OfferPerformancePreset() {
+    if (UISettings::values.performance_preset_offered.GetValue() || vk_device_records.empty()) {
+        return;
+    }
+    UISettings::values.performance_preset_offered = true;
+    const Settings::HostProfile host = VkDeviceInfo::DetectHostProfile(
+        vk_device_records, Settings::values.vulkan_device.GetValue());
+    const Settings::PerformancePreset preset = Settings::RecommendedPreset(host);
+    const std::array names{tr("Performance"), tr("Balanced"), tr("Quality"), tr("Ultra")};
+    const auto answer = QMessageBox::question(
+        this, tr("Performance preset"),
+        tr("Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of "
+           "memory.\n\nUse the %5 preset? It sets the resolution and the graphics options that "
+           "matter most for speed on this computer, for every game without its own "
+           "settings.\n\nYou can change it at any time under Configure, Performance.")
+            .arg(QString::fromStdString(host.gpu_name))
+            .arg(static_cast<double>(host.gpu_memory_bytes) / (1ULL << 30), 0, 'f', 1)
+            .arg(host.cpu_threads)
+            .arg(static_cast<double>(host.ram_bytes) / (1ULL << 30), 0, 'f', 0)
+            .arg(names[static_cast<size_t>(preset)]),
+        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    if (answer == QMessageBox::Yes) {
+        Settings::ApplyPerformancePreset(Settings::values, preset, host, false);
+        LOG_INFO(Config, "Applied the {} performance preset",
+                 Settings::PerformancePresetKey(preset));
+        UpdateStatusButtons();
+    }
+    config->SaveAllValues();
+}
+
 void MainWindow::UpdateUISettings() {
     if (!ui->action_Fullscreen->isChecked()) {
         UISettings::values.geometry = saveGeometry();

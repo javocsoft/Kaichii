@@ -465,6 +465,7 @@ private:
     void UpdateGPUAccuracyButton();
     void UpdateStatusButtons();
     void UpdateUISettings();
+    void OfferPerformancePreset();
     void UpdateInputDrivers();
     void HideMouseCursor();
     void ShowMouseCursor();

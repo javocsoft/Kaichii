@@ -2,6 +2,36 @@
 
 Graphical enhancements and visual quality improvments. This doesn't cover texture mods.
 
+## Performance presets
+
+**Configure > Performance** shows what Lichii found about the computer (graphics card, video
+memory, processor threads, RAM) and four presets. The one for that hardware is marked as
+recommended, and Lichii offers it once on its first start.
+
+| Preset | Resolution | For |
+|---|---|---|
+| Performance | 0.5x, FSR | Integrated graphics, laptops, cards with 4 GB or less |
+| Balanced | 0.75x, FSR | Cards with 6 to 8 GB |
+| Quality | 1x | Cards with 10 to 12 GB |
+| Ultra | 1.5x | Cards with 16 GB or more |
+
+Every preset also sets fast GPU accuracy, asynchronous shaders, texture memory for the card, and
+decodes ASTC textures on the processor when it has 8 threads or more. Most graphics cards for PCs
+can't read ASTC, the format Switch games use, so they need it decoded first; on the card itself
+that competes with the game.
+
+- **Use this preset** fills in the Graphics pages. Nothing is saved until **OK**.
+- In a game's **Properties**, the same page sets that game only.
+
+Measured in The Legend of Zelda: Ocarina of Time on an RTX 3050 Laptop (4 GB) in Link's house:
+
+| Settings | fps |
+|---|---|
+| 1x, game anti-aliasing, ASTC on the GPU (old defaults) | 14 |
+| Performance preset | 40 |
+| Balanced preset | 32 |
+| 1x, Ocarina anti-aliasing without sharpening, ASTC on the processor | 31 |
+
 ## Visual Enhancements
 
 ### Anti-aliasing

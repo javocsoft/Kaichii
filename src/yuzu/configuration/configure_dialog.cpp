@@ -20,6 +20,7 @@
 #include "yuzu/configuration/configure_filesystem.h"
 #include "yuzu/configuration/configure_general.h"
 #include "yuzu/configuration/configure_graphics.h"
+#include "yuzu/configuration/configure_performance.h"
 #include "yuzu/configuration/configure_graphics_advanced.h"
 #include "yuzu/configuration/configure_graphics_extensions.h"
 #include "yuzu/configuration/configure_hotkeys.h"
@@ -56,6 +57,9 @@ ConfigureDialog::ConfigureDialog(QWidget* parent, HotkeyRegistry& registry_,
               ui_tab->UpdateScreenshotInfo(ratio, setup);
           },
           nullptr, *builder, this)},
+      performance_tab{std::make_unique<ConfigurePerformance>(
+          VkDeviceInfo::DetectHostProfile(vk_device_records, Settings::values.vulkan_device.GetValue()),
+          *builder, nullptr, this)},
       hotkeys_tab{std::make_unique<ConfigureHotkeys>(system_.HIDCore(), this)},
       input_tab{std::make_unique<ConfigureInput>(system_, this)},
       network_tab{std::make_unique<ConfigureNetwork>(system_, this)},
@@ -66,6 +70,7 @@ ConfigureDialog::ConfigureDialog(QWidget* parent, HotkeyRegistry& registry_,
 
     ui->setupUi(this);
 
+    ui->tabWidget->addTab(performance_tab.get(), tr("Performance"));
     ui->tabWidget->addTab(applets_tab.get(), tr("Applets"));
     ui->tabWidget->addTab(audio_tab.get(), tr("Audio"));
     ui->tabWidget->addTab(cpu_tab.get(), tr("CPU"));
@@ -171,8 +176,9 @@ void ConfigureDialog::HandleApplyButtonClicked() {
 Q_DECLARE_METATYPE(QList<QWidget*>);
 
 void ConfigureDialog::PopulateSelectionList() {
-    const std::array<std::pair<QString, QList<QWidget*>>, 6> items{
-        {{tr("General"),
+    const std::array<std::pair<QString, QList<QWidget*>>, 7> items{
+        {{tr("Performance"), {performance_tab.get()}},
+         {tr("General"),
           {general_tab.get(), hotkeys_tab.get(), ui_tab.get(), web_tab.get(), debug_tab_tab.get()}},
          {tr("System"),
           {system_tab.get(), profile_tab.get(), network_tab.get(), filesystem_tab.get(),

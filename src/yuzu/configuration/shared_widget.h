@@ -9,8 +9,10 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QStringLiteral>
 #include <QWidget>
@@ -84,6 +86,16 @@ public:
      * @returns True if the Widget successfully created the components for the setting
      */
     bool Valid() const;
+
+    /**
+     * Shows a value, as the setting serializes it, as if the player had picked it, so a per-game
+     * widget turns custom and the dialog saves it on OK. Handles combo boxes, radio groups and
+     * check boxes.
+     *
+     * @returns False when the widget can't show it: another kind of widget, an unknown value, or
+     * a setting locked while a game runs
+     */
+    bool ShowValue(const std::string& value);
 
     /**
      * Creates a button to appear when a setting has been modified. This exists for custom
@@ -171,9 +183,13 @@ public:
 
     const ComboboxTranslationMap& ComboboxTranslations() const;
 
+    /// The widget built for a setting, if one was and still exists.
+    [[nodiscard]] Widget* FindWidget(const Settings::BasicSetting& setting) const;
+
 private:
     std::unique_ptr<TranslationMap> translations;
     std::unique_ptr<ComboboxTranslationMap> combobox_translations;
+    mutable std::unordered_map<u32, QPointer<Widget>> built_widgets;
 
     QWidget* parent;
     const bool runtime_lock;
