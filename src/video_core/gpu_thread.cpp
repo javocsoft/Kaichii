@@ -56,6 +56,9 @@ void ThreadManager::StartThread(VideoCore::RendererBase& renderer, Core::Fronten
         const Common::DkbCpuTrace::Registration cpu_trace{Common::DkbCpuTrace::Role::GpuCommand};
         Common::SetCurrentThreadName("GPU");
         VideoCommon::GpuSplit::MarkGpuThread();
+        SCOPE_EXIT {
+            VideoCommon::GpuSplit::UnmarkGpuThread();
+        };
 #ifdef __linux__
         // The pending-channel polls below sleep 50 us; the default timer slack adds up to 50 more.
         prctl(PR_SET_TIMERSLACK, 1UL, 0, 0, 0);

@@ -63,6 +63,8 @@ inline bool AdoptLegacyPipelineCache(const std::filesystem::path& legacy,
     return !error;
 }
 
+/// Copies a cache of `source_version` to `destination` relabelled `destination_version`, through
+/// a temporary file; never replaces an existing destination.
 inline bool CopyCompatiblePipelineCache(const std::filesystem::path& source,
                                         const std::filesystem::path& destination,
                                         const std::array<char, 8>& magic, u32 source_version,
