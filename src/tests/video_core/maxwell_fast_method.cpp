@@ -819,3 +819,33 @@ TEST_CASE("Maxwell3D's split front uploads macro code sent as one multi-method r
     REQUIRE(macros.native_write_offset == pointer * 3 + code.size());
     CHECK(std::equal(code.begin(), code.end(), macros.native_code.begin() + pointer * 3));
 }
+
+TEST_CASE("Maxwell3D's split front drops the instance loop writes the back ignores",
+          "[video_core][gpu_split_dependencies]") {
+    using Access = VideoCommon::GpuSplitTestAccess;
+    Fixture f;
+    VideoCommon::GpuSplit split;
+    Access::Initialize(split, f.system);
+    auto& engine = f.fast;
+    const auto sent = [&](u32 method, u32 value) {
+        const u64 before = Access::End(split);
+        engine.FrontCallMethod(f.system, split, method, value, true);
+        return Access::End(split) != before;
+    };
+    constexpr u32 Count = MAXWELL3D_REG_INDEX(vertex_buffer.count);
+    constexpr u32 Begin = MAXWELL3D_REG_INDEX(draw.begin);
+    constexpr u32 End = MAXWELL3D_REG_INDEX(draw.end);
+    constexpr u32 Subsequent = 1U << 26;
+    CHECK(sent(Count, 3));
+    CHECK_FALSE(sent(Count, 3));
+    CHECK(sent(Count, 4));
+    // Instance id First: draw.end draws, whatever value it writes.
+    CHECK(sent(Begin, 0));
+    CHECK(sent(End, 0));
+    CHECK(sent(End, 0));
+    // Subsequent: an instance loop, where draw.end draws nothing.
+    CHECK(sent(Begin, Subsequent));
+    CHECK_FALSE(sent(End, 0));
+    CHECK(sent(Begin, 0));
+    CHECK(sent(End, 0));
+}
