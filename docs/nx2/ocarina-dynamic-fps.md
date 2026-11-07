@@ -13,8 +13,11 @@ Dark, an Eglantine developer, wrote the routine. This port preserves the call an
 `765659af4ccb7201d1145c57f3b45ce84653cea0`. That commit explicitly states that
 Dark gave permission to bundle it. Frizti supplied the built-in integration.
 
-The routine's SHA-256 is
-`3c15dfb57f748328ad7d1c1675941dc2ace32a5e7b10907368ceac6a9a8c5ee1`.
+The routine's SHA-256 was
+`3c15dfb57f748328ad7d1c1675941dc2ace32a5e7b10907368ceac6a9a8c5ee1`. One word has
+changed since: the measured frame delta is capped at `CNTFRQ / 10` (100 ms), not
+`CNTFRQ / 20`, so the game keeps real speed down to 10 fps instead of 20. It is
+now `0afb4af10a78bb49372e6807fc5b71d9fa99d828b7625f0fab7429fc66a4b1e6`.
 The call's SHA-256 is
 `e4d3f65ad1b568b557f02b9a087a9c304240ac70d6ef474dac83a1f97737515e`.
 This port adds original-byte and memory-layout guards, and
