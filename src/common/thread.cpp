@@ -803,6 +803,16 @@ void SetCurrentThreadToAllCores() {
 #endif
 }
 
+bool CanPinGpuThreads() {
+#ifdef _WIN32
+    return !PlanGpuThreadPinning(CpuSets().processors).front.empty();
+#elif defined(__linux__) && !defined(__ANDROID__)
+    return !PlanGpuThreadPinning(LinuxProcessors()).front.empty();
+#else
+    return false;
+#endif
+}
+
 void RefreshThreadPolicies() {
 #if defined(__ANDROID__)
     CpuTopologyState& state = State();

@@ -124,6 +124,8 @@ std::vector<PresetEntry> PerformancePresetEntries(Values& values, PerformancePre
         entry(values.use_asynchronous_shaders, true),
         entry(values.vram_usage_mode, VramModeFor(host)),
         entry(values.accelerate_astc, AstcModeFor(host)),
+        // Ocarina of Time on an i7-12700H: 24.4-25.3 to 26.1-26.9 fps outside, 34.8 to 36.8 inside.
+        entry(values.pin_gpu_threads, host.gpu_thread_pinning),
     };
 }
 

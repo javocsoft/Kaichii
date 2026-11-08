@@ -88,8 +88,9 @@ ConfigurePerformance::ConfigurePerformance(
     }
     auto* const common_note =
         new QLabel(tr("Every preset uses fast GPU accuracy and asynchronous shaders, sizes "
-                      "texture memory to the card, and decodes ASTC textures on the processor "
-                      "when it has 8 threads or more. Other settings are left as they are."),
+                      "texture memory to the card, decodes ASTC textures on the processor when it "
+                      "has 8 threads or more, and gives the GPU threads performance cores of their "
+                      "own when it has enough. Other settings are left as they are."),
                    preset_box);
     common_note->setWordWrap(true);
     presets->addWidget(common_note);
