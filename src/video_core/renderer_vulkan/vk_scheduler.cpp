@@ -27,6 +27,7 @@
 #include "common/thread.h"
 #include "video_core/gpu_logging/gpu_logging.h"
 #include "video_core/nx2_profile.h"
+#include "video_core/renderer_vulkan/render_pass_continuation.h"
 #include "video_core/renderer_vulkan/vk_command_pool.h"
 #include "video_core/renderer_vulkan/vk_graphics_pipeline.h"
 #include "video_core/renderer_vulkan/vk_master_semaphore.h"
@@ -506,11 +507,9 @@ void Scheduler::RequestRenderpass(const Framebuffer* framebuffer, std::source_lo
         return;
     }
     const VkRenderPass renderpass = framebuffer->RenderPass();
-    const VkFramebuffer framebuffer_handle = framebuffer->Handle();
-    const VkExtent2D render_area = framebuffer->RenderArea();
-    if (renderpass == state.renderpass && framebuffer_handle == state.framebuffer &&
-        render_area.width == state.render_area.width &&
-        render_area.height == state.render_area.height) {
+    if (ContinuesRenderPass(device.IsTiler(), state.renderpass, state.framebuffer,
+                            state.render_area, renderpass, framebuffer->Handle(),
+                            framebuffer->RenderArea())) {
         return;
     }
     if (state.renderpass) {

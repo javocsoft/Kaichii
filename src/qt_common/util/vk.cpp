@@ -14,6 +14,7 @@
 #include "common/dynamic_library.h"
 #include "common/logging.h"
 #include "common/memory_detect.h"
+#include "common/thread.h"
 #include "qt_common/util/vk.h"
 #include "video_core/vulkan_common/vulkan_device.h"
 #include "video_core/vulkan_common/vulkan_instance.h"
@@ -104,6 +105,7 @@ Settings::HostProfile DetectHostProfile(const std::vector<Record>& records, int 
     Settings::HostProfile host{
         .cpu_threads = std::thread::hardware_concurrency(),
         .ram_bytes = Common::GetMemInfo().TotalPhysicalMemory,
+        .gpu_thread_pinning = Common::CanPinGpuThreads(),
     };
     if (device_index >= 0 && static_cast<size_t>(device_index) < records.size()) {
         const Record& record = records[static_cast<size_t>(device_index)];

@@ -10919,8 +10919,8 @@ Código de error: %3</translation>
         <translation>%1 (recomendado para este equipo)</translation>
     </message>
     <message>
-        <source>Every preset uses fast GPU accuracy and asynchronous shaders, sizes texture memory to the card, and decodes ASTC textures on the processor when it has 8 threads or more. Other settings are left as they are.</source>
-        <translation>Todos los ajustes predefinidos usan la precisión de GPU rápida y shaders asíncronos, ajustan la memoria de texturas a la tarjeta y descomprimen las texturas ASTC en el procesador si tiene 8 hilos o más. El resto de ajustes no se modifica.</translation>
+        <source>Every preset uses fast GPU accuracy and asynchronous shaders, sizes texture memory to the card, decodes ASTC textures on the processor when it has 8 threads or more, and gives the GPU threads performance cores of their own when it has enough. Other settings are left as they are.</source>
+        <translation>Todos los ajustes predefinidos usan la precisión de GPU rápida y shaders asíncronos, ajustan la memoria de texturas a la tarjeta, descomprimen las texturas ASTC en el procesador si tiene 8 hilos o más y reservan núcleos de alto rendimiento para los hilos de la GPU si hay suficientes. El resto de ajustes no se modifica.</translation>
     </message>
     <message>
         <source>Use this preset</source>

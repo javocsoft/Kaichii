@@ -18,6 +18,14 @@ IR::FmzMode HalfPrecision2FmzMode(HalfPrecision precision) {
     }
 }
 
+IR::F16F32F64 ZeroLike(IR::IREmitter& ir, const IR::F16F32F64& value) {
+    const IR::F32 zero{ir.Imm32(0.0f)};
+    if (value.Type() == IR::Type::F16) {
+        return ir.FPConvert(16, zero);
+    }
+    return zero;
+}
+
 std::pair<IR::F16F32F64, IR::F16F32F64> Extract(IR::IREmitter& ir, IR::U32 value, Swizzle swizzle) {
     switch (swizzle) {
     case Swizzle::H1_H0: {

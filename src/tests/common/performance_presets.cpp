@@ -84,6 +84,18 @@ TEST_CASE("ASTC decodes on the CPU only where there are threads to spare",
     CHECK(values.accelerate_astc.GetValue() == AstcDecodeMode::CpuAsynchronous);
 }
 
+TEST_CASE("Presets pin the GPU threads only where the processor has the cores",
+          "[common][performance_presets]") {
+    Values values;
+    HostProfile host = Host("NVIDIA GeForce RTX 3050 Laptop GPU", 4, false, 20);
+    for (const bool can_pin : {true, false, true}) {
+        host.gpu_thread_pinning = can_pin;
+        ApplyPerformancePreset(values, PerformancePreset::Performance, host, false);
+        CHECK(values.pin_gpu_threads.GetValue() == can_pin);
+        CHECK(MatchingPerformancePreset(values, host) == PerformancePreset::Performance);
+    }
+}
+
 TEST_CASE("Preset entries are what the settings write and read back",
           "[common][performance_presets]") {
     const HostProfile laptop = Host("NVIDIA GeForce RTX 3050 Laptop GPU", 4);

@@ -120,6 +120,10 @@ enum class PinnedRole : u32 { GpuFront, GpuBack, GuestCore };
 /// on other hosts.
 void PinCurrentThread(PinnedRole role);
 
+/// Whether PinCurrentThread pins on this host: Windows or Linux with enough physical performance
+/// cores (MinCoresForGpuThreadPinning).
+[[nodiscard]] bool CanPinGpuThreads();
+
 void RefreshThreadPolicies();
 void PollThreadPolicies();
 

@@ -31,6 +31,9 @@ enum class HalfPrecision : u64 {
 
 IR::FmzMode HalfPrecision2FmzMode(HalfPrecision precision);
 
+/// A zero of the same type as value, to compare and select with it.
+IR::F16F32F64 ZeroLike(IR::IREmitter& ir, const IR::F16F32F64& value);
+
 std::pair<IR::F16F32F64, IR::F16F32F64> Extract(IR::IREmitter& ir, IR::U32 value, Swizzle swizzle);
 
 IR::U32 MergeResult(IR::IREmitter& ir, IR::Reg dest, const IR::F16& lhs, const IR::F16& rhs,

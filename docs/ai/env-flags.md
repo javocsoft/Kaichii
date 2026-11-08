@@ -93,7 +93,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_IPC_TRACE` | diag | Every dispatched service command and its result word. |
 | `EDEN_NX2_IPC_SUMMARY` | diag | Every 5 s, how often each command ran and with which result. Finds a game polling something that never becomes ready. |
 | `EDEN_NX2_MEM_TRACE` | diag | The title's memory layout and size queries. |
-| `EDEN_HYBRID_CORES` | A/B | Windows only. `=0` stops keeping time-critical threads on the performance cores of hybrid CPUs. |
+| `EDEN_HYBRID_CORES` | A/B | Windows only. `=0` stops keeping time-critical threads on the performance cores of hybrid CPUs, which is done only with 8 or more performance logical processors. |
 | `EDEN_NX2_AUDIO_LEVEL` | diag | Output peak about every two seconds. |
 | `EDEN_NX2_VDEC_TRACE` | diag | Video decoder submit, decode and composite trace. |
 | `EDEN_NX2_MOVIE_CLOCK` | diag | `=1`: logs wall and guest time, presents, video takes and audio counters once a second, to check a movie against its sound. |

@@ -43,4 +43,43 @@ GpuThreadPinning PlanGpuThreadPinning(std::span<const LogicalProcessor> processo
     return plan;
 }
 
+std::vector<u32> ParseCpuList(std::string_view list) {
+    std::vector<u32> cpus;
+    const auto number = [&](u32& value) {
+        if (list.empty() || list.front() < '0' || list.front() > '9') {
+            return false;
+        }
+        value = 0;
+        while (!list.empty() && list.front() >= '0' && list.front() <= '9') {
+            value = value * 10 + static_cast<u32>(list.front() - '0');
+            if (value > 0xFFFF) {
+                return false;
+            }
+            list.remove_prefix(1);
+        }
+        return true;
+    };
+    while (!list.empty()) {
+        u32 first{};
+        if (!number(first)) {
+            break;
+        }
+        u32 last = first;
+        if (!list.empty() && list.front() == '-') {
+            list.remove_prefix(1);
+            if (!number(last) || last < first) {
+                break;
+            }
+        }
+        for (u32 cpu = first; cpu <= last; ++cpu) {
+            cpus.push_back(cpu);
+        }
+        if (list.empty() || list.front() != ',') {
+            break;
+        }
+        list.remove_prefix(1);
+    }
+    return cpus;
+}
+
 } // namespace Common

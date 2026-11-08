@@ -18,7 +18,9 @@ recommended, and Lichii offers it once on its first start.
 Every preset also sets fast GPU accuracy, asynchronous shaders, texture memory for the card, and
 decodes ASTC textures on the processor when it has 8 threads or more. Most graphics cards for PCs
 can't read ASTC, the format Switch games use, so they need it decoded first; on the card itself
-that competes with the game.
+that competes with the game. On processors with at least six performance cores, presets also turn
+on **Pin GPU threads**: the two GPU threads get a performance core each and the game the other
+performance cores, away from efficiency cores (Ocarina of Time on an i7-12700H: 4 to 10% more).
 
 - **Use this preset** fills in the Graphics pages. Nothing is saved until **OK**.
 - In a game's **Properties**, the same page sets that game only.

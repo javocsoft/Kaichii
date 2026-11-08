@@ -57,6 +57,7 @@ else()
     target_sources(input_common PRIVATE
         drivers/joycon.cpp
         drivers/joycon.h
+        drivers/motion_stall_watch.h
         drivers/sdl_driver.cpp
         drivers/sdl_driver.h
         helpers/joycon_driver.cpp

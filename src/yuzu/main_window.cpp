@@ -5581,10 +5581,13 @@ void MainWindow::LoadTranslation() {
                                  QStringLiteral(":/languages/"));
     }
 
-    if (loaded)
+    if (loaded) {
         qApp->installTranslator(&translator);
-    else
-        UISettings::values.language = std::string("en");
+    } else if (!UISettings::values.language.GetValue().empty()) {
+        // Keep the choice: rewriting it to "en" lost it for good in a build without translations.
+        LOG_WARNING(Frontend, "No translation for the interface language \"{}\"; using English",
+                    UISettings::values.language.GetValue());
+    }
 }
 
 void MainWindow::OnLanguageChanged(const QString& locale) {

@@ -43,6 +43,7 @@
 #include "video_core/renderer_vulkan/async_draw_policy.h"
 #include "video_core/renderer_vulkan/fixed_pipeline_state.h"
 #include "video_core/renderer_vulkan/maxwell_to_vk.h"
+#include "video_core/renderer_vulkan/mesh_fallback_limits.h"
 #include "video_core/renderer_vulkan/pipeline_helper.h"
 #include "video_core/renderer_vulkan/pipeline_shader_emission.h"
 #include "video_core/renderer_vulkan/pipeline_statistics.h"
@@ -1396,6 +1397,12 @@ void PipelineCache::EvictUnusedPipelines() {
     if (device.IsMoltenVK()) {
         return;
     }
+    // EDEN_NX2_PRELOAD_ALL_PIPELINES asked for every cached pipeline built: evicting the ones not
+    // used yet threw the preload away after 9000 frames (Ocarina: 22,510 of 24,285, then rebuilt
+    // one by one in new places).
+    if (PreloadAllPipelines()) {
+        return;
+    }
     // Each built pipeline holds ~0.45 MB of driver memory and none was ever destroyed, so it grew
     // with every place a session went (title 1: 1,500 on its title screen alone). Past a budget of
     // 1/16 of host RAM, the least recently used ones unused for this long are destroyed. Below it
@@ -1778,10 +1785,13 @@ std::unique_ptr<GraphicsPipeline> PipelineCache::CreateGraphicsPipeline(
                     Shader::NumDescriptors(programs[index].info.storage_buffers_descriptors);
             }
         }
-        if (storage_buffers > set_limit) {
+        // The mesh fallback binds its own buffers into the same set.
+        const size_t auxiliary_buffers = mesh_emulation ? (mesh_emulation->has_task ? 4 : 1) : 0;
+        if (!FitsStorageBufferSetLimit(storage_buffers, auxiliary_buffers, set_limit)) {
             throw Shader::NotImplementedException(
-                "Binding {} storage buffers to a pipeline whose descriptor set binds {}",
-                storage_buffers, set_limit);
+                "Binding {} storage buffers ({} for the mesh fallback) to a pipeline whose "
+                "descriptor set binds {}",
+                storage_buffers + auxiliary_buffers, auxiliary_buffers, set_limit);
         }
     }
     std::array<const Shader::Info*, Maxwell::MaxShaderStage> infos{};
@@ -2229,9 +2239,21 @@ vk::PipelineCache PipelineCache::LoadVulkanPipelineCache(const std::filesystem::
         file.read(cache_data.data(), cache_size);
 
         LOG_INFO(Render_Vulkan,
-                 "Loaded Vulkan driver pipeline cache: ", Common::FS::PathToUTF8String(filename));
+                 "Loaded Vulkan driver pipeline cache: {}", Common::FS::PathToUTF8String(filename));
 
-        return create_pipeline_cache(cache_size, cache_data.data());
+        try {
+            return create_pipeline_cache(cache_size, cache_data.data());
+        } catch (const vk::Exception& e) {
+            // The blob came from another driver or driver version (e.g. switching between
+            // MoltenVK and KosmicKrisp on macOS): the driver rejects it. Start empty instead of
+            // aborting, and drop the stale file so the next run doesn't retry it.
+            LOG_ERROR(Render_Vulkan,
+                      "Driver rejected the Vulkan pipeline cache file ({}), starting with an empty "
+                      "cache and deleting it",
+                      e.what());
+            Common::FS::RemoveFile(filename);
+            return create_pipeline_cache(0, nullptr);
+        }
 
     } catch (const std::ios_base::failure& e) {
         LOG_ERROR(Common_Filesystem, "{}", e.what());

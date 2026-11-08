@@ -170,6 +170,8 @@ add_library(video_core STATIC
     renderer_vulkan/framebuffer_clear_layers.h
     renderer_vulkan/framebuffer_limits.h
     renderer_vulkan/fragment_color_mask.h
+    renderer_vulkan/mesh_fallback_limits.h
+    renderer_vulkan/render_pass_continuation.h
     renderer_vulkan/samples_query_policy.h
     renderer_vulkan/maxwell_to_vk.cpp
     renderer_vulkan/maxwell_to_vk.h
@@ -290,6 +292,7 @@ add_library(video_core STATIC
     texture_cache/format_lookup_table.h
     texture_cache/image_base.cpp
     texture_cache/image_base.h
+    texture_cache/host_mip_limits.h
     texture_cache/image_info.cpp
     texture_cache/image_info.h
     texture_cache/image_view_base.cpp

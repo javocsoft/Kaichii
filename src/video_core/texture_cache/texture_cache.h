@@ -28,14 +28,15 @@
 #include "video_core/engines/kepler_compute.h"
 #include "video_core/guest_memory.h"
 #include "video_core/host1x/gpu_device_memory_manager.h"
-#include "video_core/texture_cache/image_view_base.h"
-#include "video_core/texture_cache/conversion.h"
-#include "video_core/texture_cache/samples_helper.h"
-#include "video_core/texture_cache/texture_cache_base.h"
-#include "video_core/texture_cache/util.h"
 #include "video_core/nx2.h"
 #include "video_core/nx2_profile.h"
 #include "video_core/render_trace.h"
+#include "video_core/texture_cache/conversion.h"
+#include "video_core/texture_cache/host_mip_limits.h"
+#include "video_core/texture_cache/image_view_base.h"
+#include "video_core/texture_cache/samples_helper.h"
+#include "video_core/texture_cache/texture_cache_base.h"
+#include "video_core/texture_cache/util.h"
 #include "video_core/textures/decoders.h"
 
 namespace VideoCommon {
@@ -463,10 +464,16 @@ bool TextureCache<P>::IsAllStale(DAddr addr, size_t size) const {
 
 template <class P>
 void TextureCache<P>::ApplyThresholdOverrides(bool log) {
-    // On every GPU: past what a frame needs, more device memory only keeps the textures of earlier
-    // scenes (title 1 filled 6.7 GB of an 8 GB card and draws its races in ~5 GB), so collect from
-    // MaxCriticalMemory on rather than near the card's budget.
-    critical_memory = (std::min)(critical_memory, MaxCriticalMemory);
+    // Past what a frame needs, more device memory only keeps the textures of earlier scenes
+    // (title 1 filled 6.7 GB of an 8 GB card and draws its races in ~5 GB), so collect from
+    // MaxCriticalMemory on rather than near the card's budget. Larger cards get 5/8 of the
+    // driver's budget (GetDeviceLocalMemory is capped near 7 GiB): at 5 GiB title 1's races
+    // recreate and upload ~8 MiB of render targets a frame (16 GB card: 53 -> 59 fps at 10 GiB).
+    u64 max_critical = MaxCriticalMemory;
+    if constexpr (requires { runtime.GetDeviceMemoryBudget(); }) {
+        max_critical = (std::max)(max_critical, runtime.GetDeviceMemoryBudget() / 8 * 5);
+    }
+    critical_memory = (std::min)(critical_memory, max_critical);
     expected_memory =
         (std::min)(expected_memory, critical_memory - (std::min)(critical_memory, u64{768_MiB}));
     minimum_memory =
@@ -2492,6 +2499,17 @@ bool TextureCache<P>::ImageCanRescale(ImageBase& image) {
     }
     if (Settings::values.resolution_info.downscale && !image.info.downscaleable) {
         return false;
+    }
+    if (Settings::values.resolution_info.downscale) {
+        const auto& info = image.info;
+        const auto& resolution = Settings::values.resolution_info;
+        const u32 levels = HostMipLevelCount(info.size.width, info.size.height, info.size.depth,
+                                             static_cast<u32>(info.resources.levels));
+        const u32 width = resolution.ScaleUp(info.size.width);
+        const u32 height =
+            info.type == ImageType::e2D ? resolution.ScaleUp(info.size.height) : info.size.height;
+        if (HostMipLevelCount(width, height, info.size.depth, levels) < levels)
+            return false;
     }
     if (True(image.flags & (ImageFlagBits::Rescaled | ImageFlagBits::CheckingRescalable))) {
         return true;

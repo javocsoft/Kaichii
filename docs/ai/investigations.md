@@ -15,7 +15,7 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 | Fire Emblem: Fortune's Weave | 04007EF01F8AE000 | [Upscale stand-in](../FE_UPSCALE_STANDIN.md), [DLSS replacement](../native-dlss-replacement.md) |
 | The Duskbloods network test | 0400D1D02399A000 | [Bindless surfaces](../duskbloods-bindless-surfaces.md), [uniform shift](../duskbloods-uniform-immediate-shift.md) |
 | Mario Kart World | 0400C3F00006E000 | [Integration test](../performance/MKW-INTEGRATION.md), `docs/nx2/notes.md`, `docs/nx2/gpu-thread-split.md` |
-| The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md), [network bypass](../nx2/oot-network-bypass.md) |
+| The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md), [network bypass](../nx2/oot-network-bypass.md). Zortos issue 653 (abort on an unimplemented `nx2:vi2` 201 at boot): never called on this tree's test machine, so no stub is guessed for it. Zortos issue 619 (GPU hang, Xid 109, after about 5 minutes on Linux with NVIDIA driver 580): 13 minutes here on driver 595 without a hang. |
 
 ## By subject
 
@@ -40,6 +40,16 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | `8820bb79aa`, storage buffers sized from the mapping only in DLSS passes | Tested in Ocarina of Time on top of Zortos PR 415, on an RTX 3050 Laptop: the Deku Tree intro rendered the same, and Link's house ran at 13.8 fps against 14.3 without it, inside the 1 fps the runs vary by. Its reason, every native dispatch marking an 8 MiB binding GPU-written, is what PR 415 fixes at the root: the binding keeps its size and only the range the shader's stores reach is marked. It also takes the word after a pointer as a size, which a native program does not promise. |
 | `6dd4781249`, `0ca2032bff`, data directory and translations renamed to Eglantine | Would strand the saves and settings in the `eden` directory. |
 | `587633debe`, Star Fox support | Reverted upstream by `e87ad31068`. |
+| `292a68df46`, a 4096-entry `MaxContinuousRange` cache for Ocarina | This tree answers `MaxContinuousRange` from the mapping runs it keeps at map time, so there is no cache to miss. |
+| `de4ed9d9d7`, 64 storage buffers for compute | This tree already allows 64 in every stage, up to the device's limit. |
+| `900ab5a825`, lowering operand lists for SHF, IADD3.UR, FSETP and I2F | Written for Eglantine's lowering, which reserves its top registers through `PrepareRegisterPressure`; this tree's lowering has no such list. Whether Ocarina's three Hyrule Field tessellation programs lower here is not checked: the save here doesn't reach the field. |
+| `f7a9027ff1`, Ocarina video, NUP mods and batching | Its parts: LayeredFS mods for .nup files are already here. The swap interval exemption while a video plays only changes the `EDEN_NX2_SWAP_INTERVAL` override. The texture cache override cap is Zortos PR 692. `EDEN_NX2_FRONT_BATCH` is an experiment. Fence operation vectors (`d52e5f1036`): allocation took under 0.2% of the 2026-11-08 Ocarina profile. |
+| PRs 716, 721 and 723 | Already here: the compare-exchange retry (Zortos 206), float depth-compare descriptors, and 723's shader, barrier and AVX-512 CLZ fixes. |
+| PR 717, lock-free exclusive monitor | Its speed comes from not taking the global monitor's lock, and this tree's default CPU accuracy (Auto) already ignores the global monitor. Its correctness claim, closing the races that ignoring it opens, is not checked here. |
+| PR 754, Intel parts | Workarounds for Intel's Windows driver, and a Mario Kart World task payload fix written for Eglantine's mesh prologue. Its all-vendor shutdown fix was taken. |
+| PRs 739, 741 | arm64 hosts: a host memory reservation that only unit tests on arm64 Linux reach, and NCE SIGILL handling. Nothing here builds or runs arm64; 740's NCE fix was taken. |
+| PR 758 | Adreno (Turnip) experiments for Ocarina behind switches, with an opt-in bilinear stand-in for its upscaler. |
+| PR 720 | Seven fixes in 17,900 lines from another fork. Its tessellation pipeline check is already here. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
 commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182, 186, 189, 192, 199,
@@ -60,4 +70,24 @@ commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182,
 | 559 | Waits only for a macro DMA read's own query reports. Its author's profile shows less waiting, but its own frame rates went down (walking 36.1 to 31.9 fps). |
 | 591, 640 | Pipeline cache migration and pruning of damaged, stale and duplicate records (+2,300 lines). 591 overlaps this tree's own migration from 52-54 to 55, and on Ocarina here only three compute records are stale (the "Uncached storage pointer classification" lines at boot), none graphics. Left until Zortos merges them. |
 | 615 | Channel-aware state tracking from Eglantine #754: its author neither built nor ran it. |
+| 690 | Mario Kart World water: the collision write-back is a fix, but it comes with a wave-shader workaround keyed to one program, and nothing here runs the game. |
+| 692 | Caps the `EDEN_NX2_TC_*_MIB` tuning overrides at the device budget: only matters to someone setting them past their card. |
+| 652 | Keeps stale Switch 2 graphics pipelines within a RAM budget, a different eviction policy from this tree's (only the excess over the budget, least recently used first, prebuilt unused ones kept). |
+| 655, 678, 695 | Ocarina features: FPS unlock and frame limit slider (this tree has Dynamic FPS and 270's limit), DLSS/DLAA and FSR 3.1 in place of the game's network. Features, not fixes. |
+| 645, 656 | Windows fastmem retry and macOS/MoltenVK work: nothing here runs either. |
+| 715 | Copies Ocarina's UI storage at each present while it runs a frame ahead (issue 286, reported on AMD: the dialogue panel and HUD missing in half the frames). Not seen here: on the RTX 3050 the hearts, minimap, button prompts and Saria's speech bubble were in all eight screenshots taken in a row in Kokiri Forest. The dialogue panel itself was not checked. |
+| 712, first half | Compares motion with the first value since mapping began. While mapping, `InputEngine::SetMotion` already keeps the value from before mapping began, so the comparison already has a fixed baseline. Its sensor restart was taken. |
+| 635 | DLSS fixes for Ocarina: DLSS builds only with MSVC here, and nothing here runs Windows. |
+| 638 | Clears a whole 3D target on its first slice's zero clear for The Duskbloods: a guess about the other slices, and nothing here runs the game. |
+| 621 | Already in the tree. |
+| 718 | Keeps a samples query running up to 4 banks without a reset or report. This tree drops one only past 8,192 slots (`samples_query_policy.h`), and Ocarina here drops two a boot, both at the title. |
+| 721 | Replaces Ocarina's movie network (intro, title menu, cutscenes) with a bilinear copy, always on, so the movies lose the network's picture. Its 33 ms a frame were measured on an RX 6800 XT, which emulates the network's matrix operations; on NVIDIA this tree runs them on cooperative matrices. Not measured here. |
+| 722 | Interpolates noperspective varyings through perspective interpolation, for the red line in Ocarina's Royal Family's Tomb on an AMD driver. The NVIDIA report in issue 441 says the latest release is fine there. |
+| 727, and 600's `IAudioRenderer` command 14 | Stubs for `nx2:vi2` 201, `IGeneralService` 101 and `SetAsyncMemoryPoolControlEnabled`. Unknown commands already get the automatic stub reply here: Ocarina calls 101 at every boot and goes on. |
+| 738, second half | Shows a .nup's en-us title in the game list. Here that would hide a title edited in the .nup metadata. The first half, the en-us control data slot, was taken. |
+| 740 | Serves a file with a similar name in place of a damaged one from a bad dump: a stand-in, not a fix. |
+| 741 | Prepares shaders on the loading screen. Built on 579, which is not merged. |
+| 488 | Its first half, dropping same-value vertex buffer stores on the split front, is here as 178. The second half reads two per-method switches without a function-local static: 1.2% of the back thread by its author's profile. |
+| 161 | Its desktop submission budget and deferred fragment barrier are already here. |
+| 717, the parts not taken | Measured in Kokiri Forest on an RTX 3050 Laptop, built as-is with GCC 13: 32.0 fps against 25.7 for this tree. The parts taken, Occlusion Off and the kernel lock and trap paths, are cited in their commits. Its switch groups, each turned off on top of the whole PR: its JIT changes 29.9, its buffer cache 29.4, its split GPU thread 30.6, its back-thread caches 30.9, its Ocarina macros 31.1. Its reactive readback is what this tree's preflush already does (26.0 with it off, this tree's level). Ported onto this tree (28.3 fps with all four of its Ocarina patches), turning off native zstd gave 29.0, the fast string lookup 29.4 and the resource poll backoff 28.5, within the runs' spread, against 24.9 for Occlusion Off. Its widened thread affinity for Ocarina's main threads changed nothing (29.4 with and without). Its JIT options: `elide_redundant_zext` makes Ocarina read unmapped memory at main+0x1753024 (32 to 535 times a run; none with only that option off). Without it, ported onto this tree, the rest gave Kokiri Forest 28.8 -> 29.0 and Link's house 36.2 -> 37.5 fps over three rounds. Not taken: no gain outdoors, and a differential test against the plain JIT (random programs, fastmem only) did not catch the zero-extend bug either, so it does not cover the paths that have one. |
 | 204, 335, 467, 213, 267, 219, 411 | Not reviewed in depth yet. |

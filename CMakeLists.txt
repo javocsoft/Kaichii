@@ -72,7 +72,7 @@ endif()
 
 # qt stuff
 option(ENABLE_QT "Enable the Qt frontend" ON)
-option(ENABLE_QT_TRANSLATION "Enable translations for the Qt frontend" OFF)
+option(ENABLE_QT_TRANSLATION "Enable translations for the Qt frontend (needs Qt LinguistTools)" ON)
 option(ENABLE_UPDATE_CHECKER "Enable update checker (for Qt and Android)" OFF)
 set(LICHII_BUILD_TAG "" CACHE STRING "Published build-N release tag; empty for local builds")
 set(LICHII_BUILD_PLATFORM "" CACHE STRING "Release asset platform and variant, such as linux-x86_64-pgo")
@@ -664,10 +664,14 @@ if (ENABLE_QT)
     endif()
 
     if (ENABLE_QT_TRANSLATION)
-        list(APPEND YUZU_QT_COMPONENTS LinguistTools)
+        list(APPEND YUZU_QT_OPTIONAL LinguistTools)
     endif()
 
     find_package(Qt6 REQUIRED COMPONENTS ${YUZU_QT_COMPONENTS} OPTIONAL_COMPONENTS ${YUZU_QT_OPTIONAL})
+    if (ENABLE_QT_TRANSLATION AND NOT Qt6LinguistTools_FOUND)
+        message(WARNING "Qt LinguistTools not found: the Qt frontend is built without translations")
+        set(ENABLE_QT_TRANSLATION OFF)
+    endif()
     set(QT_MAJOR_VERSION 6)
     # Qt6 sets cxx_std_17 and we need to undo that
     set_target_properties(Qt6::Platform PROPERTIES INTERFACE_COMPILE_FEATURES "")

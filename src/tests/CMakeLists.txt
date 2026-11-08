@@ -26,6 +26,7 @@ add_executable(tests
     video_core/unswizzle_workers.cpp
     video_core/aftermath_dump.cpp
     video_core/frame_dump_schedule.cpp
+    video_core/host_mip_limits.cpp
     video_core/gpu_timestamp.cpp
     core/nx2_streamplay.cpp
     core/nx2_video_ready.cpp
@@ -62,6 +63,7 @@ add_executable(tests
     video_core/storage_buffer_control_flow.cpp
     core/nup_validation.cpp
     input_common/calibration_lifetime.cpp
+    input_common/motion_stall_watch.cpp
     video_core/ampere_logged_numeric.cpp
     video_core/ampere_logged_textures.cpp
     video_core/native_texture_header_index.cpp
@@ -69,6 +71,7 @@ add_executable(tests
     video_core/ampere_selevet_modes.cpp
     video_core/ampere_selevet_spills.cpp
     video_core/blit_dither.cpp
+    video_core/fmz_saturate.cpp
     video_core/maxwell_numeric.cpp
     video_core/maxwell_permute_lod.cpp
     video_core/submission_policy.cpp
@@ -76,6 +79,8 @@ add_executable(tests
     video_core/framebuffer_clear_layers.cpp
     video_core/framebuffer_limits.cpp
     video_core/fragment_color_mask.cpp
+    video_core/nx2_switch_reload.cpp
+    video_core/render_pass_continuation.cpp
     video_core/samples_query_policy.cpp
     video_core/fire_emblem_upscale.cpp
     video_core/dlss_contract.cpp
@@ -161,11 +166,14 @@ add_executable(tests
     core/nup_metadata.cpp
     core/nx2_image_layout.cpp
     core/nx2_video_input_queue.cpp
+    core/font_merge.cpp
     core/ldn.cpp
     core/internal_network/socket_proxy.cpp
+    core/kernel_locks.cpp
     core/priority_queue.cpp
     core/internal_network/network.cpp
     video_core/memory_tracker.cpp
+    video_core/invalidation_accumulator.cpp
     video_core/memory_manager_runs.cpp
     video_core/nx2_perf_draw_binds.cpp
     video_core/nx2_perf_texture_writes.cpp

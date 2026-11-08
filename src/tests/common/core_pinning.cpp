@@ -175,3 +175,29 @@ TEST_CASE("Core pinning: the enumeration order does not change the cores",
     CHECK(Sorted(plan.back) == expected.back);
     CHECK(Sorted(plan.guest) == expected.guest);
 }
+
+TEST_CASE("Linux CPU lists name every processor in their ranges", "[core_pinning]") {
+    using Common::ParseCpuList;
+    using List = std::vector<u32>;
+    // An i7-12700H: P-cores 0-11 (six cores with SMT), E-cores 12-19.
+    CHECK(ParseCpuList("0-11\n") == List{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11});
+    CHECK(ParseCpuList("0-3,8,10-11") == List{0, 1, 2, 3, 8, 10, 11});
+    CHECK(ParseCpuList("7") == List{7});
+    CHECK(ParseCpuList("").empty());
+    // A malformed entry ends the list, keeping what came before.
+    CHECK(ParseCpuList("0-1,x,4") == List{0, 1});
+    CHECK(ParseCpuList("5-2,8").empty());
+    CHECK(ParseCpuList("0-99999").empty());
+}
+
+TEST_CASE("Hybrid placement keeps threads on eight or more performance processors",
+          "[common][core_pinning]") {
+    // i5-1235U: 2 P-cores with SMT and 8 E-cores.
+    CHECK_FALSE(Common::UsesHybridPlacement(4, 8));
+    CHECK_FALSE(Common::UsesHybridPlacement(7, 8));
+    // 4 P-cores with SMT, and the i7-12700H's 6.
+    CHECK(Common::UsesHybridPlacement(8, 8));
+    CHECK(Common::UsesHybridPlacement(12, 8));
+    // Not hybrid: every processor is of the fastest class.
+    CHECK_FALSE(Common::UsesHybridPlacement(16, 0));
+}

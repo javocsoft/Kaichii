@@ -511,7 +511,14 @@ const WindowsCpuSets& CpuSets() {
             (processor.efficiency_class == best ? result.performance : result.efficiency)
                 .push_back(processor.id);
         }
-        result.hybrid = !result.efficiency.empty() && result.performance.size() >= 2;
+        result.hybrid =
+            Common::UsesHybridPlacement(result.performance.size(), result.efficiency.size());
+        if (!result.efficiency.empty() && !result.hybrid) {
+            LOG_INFO(Common,
+                     "Hybrid CPU with {} performance logical processors (fewer than {}): "
+                     "threads are left to Windows",
+                     result.performance.size(), Common::MinPerformanceProcessorsForHybridPlacement);
+        }
         if (result.hybrid) {
             LOG_INFO(Common,
                      "Hybrid CPU: {} performance and {} efficiency logical processors, "
@@ -560,6 +567,19 @@ std::vector<Common::LogicalProcessor> LinuxProcessors() {
         }
         return std::nullopt;
     };
+    // Intel hybrid CPUs list their P-cores here. cpu_capacity can't tell the classes apart on
+    // them (an i7-12700K or i7-12700H reports 1024 for P- and E-cores alike).
+    std::vector<bool> performance_cores;
+    if (std::ifstream pmu{"/sys/bus/event_source/devices/cpu_core/cpus"}) {
+        std::string list;
+        std::getline(pmu, list);
+        performance_cores.resize(CPU_SETSIZE);
+        for (const u32 cpu : Common::ParseCpuList(list)) {
+            if (cpu < CPU_SETSIZE) {
+                performance_cores[cpu] = true;
+            }
+        }
+    }
     for (int cpu = 0; cpu < CPU_SETSIZE; ++cpu) {
         if (!CPU_ISSET(cpu, &allowed)) {
             continue;
@@ -570,7 +590,8 @@ std::vector<Common::LogicalProcessor> LinuxProcessors() {
             return {};
         }
         // cpu_capacity is 1024 for the fastest cores; absent on CPUs that are not hybrid.
-        const u32 capacity = read(cpu, "cpu_capacity").value_or(1024);
+        const u32 capacity = !performance_cores.empty() ? (performance_cores[cpu] ? 1024U : 512U)
+                                                        : read(cpu, "cpu_capacity").value_or(1024);
         processors.push_back({static_cast<u32>(cpu), (*package << 16) | *core,
                               static_cast<u8>((std::min)(capacity, 1024U) >> 3)});
     }
@@ -786,6 +807,16 @@ void SetCurrentThreadToAllCores() {
     if (const WindowsCpuSets& sets = CpuSets(); sets.hybrid) {
         SelectCurrentThreadCpuSets({});
     }
+#endif
+}
+
+bool CanPinGpuThreads() {
+#ifdef _WIN32
+    return !PlanGpuThreadPinning(CpuSets().processors).front.empty();
+#elif defined(__linux__) && !defined(__ANDROID__)
+    return !PlanGpuThreadPinning(LinuxProcessors()).front.empty();
+#else
+    return false;
 #endif
 }
 

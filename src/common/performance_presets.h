@@ -23,6 +23,8 @@ struct HostProfile {
     u64 gpu_memory_bytes = 0; ///< The largest device-local heap
     u32 cpu_threads = 0;
     u64 ram_bytes = 0;
+    /// Enough physical performance cores to pin the split GPU threads (Common::CanPinGpuThreads)
+    bool gpu_thread_pinning = false;
 };
 
 enum class HardwareTier : u8 {

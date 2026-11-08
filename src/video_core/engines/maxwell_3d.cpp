@@ -40,9 +40,6 @@ namespace Tegra::Engines {
 /// First register id that is actually a Macro call.
 constexpr u32 MacroRegistersStart = 0xE00;
 
-// EDEN_NX2_3D_METHODS: log the first write to each 3D register (finds methods Eden doesn't model).
-static const bool g_trace_first_method_writes = std::getenv("EDEN_NX2_3D_METHODS") != nullptr;
-
 Maxwell3D::Maxwell3D(MemoryManager& memory_manager_)
     : draw_manager()
     , memory_manager{memory_manager_}
@@ -59,7 +56,7 @@ Maxwell3D::Maxwell3D(MemoryManager& memory_manager_)
     for (size_t i = 0; i < execution_mask.size(); i++)
         execution_mask[i] = IsMethodExecutable(u32(i));
     fast_maxwell3d = !record_write_history &&
-                     !g_trace_first_method_writes && !VideoCommon::Nx2Profile::Enabled();
+                     !trace_first_method_writes && !VideoCommon::Nx2Profile::Enabled();
 }
 
 Maxwell3D::~Maxwell3D() = default;
@@ -639,13 +636,14 @@ void Maxwell3D::CallConstBufferWords(Core::System& system, const u32* methods,
 }
 
 void Maxwell3D::CallMethodSlow(Core::System& system, u32 method, u32 method_argument, bool is_last_call) {
-    // It is an error to write to a register other than the current macro's ARG register before
-    // it has finished execution.
-    if (executing_macro != 0 && method != executing_macro + 1) {
+    // Every word of a macro register run is a parameter of the macro it started, whichever macro
+    // register it writes (as on the split front, FrontCallMethod). Only a write to an ordinary
+    // register before the macro has all its parameters is an error.
+    if (executing_macro != 0 && method < MacroRegistersStart) {
         DumpRecentWrites(method);
     }
     if (executing_macro != 0) {
-        ASSERT(method == executing_macro + 1);
+        ASSERT(method >= MacroRegistersStart);
     }
     RecordWrite(method, method_argument, 1, is_last_call ? 1 : 2);
 
@@ -655,7 +653,7 @@ void Maxwell3D::CallMethodSlow(Core::System& system, u32 method, u32 method_argu
         ProcessMacro(system, method, &method_argument, 1, is_last_call);
         return;
     }
-    if (g_trace_first_method_writes) [[unlikely]] {
+    if (trace_first_method_writes) [[unlikely]] {
         TraceFirstMethodWrite(method, method_argument);
     }
 

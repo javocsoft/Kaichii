@@ -149,12 +149,17 @@ std::string Tlv(u16 type, std::string_view value, u16 reserved = 0xA15E) {
     return bytes;
 }
 
-std::string Localized(std::string_view value) {
-    std::string bytes{"\x02nl"};
-    bytes.resize(7);
-    SetLe(bytes, 3, value.size(), 4);
+std::string LocalizedAs(std::string_view tag, std::string_view value) {
+    std::string bytes(1, static_cast<char>(tag.size()));
+    bytes += tag;
+    bytes.resize(bytes.size() + 4);
+    SetLe(bytes, 1 + tag.size(), value.size(), 4);
     bytes += value;
     return bytes;
+}
+
+std::string Localized(std::string_view value) {
+    return LocalizedAs("nl", value);
 }
 
 std::string Meta(std::string_view bytes, std::size_t index) {
@@ -554,6 +559,46 @@ TEST_CASE("NUP edited display title overrides the selected language without chan
     const auto after_metadata =
         after.substr(Le(after, package + 0x20, 8), Le(after, package + 0x28, 4));
     REQUIRE(after_metadata.find(localized) != std::string::npos);
+}
+
+TEST_CASE("NUP control data keeps an en-us localized title over the default title",
+          "[nup][metadata]") {
+    TempDir temp;
+    const auto root = temp.path / "Game";
+    fs::create_directories(root / "Base/exefs");
+    fs::create_directories(root / "Base/romfs");
+    Write(root / "Base/exefs/main", "synthetic main");
+    std::string npdm(0x100, '\0');
+    npdm.replace(0x80, 4, "ACI0");
+    SetLe(npdm, 0x90, 0x0400ABCD00010000ULL, 8);
+    Write(root / "Base/exefs/main.npdm", npdm);
+    Write(root / "Base/romfs/dummy", "synthetic data");
+    const auto archive = temp.path / "Game.nup";
+    std::string error;
+    const auto packed = FileSys::Nup::PackDump(root, archive, {}, {}, nullptr, &error);
+    INFO(error);
+    REQUIRE(packed == PackResult::Success);
+
+    auto bytes = Read(archive);
+    const auto toc = static_cast<std::size_t>(Le(bytes, 8, 8));
+    const auto package = toc + 0x30;
+    auto metadata = bytes.substr(Le(bytes, package + 0x20, 8), Le(bytes, package + 0x28, 4));
+    const std::string english_title = "English localized title";
+    metadata += Tlv(5, "Default title");
+    metadata += Tlv(9, LocalizedAs("en-us", english_title));
+    SetLe(bytes, package + 0x20, bytes.size(), 8);
+    SetLe(bytes, package + 0x28, metadata.size(), 4);
+    bytes += metadata;
+    SetLe(bytes, 0x40, bytes.size(), 8);
+    RefreshTocHash(bytes);
+    Write(archive, bytes);
+
+    FileSys::RealVfsFilesystem real;
+    Loader::AppLoader_NUP loader{real.OpenFile(archive.string(), FileSys::OpenMode::Read)};
+    FileSys::NACP control;
+    REQUIRE(loader.ReadControlData(control) == Loader::ResultStatus::Success);
+    REQUIRE(control.raw.language_entries.language_entries[0].GetApplicationName() ==
+            english_title);
 }
 
 TEST_CASE("NUP metadata rejects hostile ranges and counts without modifying the archive",
