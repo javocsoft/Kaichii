@@ -130,24 +130,35 @@ std::optional<VAddr> AppLoader_NSO::LoadModule(Kernel::KProcess& process, Core::
                 return std::nullopt;
             }
             if (nso_header.IsSegmentCompressed(i)) {
+                const u32 segment_size = nso_header.segments[i].size;
                 if (nso_header.IsZBICCompressed()) {
                     // ZBIC compression
                     const int r = Common::Compression::DecompressDataZBIC(
-                        std::span<u8>{decompressed_size}.first(nso_header.segments[i].size),
+                        std::span<u8>{decompressed_size}.first(segment_size),
                         std::span<const u8>{compressed_data}.first(nso_header.segments_compressed_size[i])
                     );
+                    // A failed segment would leave the previous segment's bytes in the buffer and
+                    // boot a corrupt image that hangs without presenting; refuse to load instead.
                     if (r <= 0) {
+                        LOG_ERROR(Loader, "{}: segment {} failed ZBIC decompression",
+                                  nso_file.GetName(), i);
                         return std::nullopt;
+                    }
+                    if (static_cast<u32>(r) != segment_size) {
+                        LOG_WARNING(Loader, "{}: segment {} decompressed to {:#x} of {:#x} bytes",
+                                    nso_file.GetName(), i, r, segment_size);
+                        std::fill(decompressed_size.begin() + r,
+                                  decompressed_size.begin() + segment_size, u8{0});
                     }
                 } else {
                     // LZ4 compression
                     int r = Common::Compression::DecompressDataLZ4(
                         decompressed_size.data(),
-                        nso_header.segments[i].size,
+                        segment_size,
                         compressed_data.data(),
                         nso_header.segments_compressed_size[i]
                     );
-                    if (r != int(nso_header.segments[i].size)) {
+                    if (r != int(segment_size)) {
                         return std::nullopt;
                     }
                 }

@@ -32,6 +32,21 @@ constexpr size_t GraphicsPipelinesToEvict(size_t cached, size_t stale, size_t bu
     return std::min(stale, cached - budget);
 }
 
+/// Pipelines built from the disk cache at boot that no draw has used yet stay out of eviction up to
+/// this many (~0.9 GB of driver memory at ~0.45 MB each). Evicting one throws its prebuild away, and
+/// the game translates it again on the GPU thread when it reaches that content (Ocarina of Time:
+/// 1174 of 1346 evicted on the title screen, 684 rebuilt in 10 s on entering the field).
+inline constexpr size_t MaxUnusedPrebuiltPipelines = 2000;
+
+/// Whether a stale pipeline stays as one of the unused prebuilt ones; `kept` counts those so far.
+constexpr bool KeepsUnusedPrebuiltPipeline(bool was_used, size_t& kept) {
+    if (was_used || kept >= MaxUnusedPrebuiltPipelines) {
+        return false;
+    }
+    ++kept;
+    return true;
+}
+
 /// Attribute mask of a native vertex program, two bits per attribute as in
 /// FixedPipelineState::attribute_types.
 /// @param input_generic Components of each generic attribute in the program header's input map.

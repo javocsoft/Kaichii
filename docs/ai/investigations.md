@@ -42,19 +42,18 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | `587633debe`, Star Fox support | Reverted upstream by `e87ad31068`. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
-commits.
+commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182, 186, 189, 192, 199,
+214, 221, 228, 246, 255, 270, 320, 329, 330, 353, 365, 377, 418, 456 and 475 as Zortos merged them:
+353 joined this tree's fragment color mask, and 182's `frame_times` reads the present history of 445.
 
 | Pull requests | Why they are not here |
 |---|---|
-| 353 | Changes pipeline keys and has no tests. |
 | 216 | Patches the same instruction as the built-in Dynamic FPS add-on, which 299 now keeps at real speed down to 10 fps. |
 | 313 | The same eviction problem as 408, whose budget was taken. |
-| 182 | Replaced by 445, frame times in `status`. |
 | 206 | Already in the tree as `68caa6c75e`. |
-| 437, 448, 300, 378, 354, 329, 223 | Fixes for AMD or Intel GPUs, which nothing here can run. |
-| 456, 387, 253 | Three overlapping DLSS integrations for Ocarina: features, not fixes. |
-| 418, 278, 235, 231, 243, 270 | Experiments behind switches, which do not merge to `nx2`. |
-| 365, 377, 451, 431, 199, 186, 195 | Windows or MinGW only features and tweaks, not fixes. |
+| 437, 448, 300, 378, 354, 223 | Fixes for AMD or Intel GPUs, which nothing here can run. |
+| 387, 253 | Two more DLSS integrations for Ocarina, overlapping 456. |
+| 278, 235, 231, 243 | Experiments behind switches, which do not merge to `nx2`. |
+| 451, 431, 195 | Windows or MinGW only features and tweaks, not fixes. |
 | 345 | Ported and measured on top of the presets branch, Ocarina on an RTX 3050 Laptop: the split front's waits for its back fell from 450 to 166 ms a second, but the game ran at 31.2 against 30.7 fps at 1x and 38.1 against 40.4 at 0.5x. Those waits overlapped other work, so about 1,000 lines of split synchronization bought nothing measurable here. Outside in Kokiri Forest at half resolution, where the emulated CPU sets the pace, the macro DMA read waits fell from 274 to 61 ms a second but list writer waits rose from 128 to 296, and the game ran at 23.1 against 22.6 fps. |
-| 475 | HMMA.16816.F16 on cooperative matrices: its author measured no change in fps once 259's preflush removed the read stalls (the preflush is the default now, with reads guarded), and its output is not bit-identical to the emulation. |
-| 296, 204, 189, 192, 221, 246, 320, 330, 335, 467, 213, 255, 267, 214, 219, 228, 411 | Not reviewed in depth yet. |
+| 296, 204, 335, 467, 213, 267, 219, 411 | Not reviewed in depth yet. |

@@ -21,6 +21,12 @@
 
 namespace ConfigurationShared {
 
+/**
+ * Builds the label and tooltip every settings widget shows, keyed by setting id.
+ *
+ * @param parent Object used for translation lookups.
+ * @return The translation map.
+ */
 std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
     std::unique_ptr<TranslationMap> translations = std::make_unique<TranslationMap>();
     const auto& tr = [](const char* text) -> QString { return QCoreApplication::translate("ConfigurationShared", text); };
@@ -159,9 +165,10 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
            tr("Uses NVIDIA DLSS on GeForce RTX cards in place of a Switch 2 game's own DLSS, "
               "instead of AMD FSR 3.1.\nNeeds NVIDIA's Streamline loader, and NVIDIA DLSS unless "
               "the NVIDIA app has downloaded it; Lichii does not ship NVIDIA's files. Use the "
-              "download button below.\nCurrently requires Fire Emblem: Fortune's Weave and "
+              "download button below.\nFire Emblem: Fortune's Weave also needs "
               "EDEN_NX2_DLSS_REPLACEMENT=dlss. Without that override, its spatial workaround "
-              "remains active.\nTakes effect when a game starts."));
+              "remains active.\nIn The Legend of Zelda: Ocarina of Time it replaces the game's "
+              "upscaler at 1x resolution scale.\nTakes effect when a game starts."));
     INSERT(Settings, anti_aliasing, tr("Anti-Aliasing Method:"),
            tr("The anti-aliasing method to use.\nSMAA offers the best quality.\nFXAA "
               "can produce a more stable picture in lower resolutions."));
@@ -214,6 +221,9 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
     INSERT(Settings, skip_cpu_inner_invalidation, tr("Skip CPU Inner Invalidation"),
            tr("Skips certain cache invalidations during memory updates, reducing CPU usage and "
               "improving latency. This may cause soft-crashes."));
+    INSERT(Settings, fps_limit, tr("FPS Limit"),
+           tr("Caps how often the game presents, so the game itself runs at this rate. 0 leaves "
+              "the frame rate to the game and the display."));
     INSERT(Settings, vsync_mode, tr("VSync Mode:"),
            tr("FIFO (VSync) does not drop frames or exhibit tearing but is limited by the screen "
               "refresh rate.\nFIFO Relaxed allows tearing as it recovers from a slow down.\n"
@@ -284,6 +294,12 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
            tr("Determines the number of depth slices processed in a single dispatch.\n"
               "Increasing this can improve throughput on high-end GPUs but may cause TDR or driver "
               "timeouts on weaker hardware."));
+    INSERT(Settings, pin_gpu_threads, tr("Pin GPU threads to their own cores (experimental)"),
+           tr("Pins the emulator's GPU threads to dedicated physical CPU cores and keeps the "
+              "emulated CPU cores off them.\n"
+              "Can hurt performance on CPUs with few cores. Skipped on CPUs with fewer than 6 "
+              "physical performance cores.\n"
+              "Windows and Linux only. Takes effect when a game starts."));
 
     INSERT(Settings, use_vulkan_driver_pipeline_cache, tr("Use Vulkan pipeline cache"),
            tr("Enables GPU vendor-specific pipeline cache.\nThis option can improve shader loading "

@@ -61,9 +61,11 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_DLSS_CONTRACT_SKIP` | diag | `=<n>`: skip the first n, at most 1000000. |
 | `EDEN_NX2_DLSS_LOG` | diag | `=<level>`: Streamline log level. |
 | `EDEN_NX2_PIPELINE_DIFF` | diag | For a new pipeline reusing an earlier one's shaders, logs which fixed state differs. Finds state that splits the same program. |
+| `EDEN_NX2_PIPELINE_BUILD_TRACE` | diag | `=<file>`: a line before and after every driver pipeline build, flushed at once, so the last BEGIN without an END names the shaders a driver crashed on. |
 | `EDEN_NX2_PENDING_WRITE_TRACE` | diag | Reports shaders reading buffer bytes that guest CPU writes have not reached yet. |
 | `EDEN_NX2_TABLE_POINTER_TRACE` | diag | Logs table-pointer slot changes and whether guest and host copies can differ. |
 | `EDEN_NX2_DOWNLOAD_TRACE` | diag | What the buffer cache copies back at fences, and the pages whose CPU reads had to flush, every 10 s. |
+| `EDEN_NX2_READBLOCK_TRACE` | diag | `=1`: logs every unmapped device memory read with its caller, not only the first 16. |
 | `EDEN_NX2_QUERY_TRACE` | diag | Query cache activity. |
 | `EDEN_NX2_QUERY_DMA_TRACE` | diag | MME DMA reads of reports whose host result is not in guest memory yet. |
 | `EDEN_NX2_QMD_TRACE` | diag | QMD scheduler loads, dependency counts and launches. |
@@ -124,6 +126,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_CNTFRQ` | tune | `=<Hz>`: overrides the 31.25 MHz Switch 2 counter frequency. |
 | `EDEN_NX2_CNTPCT_PAUSE` | A/B | `=0`: no pause in guest counter spin loops. |
 | `EDEN_NX2_SWAP_INTERVAL` | tune | `=<n>`: forces the present swap interval. |
+| `EDEN_NX2_FPS_LIMIT` | tune | `=<fps>`: holds presents to that rate when it is below the swap interval's; overrides the FPS limit setting. |
 | `EDEN_NX2_VSYNC_HZ` | tune | `=<rate>`: vsync event rate. |
 | `EDEN_NX2_CROP_WIDTH` | tune | `=<n>`: overrides the presented crop width. |
 | `EDEN_NX2_CROP_HEIGHT` | tune | `=<n>`: overrides the presented crop height. |

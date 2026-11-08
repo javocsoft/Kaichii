@@ -66,4 +66,7 @@ to `nx2-experimental` that touches `src/` (other than `src/tests/`), `CMakeLists
 
 Each publish creates the tag `build-<run number>`. Releases configure with `BUILD_TESTING=OFF`, so a
 release proves nothing about the tests. Linux PGO needs a Clang at least as new as the one that wrote
-`eglantine.profdata`; `PGO_LLVM_VERSION` in the workflow records it.
+`eglantine.profdata`; `PGO_LLVM_VERSION` in the workflow records it. Both Windows builds use clang-cl
+from a pinned LLVM (`tools/windows/install-llvm.ps1`) with ThinLTO against the MSVC headers and SDK;
+the PGO one adds `lichii-windows.profdata`, an MSVC-ABI profile trained on Ocarina of Time. Zortos's
+Windows clang-cl job in `build-check.yml` is not taken here: Windows does not build on pull requests.
