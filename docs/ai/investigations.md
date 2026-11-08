@@ -43,6 +43,13 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | `292a68df46`, a 4096-entry `MaxContinuousRange` cache for Ocarina | This tree answers `MaxContinuousRange` from the mapping runs it keeps at map time, so there is no cache to miss. |
 | `de4ed9d9d7`, 64 storage buffers for compute | This tree already allows 64 in every stage, up to the device's limit. |
 | `900ab5a825`, lowering operand lists for SHF, IADD3.UR, FSETP and I2F | Written for Eglantine's lowering, which reserves its top registers through `PrepareRegisterPressure`; this tree's lowering has no such list. Whether Ocarina's three Hyrule Field tessellation programs lower here is not checked: the save here doesn't reach the field. |
+| `f7a9027ff1`, Ocarina video, NUP mods and batching | Its parts: LayeredFS mods for .nup files are already here. The swap interval exemption while a video plays only changes the `EDEN_NX2_SWAP_INTERVAL` override. The texture cache override cap is Zortos PR 692. `EDEN_NX2_FRONT_BATCH` is an experiment. Fence operation vectors (`d52e5f1036`): allocation took under 0.2% of the 2026-11-08 Ocarina profile. |
+| PRs 716, 721 and 723 | Already here: the compare-exchange retry (Zortos 206), float depth-compare descriptors, and 723's shader, barrier and AVX-512 CLZ fixes. |
+| PR 717, lock-free exclusive monitor | Its speed comes from not taking the global monitor's lock, and this tree's default CPU accuracy (Auto) already ignores the global monitor. Its correctness claim, closing the races that ignoring it opens, is not checked here. |
+| PR 754, Intel parts | Workarounds for Intel's Windows driver, and a Mario Kart World task payload fix written for Eglantine's mesh prologue. Its all-vendor shutdown fix was taken. |
+| PRs 739, 741 | arm64 hosts: a host memory reservation that only unit tests on arm64 Linux reach, and NCE SIGILL handling. Nothing here builds or runs arm64; 740's NCE fix was taken. |
+| PR 758 | Adreno (Turnip) experiments for Ocarina behind switches, with an opt-in bilinear stand-in for its upscaler. |
+| PR 720 | Seven fixes in 17,900 lines from another fork. Its tessellation pipeline check is already here. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
 commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182, 186, 189, 192, 199,
@@ -73,4 +80,13 @@ commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182,
 | 635 | DLSS fixes for Ocarina: DLSS builds only with MSVC here, and nothing here runs Windows. |
 | 638 | Clears a whole 3D target on its first slice's zero clear for The Duskbloods: a guess about the other slices, and nothing here runs the game. |
 | 621 | Already in the tree. |
+| 718 | Keeps a samples query running up to 4 banks without a reset or report. This tree drops one only past 8,192 slots (`samples_query_policy.h`), and Ocarina here drops two a boot, both at the title. |
+| 721 | Replaces Ocarina's movie network (intro, title menu, cutscenes) with a bilinear copy, always on, so the movies lose the network's picture. Its 33 ms a frame were measured on an RX 6800 XT, which emulates the network's matrix operations; on NVIDIA this tree runs them on cooperative matrices. Not measured here. |
+| 722 | Interpolates noperspective varyings through perspective interpolation, for the red line in Ocarina's Royal Family's Tomb on an AMD driver. The NVIDIA report in issue 441 says the latest release is fine there. |
+| 727, and 600's `IAudioRenderer` command 14 | Stubs for `nx2:vi2` 201, `IGeneralService` 101 and `SetAsyncMemoryPoolControlEnabled`. Unknown commands already get the automatic stub reply here: Ocarina calls 101 at every boot and goes on. |
+| 738, second half | Shows a .nup's en-us title in the game list. Here that would hide a title edited in the .nup metadata. The first half, the en-us control data slot, was taken. |
+| 740 | Serves a file with a similar name in place of a damaged one from a bad dump: a stand-in, not a fix. |
+| 741 | Prepares shaders on the loading screen. Built on 579, which is not merged. |
+| 488 | Its first half, dropping same-value vertex buffer stores on the split front, is here as 178. The second half reads two per-method switches without a function-local static: 1.2% of the back thread by its author's profile. |
+| 161 | Its desktop submission budget and deferred fragment barrier are already here. |
 | 204, 335, 467, 213, 267, 219, 411 | Not reviewed in depth yet. |
