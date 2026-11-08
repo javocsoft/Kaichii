@@ -21,6 +21,7 @@
 #include "core/file_sys/patch_manager.h"
 #include "core/file_sys/registered_cache.h"
 #include "core/file_sys/vfs/vfs_real.h"
+#include "core/file_sys/vfs/vfs_vector.h"
 #include "core/hle/service/filesystem/filesystem.h"
 #include "core/loader/nso.h"
 
@@ -363,4 +364,20 @@ TEST_CASE("Built-in Dynamic FPS leaves both records alone when a user mod change
     auto expected = nso;
     std::memcpy(expected.data() + offset, &mod_word, sizeof(mod_word));
     REQUIRE(context.Manager().PatchNSO(nso, "main") == expected);
+}
+
+TEST_CASE("Patching without mod roots leaves the game's directories alone", "[patch_manager]") {
+    // No filesystem factories: neither the NAND nor the SD mod root exists.
+    Core::System system;
+    system.SetFilesystem(std::make_shared<FileSys::RealVfsFilesystem>());
+    system.SetContentProvider(std::make_unique<FileSys::ContentProviderUnion>());
+    const FileSys::PatchManager manager{OcarinaTitleId, system.GetFileSystemController(),
+                                        system.GetContentProvider()};
+    const auto main =
+        std::make_shared<FileSys::VectorVfsFile>(MakeMain(OcarinaBuildId, NopInstruction), "main");
+    const auto exefs = std::make_shared<FileSys::VectorVfsDirectory>(
+        std::vector<FileSys::VirtualFile>{main}, std::vector<FileSys::VirtualDir>{}, "exefs");
+    const auto patched = manager.PatchExeFS(exefs);
+    REQUIRE(patched != nullptr);
+    CHECK(patched->GetFile("main") != nullptr);
 }
