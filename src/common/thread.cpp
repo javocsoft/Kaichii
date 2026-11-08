@@ -511,7 +511,14 @@ const WindowsCpuSets& CpuSets() {
             (processor.efficiency_class == best ? result.performance : result.efficiency)
                 .push_back(processor.id);
         }
-        result.hybrid = !result.efficiency.empty() && result.performance.size() >= 2;
+        result.hybrid =
+            Common::UsesHybridPlacement(result.performance.size(), result.efficiency.size());
+        if (!result.efficiency.empty() && !result.hybrid) {
+            LOG_INFO(Common,
+                     "Hybrid CPU with {} performance logical processors (fewer than {}): "
+                     "threads are left to Windows",
+                     result.performance.size(), Common::MinPerformanceProcessorsForHybridPlacement);
+        }
         if (result.hybrid) {
             LOG_INFO(Common,
                      "Hybrid CPU: {} performance and {} efficiency logical processors, "

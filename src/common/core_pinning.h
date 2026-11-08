@@ -25,6 +25,19 @@ struct LogicalProcessor {
 /// Physical cores of the fastest class needed before the GPU threads are pinned.
 constexpr std::size_t MinCoresForGpuThreadPinning = 6;
 
+/// Performance logical processors a hybrid CPU needs before its time-critical threads (six guest
+/// cores, the GPU front and back, the Vulkan worker, timing and fencing) are kept on them with
+/// Windows CPU sets. With fewer they crowd each other: an i5-1235U (2 P-cores, 4 logical
+/// processors) ran Ocarina of Time at 9.3 fps that way and at 11.5 fps with Windows placing them.
+constexpr std::size_t MinPerformanceProcessorsForHybridPlacement = 8;
+
+/// Whether the time-critical threads are kept on the performance processors of a hybrid CPU.
+[[nodiscard]] constexpr bool UsesHybridPlacement(std::size_t performance_processors,
+                                                 std::size_t efficiency_processors) {
+    return efficiency_processors != 0 &&
+           performance_processors >= MinPerformanceProcessorsForHybridPlacement;
+}
+
 /// Logical processor ids for each pinned role. All three are empty when the host has fewer than
 /// MinCoresForGpuThreadPinning performance cores.
 struct GpuThreadPinning {
