@@ -560,6 +560,19 @@ std::vector<Common::LogicalProcessor> LinuxProcessors() {
         }
         return std::nullopt;
     };
+    // Intel hybrid CPUs list their P-cores here. cpu_capacity can't tell the classes apart on
+    // them (an i7-12700K or i7-12700H reports 1024 for P- and E-cores alike).
+    std::vector<bool> performance_cores;
+    if (std::ifstream pmu{"/sys/bus/event_source/devices/cpu_core/cpus"}) {
+        std::string list;
+        std::getline(pmu, list);
+        performance_cores.resize(CPU_SETSIZE);
+        for (const u32 cpu : Common::ParseCpuList(list)) {
+            if (cpu < CPU_SETSIZE) {
+                performance_cores[cpu] = true;
+            }
+        }
+    }
     for (int cpu = 0; cpu < CPU_SETSIZE; ++cpu) {
         if (!CPU_ISSET(cpu, &allowed)) {
             continue;
@@ -570,7 +583,8 @@ std::vector<Common::LogicalProcessor> LinuxProcessors() {
             return {};
         }
         // cpu_capacity is 1024 for the fastest cores; absent on CPUs that are not hybrid.
-        const u32 capacity = read(cpu, "cpu_capacity").value_or(1024);
+        const u32 capacity = !performance_cores.empty() ? (performance_cores[cpu] ? 1024U : 512U)
+                                                        : read(cpu, "cpu_capacity").value_or(1024);
         processors.push_back({static_cast<u32>(cpu), (*package << 16) | *core,
                               static_cast<u8>((std::min)(capacity, 1024U) >> 3)});
     }
