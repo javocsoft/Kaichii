@@ -77,6 +77,7 @@ add_executable(tests
     video_core/framebuffer_limits.cpp
     video_core/fragment_color_mask.cpp
     video_core/nx2_switch_reload.cpp
+    video_core/render_pass_continuation.cpp
     video_core/samples_query_policy.cpp
     video_core/fire_emblem_upscale.cpp
     video_core/dlss_contract.cpp
