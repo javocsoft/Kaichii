@@ -1076,14 +1076,6 @@ void PipelineCache::LoadDiskResources(u64 title_id, std::stop_token stop_loading
                 key.state.attribute_types, key.unique_hashes, attribute_masks);
         }
 
-        if (!device.IsExtMeshShaderSupported() &&
-            std::ranges::any_of(envs, [](const FileEnvironment& env) {
-                return env.ShaderStage() == Shader::Stage::Task ||
-                       env.ShaderStage() == Shader::Stage::Mesh;
-            })) {
-            return;
-        }
-
         if ((key.state.extended_dynamic_state != 0) !=
                 dynamic_features.has_extended_dynamic_state ||
             (key.state.extended_dynamic_state_2 != 0) !=
