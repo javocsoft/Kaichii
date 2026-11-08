@@ -15,7 +15,7 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 | Fire Emblem: Fortune's Weave | 04007EF01F8AE000 | [Upscale stand-in](../FE_UPSCALE_STANDIN.md), [DLSS replacement](../native-dlss-replacement.md) |
 | The Duskbloods network test | 0400D1D02399A000 | [Bindless surfaces](../duskbloods-bindless-surfaces.md), [uniform shift](../duskbloods-uniform-immediate-shift.md) |
 | Mario Kart World | 0400C3F00006E000 | [Integration test](../performance/MKW-INTEGRATION.md), `docs/nx2/notes.md`, `docs/nx2/gpu-thread-split.md` |
-| The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md), [network bypass](../nx2/oot-network-bypass.md) |
+| The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md), [network bypass](../nx2/oot-network-bypass.md). Zortos issue 653 (abort on an unimplemented `nx2:vi2` 201 at boot): never called on this tree's test machine, so no stub is guessed for it. |
 
 ## By subject
 
@@ -60,4 +60,9 @@ commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182,
 | 559 | Waits only for a macro DMA read's own query reports. Its author's profile shows less waiting, but its own frame rates went down (walking 36.1 to 31.9 fps). |
 | 591, 640 | Pipeline cache migration and pruning of damaged, stale and duplicate records (+2,300 lines). 591 overlaps this tree's own migration from 52-54 to 55, and on Ocarina here only three compute records are stale (the "Uncached storage pointer classification" lines at boot), none graphics. Left until Zortos merges them. |
 | 615 | Channel-aware state tracking from Eglantine #754: its author neither built nor ran it. |
+| 690 | Mario Kart World water: the collision write-back is a fix, but it comes with a wave-shader workaround keyed to one program, and nothing here runs the game. |
+| 692 | Caps the `EDEN_NX2_TC_*_MIB` tuning overrides at the device budget: only matters to someone setting them past their card. |
+| 652 | Keeps stale Switch 2 graphics pipelines within a RAM budget, a different eviction policy from this tree's (only the excess over the budget, least recently used first, prebuilt unused ones kept). |
+| 655, 678, 695 | Ocarina features: FPS unlock and frame limit slider (this tree has Dynamic FPS and 270's limit), DLSS/DLAA and FSR 3.1 in place of the game's network. Features, not fixes. |
+| 645, 656 | Windows fastmem retry and macOS/MoltenVK work: nothing here runs either. |
 | 204, 335, 467, 213, 267, 219, 411 | Not reviewed in depth yet. |
