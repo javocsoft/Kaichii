@@ -15,7 +15,7 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 | Fire Emblem: Fortune's Weave | 04007EF01F8AE000 | [Upscale stand-in](../FE_UPSCALE_STANDIN.md), [DLSS replacement](../native-dlss-replacement.md) |
 | The Duskbloods network test | 0400D1D02399A000 | [Bindless surfaces](../duskbloods-bindless-surfaces.md), [uniform shift](../duskbloods-uniform-immediate-shift.md) |
 | Mario Kart World | 0400C3F00006E000 | [Integration test](../performance/MKW-INTEGRATION.md), `docs/nx2/notes.md`, `docs/nx2/gpu-thread-split.md` |
-| The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md), [network bypass](../nx2/oot-network-bypass.md). Zortos issue 653 (abort on an unimplemented `nx2:vi2` 201 at boot): never called on this tree's test machine, so no stub is guessed for it. |
+| The Legend of Zelda: Ocarina of Time | 0400486024DEC000 | [Dynamic FPS add-on](../nx2/ocarina-dynamic-fps.md), [network bypass](../nx2/oot-network-bypass.md). Zortos issue 653 (abort on an unimplemented `nx2:vi2` 201 at boot): never called on this tree's test machine, so no stub is guessed for it. Zortos issue 619 (GPU hang, Xid 109, after about 5 minutes on Linux with NVIDIA driver 580): 13 minutes here on driver 595 without a hang. |
 
 ## By subject
 
@@ -40,6 +40,9 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | `8820bb79aa`, storage buffers sized from the mapping only in DLSS passes | Tested in Ocarina of Time on top of Zortos PR 415, on an RTX 3050 Laptop: the Deku Tree intro rendered the same, and Link's house ran at 13.8 fps against 14.3 without it, inside the 1 fps the runs vary by. Its reason, every native dispatch marking an 8 MiB binding GPU-written, is what PR 415 fixes at the root: the binding keeps its size and only the range the shader's stores reach is marked. It also takes the word after a pointer as a size, which a native program does not promise. |
 | `6dd4781249`, `0ca2032bff`, data directory and translations renamed to Eglantine | Would strand the saves and settings in the `eden` directory. |
 | `587633debe`, Star Fox support | Reverted upstream by `e87ad31068`. |
+| `292a68df46`, a 4096-entry `MaxContinuousRange` cache for Ocarina | This tree answers `MaxContinuousRange` from the mapping runs it keeps at map time, so there is no cache to miss. |
+| `de4ed9d9d7`, 64 storage buffers for compute | This tree already allows 64 in every stage, up to the device's limit. |
+| `900ab5a825`, lowering operand lists for SHF, IADD3.UR, FSETP and I2F | Written for Eglantine's lowering, which reserves its top registers through `PrepareRegisterPressure`; this tree's lowering has no such list. Whether Ocarina's three Hyrule Field tessellation programs lower here is not checked: the save here doesn't reach the field. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
 commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182, 186, 189, 192, 199,
@@ -65,4 +68,9 @@ commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182,
 | 652 | Keeps stale Switch 2 graphics pipelines within a RAM budget, a different eviction policy from this tree's (only the excess over the budget, least recently used first, prebuilt unused ones kept). |
 | 655, 678, 695 | Ocarina features: FPS unlock and frame limit slider (this tree has Dynamic FPS and 270's limit), DLSS/DLAA and FSR 3.1 in place of the game's network. Features, not fixes. |
 | 645, 656 | Windows fastmem retry and macOS/MoltenVK work: nothing here runs either. |
+| 715 | Copies Ocarina's UI storage at each present while it runs a frame ahead (issue 286, reported on AMD: the dialogue panel and HUD missing in half the frames). Not seen here: on the RTX 3050 the hearts, minimap, button prompts and Saria's speech bubble were in all eight screenshots taken in a row in Kokiri Forest. The dialogue panel itself was not checked. |
+| 712, first half | Compares motion with the first value since mapping began. While mapping, `InputEngine::SetMotion` already keeps the value from before mapping began, so the comparison already has a fixed baseline. Its sensor restart was taken. |
+| 635 | DLSS fixes for Ocarina: DLSS builds only with MSVC here, and nothing here runs Windows. |
+| 638 | Clears a whole 3D target on its first slice's zero clear for The Duskbloods: a guess about the other slices, and nothing here runs the game. |
+| 621 | Already in the tree. |
 | 204, 335, 467, 213, 267, 219, 411 | Not reviewed in depth yet. |
