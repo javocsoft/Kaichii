@@ -23,6 +23,7 @@
 #include "video_core/rasterizer_interface.h"
 #include "video_core/renderer_vulkan/vk_buffer_cache.h"
 #include "video_core/renderer_vulkan/vk_compute_pass.h"
+#include "video_core/renderer_vulkan/samples_query_policy.h"
 #include "video_core/renderer_vulkan/vk_query_cache.h"
 #include "video_core/renderer_vulkan/vk_resource_pool.h"
 #include "video_core/renderer_vulkan/vk_scheduler.h"
@@ -41,6 +42,7 @@ namespace {
 class SamplesQueryBank : public VideoCommon::BankBase {
 public:
     static constexpr size_t BANK_SIZE = 256;
+    static_assert(MaxUnreportedSamplesSlots == BANK_SIZE * 32);
     static constexpr size_t QUERY_SIZE = 8;
     explicit SamplesQueryBank(const Device& device_, Scheduler& scheduler_, size_t index_)
         : BankBase(BANK_SIZE), device{device_}, scheduler{scheduler_}, index{index_} {
@@ -215,10 +217,9 @@ public:
     void CloseCounter() override {
         PauseCounter();
         // A title that counts without resetting or reporting grows the query by a slot at every
-        // submission and render pass, and the query keeps every bank it touches alive. Ocarina of
-        // Time's title screen and file select reached 16,384 slots over 64 banks (its gameplay
-        // windows span at most 36 slots). Past a bank, drop the count as a reset would.
-        if (current_query && current_query->size_slots > SamplesQueryBank::BANK_SIZE) {
+        // submission and render pass, and the query keeps every bank it touches alive: past what
+        // gameplay reaches (DropsUnreportedSamples), drop the count as a reset would.
+        if (current_query && DropsUnreportedSamples(current_query->size_slots)) {
             // It drops a real count. Logged on the 1st, 2nd, 4th, 8th... drop, so a window this
             // long during gameplay doesn't go unnoticed and a title screen doesn't flood the log.
             ++bank_bound_resets;

@@ -197,6 +197,9 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 
 | Switch | Kind | Effect |
 |---|---|---|
+| `EDEN_NX2_FORCE_MESH_FALLBACK` | A/B | `=1`: leaves VK_EXT_mesh_shader off, so task and mesh draws take the compute fallback of devices without it. |
+| `EDEN_NX2_MESH_EMULATION_DUMP` | diag | `=<dir>`: writes the vertex shader of each emulated mesh program there, for spirv-val. |
+| `EDEN_NX2_MESH_EMULATION_PROBE` | diag | `=1`: every 60 frames, reads one emulated mesh draw's output back and logs it. |
 | `EDEN_NX2_EXPERIMENTAL_GEOMETRY` | A/B | `=0`: disable native geometry stage lowering. |
 | `EDEN_NX2_NO_TENSOR` | A/B | Disables tensor multiply-add translation. |
 | `EDEN_NX2_UNDEF_ZERO` | A/B | `=0`: emit `OpUndef` for registers read before any write, rather than zero. |

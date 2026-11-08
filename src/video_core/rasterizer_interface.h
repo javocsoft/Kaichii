@@ -158,11 +158,21 @@ public:
     virtual void PrepareRegionWrite([[maybe_unused]] DAddr addr, [[maybe_unused]] u64 size,
                                     [[maybe_unused]] VideoCommon::CacheType which) {}
 
+    /// The caches a guest memory write made by the GPU itself (InnerInvalidation) invalidates.
+    /// skip_cpu_inner_invalidation keeps the texture cache: engines that write images in software,
+    /// such as DMA copies of decoded video frames into block-linear textures, reach images only
+    /// through it.
+    [[nodiscard]] static constexpr VideoCommon::CacheType InnerInvalidationCaches(
+        bool skip_cpu_inner_invalidation) {
+        return skip_cpu_inner_invalidation ? VideoCommon::CacheType::TextureCache
+                                           : VideoCommon::CacheType::All;
+    }
+
     virtual void InnerInvalidation(std::span<const std::pair<DAddr, std::size_t>> sequences) {
-        if (!Settings::values.skip_cpu_inner_invalidation.GetValue()) {
-            for (const auto& [cpu_addr, size] : sequences) {
-                InvalidateRegion(cpu_addr, size);
-            }
+        const auto which =
+            InnerInvalidationCaches(Settings::values.skip_cpu_inner_invalidation.GetValue());
+        for (const auto& [cpu_addr, size] : sequences) {
+            InvalidateRegion(cpu_addr, size, which);
         }
     }
 
@@ -260,7 +270,7 @@ public:
     }
 
     /// State of the Ocarina of Time anti-aliasing network bypass (oot_network.h), or null when
-    /// this backend cannot bypass it.
+    /// this backend cannot bypass it or NVIDIA DLSS replaces the same output pass.
     [[nodiscard]] virtual VideoCommon::OotNetwork::BypassState* OotNetworkBypass() {
         return nullptr;
     }

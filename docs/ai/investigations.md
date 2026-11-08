@@ -56,4 +56,8 @@ commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182,
 | 278, 235, 231, 243 | Experiments behind switches, which do not merge to `nx2`. |
 | 451, 431, 195 | Windows or MinGW only features and tweaks, not fixes. |
 | 345 | Ported and measured on top of the presets branch, Ocarina on an RTX 3050 Laptop: the split front's waits for its back fell from 450 to 166 ms a second, but the game ran at 31.2 against 30.7 fps at 1x and 38.1 against 40.4 at 0.5x. Those waits overlapped other work, so about 1,000 lines of split synchronization bought nothing measurable here. Outside in Kokiri Forest at half resolution, where the emulated CPU sets the pace, the macro DMA read waits fell from 274 to 61 ms a second but list writer waits rose from 128 to 296, and the game ran at 23.1 against 22.6 fps. |
-| 296, 204, 335, 467, 213, 267, 219, 411 | Not reviewed in depth yet. |
+| 589 | Replays a macro the split front's compiled program rejects on the interpreter. The rejections it hides ("instruction outside uploaded RAM" on Linux AppImages) were GCC 13 dropping macro uploads, fixed at the root by 524. |
+| 559 | Waits only for a macro DMA read's own query reports. Its author's profile shows less waiting, but its own frame rates went down (walking 36.1 to 31.9 fps). |
+| 591, 640 | Pipeline cache migration and pruning of damaged, stale and duplicate records (+2,300 lines). 591 overlaps this tree's own migration from 52-54 to 55, and on Ocarina here only three compute records are stale (the "Uncached storage pointer classification" lines at boot), none graphics. Left until Zortos merges them. |
+| 615 | Channel-aware state tracking from Eglantine #754: its author neither built nor ran it. |
+| 204, 335, 467, 213, 267, 219, 411 | Not reviewed in depth yet. |
