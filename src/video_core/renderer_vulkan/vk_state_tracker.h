@@ -298,6 +298,11 @@ public:
 
     void SetupTables(Tegra::Control::ChannelState& channel_state);
 
+    /// Stops using the bound channel's flags, for when it goes away.
+    void ClearChannel() {
+        flags = &default_flags;
+    }
+
     void ChangeChannel(Tegra::Control::ChannelState& channel_state);
 
     void InvalidateState();
