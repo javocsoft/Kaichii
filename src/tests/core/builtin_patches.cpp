@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/generators/catch_generators_range.hpp>
 #include <fmt/format.h>
 #include "common/common_funcs.h"
 #include "common/fs/path_util.h"
@@ -31,6 +33,7 @@ constexpr u64 OcarinaTitleId = 0x0400486024DEC000;
 constexpr u64 OtherTitleId = 0x0100000000010000;
 constexpr std::string_view MaxResolution = "Max Resolution (built-in)";
 constexpr std::string_view DynamicFps = "Dynamic FPS by Dark (built-in)";
+constexpr std::string_view OcclusionOff = "Occlusion Off (built-in)";
 constexpr std::string_view OcarinaBuildIdHex = "E0F3CCFAF50065AE4EA01EB5AEB13B1A45DA3348";
 constexpr FileSys::PatchManager::BuildID OcarinaBuildId{
     0xE0, 0xF3, 0xCC, 0xFA, 0xF5, 0x00, 0x65, 0xAE, 0x4E, 0xA0,
@@ -226,6 +229,20 @@ TEST_CASE("Built-in Max Resolution patch is listed and loaded for Ocarina's main
 
 namespace {
 
+constexpr std::array<size_t, 6> OcclusionOffsets{0x11ACE68, 0x11B828C, 0x11B82A4,
+                                                 0x11ACEC8, 0x11B82DC, 0x11B82F4};
+constexpr u32 LdrbW8X0 = 0x39400008;
+constexpr u32 MovW8Wzr = 0x2A1F03E8;
+
+std::vector<u8> MakeOcclusionMain() {
+    auto nso = MakeMain(OcarinaBuildId, TbzInstruction);
+    nso.resize(sizeof(Loader::NSOHeader) + 0x11B8300);
+    for (const size_t offset : OcclusionOffsets) {
+        std::memcpy(nso.data() + sizeof(Loader::NSOHeader) + offset, &LdrbW8X0, sizeof(LdrbW8X0));
+    }
+    return nso;
+}
+
 std::vector<u8> MakeDynamicMain() {
     auto nso = MakeMain(OcarinaBuildId, TbzInstruction);
     nso.resize(DynamicStateOffset + 16);
@@ -380,4 +397,45 @@ TEST_CASE("Patching without mod roots leaves the game's directories alone", "[pa
     const auto patched = manager.PatchExeFS(exefs);
     REQUIRE(patched != nullptr);
     CHECK(patched->GetFile("main") != nullptr);
+}
+
+TEST_CASE("Built-in Occlusion Off turns both occlusion query settings off in all their nodes",
+          "[patch_manager]") {
+    PatchManagerTestContext context;
+    const auto manager = context.Manager();
+    const auto patches = manager.GetPatches();
+    const auto it = std::ranges::find(patches, OcclusionOff, &FileSys::Patch::name);
+    REQUIRE(it != patches.end());
+    REQUIRE(it->enabled);
+
+    const auto nso = MakeOcclusionMain();
+    const auto patched = manager.PatchNSO(nso, "main");
+    for (const size_t offset : OcclusionOffsets) {
+        REQUIRE(WordAt(patched, sizeof(Loader::NSOHeader) + offset) == MovW8Wzr);
+    }
+    // Only those words change (Max Resolution also applies to this module).
+    size_t changed = 0;
+    for (size_t i = 0; i < nso.size(); ++i) {
+        changed += nso[i] != patched[i] ? 1 : 0;
+    }
+    REQUIRE(changed <= OcclusionOffsets.size() * 4 + 4);
+
+    Settings::values.disabled_addons[OcarinaTitleId] = {std::string{OcclusionOff}};
+    const auto disabled = manager.PatchNSO(nso, "main");
+    for (const size_t offset : OcclusionOffsets) {
+        REQUIRE(WordAt(disabled, sizeof(Loader::NSOHeader) + offset) == LdrbW8X0);
+    }
+
+    const auto unrelated = context.Manager(OtherTitleId).GetPatches();
+    REQUIRE(std::ranges::find(unrelated, OcclusionOff, &FileSys::Patch::name) == unrelated.end());
+}
+
+TEST_CASE("Built-in Occlusion Off leaves a module with another word at any node alone",
+          "[patch_manager]") {
+    PatchManagerTestContext context;
+    Settings::values.disabled_addons[OcarinaTitleId] = {std::string{MaxResolution}};
+    auto nso = MakeOcclusionMain();
+    const size_t mismatch = GENERATE(range(size_t{0}, OcclusionOffsets.size()));
+    nso[sizeof(Loader::NSOHeader) + OcclusionOffsets[mismatch]] ^= 1;
+    REQUIRE(context.Manager().PatchNSO(nso, "main") == nso);
 }

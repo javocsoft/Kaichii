@@ -89,6 +89,21 @@ constexpr std::array DYNAMIC_FPS_RECORDS{
     BuiltinPatchRecord{0x3C46200, DYNAMIC_FPS_ROUTINE, {}, true},
 };
 
+// The render pipeline mirrors its settings into nodes after `bl getter; ldrb w8, [x0]`; `mov w8,
+// wzr` there makes a setting false. These are the two node copies each of
+// CreateZPrePassOcclusionQuery (getter main+0xf5acc0) and CreateSamplesPassedQuery (main+0xf5bf70),
+// from cLohan's OcclusionOff_ZPrePassAndSamplesQuery (the community IPS offsets are these + 0x100).
+constexpr std::array<u8, 4> OOT_LDRB_W8_X0{0x08, 0x00, 0x40, 0x39};
+constexpr std::array<u8, 4> OOT_MOV_W8_WZR{0xE8, 0x03, 0x1F, 0x2A};
+constexpr std::array OOT_OCCLUSION_OFF_RECORDS{
+    BuiltinPatchRecord{0x11ACE68, OOT_MOV_W8_WZR, OOT_LDRB_W8_X0},
+    BuiltinPatchRecord{0x11B828C, OOT_MOV_W8_WZR, OOT_LDRB_W8_X0},
+    BuiltinPatchRecord{0x11B82A4, OOT_MOV_W8_WZR, OOT_LDRB_W8_X0},
+    BuiltinPatchRecord{0x11ACEC8, OOT_MOV_W8_WZR, OOT_LDRB_W8_X0},
+    BuiltinPatchRecord{0x11B82DC, OOT_MOV_W8_WZR, OOT_LDRB_W8_X0},
+    BuiltinPatchRecord{0x11B82F4, OOT_MOV_W8_WZR, OOT_LDRB_W8_X0},
+};
+
 constexpr std::array BUILTIN_PATCHES{
     // Ocarina of Time takes its "dynamic resolution disabled" path, so the 3D renders at full scale
     // instead of following the GPU-time controller down to its 480p floor.
@@ -107,6 +122,16 @@ constexpr std::array BUILTIN_PATCHES{
         .records = DYNAMIC_FPS_RECORDS,
         .state_offset = 0x4E9FE00,
         .state_size = 16,
+    },
+    // Ocarina of Time stops issuing its per-object occlusion queries and the conditional renders
+    // they feed, which the emulated GPU answers slowly; the depth test still hides what they culled.
+    // Kokiri Forest on an RTX 3050 Laptop: 24.9 -> 28.3 fps.
+    BuiltinPatch{
+        .name = "Occlusion Off (built-in)",
+        .title_id = 0x0400486024DEC000,
+        .module = "main",
+        .build_id = "E0F3CCFAF50065AE4EA01EB5AEB13B1A45DA3348",
+        .records = OOT_OCCLUSION_OFF_RECORDS,
     },
 };
 
