@@ -6,8 +6,10 @@
 
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <vector>
 
 #include "audio_core/sink/sink.h"
@@ -40,6 +42,30 @@ public:
     std::vector<s16> ReleaseBuffer(u64) override {
         return {};
     }
+
+    /// Paces the audio renderer as a device's queue would, one block per block's length. With no
+    /// queue to fill it rendered as fast as it could on a whole core, and the guest's audio ran
+    /// ahead of real time.
+    void WaitFreeSpace(std::stop_token) override {
+        if (paused) {
+            return;
+        }
+        constexpr std::chrono::microseconds Block{u64{1'000'000} * TargetSampleCount /
+                                                  TargetSampleRate};
+        const auto now = std::chrono::steady_clock::now();
+        // A device holds a few blocks; one that fell further behind starts over instead of
+        // catching up in a burst.
+        if (next_block + 4 * Block < now) {
+            next_block = now;
+        }
+        if (next_block > now) {
+            std::this_thread::sleep_until(next_block);
+        }
+        next_block += Block;
+    }
+
+private:
+    std::chrono::steady_clock::time_point next_block{};
 };
 
 /**

@@ -3,8 +3,10 @@
 
 #include <array>
 #include <atomic>
+#include <chrono>
 #include <memory>
 #include <thread>
+
 #include <catch2/catch_test_macros.hpp>
 #include "audio_core/sink/null_sink.h"
 #include "common/settings.h"
@@ -162,4 +164,25 @@ TEST_CASE("legacy output and renderer sinks preserve FIFO volume and repeated-fr
         stream.ProcessAudioOutAndRender(output, 240);
         REQUIRE(std::ranges::all_of(output, [](s16 value) { return value == -2000; }));
     }
+}
+
+TEST_CASE("The null sink paces the audio renderer at the output's sample rate", "[sysmix_sink]") {
+    SysmixTests::Context context;
+    AudioCore::Sink::NullSink null{"auto"};
+    auto* stream =
+        null.AcquireSinkStream(context.system, 2, "render", AudioCore::Sink::StreamType::Render);
+    stream->Start();
+    // Each block is 240 frames at 48 kHz, 5 ms: 21 waits span at least 20 blocks.
+    const auto begin = std::chrono::steady_clock::now();
+    for (u32 i = 0; i < 21; ++i) {
+        stream->WaitFreeSpace({});
+    }
+    CHECK(std::chrono::steady_clock::now() - begin >= std::chrono::milliseconds{95});
+    // A paused stream doesn't hold the renderer.
+    stream->Stop();
+    const auto paused = std::chrono::steady_clock::now();
+    for (u32 i = 0; i < 100; ++i) {
+        stream->WaitFreeSpace({});
+    }
+    CHECK(std::chrono::steady_clock::now() - paused < std::chrono::milliseconds{100});
 }

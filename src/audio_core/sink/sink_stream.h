@@ -249,7 +249,7 @@ public:
     /**
      * Waits for free space in the sample ring buffer
      */
-    void WaitFreeSpace(std::stop_token stop_token);
+    virtual void WaitFreeSpace(std::stop_token stop_token);
 
 protected:
     /**

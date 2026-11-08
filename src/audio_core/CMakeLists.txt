@@ -105,6 +105,7 @@ add_library(audio_core STATIC
     renderer/command/mix/mix.h
     renderer/command/mix/mix_ramp.cpp
     renderer/command/mix/mix_ramp.h
+    renderer/command/mix/mix_sample.h
     renderer/command/mix/mix_ramp_grouped.cpp
     renderer/command/mix/mix_ramp_grouped.h
     renderer/command/mix/volume.cpp
