@@ -133,6 +133,7 @@ class TextureCache : public VideoCommon::ChannelSetupCaches<TextureCacheChannelI
     u64 gc_download_deletes{}; ///< Evictions that downloaded the image first
     u64 gc_download_waits{};   ///< GPU waits those downloads took
     u64 gc_dead_deletes{};     ///< Evictions of images whose GPU data newer writes covered
+    u64 gc_backing_waits{};    ///< Evictions put off until nx2:gpu backed the image's memory
     u64 async_decodes_queued{};
     u64 images_created{};
     u64 images_uploaded{};   ///< Image contents uploaded from guest memory (last 600 frames)

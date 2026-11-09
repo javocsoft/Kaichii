@@ -271,6 +271,12 @@ void TextureCache<P>::RunGarbageCollector(bool out_of_memory) {
             (!high_priority_mode && must_download)) {
             return false;
         }
+        if (must_download && !Tegra::Nx2SparseWriteReady(image.gpu_addr, image.guest_size_bytes)) {
+            // Its guest memory is being given a backing (see Nx2SparseWriteReady): evicted on a
+            // later pass.
+            ++gc_backing_waits;
+            return false;
+        }
         if (must_download) {
             // As DownloadMemory: a batch is capped so the staging memory held at once stays bounded.
             constexpr size_t MaxBatchBytes = 64_MiB;
@@ -709,9 +715,9 @@ void TextureCache<P>::TickFrame() {
         if constexpr (requires { runtime.LogMemoryStatistics(); }) {
             runtime.LogMemoryStatistics();
         }
-        LOG_INFO(HW_GPU, "Texture cache last 600 frames: created {} images, deleted {} (collector {}, {} costly, {} downloaded in {} GPU waits, {} with dead data), {} async decodes, ASTC {} opaque / {} alpha",
+        LOG_INFO(HW_GPU, "Texture cache last 600 frames: created {} images, deleted {} (collector {}, {} costly, {} downloaded in {} GPU waits, {} with dead data, {} kept until their memory was backed), {} async decodes, ASTC {} opaque / {} alpha",
                  images_created, images_deleted, gc_deletes + gc_costly_deletes, gc_costly_deletes,
-                 gc_download_deletes, gc_download_waits, gc_dead_deletes,
+                 gc_download_deletes, gc_download_waits, gc_dead_deletes, gc_backing_waits,
                  async_decodes_queued, astc_opaque_images, astc_alpha_images);
         {
             const auto [hits, misses] = transcode_cache.TakeCounts();
@@ -744,7 +750,7 @@ void TextureCache<P>::TickFrame() {
         // The per-image and per-shape tallies only feed debug lines: skip them while those are off.
         debug_stats = Common::Log::IsLevelEnabled(Common::Log::Class::HW_GPU, Common::Log::Level::Debug);
         gc_deletes = gc_costly_deletes = gc_download_deletes = gc_download_waits = 0;
-        gc_dead_deletes = 0;
+        gc_dead_deletes = gc_backing_waits = 0;
         async_decodes_queued = 0;
         images_created = images_deleted = 0;
     }
