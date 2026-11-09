@@ -7,6 +7,7 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cstdlib>
 #include <condition_variable>
 #include <list>
 #include <memory>
@@ -252,6 +253,8 @@ struct GPU::Impl {
                      raster_area.start_address, raster_area.end_address,
                      reads.load(std::memory_order_relaxed));
         }
+        static const bool log_slow = std::getenv("EDEN_NX2_SLOW_FRAME_MS") != nullptr;
+        const auto flush_start = std::chrono::steady_clock::now();
         const u64 fence = RequestSyncOperation([this, raster_area]() {
             // Apply collected guest writes before downloading GPU data over guest memory.
             InvalidateGPUCache();
@@ -259,6 +262,15 @@ struct GPU::Impl {
         });
         gpu_thread.TickGPU(is_async);
         WaitForSyncOperation(fence);
+        if (log_slow) {
+            const double ms = std::chrono::duration<double, std::milli>(
+                                  std::chrono::steady_clock::now() - flush_start)
+                                  .count();
+            if (ms > 5.0) {
+                LOG_INFO(HW_GPU, "Slow CPU read flush: {:.1f} ms for [{:#x}, {:#x})", ms,
+                         raster_area.start_address, raster_area.end_address);
+            }
+        }
         return raster_area;
     }
 

@@ -1851,6 +1851,25 @@ private:
             Core::g_nx2_present_fence_ns[slot].store(
                 static_cast<u64>((waited - entered) / std::chrono::nanoseconds{1}),
                 std::memory_order_release);
+            // EDEN_NX2_SLOW_FRAME_MS=<n>: log each present more than n ms after the previous one,
+            // with how long it waited for the frame's fence, to line stutters up with the log.
+            static const s64 slow_frame_ns = [] {
+                const char* value = std::getenv("EDEN_NX2_SLOW_FRAME_MS");
+                return value != nullptr ? std::strtoll(value, nullptr, 10) * 1'000'000 : 0LL;
+            }();
+            if (slow_frame_ns > 0 && present_index > 0) {
+                const u64 previous = Core::g_nx2_present_times[(present_index - 1) %
+                                                               Core::Nx2PresentHistory]
+                                         .load(std::memory_order_relaxed);
+                const s64 now_ns = entered.time_since_epoch() / std::chrono::nanoseconds{1};
+                const s64 interval = now_ns - static_cast<s64>(previous);
+                if (previous != 0 && interval > slow_frame_ns) {
+                    LOG_INFO(Service, "Slow frame: present {} came {:.1f} ms after the last, "
+                                      "{:.1f} ms of it waiting for its fence",
+                             present_index, static_cast<double>(interval) / 1e6,
+                             std::chrono::duration<double, std::milli>(waited - entered).count());
+                }
+            }
         }
         Composite(w[5], ~w[22], w[24], w[7]);
         const auto composited = std::chrono::steady_clock::now();
