@@ -58,18 +58,18 @@ struct PresetEntry {
     std::string value;
 };
 
-/// What a preset sets in `values`. A frontend can show these in its widgets before saving.
-[[nodiscard]] std::vector<PresetEntry> PerformancePresetEntries(Values& values,
+/// What a preset sets in `target`. A frontend can show these in its widgets before saving.
+[[nodiscard]] std::vector<PresetEntry> PerformancePresetEntries(Values& target,
                                                                 PerformancePreset preset,
                                                                 const HostProfile& host);
 
 /// Writes a preset's settings, as per-game values when `per_game`. Settings a preset does not
 /// name keep their values, so a player's other choices survive.
-void ApplyPerformancePreset(Values& values, PerformancePreset preset, const HostProfile& host,
+void ApplyPerformancePreset(Values& target, PerformancePreset preset, const HostProfile& host,
                             bool per_game);
 
-/// The preset whose settings `values` holds, if any.
-[[nodiscard]] std::optional<PerformancePreset> MatchingPerformancePreset(Values& values,
+/// The preset whose settings `target` holds, if any.
+[[nodiscard]] std::optional<PerformancePreset> MatchingPerformancePreset(Values& target,
                                                                          const HostProfile& host);
 
 [[nodiscard]] std::string_view PerformancePresetKey(PerformancePreset preset);
