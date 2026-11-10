@@ -4,6 +4,9 @@
 // SPDX-FileCopyrightText: Copyright 2023 yuzu Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <chrono>
+#include <cstdlib>
+
 #include "core/file_sys/errors.h"
 #include "core/hle/service/cmif_serialization.h"
 #include "core/hle/service/filesystem/fsp/fs_i_file.h"
@@ -26,6 +29,24 @@ IFile::IFile(Core::System& system_, const FileSys::VirtualFile& file_)
     RegisterHandlers(functions);
 }
 
+namespace {
+// EDEN_NX2_SLOW_FRAME_MS set: reads slower than 8 ms are logged, to line stutters up with them.
+void LogSlowRead(const char* what, std::chrono::steady_clock::time_point start, s64 offset,
+                 s64 length) {
+    static const bool enabled = std::getenv("EDEN_NX2_SLOW_FRAME_MS") != nullptr;
+    if (!enabled) {
+        return;
+    }
+    const double ms = std::chrono::duration<double, std::milli>(
+                          std::chrono::steady_clock::now() - start)
+                          .count();
+    if (ms > 8.0) {
+        LOG_INFO(Service_FS, "Slow {} read: {:.1f} ms for {} KiB at {:#x}", what, ms, length >> 10,
+                 offset);
+    }
+}
+} // Anonymous namespace
+
 Result IFile::Read(
     FileSys::ReadOption option, Out<s64> out_size, s64 offset,
     const OutBuffer<BufferAttr_HipcMapAlias | BufferAttr_HipcMapTransferAllowsNonSecure> out_buffer,
@@ -34,8 +55,11 @@ Result IFile::Read(
               size);
 
     // Read the data from the Storage backend
-    R_RETURN(
-        backend->Read(reinterpret_cast<size_t*>(out_size.Get()), offset, out_buffer.data(), size));
+    const auto read_start = std::chrono::steady_clock::now();
+    const Result result =
+        backend->Read(reinterpret_cast<size_t*>(out_size.Get()), offset, out_buffer.data(), size);
+    LogSlowRead("file", read_start, offset, size);
+    R_RETURN(result);
 }
 
 Result IFile::Write(

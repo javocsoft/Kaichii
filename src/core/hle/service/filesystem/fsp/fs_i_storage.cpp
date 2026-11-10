@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
 #include <thread>
 
 #include "common/settings.h"
@@ -27,6 +28,24 @@ IStorage::IStorage(Core::System& system_, FileSys::VirtualFile backend_)
     };
     RegisterHandlers(functions);
 }
+
+namespace {
+// EDEN_NX2_SLOW_FRAME_MS set: reads slower than 8 ms are logged, to line stutters up with them.
+void LogSlowRead(const char* what, std::chrono::steady_clock::time_point start, s64 offset,
+                 s64 length) {
+    static const bool enabled = std::getenv("EDEN_NX2_SLOW_FRAME_MS") != nullptr;
+    if (!enabled) {
+        return;
+    }
+    const double ms = std::chrono::duration<double, std::milli>(
+                          std::chrono::steady_clock::now() - start)
+                          .count();
+    if (ms > 8.0) {
+        LOG_INFO(Service_FS, "Slow {} read: {:.1f} ms for {} KiB at {:#x}", what, ms, length >> 10,
+                 offset);
+    }
+}
+} // Anonymous namespace
 
 Result IStorage::Read(
     OutBuffer<BufferAttr_HipcMapAlias | BufferAttr_HipcMapTransferAllowsNonSecure> out_bytes,
@@ -51,7 +70,9 @@ Result IStorage::Read(
     }
 
     // Read the data from the Storage backend
+    const auto read_start = std::chrono::steady_clock::now();
     backend->Read(out_bytes.data(), length, offset);
+    LogSlowRead("storage", read_start, offset, length);
 
     R_SUCCEED();
 }

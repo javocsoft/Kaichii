@@ -161,14 +161,19 @@ inline void Nx2ClearSemaphoreRegions() {
 // the GPU memory manager calls Nx2BackSparseWrite before each write, with the bytes it writes
 // (blocks nobody wrote that only get zeros need no memory: they read zero already).
 using Nx2SparseBackingHandler = std::function<void(u64 gpu_address, u64 size, const u8* data)>;
+/// Must not wait: see Nx2SparseWriteReady.
+using Nx2SparseReadyHandler = std::function<bool(u64 gpu_address, u64 size)>;
 inline std::recursive_mutex g_nx2_sparse_backing_mutex;
 inline Nx2SparseBackingHandler g_nx2_sparse_backing;
+inline Nx2SparseReadyHandler g_nx2_sparse_ready;
 inline std::atomic<u64> g_nx2_sparse_low{~u64{0}};
 inline std::atomic<u64> g_nx2_sparse_high{0};
 
-inline void Nx2SetSparseBacking(Nx2SparseBackingHandler handler) {
+inline void Nx2SetSparseBacking(Nx2SparseBackingHandler handler,
+                                Nx2SparseReadyHandler ready = {}) {
     std::scoped_lock lk{g_nx2_sparse_backing_mutex};
     g_nx2_sparse_backing = std::move(handler);
+    g_nx2_sparse_ready = std::move(ready);
     g_nx2_sparse_low.store(~u64{0});
     g_nx2_sparse_high.store(0);
 }
@@ -193,6 +198,25 @@ inline void Nx2BackSparseWrite(u64 gpu_address, u64 size, const void* data) {
     if (g_nx2_sparse_backing) {
         g_nx2_sparse_backing(gpu_address, size, static_cast<const u8*>(data));
     }
+}
+
+/// For a caller that must not wait on the guest: true when a write over [gpu_address, +size) finds
+/// the memory it needs. Backing a block maps memory, which waits on the guest page table lock, and
+/// the texture collector holds the cache locks that guest reads of GPU-written pages wait for: with
+/// every core stalled there, the guest thread holding that lock never ran again (a hang in Ocarina
+/// of Time). When false, nx2:gpu backs what is missing on a thread of its own and the caller keeps
+/// its data and asks again later.
+inline bool Nx2SparseWriteReady(u64 gpu_address, u64 size) {
+    if (size == 0 || gpu_address + size <= g_nx2_sparse_low.load(std::memory_order_relaxed) ||
+        gpu_address >= g_nx2_sparse_high.load(std::memory_order_relaxed)) [[likely]] {
+        return true;
+    }
+    // Held while another write maps memory.
+    std::unique_lock lk{g_nx2_sparse_backing_mutex, std::try_to_lock};
+    if (!lk.owns_lock()) {
+        return false;
+    }
+    return !g_nx2_sparse_ready || g_nx2_sparse_ready(gpu_address, size);
 }
 
 // Which blocks of each sparse region have been written (got memory), for the texture cache: an

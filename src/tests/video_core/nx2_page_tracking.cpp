@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <future>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -120,6 +122,46 @@ TEST_CASE("Sparse writes reach the handler only inside the span", "[video_core][
     CHECK(calls == 1);
     Nx2BackSparseWrite(Region + 4 * Block - 1, 16, &data);
     CHECK(calls == 2);
+}
+
+TEST_CASE("Sparse write readiness asks only inside the span and never waits",
+          "[video_core][nx2_pages]") {
+    ScopedTables tables;
+    int asks{};
+    bool answer{};
+    Nx2SetSparseBacking([](u64, u64, const u8*) {});
+    Nx2AddSparseSpan(Region, 4 * Block);
+    // Without a readiness handler every write is ready.
+    CHECK(Nx2SparseWriteReady(Region, 16));
+
+    Nx2SetSparseBacking([](u64, u64, const u8*) {}, [&](u64, u64) {
+        ++asks;
+        return answer;
+    });
+    Nx2AddSparseSpan(Region, 4 * Block);
+    CHECK(Nx2SparseWriteReady(Region - 16, 16));
+    CHECK(Nx2SparseWriteReady(Region + 4 * Block, 16));
+    CHECK(Nx2SparseWriteReady(Region, 0));
+    CHECK(asks == 0);
+    CHECK_FALSE(Nx2SparseWriteReady(Region + Block, 16));
+    answer = true;
+    CHECK(Nx2SparseWriteReady(Region - 16, 17));
+    CHECK(asks == 2);
+
+    // Another thread mapping memory for a write holds the backing mutex: not ready, no wait.
+    std::promise<void> locked;
+    std::promise<void> release;
+    std::thread writer{[&] {
+        std::scoped_lock lk{g_nx2_sparse_backing_mutex};
+        locked.set_value();
+        release.get_future().wait();
+    }};
+    locked.get_future().wait();
+    CHECK_FALSE(Nx2SparseWriteReady(Region, 16));
+    release.set_value();
+    writer.join();
+    CHECK(asks == 2);
+    CHECK(Nx2SparseWriteReady(Region, 16));
 }
 
 TEST_CASE("Sparse blocks are unknown until written", "[video_core][nx2_pages]") {

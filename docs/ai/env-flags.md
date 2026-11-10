@@ -77,7 +77,8 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_SEM_WATCH_EMITS` | diag | Adds compute macro emits to that watch. |
 | `EDEN_NX2_CMDPAGE_DIAG` | diag | For command list pages GPU work writes: whether it writes the lists' words or only other bytes. |
 | `EDEN_NX2_PB_CHECK` | diag | Counts pushbuffer entries that change between submit and parse. |
-| `EDEN_NX2_TC_LOG` | diag | Device memory against the collector's thresholds, every 600 frames. |
+| `EDEN_NX2_TC_LOG` | diag | Device memory against the collector's thresholds, every 600 frames: the images' real allocations (GPU-written and rescaled shares), the transcode cache's hits, evictions put off until nx2:gpu backed the image's memory, and the staging buffers. |
+| `EDEN_NX2_SLOW_FRAME_MS` | diag | `=<n>`: logs each present more than n ms after the last, with its fence wait, and the slow work around it (file reads over 8 ms, CPU read flushes and texture collector GPU waits over 5 ms), to line stutters up with their cause. |
 | `EDEN_NX2_TC_SKIP_STALE` | A/B | `=0`: uploads guest memory into new images even over pages a dropped GPU image left stale. |
 | `EDEN_NX2_MME_LOG` | diag | Every macro call. Very high volume. |
 | `EDEN_NX2_MME_MEMO_STATS` | diag | Macro memo counters every 2^24 calls. |
