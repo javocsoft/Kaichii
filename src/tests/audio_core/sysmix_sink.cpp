@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <chrono>
 #include <memory>
 #include <thread>
+#include <vector>
 
 #include <catch2/catch_test_macros.hpp>
 #include "audio_core/sink/null_sink.h"
@@ -41,6 +43,38 @@ TEST_CASE("sysmix sink admission is bounded and preserves samples on rejection",
     stream.ProcessAudioOutAndRender(output, 240);
     REQUIRE(std::ranges::all_of(output, [](s16 sample) { return sample == 0; }));
     REQUIRE_FALSE(stream.TryAppendOutputBlock(block, samples));
+}
+
+TEST_CASE("sysmix sink queues enough blocks for the host's largest callback", "[sysmix_sink]") {
+    SysmixTests::Context context;
+    auto owned_stream = std::make_unique<SysmixTests::Stream>(
+        context.system, AudioCore::Sink::StreamType::Sysmix, 2, true);
+    auto& stream = *owned_stream;
+    stream.SetSystemVolume(1.0f / Settings::Volume());
+    REQUIRE(stream.SysmixQueueLimit() == 3);
+    // PipeWire's default quantum: three 240-frame blocks left 304 frames of every callback silent.
+    std::vector<s16> output(1024 * 2);
+    stream.ProcessAudioOutAndRender(output, 1024);
+    REQUIRE(stream.SysmixQueueLimit() == 6);
+    AudioCore::Sink::SinkBuffer block{240, 0, 0, false};
+    std::array<s16, 480> samples{};
+    samples.fill(7);
+    for (int i = 0; i < 6; ++i) {
+        REQUIRE(stream.TryAppendOutputBlock(block, samples));
+    }
+    REQUIRE_FALSE(stream.TryAppendOutputBlock(block, samples));
+    stream.ProcessAudioOutAndRender(output, 1024);
+    REQUIRE(std::ranges::all_of(output, [](s16 sample) { return sample == 7; }));
+    // A smaller request later keeps the largest one's limit.
+    stream.ProcessAudioOutAndRender(std::span{output}.first(480), 240);
+    REQUIRE(stream.SysmixQueueLimit() == 6);
+
+    // Six device channels: the sample ring holds 45 blocks, one of them playing.
+    auto surround = std::make_unique<SysmixTests::Stream>(
+        context.system, AudioCore::Sink::StreamType::Sysmix, 6, true);
+    std::vector<s16> large(48000 * 6);
+    surround->ProcessAudioOutAndRender(large, 48000);
+    REQUIRE(surround->SysmixQueueLimit() == 44);
 }
 
 TEST_CASE("sysmix sink rejects invalid blocks and unavailable backends", "[sysmix_sink]") {
