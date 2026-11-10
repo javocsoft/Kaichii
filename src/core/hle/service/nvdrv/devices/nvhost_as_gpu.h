@@ -35,6 +35,7 @@ class Module;
 namespace Service::Nvidia::NvCore {
 class Container;
 class NvMap;
+struct Session;
 } // namespace Service::Nvidia::NvCore
 
 namespace Service::Nvidia::Devices {
@@ -242,6 +243,9 @@ private:
         size_t asid{};
     };
     std::map<std::pair<u64, u64>, Nx2DeviceRange> nx2_device_ranges;
+    /// The device range a GPU mapping of [cpu_address, +size) uses, reused or made (0 when out of
+    /// SMMU space). Called with `mutex` held.
+    DAddr Nx2AcquireDeviceRange(NvCore::Session& session, u64 cpu_address, u64 size);
     void Nx2Release(u64 cpu_address, u64 size);
 
     // Switch 2 sparse regions: a device range per region, mapped for the GPU when it's created;

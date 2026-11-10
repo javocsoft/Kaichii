@@ -36,6 +36,13 @@ inline NvResult Nx2UnknownIoctl(const char* device, Ioctl command, std::span<con
 // the memory at GPU address == CPU address, and NormalMapGpuMemory4K (211) maps a memory handle at
 // a chosen GPU address (also in sparse regions). Every nvhost-as-gpu address space applies each
 // mapping, including ones made before the address space existed.
+//
+// Listeners are called outside `mutex`: a listener can call back into the emulator
+// (GPU::MapInOrder waits for the GPU thread, and the GPU thread's back reaches the registry
+// from BackSparseWrite through BackSparse), so holding `mutex` across the call deadlocks
+// (guest: MapAt under `mutex` waits for the GPU thread that waits for `mutex`). The map is
+// copied under the lock and the listeners run after it is released; AddListener's replay of
+// existing mappings stays under the lock, where it is atomic against MapAt.
 class Nx2GpuMemoryRegistry {
 public:
     using Listener = std::function<void(u64 gpu_address, u64 cpu_address, u64 size)>;
@@ -63,21 +70,21 @@ public:
     }
 
     void MapAt(u32 handle, u64 offset, u64 gpu_address, u64 cpu_address, u64 size) {
-        std::scoped_lock lk{mutex};
-        TrimMappings(gpu_address, size);
-        mappings.push_back({gpu_address, cpu_address, size, handle, offset});
-        for (auto& [owner, listener] : listeners) {
-            listener.map(gpu_address, cpu_address, size);
+        {
+            std::scoped_lock lk{mutex};
+            TrimMappings(gpu_address, size);
+            mappings.push_back({gpu_address, cpu_address, size, handle, offset});
         }
+        NotifyListeners(&Listeners::map, gpu_address, cpu_address, size);
     }
 
     // NormalUnmapGpuMemory4K, or destroying the memory: the GPU range stops reaching it.
     void Unmap(u64 gpu_address, u64 size) {
-        std::scoped_lock lk{mutex};
-        TrimMappings(gpu_address, size);
-        for (auto& [owner, listener] : listeners) {
-            listener.unmap(gpu_address, size);
+        {
+            std::scoped_lock lk{mutex};
+            TrimMappings(gpu_address, size);
         }
+        NotifyListeners(&Listeners::unmap, gpu_address, size);
     }
 
     // Backing memory [cpu_address, +size) is about to be freed (its GPU mappings are gone): each
@@ -87,12 +94,7 @@ public:
             std::scoped_lock lk{device_mutex};
             device_ranges.erase(cpu_address);
         }
-        std::scoped_lock lk{mutex};
-        for (auto& [owner, listener] : listeners) {
-            if (listener.release) {
-                listener.release(cpu_address, size);
-            }
-        }
+        NotifyListeners(&Listeners::release, cpu_address, size);
     }
 
     // Sparse regions (nx2:gpu 214 with the sparse flag): the GPU range reaches device memory of its
@@ -100,32 +102,23 @@ public:
     // The GPU mapping never changes, so the texture cache doesn't rebuild the images over it as
     // blocks get memory; unbacked blocks read zero.
     void CreateSparse(u64 gpu_address, u64 size) {
-        std::scoped_lock lk{mutex};
-        sparse_regions[gpu_address] = size;
-        for (auto& [owner, listener] : listeners) {
-            if (listener.sparse) {
-                listener.sparse(gpu_address, size, true);
-            }
+        {
+            std::scoped_lock lk{mutex};
+            sparse_regions[gpu_address] = size;
         }
+        NotifyListeners(&Listeners::sparse, gpu_address, size, true);
     }
 
     void DestroySparse(u64 gpu_address, u64 size) {
-        std::scoped_lock lk{mutex};
-        sparse_regions.erase(gpu_address);
-        for (auto& [owner, listener] : listeners) {
-            if (listener.sparse) {
-                listener.sparse(gpu_address, size, false);
-            }
+        {
+            std::scoped_lock lk{mutex};
+            sparse_regions.erase(gpu_address);
         }
+        NotifyListeners(&Listeners::sparse, gpu_address, size, false);
     }
 
     void BackSparse(u64 gpu_address, u64 cpu_address, u64 size) {
-        std::scoped_lock lk{mutex};
-        for (auto& [owner, listener] : listeners) {
-            if (listener.back) {
-                listener.back(gpu_address, cpu_address, size);
-            }
-        }
+        NotifyListeners(&Listeners::back, gpu_address, cpu_address, size);
     }
 
     // nx2:gpu 216 (sparse map requests): the tile [gpu_address, +size) of a sparse region now
@@ -133,12 +126,7 @@ public:
     // cpu_address 0 it is unmapped and reads zero. The GPU mapping stays as it is; only the
     // region's device pages change, in GPU-thread order.
     void MapSparseTile(u64 gpu_address, u64 cpu_address, u64 size) {
-        std::scoped_lock lk{mutex};
-        for (auto& [owner, listener] : listeners) {
-            if (listener.tile) {
-                listener.tile(gpu_address, cpu_address, size);
-            }
-        }
+        NotifyListeners(&Listeners::tile, gpu_address, cpu_address, size);
     }
 
     void AddListener(const void* owner, Listener listener, UnmapListener unmap_listener,
@@ -322,6 +310,26 @@ private:
     std::vector<Mapping> mappings;
     std::map<u64, u64> sparse_regions; ///< GPU address -> size
     std::map<const void*, Listeners> listeners;
+
+    // Calls every registered listener outside `mutex` (see the class comment): copies the
+    // listener functions under the lock, releases it, then calls them in owner order. A null
+    // member of a listener is skipped, as before.
+    template <typename Member, typename... Args>
+    void NotifyListeners(Member member, Args... args) {
+        std::vector<std::function<void()>> calls;
+        {
+            std::scoped_lock lk{mutex};
+            calls.reserve(listeners.size());
+            for (auto& [owner, listener] : listeners) {
+                if (auto& fn = listener.*member) {
+                    calls.push_back([fn, args...]() { fn(args...); });
+                }
+            }
+        }
+        for (auto& call : calls) {
+            call();
+        }
+    }
 };
 
 // Device node that Switch 2 nvgpu drivers open but Switch 1 never had (e.g. /dev/nvhost-tsg-gpu).
