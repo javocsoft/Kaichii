@@ -7,6 +7,7 @@
 add_executable(tests
     common/addon_config.cpp
     common/nvidia_shader_cache.cpp
+    common/qt_platform_choice.cpp
     core/control_metadata.cpp
     core/executable_headers.cpp
     core/ips_layer.cpp

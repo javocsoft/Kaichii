@@ -15,6 +15,7 @@
 #include <QStringList>
 #include <QVector>
 #include <qdir.h>
+#include "common/qt_platform_choice.h"
 #include "common/common_types.h"
 #include "common/settings.h"
 #include "common/settings_enums.h"
@@ -155,7 +156,8 @@ struct Values {
 #endif
                                             "enable_gamemode", Category::UiGeneral};
 #ifdef __unix__
-    SwitchableSetting<bool> gui_force_x11{linkage, false, "gui_force_x11", Category::UiGeneral};
+    SwitchableSetting<bool> gui_force_x11{linkage, Common::DefaultForceX11, "gui_force_x11",
+                                          Category::UiGeneral};
     Setting<bool> gui_hide_backend_warning{linkage, false, "gui_hide_backend_warning",
                                            Category::UiGeneral};
 #endif

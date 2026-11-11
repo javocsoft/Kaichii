@@ -5,6 +5,7 @@
 
 #include "common/fs/fs_paths.h"
 #include "common/nvidia_shader_cache.h"
+#include "common/qt_platform_choice.h"
 #include "common/fs/path_util.h"
 #include "nx2_switches.h"
 #include "startup_checks.h"
@@ -163,8 +164,11 @@ int main(int argc, char* argv[]) {
         qputenv("DISPLAY", ":0");
     }
 
-    if (GraphicsBackend::GetForceX11() && qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM"))
-        qputenv("QT_QPA_PLATFORM", "xcb");
+    if (const std::string_view platform = Common::QtPlatformOverride(
+            GraphicsBackend::GetForceX11(), qgetenv("QT_QPA_PLATFORM").toStdString());
+        !platform.empty()) {
+        qputenv("QT_QPA_PLATFORM", QByteArray{platform.data(), static_cast<qsizetype>(platform.size())});
+    }
 
     // Fix the Wayland appId. This needs to match the name of the .desktop file without the .desktop
     // suffix.
