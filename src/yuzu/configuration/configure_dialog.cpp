@@ -31,6 +31,7 @@
 #include "yuzu/configuration/configure_system.h"
 #include "yuzu/configuration/configure_ui.h"
 #include "yuzu/configuration/configure_web.h"
+#include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/hotkeys.h"
 
 ConfigureDialog::ConfigureDialog(QWidget* parent, HotkeyRegistry& registry_,
@@ -70,23 +71,23 @@ ConfigureDialog::ConfigureDialog(QWidget* parent, HotkeyRegistry& registry_,
 
     ui->setupUi(this);
 
-    ui->tabWidget->addTab(performance_tab.get(), tr("Performance"));
-    ui->tabWidget->addTab(applets_tab.get(), tr("Applets"));
-    ui->tabWidget->addTab(audio_tab.get(), tr("Audio"));
-    ui->tabWidget->addTab(cpu_tab.get(), tr("CPU"));
-    ui->tabWidget->addTab(debug_tab_tab.get(), tr("Debug"));
-    ui->tabWidget->addTab(filesystem_tab.get(), tr("Filesystem"));
-    ui->tabWidget->addTab(general_tab.get(), tr("General"));
-    ui->tabWidget->addTab(graphics_tab.get(), tr("Graphics"));
-    ui->tabWidget->addTab(graphics_advanced_tab.get(), tr("GraphicsAdvanced"));
-    ui->tabWidget->addTab(graphics_extensions_tab.get(), tr("GraphicsExtra"));
-    ui->tabWidget->addTab(hotkeys_tab.get(), tr("Hotkeys"));
-    ui->tabWidget->addTab(input_tab.get(), tr("Controls"));
-    ui->tabWidget->addTab(profile_tab.get(), tr("Profiles"));
-    ui->tabWidget->addTab(network_tab.get(), tr("Network"));
-    ui->tabWidget->addTab(system_tab.get(), tr("System"));
-    ui->tabWidget->addTab(ui_tab.get(), tr("Game List"));
-    ui->tabWidget->addTab(web_tab.get(), tr("Web"));
+    ui->tabWidget->addTab(ScrollPage(performance_tab.get()), tr("Performance"));
+    ui->tabWidget->addTab(ScrollPage(applets_tab.get()), tr("Applets"));
+    ui->tabWidget->addTab(ScrollPage(audio_tab.get()), tr("Audio"));
+    ui->tabWidget->addTab(ScrollPage(cpu_tab.get()), tr("CPU"));
+    ui->tabWidget->addTab(ScrollPage(debug_tab_tab.get()), tr("Debug"));
+    ui->tabWidget->addTab(ScrollPage(filesystem_tab.get()), tr("Filesystem"));
+    ui->tabWidget->addTab(ScrollPage(general_tab.get()), tr("General"));
+    ui->tabWidget->addTab(ScrollPage(graphics_tab.get()), tr("Graphics"));
+    ui->tabWidget->addTab(ScrollPage(graphics_advanced_tab.get()), tr("GraphicsAdvanced"));
+    ui->tabWidget->addTab(ScrollPage(graphics_extensions_tab.get()), tr("GraphicsExtra"));
+    ui->tabWidget->addTab(ScrollPage(hotkeys_tab.get()), tr("Hotkeys"));
+    ui->tabWidget->addTab(ScrollPage(input_tab.get()), tr("Controls"));
+    ui->tabWidget->addTab(ScrollPage(profile_tab.get()), tr("Profiles"));
+    ui->tabWidget->addTab(ScrollPage(network_tab.get()), tr("Network"));
+    ui->tabWidget->addTab(ScrollPage(system_tab.get()), tr("System"));
+    ui->tabWidget->addTab(ScrollPage(ui_tab.get()), tr("Game List"));
+    ui->tabWidget->addTab(ScrollPage(web_tab.get()), tr("Web"));
 
     web_tab->SetWebServiceConfigEnabled(enable_web_config);
     hotkeys_tab->Populate(registry);
@@ -115,7 +116,7 @@ ConfigureDialog::ConfigureDialog(QWidget* parent, HotkeyRegistry& registry_,
                 &ConfigureDialog::HandleApplyButtonClicked);
     }
 
-    adjustSize();
+    ConfigurationShared::FitDialogToScreen(*this);
     ui->selectorList->setCurrentRow(0);
 
     // Selects the leftmost button on the bottom bar (Cancel as of writing)
@@ -225,6 +226,14 @@ void ConfigureDialog::UpdateVisibleTabs() {
 
     for (auto* const tab : tabs) {
         LOG_DEBUG(Frontend, "{}", tab->accessibleName().toStdString());
-        ui->tabWidget->addTab(tab, tab->accessibleName());
+        ui->tabWidget->addTab(ScrollPage(tab), tab->accessibleName());
     }
+}
+
+QWidget* ConfigureDialog::ScrollPage(QWidget* page) {
+    auto*& scroll = scroll_pages[page];
+    if (scroll == nullptr) {
+        scroll = new ConfigurationShared::SettingsPageScroll(page, this);
+    }
+    return scroll;
 }

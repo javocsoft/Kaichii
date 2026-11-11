@@ -88,6 +88,7 @@ add_executable(tests
     video_core/nx2_switch_reload.cpp
     video_core/render_pass_continuation.cpp
     video_core/samples_query_policy.cpp
+    video_core/unbacked_fallback.cpp
     video_core/fire_emblem_upscale.cpp
     video_core/dlss_contract.cpp
     video_core/ampere_fast_fusion.cpp
@@ -132,6 +133,8 @@ add_executable(tests
     video_core/ampere_tennis_i2f.cpp
     video_core/ampere_tennis_tessellation.cpp
     video_core/pipeline_cache_files.cpp
+    video_core/evicted_pointer_slots.cpp
+    video_core/submit_serial.cpp
     video_core/storage_binding_capacity.cpp
     video_core/native_indirect_reset.cpp
     video_core/native_qmd_release.cpp

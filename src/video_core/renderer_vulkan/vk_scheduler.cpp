@@ -41,6 +41,7 @@ namespace Vulkan {
 
 namespace {
 std::atomic<u64> g_profile_submits{};
+std::atomic<u64> g_profile_skipped_flushes{};
 std::atomic<u64> g_profile_renderpasses{};
 std::atomic<u64> g_profile_finishes{};
 std::atomic<u64> g_profile_finish_ns{};
@@ -81,9 +82,10 @@ void ReportSubmitCounts() {
     }
     const double seconds = static_cast<double>(now - start) / 1e9;
     LOG_INFO(Render_Vulkan,
-             "Scheduler per second: {:.0f} submits, {:.0f} render passes, {:.0f} finishes "
-             "waiting {:.1f} ms",
+             "Scheduler per second: {:.0f} submits, {:.0f} empty flushes skipped, {:.0f} render "
+             "passes, {:.0f} finishes waiting {:.1f} ms",
              static_cast<double>(g_profile_submits.exchange(0)) / seconds,
+             static_cast<double>(g_profile_skipped_flushes.exchange(0)) / seconds,
              static_cast<double>(g_profile_renderpasses.exchange(0)) / seconds,
              static_cast<double>(g_profile_finishes.exchange(0)) / seconds,
              static_cast<double>(g_profile_finish_ns.exchange(0)) / 1e6 / seconds);
@@ -247,10 +249,17 @@ u64 Scheduler::Flush(VkSemaphore signal_semaphore, VkSemaphore wait_semaphore,
     }
     // When flushing, we only send data to the worker thread; no waiting is necessary.
     const u64 signal_value = SubmitExecution(signal_semaphore, wait_semaphore);
+    submit_serial.Submitted();
     AllocateNewContext();
     last_flush = std::chrono::steady_clock::now();
     flush_pending = false;
     return signal_value;
+}
+
+void Scheduler::CountSkippedFlush() {
+    if (VideoCommon::Nx2Profile::Enabled()) {
+        g_profile_skipped_flushes.fetch_add(1, std::memory_order_relaxed);
+    }
 }
 
 bool Scheduler::DeferFlush() {
@@ -323,6 +332,7 @@ void Scheduler::Finish(VkSemaphore signal_semaphore, VkSemaphore wait_semaphore,
     const bool profile = VideoCommon::Nx2Profile::Enabled();
     const u64 start = profile ? VideoCommon::Nx2Profile::Now() : 0;
     SubmitExecution(signal_semaphore, wait_semaphore);
+    submit_serial.Submitted();
     Wait(presubmit_tick);
     AllocateNewContext();
     last_flush = std::chrono::steady_clock::now();

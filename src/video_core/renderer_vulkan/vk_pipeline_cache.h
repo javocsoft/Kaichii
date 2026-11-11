@@ -151,13 +151,25 @@ private:
     /// may be skipped while it builds (asynchronous shaders, CanDiscardPendingDraw).
     [[nodiscard]] GraphicsPipeline* BuiltPipeline(GraphicsPipeline* pipeline) noexcept;
 
-    std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline();
+    /// With `keep_pointers`, the slots an evicted pipeline of this key bound stay storage buffer
+    /// pointers whatever they hold now.
+    std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(
+        const VideoCommon::EvictedPointerSlots::Slots* keep_pointers = nullptr);
+
+    /// Applies `keep_pointers` (when set) to the current key's environments.
+    void KeepEvictedPointers(GraphicsEnvironments& environments,
+                             const VideoCommon::EvictedPointerSlots::Slots* keep_pointers) const;
+
+    /// Logs a kept pointer slot (an index of keep_pointers) that this translation would otherwise
+    /// have classified as no pointer: null, unmapped, or out of range right now.
+    void WarnKeptPointer(size_t program, u64 slot) const;
 
     /// Whether a new native pipeline is translated on a worker while draws that may be skipped
     /// are (use_asynchronous_shaders, and native_async_draws other than Wait).
     [[nodiscard]] bool TranslatesInBackground() const;
-    /// Queues the current key's pipeline for a worker, with its environments frozen.
-    bool SubmitGraphicsPipeline();
+    /// Queues the current key's pipeline for a worker, with its environments frozen and
+    /// `keep_pointers` applied as CreateGraphicsPipeline does.
+    bool SubmitGraphicsPipeline(const VideoCommon::EvictedPointerSlots::Slots* keep_pointers);
     /// For a submitted key: the pipeline once built (or now, built here, when the current draw
     /// may not be skipped), and whether it is still pending.
     std::unique_ptr<GraphicsPipeline> TakeSubmittedPipeline(bool& pending);
@@ -221,6 +233,7 @@ private:
     s64 native_wait_used_us{}; ///< Budget spent since the last 10 s log line.
     std::deque<std::pair<u64, std::unique_ptr<GraphicsPipeline>>> evicted_pipelines; ///< (tick, pipeline)
     std::unordered_set<u64> used_and_evicted; ///< Key hashes of pipelines used this session, evicted since
+    VideoCommon::EvictedPointerSlots evicted_pointer_slots;
 
     ::Common::unordered_map<ComputePipelineCacheKey, ComputePipelineCacheEntry> compute_cache;
     /// Replaced compute pipelines, destroyed once the GPU and their queued build are done with

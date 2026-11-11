@@ -54,6 +54,8 @@ std::vector<std::vector<u32>> Instructions(const std::vector<u32>& code, u32 opc
     return result;
 }
 
+std::vector<u32> EmitNative(IR::Block& block, IR::Opcode untracked);
+
 // A compute program whose atomic address comes from global memory, so the storage buffer pass
 // tracks the load but not the atomic.
 std::vector<u32> EmitUntrackedAtomic(IR::Opcode opcode) {
@@ -72,7 +74,12 @@ std::vector<u32> EmitUntrackedAtomic(IR::Opcode opcode) {
                              ? IR::U32{ir.BitCast<IR::U32>(IR::F32{previous})}
                              : IR::U32{previous}};
     ir.WriteGlobal32(address, result);
+    return EmitNative(block, opcode);
+}
 
+// Emits a native compute program made of `block`, after the storage buffer pass, which must leave
+// an instruction with `untracked` (an access through a pointer read from memory).
+std::vector<u32> EmitNative(IR::Block& block, IR::Opcode untracked) {
     IR::Program program;
     program.stage = Stage::Compute;
     program.workgroup_size = {1, 1, 1};
@@ -85,7 +92,7 @@ std::vector<u32> EmitUntrackedAtomic(IR::Opcode opcode) {
     StubEnvironment env;
     Optimization::GlobalMemoryToStorageBufferPass(env, program, host);
     REQUIRE(std::ranges::any_of(block.Instructions(), [&](const IR::Inst& inst) {
-        return inst.GetOpcode() == opcode;
+        return inst.GetOpcode() == untracked;
     }));
     Optimization::CollectShaderInfoPass(env, program);
     program.info.native_global_bounds = true;
@@ -99,7 +106,43 @@ std::vector<u32> EmitUntrackedAtomic(IR::Opcode opcode) {
     profile.min_ssbo_alignment = 16;
     return Backend::SPIRV::EmitSPIRV(profile, program);
 }
+// A compute program that reads `pointers` pointers from constant buffer 0 (each tracked to a
+// storage buffer) and writes through an address read from the first one's buffer.
+std::vector<u32> EmitUntrackedWrite(u32 pointers) {
+    ObjectPool<IR::Inst> pool;
+    IR::Block block{pool};
+    IR::IREmitter ir{block};
+    IR::Value first;
+    for (u32 index = 0; index < pointers; ++index) {
+        const auto low = ir.GetCbuf(ir.Imm32(0), ir.Imm32(0x110 + index * 0x10));
+        const auto high = ir.GetCbuf(ir.Imm32(0), ir.Imm32(0x114 + index * 0x10));
+        const auto loaded = ir.LoadGlobal64(ir.PackUint2x32(ir.CompositeConstruct(low, high)));
+        if (index == 0) {
+            first = loaded;
+        }
+    }
+    const IR::U64 address{ir.PackUint2x32(
+        ir.CompositeConstruct(ir.CompositeExtract(first, 0), ir.CompositeExtract(first, 1)))};
+    ir.WriteGlobal32(address, ir.Imm32(1));
+    return EmitNative(block, IR::Opcode::WriteGlobal32);
+}
 } // namespace
+
+TEST_CASE("Native global accesses pick their storage buffer with one switch",
+          "[shader_recompiler][global_memory]") {
+    constexpr u32 OpSwitch = 251;
+    for (const u32 pointers : {1U, 3U}) {
+        CAPTURE(pointers);
+        std::vector<u32> code;
+        REQUIRE_NOTHROW(code = EmitUntrackedWrite(pointers));
+        const auto switches = Instructions(code, OpSwitch);
+        REQUIRE_FALSE(switches.empty());
+        // The selector, the default label, then a literal and a label per candidate buffer.
+        for (const auto& operands : switches) {
+            CHECK(operands.size() == 2 + 2 * size_t{pointers});
+        }
+    }
+}
 
 TEST_CASE("Untracked 32-bit global atomics route to their storage buffer",
           "[shader_recompiler][global_memory]") {

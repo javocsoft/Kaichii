@@ -26,6 +26,7 @@
 #include "common/settings.h"
 #include "video_core/gpu_split.h"
 #include "video_core/renderer_vulkan/fragment_barrier_state.h"
+#include "video_core/renderer_vulkan/submit_serial.h"
 #include "video_core/renderer_vulkan/vk_master_semaphore.h"
 #include "video_core/vulkan_common/vulkan_wrapper.h"
 
@@ -187,6 +188,7 @@ public:
         if (VideoCommon::GpuSplit::check_owner) [[unlikely]] {
             VideoCommon::GpuSplit::CheckOwner("Scheduler::Record");
         }
+        submit_serial.Recorded();
         if (chunk->Record(command, location)) {
             return;
         }
@@ -203,6 +205,14 @@ public:
             },
             location);
     }
+
+    /// Whether a Flush now would submit anything: a command recorded since the last Flush or
+    /// Finish, or a deferred clear.
+    [[nodiscard]] bool RecordedSinceSubmit() const noexcept {
+        return submit_serial.RecordedSinceSubmit(deferred_clear.framebuffer != nullptr);
+    }
+    /// Counts a flush skipped because nothing was recorded (EDEN_NX2_GPU_PROFILE).
+    static void CountSkippedFlush();
 
     /// Whether the recording thread submitted `tick` within 20 ms.
     [[nodiscard]] bool WaitForSubmission(u64 tick) const {
@@ -520,6 +530,7 @@ private:
 
     State state;
     u64 recording_epoch = 0;
+    SubmitSerial submit_serial;
 
     u32 num_renderpass_images = 0;
     std::array<VkImage, 9> renderpass_images{};

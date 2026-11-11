@@ -16,6 +16,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 if(YUZU_TESTS)
     add_subdirectory(../tests/qt_compatibility ${CMAKE_BINARY_DIR}/qt_compatibility_tests)
+    add_subdirectory(../tests/qt_settings ${CMAKE_BINARY_DIR}/qt_settings_tests)
 endif()
 
 add_executable(yuzu
@@ -158,6 +159,8 @@ add_executable(yuzu
     configuration/configure_web.ui
     configuration/input_profiles.cpp
     configuration/input_profiles.h
+    configuration/settings_page_scroll.cpp
+    configuration/settings_page_scroll.h
     configuration/shared_widget.cpp
     configuration/shared_widget.h
     debugger/console.cpp
