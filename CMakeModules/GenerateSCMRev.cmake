@@ -37,11 +37,21 @@ set(GIT_DESC ${BUILD_VERSION})
 
 # Generate cpp with Git revision from template
 
-set(BUILD_AUTO_UPDATE_STABLE_REPO "zortos293/Lichii")
+# The repository whose releases the updater offers: the one being built. Another repository's
+# builds carry their own build numbers, so the updater would offer them as newer and replace this
+# build with one that lacks its changes. GitHub Actions names the repository it builds.
+if (NOT LICHII_UPDATE_REPO)
+    if (NOT "$ENV{GITHUB_REPOSITORY}" STREQUAL "")
+        set(LICHII_UPDATE_REPO "$ENV{GITHUB_REPOSITORY}")
+    else()
+        set(LICHII_UPDATE_REPO "javocsoft/Lichii")
+    endif()
+endif()
+set(BUILD_AUTO_UPDATE_STABLE_REPO "${LICHII_UPDATE_REPO}")
 set(BUILD_AUTO_UPDATE_STABLE_API "api.github.com")
-set(BUILD_AUTO_UPDATE_API_PATH "/repos/zortos293/Lichii/releases?per_page=100")
+set(BUILD_AUTO_UPDATE_API_PATH "/repos/${LICHII_UPDATE_REPO}/releases?per_page=100")
 set(BUILD_AUTO_UPDATE_WEBSITE "https://github.com")
-set(BUILD_AUTO_UPDATE_REPO "zortos293/Lichii")
+set(BUILD_AUTO_UPDATE_REPO "${LICHII_UPDATE_REPO}")
 if (NIGHTLY_BUILD)
     set(REPO_NAME "Lichii Nightly")
 else()

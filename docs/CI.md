@@ -57,6 +57,11 @@ until a maintainer approves it, so those PRs have had no CI yet.
 to `nx2-experimental` that touches `src/` (other than `src/tests/`), `CMakeLists.txt`, `CMakeModules/`,
 `externals/`, `dist/`, `tools/`, `.patch/`, `cpmfile.json` or the workflow itself.
 
+Its builds check for updates in the releases of the repository that built them: CMake's
+`LICHII_UPDATE_REPO` defaults to `GITHUB_REPOSITORY`, and to `javocsoft/Lichii` outside GitHub
+Actions. Another repository's builds carry their own build numbers, so offering them would replace
+this fork's build with one that lacks its changes.
+
 | Platform | Runner | Variants |
 |---|---|---|
 | Linux x86-64 | `ubuntu-24.04` | Standard and PGO |
