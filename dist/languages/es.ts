@@ -10575,32 +10575,52 @@ p, li { white-space: pre-wrap; }
         <translation>0 fps</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+105"/>
+        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+168"/>
+        <location line="+84"/>
         <source>%1 fps</source>
         <translation>%1 fps</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+50"/>
+        <location line="-63"/>
+        <location line="+52"/>
+        <location line="+12"/>
         <source>Avg: %1</source>
         <translation>Prom: %1</translation>
     </message>
     <message>
-        <location line="-41"/>
-        <location line="+30"/>
+        <location line="-55"/>
+        <location line="+32"/>
+        <location line="+29"/>
         <source>Min: %1</source>
         <translation>Mín: %1</translation>
     </message>
     <message>
-        <location line="-29"/>
+        <location line="-60"/>
+        <location line="+32"/>
         <location line="+30"/>
         <source>Max: %1</source>
         <translation>Máx: %1</translation>
     </message>
     <message>
-        <location line="-13"/>
+        <location line="-43"/>
+        <location line="+40"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
+    </message>
+    <message>
+        <location line="-4"/>
+        <source>1% low: %1</source>
+        <translation>1 % bajo: %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Stutters: %1</source>
+        <translation>Tirones: %1</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>p99: %1</source>
+        <translation>p99: %1</translation>
     </message>
 </context>
 <context>

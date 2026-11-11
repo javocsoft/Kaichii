@@ -87,6 +87,7 @@ add_library(
     math_util.h
     memory_detect.cpp
     memory_detect.h
+    frame_pacing.h
     nvidia_shader_cache.cpp
     qt_platform_choice.h
     nvidia_shader_cache.h

@@ -39,6 +39,9 @@ protected:
 private:
     void resetPosition(const QPoint& pos);
     void updateStats(const Core::PerfStatsResults& results, const VideoCore::ShaderNotify& shaders);
+    /// Shows a Switch 2 game's per-frame pacing (frame times, 1% low, stutters). False when there
+    /// are no recent presents to show: the overlay then shows its averages.
+    bool ShowFramePacing();
 
     MainWindow* m_mainWindow = nullptr;
     Ui::PerformanceOverlay* ui;
@@ -63,6 +66,7 @@ private:
 
     // fps chart
     QLineSeries* m_fpsSeries = nullptr;
+    QLineSeries* m_targetSeries = nullptr;
     QChart* m_fpsChart = nullptr;
     QChartView* m_fpsChartView = nullptr;
     QValueAxis* m_fpsX = nullptr;
