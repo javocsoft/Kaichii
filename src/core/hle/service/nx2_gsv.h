@@ -42,6 +42,7 @@
 #include "video_core/gpu.h"
 #include "video_core/framebuffer_config.h"
 #include "core/core_timing.h"
+#include "core/hle/kernel/guest_profile.h"
 #include "core/hle/kernel/k_client_session.h"
 #include "core/hle/kernel/k_process.h"
 #include "core/hle/kernel/kernel.h"
@@ -1934,6 +1935,16 @@ private:
                 const char* value = std::getenv("EDEN_NX2_SLOW_FRAME_MS");
                 return value != nullptr ? std::strtoll(value, nullptr, 10) * 1'000'000 : 0LL;
             }();
+            if (Kernel::GuestProfile::Enabled() && present_index > 0) [[unlikely]] {
+                const u64 previous = Core::g_nx2_present_times[(present_index - 1) %
+                                                               Core::Nx2PresentHistory]
+                                         .load(std::memory_order_relaxed);
+                const u64 now_ns = static_cast<u64>(entered.time_since_epoch() /
+                                                    std::chrono::nanoseconds{1});
+                if (previous != 0 && now_ns > previous) {
+                    Kernel::GuestProfile::OnPresent(present_index, now_ns - previous);
+                }
+            }
             if (slow_frame_ns > 0 && present_index > 0) {
                 const u64 previous = Core::g_nx2_present_times[(present_index - 1) %
                                                                Core::Nx2PresentHistory]

@@ -171,6 +171,7 @@ add_executable(tests
     core/font_merge.cpp
     core/ldn.cpp
     core/internal_network/socket_proxy.cpp
+    core/guest_profile.cpp
     core/kernel_locks.cpp
     core/priority_queue.cpp
     core/internal_network/network.cpp
