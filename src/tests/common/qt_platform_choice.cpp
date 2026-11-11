@@ -13,7 +13,11 @@ TEST_CASE("The Qt frontend runs through X11 unless the player chose otherwise",
     CHECK(QtPlatformOverride(Common::DefaultForceX11, "") == "xcb;wayland");
     // The player chose Wayland in the settings.
     CHECK(QtPlatformOverride(false, "").empty());
-    // QT_QPA_PLATFORM set by the player always wins.
-    CHECK(QtPlatformOverride(true, "wayland").empty());
+    // A Wayland preference the desktop exports for every application (COSMIC: "wayland;xcb").
+    CHECK(QtPlatformOverride(true, "wayland;xcb") == "xcb;wayland");
+    CHECK(QtPlatformOverride(true, "wayland") == "xcb;wayland");
+    CHECK(QtPlatformOverride(false, "wayland;xcb").empty());
+    // Anything else was chosen on purpose and is kept.
     CHECK(QtPlatformOverride(true, "xcb").empty());
+    CHECK(QtPlatformOverride(true, "offscreen").empty());
 }
