@@ -32,6 +32,7 @@
 #include "video_core/nx2.h"
 #include "video_core/nx2_profile.h"
 #include "video_core/render_trace.h"
+#include "video_core/texture_cache/collector_escalation.h"
 #include "video_core/texture_cache/conversion.h"
 #include "video_core/texture_cache/host_mip_limits.h"
 #include "video_core/texture_cache/image_view_base.h"
@@ -243,6 +244,14 @@ void TextureCache<P>::RunGarbageCollector(bool out_of_memory) {
         }();
         ticks_to_destroy = (std::max)(ticks_to_destroy, min_age);
         num_iterations = aggressive_mode ? 40 : (high_priority_mode ? 20 : 10);
+        // Past the critical memory, 40 images a frame is not enough where the cache runs away
+        // (Zortos PR 1306; see collector_escalation.h).
+        const auto escalation =
+            EscalateCollector(aggressive_mode, total_used_memory, critical_memory, min_age);
+        num_iterations += escalation.extra_iterations;
+        if (escalation.ticks_to_destroy != 0) {
+            ticks_to_destroy = escalation.ticks_to_destroy;
+        }
     };
     const auto Cleanup = [&](ImageId image_id) {
         if (num_iterations == 0) {

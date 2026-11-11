@@ -50,6 +50,7 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | PRs 739, 741 | arm64 hosts: a host memory reservation that only unit tests on arm64 Linux reach, and NCE SIGILL handling. Nothing here builds or runs arm64; 740's NCE fix was taken. |
 | PR 758 | Adreno (Turnip) experiments for Ocarina behind switches, with an opt-in bilinear stand-in for its upscaler. |
 | PR 720 | Seven fixes in 17,900 lines from another fork. Its tessellation pipeline check is already here. |
+| Zortos 1334 and 1337, graphics pipelines kept up to a quarter of the RAM and rebuilt from kept SPIR-V | This tree already destroys unused pipelines only past a budget (`pipeline_cache_policy.h`: 1/16 of the RAM at ~0.45 MB each, about 4,660 on 32 GB), the root cause 1334 fixes upstream. No session here has logged an eviction (Kokiri Forest stays under it), so the larger budget is not taken until one does. Building the user's whole pack at boot took about 0.9 MB of resident memory per pipeline. |
 | Zortos 1327 and 1331, dynarmic ordered loads as plain moves and one cache line per exclusive reservation | Measured in Ocarina of Time on an RTX 3050 Laptop over three alternating rounds (2026-11-11): Kokiri porch 30.4 fps without against 29.3 with them, walking 33.7 against 32.0, lower in all six pairs. Neither fixes a bug here. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
