@@ -29,8 +29,17 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Restore apt packages
+        id: apt-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: /home/runner/apt-cache
+          key: apt-${{ github.job }}-${{ runner.arch }}-${{ hashFiles('.github/workflows/build-check.yml', 'tools/ci/apt-install.sh') }}
+
       - name: Install Linux dependencies
-        timeout-minutes: 20
+        timeout-minutes: 40
+        env:
+          APT_CACHE_DIR: /home/runner/apt-cache
         run: |
           tools/ci/apt-install.sh \
             autoconf gcc-13 g++-13 git glslang-tools libglu1-mesa-dev \
@@ -45,6 +54,13 @@ jobs:
             libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 libxcb-xkb1
           pipx install cmake==4.4.4
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Save apt packages
+        if: steps.apt-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: /home/runner/apt-cache
+          key: ${{ steps.apt-cache.outputs.cache-primary-key }}
 
       - name: Install Qt
         uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06
