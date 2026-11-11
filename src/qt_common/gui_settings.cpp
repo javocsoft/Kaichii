@@ -3,6 +3,7 @@
 
 #include "common/fs/fs.h"
 #include "common/fs/path_util.h"
+#include "common/qt_platform_choice.h"
 #include "gui_settings.h"
 
 namespace FS = Common::FS;
@@ -20,7 +21,9 @@ void SetForceX11(bool state) {
 }
 
 bool GetForceX11() {
-    return QSettings(GuiConfigPath(), QSettings::IniFormat).value("gui_force_x11", false).toBool();
+    return QSettings(GuiConfigPath(), QSettings::IniFormat)
+        .value("gui_force_x11", Common::DefaultForceX11)
+        .toBool();
 }
 
 } // namespace GraphicsBackend

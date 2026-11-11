@@ -88,6 +88,7 @@ add_library(
     memory_detect.cpp
     memory_detect.h
     nvidia_shader_cache.cpp
+    qt_platform_choice.h
     nvidia_shader_cache.h
     multi_level_page_table.cpp
     multi_level_page_table.h
