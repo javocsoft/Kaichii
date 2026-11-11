@@ -9,6 +9,7 @@
 #include "common/scope_exit.h"
 
 #include "core/core.h"
+#include "core/hle/kernel/guest_profile.h"
 #include "core/hle/kernel/k_client_port.h"
 #include "core/hle/kernel/k_client_session.h"
 #include "core/hle/kernel/k_event.h"
@@ -138,6 +139,9 @@ void ServerManager::RunServer(std::unique_ptr<ServerManager>&& server_manager) {
 
 Result ServerManager::RegisterSession(Kernel::KServerSession* server_session,
                                       std::shared_ptr<SessionRequestManager> manager) {
+    if (Kernel::GuestProfile::Enabled() && manager && manager->HasSessionHandler()) {
+        Kernel::GuestProfile::NameSession(server_session, manager->SessionHandler().DebugName());
+    }
     // We are taking ownership of the server session, so don't open it.
     auto* session = new Session(m_system.Kernel(), server_session, std::move(manager));
 

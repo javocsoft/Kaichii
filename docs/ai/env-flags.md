@@ -90,6 +90,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 
 | Switch | Kind | Effect |
 |---|---|---|
+| `EDEN_NX2_GUEST_PROFILE` | diag | `=1`: per game thread, the time outside SVCs (running or waiting for a core) and in each SVC, by what it waited on (the IPC service, the event, the lock or condition variable address). Logs the busiest threads every 10 s, and each frame slower than `EDEN_NX2_SLOW_FRAME_MS` (60 ms by default) with what the threads did during it. |
 | `EDEN_NX2_SVC_TRACE` | diag | `=1`: every SVC with arguments and results. `=<first>:<last>`: only those presents. |
 | `EDEN_NX2_IPC_TRACE` | diag | Every dispatched service command and its result word. |
 | `EDEN_NX2_IPC_SUMMARY` | diag | Every 5 s, how often each command ran and with which result. Finds a game polling something that never becomes ready. |

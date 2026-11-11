@@ -79,8 +79,14 @@ public:
     virtual Result HandleSyncRequest(Kernel::KServerSession& session,
                                      HLERequestContext& context) = 0;
 
+    /// The service name it was created with (EDEN_NX2_GUEST_PROFILE names IPC waits with it).
+    [[nodiscard]] const char* DebugName() const {
+        return debug_name != nullptr ? debug_name : "";
+    }
+
 protected:
     Kernel::KernelCore& kernel;
+    const char* debug_name{};
 };
 
 using SessionRequestHandlerWeakPtr = std::weak_ptr<SessionRequestHandler>;

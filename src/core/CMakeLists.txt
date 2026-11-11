@@ -225,6 +225,8 @@ add_library(core STATIC
     hle/kernel/code_set.cpp
     hle/kernel/code_set.h
     hle/kernel/global_scheduler_context.cpp
+    hle/kernel/guest_profile.cpp
+    hle/kernel/guest_profile.h
     hle/kernel/global_scheduler_context.h
     hle/kernel/init/init_slab_setup.cpp
     hle/kernel/init/init_slab_setup.h
