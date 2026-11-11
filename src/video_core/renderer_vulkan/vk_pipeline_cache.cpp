@@ -748,6 +748,7 @@ bool PreloadAllPipelines() {
 
 PipelineCache::~PipelineCache() {
     background_pipelines.Stop();
+    runtime_graphics.Stop();
     workers.WaitForRequests();
     serialization_thread.WaitForRequests();
     SaveUsedPipelines();
@@ -1353,8 +1354,15 @@ GraphicsPipeline* PipelineCache::CurrentGraphicsPipelineSlowPath() {
     if (is_new) {
         ReportNewPipelineKey(graphics_key);
         pipeline = background_pipelines.Take(graphics_key);
-        if (!pipeline) {
+        if (!pipeline && !(TranslatesInBackground() && SubmitGraphicsPipeline())) {
             pipeline = CreateGraphicsPipeline();
+        }
+    }
+    if (!pipeline && pending_graphics.contains(graphics_key)) {
+        bool pending = false;
+        pipeline = TakeSubmittedPipeline(pending);
+        if (pending) {
+            return nullptr; // the draw is skipped while the pipeline is translated
         }
     }
     if (!pipeline) {
@@ -1371,6 +1379,130 @@ GraphicsPipeline* PipelineCache::CurrentGraphicsPipelineSlowPath() {
     current_pipeline = pipeline.get();
     current_pipeline->MarkUsed(frame_count);
     return BuiltPipeline(current_pipeline);
+}
+
+bool PipelineCache::TranslatesInBackground() const {
+    if (!use_asynchronous_shaders || !maxwell3d->GetNativeMacroEngine().native_turing) {
+        return false;
+    }
+    return Settings::values.native_async_draws.GetValue() != Settings::NativeAsyncDraws::Wait;
+}
+
+namespace {
+/// Background translation counts, logged every 10 s while any happen.
+struct BackgroundTranslationStats {
+    u64 submitted{};
+    u64 installed{};
+    u64 skipped{};
+    u64 waited{};
+    std::chrono::nanoseconds wait_time{};
+    std::chrono::steady_clock::time_point window = std::chrono::steady_clock::now();
+
+    void MaybeLog() {
+        const auto now = std::chrono::steady_clock::now();
+        if (now - window < std::chrono::seconds{10}) {
+            return;
+        }
+        if (submitted + installed + skipped + waited != 0) {
+            LOG_INFO(Render_Vulkan,
+                     "Background translation in the last 10 s: {} pipelines queued, {} installed, "
+                     "{} draw lookups skipped, {} draws waited ({:.1f} ms)",
+                     submitted, installed, skipped, waited,
+                     std::chrono::duration<double, std::milli>(wait_time).count());
+        }
+        *this = {};
+    }
+};
+BackgroundTranslationStats background_stats;
+} // Anonymous namespace
+
+bool PipelineCache::SubmitGraphicsPipeline() {
+    auto envs = std::make_shared<GraphicsEnvironments>();
+    GetGraphicsEnvironments(*envs, graphics_key.unique_hashes);
+    for (size_t index = 0; index < Maxwell::MaxShaderProgram; ++index) {
+        if (graphics_key.unique_hashes[index] != 0) {
+            envs->envs[index].Freeze();
+        }
+    }
+    const GraphicsPipelineCacheKey key = graphics_key;
+    const bool submitted = runtime_graphics.Submit(key, [this, key, envs] {
+        const auto begin = std::chrono::steady_clock::now();
+        ShaderPools pools;
+        auto pipeline = CreateGraphicsPipeline(pools, key, envs->Span(), nullptr, false);
+        LOG_DEBUG(Render_Vulkan, "Pipeline {:016x} translated and built on a worker in {:.1f} ms",
+                  key.Hash(),
+                  std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() -
+                                                            begin)
+                      .count());
+        return pipeline;
+    });
+    if (submitted) {
+        pending_graphics.emplace(key, std::move(envs));
+        ++background_stats.submitted;
+        background_stats.MaybeLog();
+    }
+    return submitted;
+}
+
+std::unique_ptr<GraphicsPipeline> PipelineCache::TakeSubmittedPipeline(bool& pending) {
+    // The same choice BuiltPipeline makes for a pipeline the driver still builds; a timed wait
+    // skips as well, since translating takes longer than the per-frame budget.
+    const auto& draw_state = maxwell3d->draw_manager.draw_state;
+    const auto mode = Settings::values.native_async_draws.GetValue() ==
+                              Settings::NativeAsyncDraws::Skip
+                          ? NativePendingMode::Skip
+                          : NativePendingMode::Bounded;
+    const bool can_discard =
+        CanDiscardPendingDraw(true, maxwell3d->regs.zeta_enable != 0,
+                              draw_state.draw_element_count, draw_state.draw_element_count, true);
+    const bool must_wait = DecideNativePending(mode, can_discard, native_wait_budget_us) ==
+                           NativeDrawAction::Wait;
+    std::unique_ptr<GraphicsPipeline> pipeline;
+    if (must_wait) {
+        const auto begin = std::chrono::steady_clock::now();
+        pipeline = runtime_graphics.Wait(graphics_key);
+        ++background_stats.waited;
+        background_stats.wait_time += std::chrono::steady_clock::now() - begin;
+    } else if (runtime_graphics.Poll(graphics_key, pipeline) ==
+               RuntimePipelineBuilds<GraphicsPipelineCacheKey, GraphicsPipeline>::State::Pending) {
+        pending = true;
+        ++background_stats.skipped;
+        background_stats.MaybeLog();
+        return nullptr;
+    }
+    // Built (or failed): the key is no longer pending, and a null entry stays null as when
+    // CreateGraphicsPipeline() fails on this thread.
+    auto node = pending_graphics.extract(graphics_key);
+    ++background_stats.installed;
+    background_stats.MaybeLog();
+    if (pipeline && !node.empty()) {
+        SerializeNewPipeline(graphics_key, std::move(node.mapped()->envs));
+    }
+    return pipeline;
+}
+
+void PipelineCache::SerializeNewPipeline(
+    const GraphicsPipelineCacheKey& key,
+    std::array<VideoCommon::GraphicsEnvironment, Maxwell::MaxShaderProgram>&& envs) {
+    if (pipeline_cache_filename.empty()) {
+        return;
+    }
+    if (disk_pipelines.contains(key.Hash())) {
+        QueueVulkanPipelineCacheFlush();
+        return;
+    }
+    disk_pipelines.insert(key.Hash());
+    serialization_thread.QueueWork([this, key, envs = std::move(envs)] {
+        boost::container::static_vector<const GenericEnvironment*, Maxwell::MaxShaderProgram>
+            env_ptrs;
+        for (size_t index = 0; index < Maxwell::MaxShaderProgram; ++index) {
+            if (key.unique_hashes[index] != 0) {
+                env_ptrs.push_back(&envs[index]);
+            }
+        }
+        SerializePipeline(key, env_ptrs, pipeline_cache_filename, CACHE_VERSION);
+    });
+    QueueVulkanPipelineCacheFlush();
 }
 
 void PipelineCache::TickFrame() {
