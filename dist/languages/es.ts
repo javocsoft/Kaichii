@@ -8055,7 +8055,7 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+5130"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+5143"/>
         <source>Performance preset</source>
         <translation>Ajuste predefinido de rendimiento</translation>
     </message>
@@ -8078,7 +8078,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Rendimiento</translation>
     </message>
     <message>
-        <location line="-3181"/>
+        <location line="-3184"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -8093,7 +8093,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Archivo instalable de Switch (*.nca *.nsp *.nsz *.xci *.xcz);;Archivo de contenido de Nintendo (*.nca);;Paquete de envío de Nintendo (*.nsp *.nsz);;Imagen de cartucho NX (*.xci *.xcz)</translation>
     </message>
     <message>
-        <location line="+1984"/>
+        <location line="+1987"/>
         <source>Balanced</source>
         <translation>Equilibrado</translation>
     </message>
@@ -8247,7 +8247,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-3344"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-3347"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -8267,7 +8267,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="-276"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3599"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3602"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Lichii</source>
@@ -8415,7 +8415,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-609"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-612"/>
         <source>&amp;Start</source>
         <translation>&amp;Iniciar</translation>
     </message>
@@ -8521,8 +8521,8 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4548"/>
-        <location filename="../../src/qt_common/config/shared_translation.h" line="+31"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4558"/>
+        <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
     </message>
@@ -8641,12 +8641,12 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Restablecer volumen</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+64"/>
         <source>Configure Effects...</source>
         <translation>Configurar efectos...</translation>
     </message>
     <message>
-        <location line="+172"/>
+        <location line="+181"/>
         <source>&amp;Clear Recent Files</source>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
@@ -9446,7 +9446,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>Fotograma: %1 ms</translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+49"/>
         <source>NO AA</source>
         <translation>NO AA</translation>
     </message>
@@ -9471,7 +9471,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>La generación de fotogramas está desactivada.</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>FG %1 %2X</source>
         <translation>FG %1 %2X</translation>
     </message>
