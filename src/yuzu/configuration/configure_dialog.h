@@ -7,6 +7,7 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 #include <QDialog>
 #include "configuration/shared_widget.h"
@@ -74,6 +75,8 @@ private:
     void SetConfiguration();
     void UpdateVisibleTabs();
     void PopulateSelectionList();
+    /// The scroll area a settings page is shown in, made on first use (see SettingsPageScroll).
+    QWidget* ScrollPage(QWidget* page);
 
     std::unique_ptr<Ui::ConfigureDialog> ui;
     HotkeyRegistry& registry;
@@ -99,4 +102,6 @@ private:
     std::unique_ptr<ConfigureProfileManager> profile_tab;
     std::unique_ptr<ConfigureSystem> system_tab;
     std::unique_ptr<ConfigureWeb> web_tab;
+
+    std::unordered_map<QWidget*, QWidget*> scroll_pages;
 };

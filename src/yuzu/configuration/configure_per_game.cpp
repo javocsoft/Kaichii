@@ -75,6 +75,7 @@
 #include "yuzu/configuration/configure_per_game.h"
 #include "yuzu/configuration/configure_per_game_addons.h"
 #include "yuzu/configuration/configure_system.h"
+#include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/util/util.h"
 
 namespace {
@@ -395,17 +396,25 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
 
     ui->setupUi(this);
 
-    ui->tabWidget->addTab(performance_tab.get(), tr("Performance"));
-    ui->tabWidget->addTab(addons_tab.get(), tr("Add-Ons"));
-    ui->tabWidget->addTab(system_tab.get(), tr("System"));
-    ui->tabWidget->addTab(cpu_tab.get(), tr("CPU"));
-    ui->tabWidget->addTab(graphics_tab.get(), tr("Graphics"));
-    ui->tabWidget->addTab(graphics_advanced_tab.get(), tr("Adv. Graphics"));
-    ui->tabWidget->addTab(graphics_extensions_tab.get(), tr("Ext. Graphics"));
-    ui->tabWidget->addTab(audio_tab.get(), tr("Audio"));
-    ui->tabWidget->addTab(input_tab.get(), tr("Input Profiles"));
-    ui->tabWidget->addTab(network_tab.get(), tr("Network"));
-    ui->tabWidget->addTab(applets_tab.get(), tr("Applets"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(performance_tab.get(), this), tr("Performance"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(addons_tab.get(), this), tr("Add-Ons"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(system_tab.get(), this), tr("System"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(cpu_tab.get(), this), tr("CPU"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(graphics_tab.get(), this), tr("Graphics"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(graphics_advanced_tab.get(), this), tr("Adv. Graphics"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(graphics_extensions_tab.get(), this), tr("Ext. Graphics"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(audio_tab.get(), this), tr("Audio"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(input_tab.get(), this), tr("Input Profiles"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(network_tab.get(), this), tr("Network"));
+    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(applets_tab.get(), this), tr("Applets"));
+
+    // The game's info panel scrolls too: at high scale it alone is taller than a 1080p screen.
+    const int info_index = ui->horizontalLayout->indexOf(ui->groupBox);
+    auto* const info_scroll = new ConfigurationShared::SettingsPageScroll(ui->groupBox, this);
+    info_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    info_scroll->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+    info_scroll->setMinimumWidth(info_scroll->sizeHint().width());
+    ui->horizontalLayout->insertWidget(info_index, info_scroll);
 
     setFocusPolicy(Qt::ClickFocus);
     setWindowTitle(tr("Properties"));
@@ -459,6 +468,7 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
     }
 
     LoadConfiguration();
+    ConfigurationShared::FitDialogToScreen(*this);
 }
 
 ConfigurePerGame::~ConfigurePerGame() {
