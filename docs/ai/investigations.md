@@ -57,6 +57,8 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | Zortos 1327 and 1331, dynarmic ordered loads as plain moves and one cache line per exclusive reservation | Measured in Ocarina of Time on an RTX 3050 Laptop over three alternating rounds (2026-11-11): Kokiri porch 30.4 fps without against 29.3 with them, walking 33.7 against 32.0, lower in all six pairs. Neither fixes a bug here. |
 | Zortos 1333, read-only native compute bindings sized from their size word | Undoes Zortos 1231 (bindings to the end of the mapping, a 1 GiB buffer for Ocarina of Time's heap), which this tree does not have: native compute bindings here keep the 8 MiB bound. Its other part, growing past 8 MiB through the size word for Mario Kart World's lighting, is untested here. |
 | Zortos 1353, `ZeroTrim` allocation failures | This tree has no `TrimZeroPages` worker. |
+| Zortos 1232, nxformat linked statically | Fixes a crash when `nxformat.dll` is missing; this tree doesn't use nxformat. The rest of the PR is NX archive features (XCI conversion, icon editing). |
+| Zortos 1336, the front reads the list words the host GPU wrote | Like 345, measured here: the front's waits fell from 450 to 166 ms a second and the frame rate didn't change. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
 commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182, 186, 189, 192, 199,
