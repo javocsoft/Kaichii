@@ -263,8 +263,10 @@ std::optional<s64> CoreTiming::Advance() {
             } else {
                 basic_lock.unlock();
 
-                const auto new_schedule_time{event_type->callback(
-                    evt_time, std::chrono::nanoseconds{GetGlobalTimeNs().count() - evt_time})};
+                const std::chrono::nanoseconds late_since_pause{LatenessSincePause(
+                    evt_time, GetGlobalTimeNs().count(),
+                    pause_end_time.load(std::memory_order_relaxed))};
+                const auto new_schedule_time{event_type->callback(evt_time, late_since_pause)};
 
                 basic_lock.lock();
 

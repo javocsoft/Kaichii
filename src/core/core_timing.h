@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <functional>
@@ -22,6 +23,14 @@
 #include "common/cpu_features.h"
 
 namespace Core::Timing {
+
+/// How late a looping event's callback runs at `now`, not counting time emulation spent paused:
+/// an event due before the last pause ended is late only from the end of that pause. A callback
+/// that makes up for lateness (the sysmix pump) would otherwise wait out the pause again.
+constexpr s64 LatenessSincePause(s64 event_time, s64 now, s64 pause_end) {
+    const s64 late = now - event_time;
+    return event_time < pause_end ? (std::min)(late, now - pause_end) : late;
+}
 
 /// A callback that may be scheduled for a particular core timing event.
 using TimedCallback = std::function<std::optional<std::chrono::nanoseconds>(
