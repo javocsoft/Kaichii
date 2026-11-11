@@ -34,6 +34,7 @@
 #include "common/polyfill_thread.h"
 #include "common/thread.h"
 
+#include "common/log_file_rotation.h"
 #include "common/logging.h"
 #include "common/settings.h"
 #include "common/string_util.h"
@@ -247,13 +248,12 @@ struct ColorConsoleBackend final : public Backend {
 /// @brief Backend that writes to a file passed into the constructor
 struct FileBackend final : public Backend {
     explicit FileBackend(const std::filesystem::path& filename) noexcept {
-        auto old_filename = filename;
-        old_filename += ".old.txt";
-        // Existence checks are done within the functions themselves.
-        // We don't particularly care if these succeed or not.
-        void(FS::RemoveFile(old_filename));
-        void(FS::RenameFile(filename, old_filename));
-        file.emplace(filename, FS::FileAccessMode::Write, FS::FileType::TextFile);
+        const auto [path, append] = Common::Log::ChooseLogFile(filename);
+        const auto mode = append ? FS::FileAccessMode::Append : FS::FileAccessMode::Write;
+        file.emplace(path, mode, FS::FileType::TextFile);
+        // Count what is already there so the size limit still applies when appending.
+        if (mode == FS::FileAccessMode::Append)
+            bytes_written = file->GetSize();
     }
     ~FileBackend() noexcept override = default;
 
