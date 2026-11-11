@@ -30,9 +30,9 @@ jobs:
           persist-credentials: false
 
       - name: Install Linux dependencies
+        timeout-minutes: 20
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          tools/ci/apt-install.sh \
             autoconf clang-20 lld-20 llvm-20 libclang-rt-20-dev git glslang-tools libglu1-mesa-dev \
             libpulse-dev libtool libudev-dev libxkbcommon-x11-0 \
             mesa-common-dev nasm ninja-build qt6-base-private-dev \

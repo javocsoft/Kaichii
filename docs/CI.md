@@ -48,6 +48,12 @@ need no secrets.
 Their first runs start with an empty cache: the build alone took 41 minutes with GCC and 35 with Clang
 on a fork's first run.
 
+Every workflow installs its Ubuntu packages through `tools/ci/apt-install.sh`, with short apt
+timeouts, three attempts, and a step timeout of 10 to 20 minutes. On 2026-11-11 a runner whose DNS
+stopped resolving the Ubuntu mirrors kept apt retrying package after package until the job's own
+90-minute limit cancelled it, and the PR waited for hours; now such a failure ends in minutes and
+the job can be run again.
+
 In `zortos293/Lichii`, a workflow run from a first-time contributor's PR stays at `action_required`
 until a maintainer approves it, so those PRs have had no CI yet.
 
