@@ -40,12 +40,17 @@ public:
 private:
     void ApplySelectedPreset();
     void UpdateCurrent();
+    /// A setting's name as the settings pages show it.
+    QString SettingName(const Settings::BasicSetting& setting) const;
+    /// A value of a setting (as Setting::ToString writes it) as the settings pages show it.
+    QString SettingValue(const Settings::BasicSetting& setting, const std::string& value) const;
 
     const Settings::HostProfile host;
     const ConfigurationShared::Builder& builder;
     QButtonGroup* preset_buttons{};
     std::array<QRadioButton*, Settings::AllPerformancePresets.size()> preset_radios{};
     std::array<QString, Settings::AllPerformancePresets.size()> preset_names;
+    std::unique_ptr<ConfigurationShared::TranslationMap> setting_names;
     QLabel* current_label{};
     QLabel* status_label{};
 };

@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 
 #include "common/settings.h"
+#include "qt_common/config/shared_translation.h"
 #include "yuzu/configuration/configure_performance.h"
 #include "yuzu/configuration/shared_widget.h"
 
@@ -26,7 +27,8 @@ QString GigabytesText(u64 bytes) {
 ConfigurePerformance::ConfigurePerformance(
     const Settings::HostProfile& host_, const ConfigurationShared::Builder& builder_,
     std::shared_ptr<std::vector<ConfigurationShared::Tab*>> group, QWidget* parent)
-    : Tab(group, parent), host{host_}, builder{builder_} {
+    : Tab(group, parent), host{host_}, builder{builder_},
+      setting_names{ConfigurationShared::InitializeTranslations(this)} {
     setAccessibleName(tr("Performance"));
     // The descriptions wrap: in a scroll area they get the height they need however small the
     // dialog is.
@@ -130,10 +132,62 @@ void ConfigurePerformance::SetConfiguration() {
 
 void ConfigurePerformance::UpdateCurrent() {
     const auto current = Settings::MatchingPerformancePreset(Settings::values, host);
-    current_label->setText(
-        current ? tr("The saved settings match the %1 preset.")
-                      .arg(preset_names[static_cast<size_t>(*current)])
-                : tr("The saved settings match no preset."));
+    QString text = current ? tr("The saved settings match the %1 preset.")
+                                 .arg(preset_names[static_cast<size_t>(*current)])
+                           : tr("The saved settings match no preset.");
+    // What keeps them from the recommended preset, so a slow setting is easy to spot.
+    const auto recommended = Settings::RecommendedPreset(host);
+    if (current != recommended) {
+        const auto differences =
+            Settings::PresetDifferences(Settings::values, recommended, host);
+        if (!differences.empty()) {
+            text += QStringLiteral("\n\n") +
+                    tr("Compared with the %1 preset recommended for this computer:")
+                        .arg(preset_names[static_cast<size_t>(recommended)]);
+            for (const Settings::PresetDifference& difference : differences) {
+                text += QStringLiteral("\n• ") +
+                        tr("%1 %2 (the preset uses %3)")
+                            .arg(SettingName(*difference.setting),
+                                 SettingValue(*difference.setting, difference.current),
+                                 SettingValue(*difference.setting, difference.preset));
+            }
+        }
+    }
+    current_label->setText(text);
+}
+
+QString ConfigurePerformance::SettingName(const Settings::BasicSetting& setting) const {
+    if (setting_names) {
+        if (const auto it = setting_names->find(setting.Id());
+            it != setting_names->end() && !it->second.first.isEmpty()) {
+            QString name = it->second.first.trimmed();
+            return name.endsWith(QLatin1Char(':')) ? name : name + QLatin1Char(':');
+        }
+    }
+    return QString::fromStdString(setting.GetLabel()) + QLatin1Char(':');
+}
+
+QString ConfigurePerformance::SettingValue(const Settings::BasicSetting& setting,
+                                           const std::string& value) const {
+    if (setting.IsEnum()) {
+        const auto& enums = builder.ComboboxTranslations();
+        if (const auto it = enums.find(setting.EnumIndex()); it != enums.end()) {
+            bool ok = false;
+            const u32 index = QString::fromStdString(value).toUInt(&ok);
+            for (const auto& [id, text] : it->second) {
+                if (ok && id == index) {
+                    return text;
+                }
+            }
+        }
+    }
+    if (value == "true") {
+        return tr("on");
+    }
+    if (value == "false") {
+        return tr("off");
+    }
+    return QString::fromStdString(value);
 }
 
 void ConfigurePerformance::ApplySelectedPreset() {

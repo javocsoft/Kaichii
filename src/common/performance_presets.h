@@ -63,6 +63,19 @@ struct PresetEntry {
                                                                 PerformancePreset preset,
                                                                 const HostProfile& host);
 
+/// A setting whose value differs from what a preset sets: both as Setting::ToString writes them.
+struct PresetDifference {
+    BasicSetting* setting;
+    std::string current;
+    std::string preset;
+};
+
+/// The settings in `target` that differ from `preset`, in the order the preset lists them. Empty
+/// when `target` matches it.
+[[nodiscard]] std::vector<PresetDifference> PresetDifferences(Values& target,
+                                                             PerformancePreset preset,
+                                                             const HostProfile& host);
+
 /// Writes a preset's settings, as per-game values when `per_game`. Settings a preset does not
 /// name keep their values, so a player's other choices survive.
 void ApplyPerformancePreset(Values& target, PerformancePreset preset, const HostProfile& host,
