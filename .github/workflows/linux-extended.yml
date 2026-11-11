@@ -31,10 +31,19 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Restore apt packages
+        id: apt-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: /home/runner/apt-cache
+          key: apt-${{ github.job }}-${{ runner.arch }}-${{ hashFiles('.github/workflows/linux-extended.yml', 'tools/ci/apt-install.sh') }}
+
       - name: Install Linux dependencies
+        timeout-minutes: 40
+        env:
+          APT_CACHE_DIR: /home/runner/apt-cache
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          tools/ci/apt-install.sh \
             autoconf clang-20 lld-20 git glslang-tools libglu1-mesa-dev \
             libpulse-dev libtool libudev-dev libxkbcommon-x11-0 \
             mesa-common-dev nasm ninja-build qt6-base-private-dev \
@@ -48,6 +57,13 @@ jobs:
             mesa-vulkan-drivers vulkan-validationlayers python3-numpy python3-pil python3-venv
           pipx install cmake==4.4.4
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Save apt packages
+        if: steps.apt-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: /home/runner/apt-cache
+          key: ${{ steps.apt-cache.outputs.cache-primary-key }}
 
       - name: Install Qt
         uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06

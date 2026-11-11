@@ -109,12 +109,22 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v5
 
+      - name: Restore apt packages
+        if: startsWith(matrix.platform, 'linux')
+        id: apt-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: /home/runner/apt-cache
+          key: apt-${{ github.job }}-${{ matrix.platform }}-${{ runner.arch }}-${{ hashFiles('.github/workflows/release-binaries.yml', 'tools/ci/apt-install.sh') }}
+
       - name: Install Linux dependencies
         if: startsWith(matrix.platform, 'linux')
+        timeout-minutes: 40
+        env:
+          APT_CACHE_DIR: /home/runner/apt-cache
         shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          tools/ci/apt-install.sh \
             autoconf cmake g++ gcc git glslang-tools libglu1-mesa-dev \
             libpulse-dev libtool libudev-dev libxkbcommon-x11-0 \
             mesa-common-dev nasm ninja-build qt6-base-private-dev \
@@ -125,6 +135,13 @@ jobs:
             libopus-dev libasound2-dev ccache \
             libxcb-cursor0 libxcb-icccm4 libxcb-image0 \
             libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 libxcb-xkb1
+
+      - name: Save apt packages
+        if: (startsWith(matrix.platform, 'linux')) && steps.apt-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: /home/runner/apt-cache
+          key: ${{ steps.apt-cache.outputs.cache-primary-key }}
 
       # The packages docs/Deps.md lists for macOS, plus ccache.
       - name: Install macOS dependencies
@@ -173,9 +190,7 @@ jobs:
             sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc > /dev/null
           echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-$PGO_LLVM_VERSION main" |
             sudo tee /etc/apt/sources.list.d/llvm.list > /dev/null
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            "clang-$PGO_LLVM_VERSION" "lld-$PGO_LLVM_VERSION"
+          tools/ci/apt-install.sh "clang-$PGO_LLVM_VERSION" "lld-$PGO_LLVM_VERSION"
           "clang-$PGO_LLVM_VERSION" --version
 
       # The profiles are in the source tree, where the Linux and Windows configure steps read them.
