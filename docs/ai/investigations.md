@@ -50,6 +50,7 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | PRs 739, 741 | arm64 hosts: a host memory reservation that only unit tests on arm64 Linux reach, and NCE SIGILL handling. Nothing here builds or runs arm64; 740's NCE fix was taken. |
 | PR 758 | Adreno (Turnip) experiments for Ocarina behind switches, with an opt-in bilinear stand-in for its upscaler. |
 | PR 720 | Seven fixes in 17,900 lines from another fork. Its tessellation pipeline check is already here. |
+| Zortos 1327 and 1331, dynarmic ordered loads as plain moves and one cache line per exclusive reservation | Measured in Ocarina of Time on an RTX 3050 Laptop over three alternating rounds (2026-11-11): Kokiri porch 30.4 fps without against 29.3 with them, walking 33.7 against 32.0, lower in all six pairs. Neither fixes a bug here. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
 commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182, 186, 189, 192, 199,

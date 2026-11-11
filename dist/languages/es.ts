@@ -4519,7 +4519,7 @@ Would you like to delete the old save data?</source>
     </message>
     <message>
         <location line="+63"/>
-        <location filename="../../src/yuzu/configuration/configure_input_player.cpp" line="+1369"/>
+        <location filename="../../src/yuzu/configuration/configure_input_player.cpp" line="+1420"/>
         <source>Left Stick</source>
         <translation>Palanca izquierda</translation>
     </message>
@@ -4736,7 +4736,7 @@ Would you like to delete the old save data?</source>
         <translation>Configurar</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_input_player.cpp" line="-983"/>
+        <location filename="../../src/yuzu/configuration/configure_input_player.cpp" line="-1034"/>
         <location line="+85"/>
         <location line="+98"/>
         <location line="+95"/>
@@ -4823,24 +4823,34 @@ Para invertir los ejes, mueve primero el joystick de manera vertical, y luego ho
     </message>
     <message>
         <location line="+108"/>
-        <location line="+365"/>
+        <location line="+416"/>
         <source>Deadzone: %1%</source>
         <translation>Punto muerto: %1%</translation>
     </message>
     <message>
-        <location line="-356"/>
-        <location line="+361"/>
+        <location line="-407"/>
+        <location line="+412"/>
         <source>Modifier Range: %1%</source>
         <translation>Rango del modificador: %1%</translation>
     </message>
     <message>
-        <location line="-320"/>
-        <location line="+345"/>
+        <location line="-371"/>
+        <location line="+396"/>
         <source>Pro Controller</source>
         <translation>Controlador Pro</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-219"/>
+        <source>Custom mapping</source>
+        <translation>Asignación personalizada</translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>Disconnected device</source>
+        <translation>Dispositivo desconectado</translation>
+    </message>
+    <message>
+        <location line="+183"/>
         <source>Dual Joycons</source>
         <translation>Joycons duales</translation>
     </message>
@@ -4910,7 +4920,7 @@ Para invertir los ejes, mueve primero el joystick de manera vertical, y luego ho
         <translation>C-Stick</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+117"/>
         <source>Shake!</source>
         <translation>¡Agita!</translation>
     </message>
@@ -7119,7 +7129,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GRenderWindow</name>
     <message>
-        <location filename="../../src/yuzu/bootmanager.cpp" line="+848"/>
+        <location filename="../../src/yuzu/bootmanager.cpp" line="+852"/>
         <location line="+17"/>
         <source>OpenGL not available!</source>
         <translation>¡OpenGL no está disponible!</translation>
@@ -7938,7 +7948,7 @@ o haz clic para buscarlo</translation>
         <translation>Tiempo estimado 5m 4s</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/loading_screen.cpp" line="+86"/>
+        <location filename="../../src/yuzu/loading_screen.cpp" line="+97"/>
         <source>Loading...</source>
         <translation>Cargando...</translation>
     </message>
@@ -8045,7 +8055,7 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+5124"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+5130"/>
         <source>Performance preset</source>
         <translation>Ajuste predefinido de rendimiento</translation>
     </message>
@@ -8068,7 +8078,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Rendimiento</translation>
     </message>
     <message>
-        <location line="-3179"/>
+        <location line="-3181"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -8078,7 +8088,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Lichii no pudo reservar la memoria del juego. Cierra otras aplicaciones y comprueba que el sistema tiene suficiente memoria disponible y espacio para el archivo de paginación; después vuelve a intentarlo.</translation>
     </message>
     <message>
-        <location line="+1194"/>
+        <location line="+1196"/>
         <source>Installable Switch File (*.nca *.nsp *.nsz *.xci *.xcz);;Nintendo Content Archive (*.nca);;Nintendo Submission Package (*.nsp *.nsz);;NX Cartridge Image (*.xci *.xcz)</source>
         <translation>Archivo instalable de Switch (*.nca *.nsp *.nsz *.xci *.xcz);;Archivo de contenido de Nintendo (*.nca);;Paquete de envío de Nintendo (*.nsp *.nsz);;Imagen de cartucho NX (*.xci *.xcz)</translation>
     </message>
@@ -8237,7 +8247,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-3342"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-3344"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -8257,7 +8267,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="-276"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3593"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3599"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Lichii</source>
@@ -8405,7 +8415,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-605"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-609"/>
         <source>&amp;Start</source>
         <translation>&amp;Iniciar</translation>
     </message>
@@ -8511,7 +8521,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4542"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4548"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+31"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -8641,7 +8651,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+396"/>
+        <location line="+400"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -8761,19 +8771,19 @@ Se aplican a Mario Kart World hasta que se cierre Lichii. Tus ajustes guardados 
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2479"/>
+        <location line="+2481"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2479"/>
-        <location line="+2479"/>
+        <location line="-2481"/>
+        <location line="+2481"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2478"/>
-        <location line="+2480"/>
+        <location line="-2480"/>
+        <location line="+2482"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
@@ -9547,7 +9557,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>VOLUMEN: %1%</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+103"/>
         <source>Derivation Components Missing</source>
         <translation>Componentes de derivación ausentes</translation>
     </message>
@@ -10686,7 +10696,7 @@ p, li { white-space: pre-wrap; }
         <translation>Migrando, Esto se puede tardar...</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_input_player.cpp" line="-1620"/>
+        <location filename="../../src/yuzu/configuration/configure_input_player.cpp" line="-1687"/>
         <location filename="../../src/yuzu/configuration/configure_ringcon.cpp" line="-304"/>
         <location filename="../../src/yuzu/configuration/configure_touch_from_button.cpp" line="-210"/>
         <source>Shift</source>
