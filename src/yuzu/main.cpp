@@ -4,6 +4,7 @@
 #include <QApplication>
 
 #include "common/fs/fs_paths.h"
+#include "common/nvidia_shader_cache.h"
 #include "common/fs/path_util.h"
 #include "nx2_switches.h"
 #include "startup_checks.h"
@@ -82,6 +83,7 @@ static Qt::HighDpiScaleFactorRoundingPolicy GetHighDpiRoundingPolicy() {
 }
 
 int main(int argc, char* argv[]) {
+    Common::SetUpNvidiaShaderDiskCache();
     LoadNx2Switches(argv[0]);
 #if YUZU_ROOM
     bool launch_room = false;

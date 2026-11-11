@@ -29,6 +29,8 @@
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <SDL3/SDL_main.h>
 
+#include "common/nvidia_shader_cache.h"
+
 #include <fmt/ostream.h>
 
 #include "common/fs/fs_util.h"
@@ -479,6 +481,7 @@ static bool EditNup(const Core::LaunchParams& lp) {
 }
 
 extern "C" SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
+    Common::SetUpNvidiaShaderDiskCache();
 #ifdef _WIN32
     SetUnhandledExceptionFilter(WriteCrashDump);
 #endif

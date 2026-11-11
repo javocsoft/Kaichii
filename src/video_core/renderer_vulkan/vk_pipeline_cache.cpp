@@ -471,6 +471,18 @@ PipelineCache::PipelineCache(Tegra::MaxwellDeviceMemoryManager& device_memory_,
       background_pipelines{64, 16 * 1024 * 1024, device.HasBrokenParallelShaderCompiling()} {
     const auto& float_control{device.FloatControlProperties()};
     const VkDriverId driver_id{device.GetDriverID()};
+#if defined(__unix__) && !defined(__APPLE__) && !defined(__ANDROID__)
+    if (driver_id == VK_DRIVER_ID_NVIDIA_PROPRIETARY) {
+        // The driver's disk cache is the only one kept on NVIDIA (DriverCachesPipelines); the
+        // frontends set it up at startup (Common::SetUpNvidiaShaderDiskCache).
+        const char* const path = std::getenv("__GL_SHADER_DISK_CACHE_PATH");
+        const char* const size = std::getenv("__GL_SHADER_DISK_CACHE_SIZE");
+        LOG_INFO(Render_Vulkan,
+                 "NVIDIA shader disk cache: __GL_SHADER_DISK_CACHE_PATH={}, "
+                 "__GL_SHADER_DISK_CACHE_SIZE={}",
+                 path != nullptr ? path : "unset", size != nullptr ? size : "unset");
+    }
+#endif
     const VkShaderStageFlags subgroup_stages{device.GetSubgroupSupportedStages()};
     const auto subgroup_stage_bit{[subgroup_stages](VkShaderStageFlags flag, Shader::Stage stage) {
         return (subgroup_stages & flag) != 0 ? (1u << static_cast<u32>(stage)) : 0u;
