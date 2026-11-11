@@ -67,6 +67,7 @@ TEST_CASE("A preset sets its values, per game or globally, and is recognised aft
         CHECK(values.use_asynchronous_shaders.GetValue());
         CHECK(values.vram_usage_mode.GetValue() == VramUsageMode::Conservative);
         CHECK(values.accelerate_astc.GetValue() == AstcDecodeMode::CpuAsynchronous);
+        CHECK(values.native_async_draws.GetValue() == NativeAsyncDraws::Bounded);
         // What the preset does not name stays the player's.
         CHECK(values.use_docked_mode.GetValue() == ConsoleMode::Handheld);
         CHECK(MatchingPerformancePreset(values, laptop) == PerformancePreset::Performance);
@@ -119,4 +120,19 @@ TEST_CASE("Changing a preset's setting by hand leaves no preset matched",
     }
     values.resolution_setup.SetValue(ResolutionSetup::Res2X);
     CHECK_FALSE(MatchingPerformancePreset(values, desktop).has_value());
+}
+
+TEST_CASE("Only the Performance preset skips draws while new pipelines build",
+          "[common][performance_presets]") {
+    const HostProfile desktop = Host("NVIDIA GeForce RTX 4070", 12);
+    for (const auto preset : {PerformancePreset::Balanced, PerformancePreset::Quality,
+                              PerformancePreset::Ultra}) {
+        Values values;
+        values.native_async_draws.SetValue(NativeAsyncDraws::Skip);
+        ApplyPerformancePreset(values, preset, desktop, false);
+        CHECK(values.native_async_draws.GetValue() == NativeAsyncDraws::Wait);
+    }
+    Values values;
+    ApplyPerformancePreset(values, PerformancePreset::Performance, desktop, false);
+    CHECK(values.native_async_draws.GetValue() == NativeAsyncDraws::Bounded);
 }

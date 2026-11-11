@@ -177,9 +177,28 @@ public:
 
     std::optional<Shader::ReplaceConstant> GetReplaceConstBuffer(u32 bank, u32 offset) override;
 
+    /// Copies what the reads above take from the 3D engine's registers, so a worker thread can
+    /// translate the program after the GPU thread moved on. GPU memory is still read on demand.
+    void Freeze();
+
 private:
+    /// The texture header for `handle`, from the frozen table when there is one.
+    Tegra::Texture::TICEntry ReadFrozenTextureInfo(u32 handle);
+
+    struct Frozen {
+        std::array<Tegra::Engines::ConstBufferInfo, Tegra::Engines::Maxwell3D::Regs::MaxConstBuffers>
+            const_buffers{};
+        GPUVAddr tex_header_address{};
+        u32 tex_header_limit{};
+        bool via_header_index{};
+        u32 viewport_transform{};
+        ::Common::unordered_map<u64, Tegra::Engines::Maxwell3D::HLEReplacementAttributeType>
+            replace_table;
+    };
+
     Tegra::Engines::Maxwell3D* maxwell3d{};
     size_t stage_index{};
+    std::shared_ptr<const Frozen> frozen;
 };
 
 class ComputeEnvironment final : public GenericEnvironment {

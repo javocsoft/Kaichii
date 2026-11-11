@@ -31,6 +31,7 @@ struct PresetValues {
     ScalingFilter scaling_filter;
     AntiAliasing anti_aliasing;
     OotAntiAliasing oot_anti_aliasing;
+    NativeAsyncDraws native_async_draws;
 };
 
 PresetValues ValuesOf(PerformancePreset preset) {
@@ -38,17 +39,20 @@ PresetValues ValuesOf(PerformancePreset preset) {
     case PerformancePreset::Performance:
         // Measured in Ocarina of Time on an RTX 3050 Laptop: 14 fps at native resolution with the
         // game's own anti-aliasing network, 29 fps at half resolution without its sharpening.
+        // A Switch 2 draw whose new pipeline is still building is skipped instead of stalling
+        // (its pipeline is translated on a worker meanwhile): walking in Kokiri Forest from the
+        // shader pack lost 2.2 s to slow frames instead of 3.2 s, over three rounds.
         return {ResolutionSetup::Res1_2X, ScalingFilter::Fsr, AntiAliasing::None,
-                OotAntiAliasing::NoSharpening};
+                OotAntiAliasing::NoSharpening, NativeAsyncDraws::Bounded};
     case PerformancePreset::Balanced:
         return {ResolutionSetup::Res3_4X, ScalingFilter::Fsr, AntiAliasing::None,
-                OotAntiAliasing::NoSharpening};
+                OotAntiAliasing::NoSharpening, NativeAsyncDraws::Wait};
     case PerformancePreset::Quality:
         return {ResolutionSetup::Res1X, ScalingFilter::Fsr3, AntiAliasing::None,
-                OotAntiAliasing::Game};
+                OotAntiAliasing::Game, NativeAsyncDraws::Wait};
     case PerformancePreset::Ultra:
         return {ResolutionSetup::Res3_2X, ScalingFilter::Fsr3, AntiAliasing::None,
-                OotAntiAliasing::Game};
+                OotAntiAliasing::Game, NativeAsyncDraws::Wait};
     }
     return ValuesOf(PerformancePreset::Quality);
 }
@@ -119,6 +123,7 @@ std::vector<PresetEntry> PerformancePresetEntries(Values& target, PerformancePre
         entry(target.scaling_filter, preset_values.scaling_filter),
         entry(target.anti_aliasing, preset_values.anti_aliasing),
         entry(target.oot_anti_aliasing, preset_values.oot_anti_aliasing),
+        entry(target.native_async_draws, preset_values.native_async_draws),
         // Every preset: what these settings change costs frames and buys nothing a player sees.
         entry(target.gpu_accuracy, GpuAccuracy::Low),
         entry(target.use_asynchronous_shaders, true),

@@ -36,6 +36,7 @@
 #include "video_core/renderer_vulkan/vk_compute_pipeline.h"
 #include "video_core/renderer_vulkan/vk_graphics_pipeline.h"
 #include "video_core/renderer_vulkan/vk_pipeline_cache_prebuild.h"
+#include "video_core/renderer_vulkan/vk_pipeline_runtime_builds.h"
 #include "video_core/renderer_vulkan/vk_texture_cache.h"
 #include "video_core/shader_cache.h"
 
@@ -152,6 +153,18 @@ private:
 
     std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline();
 
+    /// Whether a new native pipeline is translated on a worker while draws that may be skipped
+    /// are (use_asynchronous_shaders, and native_async_draws other than Wait).
+    [[nodiscard]] bool TranslatesInBackground() const;
+    /// Queues the current key's pipeline for a worker, with its environments frozen.
+    bool SubmitGraphicsPipeline();
+    /// For a submitted key: the pipeline once built (or now, built here, when the current draw
+    /// may not be skipped), and whether it is still pending.
+    std::unique_ptr<GraphicsPipeline> TakeSubmittedPipeline(bool& pending);
+    /// Writes a newly built pipeline to the disk cache, as CreateGraphicsPipeline() does.
+    void SerializeNewPipeline(const GraphicsPipelineCacheKey& key,
+                              std::array<VideoCommon::GraphicsEnvironment, Maxwell::MaxShaderProgram>&& envs);
+
     std::unique_ptr<GraphicsPipeline> CreateGraphicsPipeline(
         ShaderPools& pools, const GraphicsPipelineCacheKey& key,
         std::span<Shader::Environment* const> envs, PipelineStatistics* statistics,
@@ -245,6 +258,10 @@ private:
     Common::ThreadWorker serialization_thread;
     DynamicFeatures dynamic_features;
     PipelinePrebuild<GraphicsPipelineCacheKey, GraphicsPipeline> background_pipelines;
+    /// New native pipelines being translated on workers, with the environments they use.
+    RuntimePipelineBuilds<GraphicsPipelineCacheKey, GraphicsPipeline> runtime_graphics{2};
+    std::unordered_map<GraphicsPipelineCacheKey, std::shared_ptr<GraphicsEnvironments>>
+        pending_graphics;
 };
 
 } // namespace Vulkan
