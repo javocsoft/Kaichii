@@ -1,6 +1,12 @@
 // SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <algorithm>
+#include <chrono>
+#include <vector>
+
+#include "common/frame_pacing.h"
+#include "core/core.h"
 #include "core/perf_stats.h"
 #include "performance_overlay.h"
 #include "ui_performance_overlay.h"
@@ -16,6 +22,50 @@
 #include <QPainter>
 #include <QValueAxis>
 #include <QWindow>
+
+namespace {
+
+/// How far back the frame pacing view looks.
+constexpr double PacingWindowMs = 10000.0;
+
+/// A Switch 2 game's present-to-present intervals (ms) over the last `window_ms`, oldest first.
+/// Empty for other games, which don't fill the present history, and when the newest present is
+/// more than two seconds old (paused or loading): the overlay then shows its average view.
+std::vector<double> RecentPresentIntervals(double window_ms) {
+    std::vector<double> intervals;
+    u64 last = Core::g_nx2_present_count.load(std::memory_order_acquire);
+    if (last >= 1 && Core::Nx2PresentTime(last).load(std::memory_order_relaxed) == 0) {
+        --last; // the newest present may not have stored its time yet
+    }
+    if (last < 2) {
+        return intervals;
+    }
+    u64 newer = Core::Nx2PresentTime(last).load(std::memory_order_relaxed);
+    const u64 now = static_cast<u64>(
+        std::chrono::steady_clock::now().time_since_epoch() / std::chrono::nanoseconds{1});
+    if (newer == 0 || now - newer > 2'000'000'000ULL) {
+        return intervals;
+    }
+    const u64 first = last > Core::Nx2PresentHistory - 1 ? last - (Core::Nx2PresentHistory - 1) : 1;
+    double total = 0.0;
+    for (u64 number = last - 1; number >= first && total < window_ms; --number) {
+        const u64 older = Core::Nx2PresentTime(number).load(std::memory_order_relaxed);
+        if (older == 0 || older >= newer) {
+            break;
+        }
+        const double ms = static_cast<double>(newer - older) / 1e6;
+        intervals.push_back(ms);
+        total += ms;
+        newer = older;
+        if (number == first) {
+            break;
+        }
+    }
+    std::ranges::reverse(intervals);
+    return intervals;
+}
+
+} // Anonymous namespace
 
 // TODO(crueter): Reset samples when user changes turbo, slow, etc.
 PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
@@ -35,6 +85,13 @@ PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
 
     m_fpsChart = new QChart;
     m_fpsChart->addSeries(m_fpsSeries);
+    // The 30 fps frame time, under the per-frame view.
+    m_targetSeries = new QLineSeries(this);
+    QPen target_pen(QColor(200, 200, 200));
+    target_pen.setWidth(1);
+    target_pen.setStyle(Qt::DashLine);
+    m_targetSeries->setPen(target_pen);
+    m_fpsChart->addSeries(m_targetSeries);
     m_fpsChart->legend()->hide();
     m_fpsChart->setBackgroundBrush(Qt::black);
     m_fpsChart->setBackgroundVisible(true);
@@ -65,6 +122,8 @@ PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
     m_fpsChart->addAxis(m_fpsY, Qt::AlignLeft);
     m_fpsSeries->attachAxis(m_fpsX);
     m_fpsSeries->attachAxis(m_fpsY);
+    m_targetSeries->attachAxis(m_fpsX);
+    m_targetSeries->attachAxis(m_fpsY);
 
     // chart view
     m_fpsChartView = new QChartView(m_fpsChart, this);
@@ -97,6 +156,10 @@ void PerformanceOverlay::resetPosition(const QPoint& _) {
 
 void PerformanceOverlay::updateStats(const Core::PerfStatsResults& results,
                                      const VideoCore::ShaderNotify& shaders) {
+    if (ShowFramePacing()) {
+        return;
+    }
+    m_targetSeries->clear();
     auto fps = results.average_game_fps;
     if (!std::isnan(fps)) {
         // don't sample measurements < 3 fps because they are probably outliers or freezes
@@ -141,6 +204,8 @@ void PerformanceOverlay::updateStats(const Core::PerfStatsResults& results,
             qreal x_max = std::max(qreal(10), m_xPos);
             m_fpsX->setRange(x_min, x_max);
             m_fpsY->setRange(0.0, max_fps);
+            m_fpsY->setLabelFormat(QStringLiteral("%d"));
+            ui->fps_max->setStyleSheet(QString{});
         }
     }
 
@@ -176,6 +241,38 @@ void PerformanceOverlay::updateStats(const Core::PerfStatsResults& results,
             ui->ft_avg->setText(tr("Avg: %1").arg(avg, 0, 'f', 1));
         }
     }
+}
+
+bool PerformanceOverlay::ShowFramePacing() {
+    const std::vector<double> intervals = RecentPresentIntervals(PacingWindowMs);
+    if (intervals.size() < 10) {
+        return false;
+    }
+    const Common::FramePacing pacing = Common::ComputeFramePacing(intervals);
+    ui->fps->setText(tr("%1 fps").arg(pacing.fps, 0, 'f', 0));
+    ui->fps_avg->setText(tr("Avg: %1").arg(pacing.average_fps, 0, 'f', 0));
+    ui->fps_min->setText(tr("1% low: %1").arg(pacing.low_1pct_fps, 0, 'f', 0));
+    ui->fps_max->setText(tr("Stutters: %1").arg(pacing.stutters));
+    ui->fps_max->setStyleSheet(pacing.stutters > 0 ? QStringLiteral("color: #ff8080;")
+                                                   : QString{});
+    ui->frametime->setText(tr("%1 ms").arg(pacing.median_ms, 0, 'f', 1));
+    ui->ft_min->setText(tr("Min: %1").arg(pacing.min_ms, 0, 'f', 1));
+    ui->ft_avg->setText(tr("p99: %1").arg(pacing.p99_ms, 0, 'f', 1));
+    ui->ft_max->setText(tr("Max: %1").arg(pacing.max_ms, 0, 'f', 1));
+
+    // Each frame's time over the window, against the 30 fps line: a stall stands out as a spike.
+    QList<QPointF> points;
+    points.reserve(static_cast<qsizetype>(intervals.size()));
+    for (size_t index = 0; index < intervals.size(); ++index) {
+        points.append(QPointF{static_cast<qreal>(index), intervals[index]});
+    }
+    m_fpsSeries->replace(points);
+    const qreal last_x = static_cast<qreal>(intervals.size() - 1);
+    m_targetSeries->replace(QList<QPointF>{{0.0, 1000.0 / 30.0}, {last_x, 1000.0 / 30.0}});
+    m_fpsX->setRange(0.0, last_x);
+    m_fpsY->setRange(0.0, std::clamp(pacing.max_ms * 1.1, 50.0, 250.0));
+    m_fpsY->setLabelFormat(QStringLiteral("%d ms"));
+    return true;
 }
 
 void PerformanceOverlay::paintEvent(QPaintEvent* event) {
