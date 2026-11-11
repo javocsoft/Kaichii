@@ -102,7 +102,7 @@ PerformancePreset RecommendedPreset(const HostProfile& host) {
     return PerformancePreset::Balanced;
 }
 
-std::vector<PresetEntry> PerformancePresetEntries(Values& values, PerformancePreset preset,
+std::vector<PresetEntry> PerformancePresetEntries(Values& target, PerformancePreset preset,
                                                   const HostProfile& host) {
     const PresetValues preset_values = ValuesOf(preset);
     // As Setting::ToString writes them, which LoadString reads back.
@@ -115,32 +115,32 @@ std::vector<PresetEntry> PerformancePresetEntries(Values& values, PerformancePre
         }
     };
     return {
-        entry(values.resolution_setup, preset_values.resolution),
-        entry(values.scaling_filter, preset_values.scaling_filter),
-        entry(values.anti_aliasing, preset_values.anti_aliasing),
-        entry(values.oot_anti_aliasing, preset_values.oot_anti_aliasing),
+        entry(target.resolution_setup, preset_values.resolution),
+        entry(target.scaling_filter, preset_values.scaling_filter),
+        entry(target.anti_aliasing, preset_values.anti_aliasing),
+        entry(target.oot_anti_aliasing, preset_values.oot_anti_aliasing),
         // Every preset: what these settings change costs frames and buys nothing a player sees.
-        entry(values.gpu_accuracy, GpuAccuracy::Low),
-        entry(values.use_asynchronous_shaders, true),
-        entry(values.vram_usage_mode, VramModeFor(host)),
-        entry(values.accelerate_astc, AstcModeFor(host)),
+        entry(target.gpu_accuracy, GpuAccuracy::Low),
+        entry(target.use_asynchronous_shaders, true),
+        entry(target.vram_usage_mode, VramModeFor(host)),
+        entry(target.accelerate_astc, AstcModeFor(host)),
         // Ocarina of Time on an i7-12700H: 24.4-25.3 to 26.1-26.9 fps outside, 34.8 to 36.8 inside.
-        entry(values.pin_gpu_threads, host.gpu_thread_pinning),
+        entry(target.pin_gpu_threads, host.gpu_thread_pinning),
     };
 }
 
-void ApplyPerformancePreset(Values& values, PerformancePreset preset, const HostProfile& host,
+void ApplyPerformancePreset(Values& target, PerformancePreset preset, const HostProfile& host,
                             bool per_game) {
-    for (const PresetEntry& entry : PerformancePresetEntries(values, preset, host)) {
+    for (const PresetEntry& entry : PerformancePresetEntries(target, preset, host)) {
         entry.setting->SetGlobal(!per_game);
         entry.setting->LoadString(entry.value);
     }
 }
 
-std::optional<PerformancePreset> MatchingPerformancePreset(Values& values,
+std::optional<PerformancePreset> MatchingPerformancePreset(Values& target,
                                                            const HostProfile& host) {
     for (const PerformancePreset preset : AllPerformancePresets) {
-        const auto entries = PerformancePresetEntries(values, preset, host);
+        const auto entries = PerformancePresetEntries(target, preset, host);
         if (std::ranges::all_of(entries, [](const PresetEntry& entry) {
                 return entry.setting->ToString() == entry.value;
             })) {
