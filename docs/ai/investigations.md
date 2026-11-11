@@ -55,6 +55,9 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | Zortos 957, the page table's last first-level index | Already fixed here (`ReserveRange` uses `start + size - 1`, with tests for a range ending at the top of the address space). |
 | Zortos 1334 and 1337, graphics pipelines kept up to a quarter of the RAM and rebuilt from kept SPIR-V | This tree already destroys unused pipelines only past a budget (`pipeline_cache_policy.h`: 1/16 of the RAM at ~0.45 MB each, about 4,660 on 32 GB), the root cause 1334 fixes upstream. No session here has logged an eviction (Kokiri Forest stays under it), so the larger budget is not taken until one does. Building the user's whole pack at boot took about 0.9 MB of resident memory per pipeline. |
 | Zortos 1327 and 1331, dynarmic ordered loads as plain moves and one cache line per exclusive reservation | Measured in Ocarina of Time on an RTX 3050 Laptop over three alternating rounds (2026-11-11): Kokiri porch 30.4 fps without against 29.3 with them, walking 33.7 against 32.0, lower in all six pairs. Neither fixes a bug here. |
+| Zortos 1333, read-only native compute bindings sized from their size word | Undoes Zortos 1231 (bindings to the end of the mapping, a 1 GiB buffer for Ocarina of Time's heap), which this tree does not have: native compute bindings here keep the 8 MiB bound. Its other part, growing past 8 MiB through the size word for Mario Kart World's lighting, is untested here. |
+| Zortos 1353, `ZeroTrim` allocation failures | This tree has no `TrimZeroPages` worker. |
+| Zortos 851, TLD4.B with a register handle and IMAD with a negated cbuf addend | Only The Duskbloods network test uses them. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
 commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182, 186, 189, 192, 199,
