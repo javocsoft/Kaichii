@@ -142,6 +142,17 @@ void ApplyPerformancePreset(Values& target, PerformancePreset preset, const Host
     }
 }
 
+std::vector<PresetDifference> PresetDifferences(Values& target, PerformancePreset preset,
+                                               const HostProfile& host) {
+    std::vector<PresetDifference> differences;
+    for (const PresetEntry& entry : PerformancePresetEntries(target, preset, host)) {
+        if (std::string current = entry.setting->ToString(); current != entry.value) {
+            differences.push_back({entry.setting, std::move(current), entry.value});
+        }
+    }
+    return differences;
+}
+
 std::optional<PerformancePreset> MatchingPerformancePreset(Values& target,
                                                            const HostProfile& host) {
     for (const PerformancePreset preset : AllPerformancePresets) {

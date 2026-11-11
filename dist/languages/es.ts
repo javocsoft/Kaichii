@@ -5691,7 +5691,7 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
 <context>
     <name>ConfigurePerformance</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_performance.cpp" line="+43"/>
+        <location filename="../../src/yuzu/configuration/configure_performance.cpp" line="+45"/>
         <source>This computer</source>
         <translation>Este equipo</translation>
     </message>
@@ -5847,7 +5847,7 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Los ajustes predefinidos aplicados aquí solo afectan a este juego.</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+20"/>
         <source>The saved settings match the %1 preset.</source>
         <translation>Los ajustes guardados coinciden con el ajuste predefinido %1.</translation>
     </message>
@@ -5857,7 +5857,27 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Los ajustes guardados no coinciden con ningún ajuste predefinido.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+8"/>
+        <source>Compared with the %1 preset recommended for this computer:</source>
+        <translation>Comparado con el preset %1, el recomendado para este equipo:</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1 %2 (the preset uses %3)</source>
+        <translation>%1 %2 (el preset usa %3)</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>on</source>
+        <translation>activado</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>off</source>
+        <translation>desactivado</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>The preset is now set in the Graphics pages. Press OK to save it.</source>
         <translation>El ajuste predefinido se ha aplicado en las páginas de Gráficos. Pulse Aceptar para guardarlo.</translation>
     </message>

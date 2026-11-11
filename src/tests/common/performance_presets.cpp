@@ -136,3 +136,24 @@ TEST_CASE("Only the Performance preset skips draws while new pipelines build",
     ApplyPerformancePreset(values, PerformancePreset::Performance, desktop, false);
     CHECK(values.native_async_draws.GetValue() == NativeAsyncDraws::Bounded);
 }
+
+TEST_CASE("Preset differences name each setting that strays from the preset",
+          "[common][performance_presets]") {
+    const HostProfile laptop = Host("NVIDIA GeForce RTX 3050 Laptop GPU", 4);
+    Values values;
+    ApplyPerformancePreset(values, PerformancePreset::Performance, laptop, false);
+    CHECK(PresetDifferences(values, PerformancePreset::Performance, laptop).empty());
+
+    values.resolution_setup.SetValue(ResolutionSetup::Res1X);
+    values.accelerate_astc.SetValue(AstcDecodeMode::Gpu);
+    values.use_docked_mode.SetValue(ConsoleMode::Handheld); // not a preset setting
+    const auto differences = PresetDifferences(values, PerformancePreset::Performance, laptop);
+    REQUIRE(differences.size() == 2);
+    // In the order the preset lists them, with both values as the settings write them.
+    CHECK(differences[0].setting == &values.resolution_setup);
+    CHECK(differences[0].current == values.resolution_setup.ToString());
+    CHECK(differences[0].preset != differences[0].current);
+    CHECK(differences[1].setting == &values.accelerate_astc);
+    CHECK(differences[1].current == values.accelerate_astc.ToString());
+    CHECK(MatchingPerformancePreset(values, laptop) != PerformancePreset::Performance);
+}
