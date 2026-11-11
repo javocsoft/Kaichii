@@ -2313,6 +2313,14 @@ void RasterizerVulkan::FlushCommands() {
     }
     draw_counter = 0;
     pending_native_work = false;
+    // A fence with a download is submitted by InnerFence::Queue, and SignalFence then comes here
+    // with nothing recorded since. That submit was empty, and ended the command buffer, so the
+    // next draw rebound everything (Zortos 1329, from Fritchii c338269b92: ~4,600 a second in
+    // Ocarina of Time's Castle Town).
+    if (!scheduler.RecordedSinceSubmit()) {
+        Scheduler::CountSkippedFlush();
+        return;
+    }
     // Fences with downloads or queries come here right after queueing: ~9,400 a second in
     // Hyrule Warriors: Age of Imprisonment fights. Batched like the fences themselves.
     if (!scheduler.DeferFlush()) {
