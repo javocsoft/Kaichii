@@ -79,7 +79,33 @@ this fork's build with one that lacks its changes.
 
 Each publish creates the tag `build-<run number>`. Releases configure with `BUILD_TESTING=OFF`, so a
 release proves nothing about the tests. Linux PGO needs a Clang at least as new as the one that wrote
-`eglantine.profdata`; `PGO_LLVM_VERSION` in the workflow records it. Both Windows builds use clang-cl
+its profile; `PGO_LLVM_VERSION` in the workflow records it. The x86-64 PGO build uses
+`lichii-linux.profdata` and the aarch64 one `eglantine.profdata` (see "Linux PGO profile" below). Both Windows builds use clang-cl
 from a pinned LLVM (`tools/windows/install-llvm.ps1`) with ThinLTO against the MSVC headers and SDK;
 the PGO one adds `lichii-windows.profdata`, an MSVC-ABI profile trained on Ocarina of Time. Zortos's
 Windows clang-cl job in `build-check.yml` is not taken here: Windows does not build on pull requests.
+
+## Linux PGO profile
+
+`lichii-linux.profdata` is `eglantine.profdata` (trained upstream on Mario Kart World) merged with
+a run of Ocarina of Time on this tree. Measured on 2026-11-12 on an i7-12700H with an RTX 3050
+Laptop, standing on Link's porch, four alternating rounds, all three compiled from the same source:
+the GCC build 30.6 fps, the PGO build with `eglantine.profdata` 32.4, with the merged profile 33.1
+(ahead in three rounds of four). Most of the gain is the PGO build itself; the retrained profile
+adds about 2 %.
+
+To train it again after large changes (functions changed since training lose their profile data):
+
+1. Build `eden-cli` with clang and `-fprofile-generate=<dir>`, without Qt and tests. Leave out
+   `-fprofile-update=atomic`: with it Ocarina of Time runs at about 5 fps.
+2. Run a game with `LLVM_PROFILE_FILE=<dir>/run-%p.profraw`: boot, load a save, play a few
+   minutes. `eden-cli` does not exit on SIGINT, and a killed process writes no profile, so ask it
+   to write one first: `gdb -p <pid> -batch -ex 'call (int)__llvm_profile_write_file()'`.
+3. Merge with an `llvm-profdata` at least as new as the one that wrote `eglantine.profdata` (23):
+   `llvm-profdata merge -o run.profdata <dir>/*.profraw`, then
+   `llvm-profdata merge -o lichii-linux.profdata -weighted-input=1,eglantine.profdata
+   -weighted-input=<w>,run.profdata`. Pick `<w>` so both have about the same
+   `Maximum function count` (`llvm-profdata show`); it was 6 for this profile.
+4. Compare the PGO build with each profile, alternating runs, before replacing the file.
+
+The profile holds counters of the emulator's own functions, no game data.
