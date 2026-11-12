@@ -156,7 +156,7 @@ call `GetAndResetPerfStats`, which would reset the Qt status bar's counters. `fr
 intervals between the presents in that window: `count`, `median`, `p90`, `p99`, `max` and
 `over_100ms`, plus `fence_mean` and `fence_max`, the time each present waited for a GPU fence
 (`nx2:vi2` stores both per present in `Core::g_nx2_present_times` and `g_nx2_present_fence_ns`, a
-ring of the last 4096). It is null when fewer than three presents fell in the window.
+ring of the last 4096). It is null when fewer than three presents fell in the window. `frame_gen_state` (0 pending, 1 running, 2 and above: why it cannot run, as `VideoCore::FrameGenState`) and `frame_gen_generated` (frames generated so far) tell whether frame generation works: `fps` counts the game's own presents only.
 
 **`frame_times`** `{seconds?, refresh_hz?}` waits for `seconds` (default 5, > 0, at most 60),
 interruptible on shutdown like `status`. It measures intervals between guest presents inside

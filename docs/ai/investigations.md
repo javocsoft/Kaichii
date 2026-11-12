@@ -59,6 +59,8 @@ Eglantine changes reviewed and not taken. Check these before porting them.
 | Zortos 1353, `ZeroTrim` allocation failures | This tree has no `TrimZeroPages` worker. |
 | Zortos 1232, nxformat linked statically | Fixes a crash when `nxformat.dll` is missing; this tree doesn't use nxformat. The rest of the PR is NX archive features (XCI conversion, icon editing). |
 | Zortos 1336, the front reads the list words the host GPU wrote | Like 345, measured here: the front's waits fell from 450 to 166 ms a second and the frame rate didn't change. |
+| Guest cores placed by hand on the host (own experiment, 2026-11-12) | Ocarina's guest cores float over four physical performance cores, and one low priority guest thread spins all the time. Five layouts over three alternating rounds on Link's porch: floating 34.0/31.5/32.7 fps; each guest core on its own processor with the two busiest on a physical core each 32.9/31.9/32.2; the three lightest on efficiency cores 31.3/30.8/31.7; the spinner's candidates on an efficiency core 32.2/31.6/31.8 and 32.5/32.4/32.7. None beats the kernel's placement. |
+| A longer minimum age for the texture collector (own experiment, 2026-11-12) | Standing still on a 4 GB card, the collector deletes about 8,400 images per 600 frames and the game makes them again. `EDEN_NX2_TC_MIN_AGE=30` cuts that to about 2,800 and `=120` to about 350, but the frame rate doesn't rise (base 33.9/27.4/29.4, 30: 29.1/30.7/30.2, 120: 27.3/26.9/27.4): holding more images near the budget is slower than making them again. |
 
 Zortos pull requests from the 2026-11-07 round that were not taken. Those taken are cited in their
 commits. The evening sync merged `zortos293/Lichii` `nx2`, which brought in 182, 186, 189, 192, 199,

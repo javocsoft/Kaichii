@@ -229,6 +229,9 @@ json Status(ToolState& state, const json& params) {
     const u64 after = g_nx2_present_count.load(std::memory_order_relaxed);
     const double seconds =
         std::chrono::duration<double>(std::chrono::steady_clock::now() - begin).count();
+    const auto frame_gen = state.system.IsPoweredOn()
+                               ? state.system.GPU().Renderer().GetFrameGenStatus()
+                               : VideoCore::FrameGenStatus{};
     return {
         {"title", state.title},
         {"program_id", fmt::format("{:016X}", state.program_id)},
@@ -246,6 +249,9 @@ json Status(ToolState& state, const json& params) {
         {"dump_dir", state.dump_directory.generic_string()},
         {"log_filter", state.log_filter},
         {"rejected", HexList(VideoCore::Nx2Debug::RejectedHashes())},
+        // Frame generation: its state (VideoCore::FrameGenState) and the frames generated so far.
+        {"frame_gen_state", static_cast<int>(frame_gen.state)},
+        {"frame_gen_generated", frame_gen.generated_frames},
     };
 }
 
