@@ -2028,18 +2028,14 @@ bool MainWindow::LoadROM(const QString& filename, Service::AM::FrontendAppletPar
                     tr("Error while loading ROM! %1", "%1 signifies a numeric error code.")
                         .arg(QString::fromStdString(error_code));
                 // Keys are installed but not the one this game needs (a title key, or keys older
-                // than the game): the loader's message names it.
-                const bool missing_keys =
-                    status == Loader::ResultStatus::ErrorMissingProductionKeyFile ||
-                    status == Loader::ResultStatus::ErrorMissingHeaderKey ||
-                    status == Loader::ResultStatus::ErrorMissingTitlekey ||
-                    status == Loader::ResultStatus::ErrorMissingTitlekek ||
-                    status == Loader::ResultStatus::ErrorMissingKeyAreaKey;
+                // than the game): the log names it.
+                const bool missing_keys = Loader::IsMissingKeyStatus(status);
                 const auto description =
                     (missing_keys
-                         ? tr("%1<br>Install your console's decryption keys with Tools > Install "
-                              "Decryption Keys, then start the game again. <a href='%2'>The "
-                              "guide</a> explains what each kind of file needs.",
+                         ? tr("%1<br>Dump current keys from your own console and install them "
+                              "with Tools > Install Decryption Keys, then start the game again. "
+                              "The log names the missing key; <a href='%2'>the guide</a> explains "
+                              "what each kind of file needs.",
                               "%1 signifies an error string.")
                          : tr("%1<br>The file may be damaged or incomplete: dump it again from "
                               "your console. <a href='%2'>The guide</a> has more help.",
