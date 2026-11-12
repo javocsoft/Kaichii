@@ -130,9 +130,13 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>No se ha podido medir ningún fotograma: esto funciona con juegos de Switch 2 mientras están en marcha y sin pausar.</translation>
     </message>
     <message>
-        <location line="+51"/>
         <source>&lt;p&gt;&lt;b&gt;Measured:&lt;/b&gt; %1 fps (slowest 1 %: %2 fps), %3 stutters in %4 s.</source>
-        <translation>&lt;p&gt;&lt;b&gt;Medido:&lt;/b&gt; %1 fps (1 % más lento: %2 fps), %3 tirones en %4 s.</translation>
+        <translation type="vanished">&lt;p&gt;&lt;b&gt;Medido:&lt;/b&gt; %1 fps (1 % más lento: %2 fps), %3 tirones en %4 s.</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>&lt;p&gt;&lt;b&gt;Measured:&lt;/b&gt; %1 fps (slowest 1 %: %2 fps), stutters in %4 s: %3.</source>
+        <translation>&lt;p&gt;&lt;b&gt;Medido:&lt;/b&gt; %1 fps (1 % más lento: %2 fps), tirones en %4 s: %3.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -10683,40 +10687,45 @@ p, li { white-space: pre-wrap; }
         <translation>0 fps</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+132"/>
-        <location line="+84"/>
+        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+135"/>
+        <location line="+109"/>
         <source>%1 fps</source>
         <translation>%1 fps</translation>
     </message>
     <message>
-        <location line="-63"/>
+        <location line="-88"/>
         <location line="+52"/>
-        <location line="+12"/>
+        <location line="+38"/>
         <source>Avg: %1</source>
         <translation>Prom: %1</translation>
     </message>
     <message>
-        <location line="-55"/>
+        <location line="-81"/>
         <location line="+32"/>
-        <location line="+29"/>
+        <location line="+55"/>
         <source>Min: %1</source>
         <translation>Mín: %1</translation>
     </message>
     <message>
-        <location line="-60"/>
+        <location line="-86"/>
         <location line="+32"/>
-        <location line="+30"/>
+        <location line="+56"/>
         <source>Max: %1</source>
         <translation>Máx: %1</translation>
     </message>
     <message>
-        <location line="-43"/>
-        <location line="+40"/>
+        <location line="-69"/>
+        <location line="+66"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location line="-4"/>
+        <location line="-11"/>
+        <source>%1 fps (%2 shown)</source>
+        <translation>%1 fps (%2 en pantalla)</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>1% low: %1</source>
         <translation>1 % bajo: %1</translation>
     </message>

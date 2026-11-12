@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include <chrono>
 #include <deque>
+#include "common/common_types.h"
 #include <QWidget>
 
 namespace VideoCore {
@@ -44,6 +46,10 @@ private:
     bool ShowFramePacing();
 
     MainWindow* m_mainWindow = nullptr;
+    /// The renderer's generated-frame counter at its last reading, for the rate between readings.
+    u64 m_generatedFrames = 0;
+    std::chrono::steady_clock::time_point m_generatedTime{};
+    double m_generatedFps = 0.0;
     Ui::PerformanceOverlay* ui;
 
     // colors

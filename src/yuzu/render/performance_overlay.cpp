@@ -6,6 +6,9 @@
 #include <vector>
 
 #include "core/nx2_present_intervals.h"
+#include "qt_common/qt_common.h"
+#include "video_core/gpu.h"
+#include "video_core/renderer_base.h"
 #include "common/frame_pacing.h"
 #include "core/core.h"
 #include "core/perf_stats.h"
@@ -213,7 +216,33 @@ bool PerformanceOverlay::ShowFramePacing() {
         return false;
     }
     const Common::FramePacing pacing = Common::ComputeFramePacing(intervals);
-    ui->fps->setText(tr("%1 fps").arg(pacing.fps, 0, 'f', 0));
+    // With frame generation the screen shows more frames than the game presents: say both, or
+    // the counter reads as if nothing had changed.
+    double generated_fps = 0.0;
+    if (QtCommon::system && QtCommon::system->IsPoweredOn()) {
+        const u64 generated =
+            QtCommon::system->GPU().Renderer().GetFrameGenStatus().generated_frames;
+        const auto now = std::chrono::steady_clock::now();
+        if (m_generatedTime != std::chrono::steady_clock::time_point{}) {
+            const double seconds = std::chrono::duration<double>(now - m_generatedTime).count();
+            if (seconds >= 1.0) {
+                m_generatedFps = Common::GeneratedFrameRate(m_generatedFrames, generated, seconds);
+                m_generatedFrames = generated;
+                m_generatedTime = now;
+            }
+        } else {
+            m_generatedFrames = generated;
+            m_generatedTime = now;
+        }
+        generated_fps = m_generatedFps;
+    }
+    if (generated_fps >= 1.0) {
+        ui->fps->setText(tr("%1 fps (%2 shown)")
+                             .arg(pacing.fps, 0, 'f', 0)
+                             .arg(pacing.fps + generated_fps, 0, 'f', 0));
+    } else {
+        ui->fps->setText(tr("%1 fps").arg(pacing.fps, 0, 'f', 0));
+    }
     ui->fps_avg->setText(tr("Avg: %1").arg(pacing.average_fps, 0, 'f', 0));
     ui->fps_min->setText(tr("1% low: %1").arg(pacing.low_1pct_fps, 0, 'f', 0));
     ui->fps_max->setText(tr("Stutters: %1").arg(pacing.stutters));

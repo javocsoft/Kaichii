@@ -213,7 +213,7 @@ void AutoOptimizeDialog::ShowResults() {
     start_button->setVisible(false);
     recommendations = Recommend(measurements);
 
-    QString summary = tr("<p><b>Measured:</b> %1 fps (slowest 1 %: %2 fps), %3 stutters in %4 s.")
+    QString summary = tr("<p><b>Measured:</b> %1 fps (slowest 1 %: %2 fps), stutters in %4 s: %3.")
                           .arg(measurements.base.fps, 0, 'f', 1)
                           .arg(measurements.base.low_1pct_fps, 0, 'f', 1)
                           .arg(measurements.base.stutters)
