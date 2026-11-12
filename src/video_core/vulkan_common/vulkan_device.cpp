@@ -1918,6 +1918,21 @@ u64 Device::GetDeviceMemoryUsage() const {
     return result;
 }
 
+u64 Device::GetHostMemoryUsage() const {
+    if (allocator == nullptr) {
+        return 0;
+    }
+    std::array<VmaBudget, VK_MAX_MEMORY_HEAPS> heap_budgets{};
+    vmaGetHeapBudgets(allocator, heap_budgets.data());
+    u64 result{};
+    for (size_t heap = 0; heap < heap_budgets.size(); ++heap) {
+        if (std::ranges::find(valid_heap_memory, heap) == valid_heap_memory.end()) {
+            result += heap_budgets[heap].statistics.blockBytes;
+        }
+    }
+    return result;
+}
+
 u64 Device::GetDeviceMemorySlack() const {
     if (allocator == nullptr) {
         return 0;

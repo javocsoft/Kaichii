@@ -32,6 +32,7 @@
 #include "video_core/nx2.h"
 #include "video_core/nx2_profile.h"
 #include "video_core/render_trace.h"
+#include "video_core/video_memory_status.h"
 #include "video_core/texture_cache/collector_escalation.h"
 #include "video_core/texture_cache/conversion.h"
 #include "video_core/texture_cache/host_mip_limits.h"
@@ -654,6 +655,16 @@ void TextureCache<P>::TickFrame() {
     // If we can obtain the memory info, use it instead of the estimate.
     if (runtime.CanReportMemoryUsage()) {
         total_used_memory = runtime.GetDeviceMemoryUsage();
+        g_video_memory_status.used.store(total_used_memory, std::memory_order_relaxed);
+        if constexpr (requires { runtime.GetDeviceMemoryBudget(); }) {
+            // The budget moves slowly (other programs' use): once a second is enough.
+            if (frame_tick % 60 == 0) {
+                g_video_memory_status.budget.store(runtime.GetDeviceMemoryBudget(),
+                                                   std::memory_order_relaxed);
+                g_video_memory_status.host_used.store(runtime.GetHostMemoryUsage(),
+                                                      std::memory_order_relaxed);
+            }
+        }
         // Images the collector deleted keep their memory for TICKS_TO_DESTROY frames: counting
         // it kept the collector in aggressive mode, deleting 40+ images a frame for frames after
         // it had freed enough (title 1: frames over 100 ms for seconds at a time).

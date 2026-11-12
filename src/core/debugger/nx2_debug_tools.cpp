@@ -33,6 +33,7 @@
 #include "video_core/gpu.h"
 #include "video_core/nx2_debug_control.h"
 #include "video_core/renderer_base.h"
+#include "video_core/video_memory_status.h"
 
 namespace Core::Nx2Debug {
 
@@ -252,6 +253,10 @@ json Status(ToolState& state, const json& params) {
         // Frame generation: its state (VideoCore::FrameGenState) and the frames generated so far.
         {"frame_gen_state", static_cast<int>(frame_gen.state)},
         {"frame_gen_generated", frame_gen.generated_frames},
+        // Device memory in use and the driver's budget, in bytes (0 until the renderer reports).
+        {"video_memory_used", VideoCommon::g_video_memory_status.used.load()},
+        {"video_memory_budget", VideoCommon::g_video_memory_status.budget.load()},
+        {"video_memory_host", VideoCommon::g_video_memory_status.host_used.load()},
     };
 }
 
@@ -437,6 +442,26 @@ json LogFilter(ToolState& state, const json& params) {
     Common::Log::SetGlobalFilter(parsed);
     json result = {{"previous", state.log_filter}, {"filter", filter}};
     state.log_filter = filter;
+    return result;
+}
+
+/// Reads a setting by its config key and, with "value", changes it while the game runs. Only
+/// settings the emulator reads as it goes take effect; others wait for the next boot.
+json Setting(ToolState&, const json& params) {
+    const std::string key = params.at("key").get<std::string>();
+    const auto& by_key = Settings::values.linkage.by_key;
+    const auto it = by_key.find(key);
+    if (it == by_key.end()) {
+        throw std::runtime_error{"unknown setting: " + key};
+    }
+    Settings::BasicSetting& setting = *it->second;
+    json result = {{"key", key},
+                   {"previous", setting.ToString()},
+                   {"runtime_modifiable", setting.RuntimeModifiable()}};
+    if (params.contains("value")) {
+        setting.LoadString(params.at("value").get<std::string>());
+    }
+    result["value"] = setting.ToString();
     return result;
 }
 
@@ -723,6 +748,7 @@ Handlers MakeHandlers(const std::shared_ptr<ToolState>& state) {
         {"screenshot", handler(Screenshot)},
         {"log_tail", handler(LogTail)},
         {"log_filter", handler(LogFilter)},
+        {"setting", handler(Setting)},
         {"capture_frame", handler(CaptureFrame)},
         {"reject_shaders", handler(RejectShaders)},
         {"sample", handler(SampleThreads)},
