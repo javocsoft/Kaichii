@@ -42,9 +42,11 @@ PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
     : QWidget(parent), m_mainWindow{parent}, ui(new Ui::PerformanceOverlay) {
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_TranslucentBackground);
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
-    raise();
+    // A child of the main window with a native window of its own, stacked over the game's. As a
+    // top-level tool window its place was the window manager's to choose: COSMIC centred it over
+    // the game and ignored every move, the user's drags included.
+    setAttribute(Qt::WA_NativeWindow);
+    setCursor(Qt::SizeAllCursor);
 
     // chart setup
     m_fpsSeries = new QLineSeries(this);
@@ -112,8 +114,9 @@ PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
     // pos/stats
     m_offset = QPoint{UISettings::values.perf_overlay_x.GetValue(),
                       UISettings::values.perf_overlay_y.GetValue()};
-    resetPosition(m_mainWindow->pos());
-    connect(parent, &MainWindow::positionChanged, this, &PerformanceOverlay::resetPosition);
+    adjustSize();
+    resetPosition({});
+    raise();
     connect(m_mainWindow, &MainWindow::statsUpdated, this, &PerformanceOverlay::updateStats);
 }
 
@@ -125,16 +128,13 @@ void PerformanceOverlay::resetPosition(const QPoint& _) {
     const auto offset = Common::ClampOverlayOffset({m_offset.x(), m_offset.y()},
                                                    m_mainWindow->width(), m_mainWindow->height(),
                                                    width(), height());
-    const auto pos = m_mainWindow->pos();
-    move(pos.x() + offset.x, pos.y() + offset.y);
+    move(offset.x, offset.y);
 }
 
 void PerformanceOverlay::showEvent(QShowEvent* event) {
     QWidget::showEvent(event);
-    // A window manager places a window as it is mapped, wherever it was moved before (under
-    // XWayland the overlay ended up in the middle of the game): move it again once it is shown.
-    QTimer::singleShot(0, this, [this] { resetPosition({}); });
-    QTimer::singleShot(250, this, [this] { resetPosition({}); });
+    resetPosition({});
+    raise();
 }
 
 void PerformanceOverlay::mouseReleaseEvent(QMouseEvent* event) {
@@ -296,20 +296,12 @@ void PerformanceOverlay::paintEvent(QPaintEvent* event) {
 
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setBrush(m_background);
-    painter.setPen(Qt::NoPen);
-
-    painter.drawRoundedRect(rect(), 10.0, 10.0);
+    // Opaque: a native child window cannot blend with the game's window under it.
+    painter.fillRect(rect(), m_background);
 }
 
 void PerformanceOverlay::mousePressEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) {
-        return;
-    }
-    // Wayland ignores move() on top-level windows, so the overlay sat where the compositor put it:
-    // let the compositor drag it instead.
-    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland")) && windowHandle() &&
-        windowHandle()->startSystemMove()) {
         return;
     }
     m_drag_start_pos = event->pos();
@@ -318,9 +310,13 @@ void PerformanceOverlay::mousePressEvent(QMouseEvent* event) {
 void PerformanceOverlay::mouseMoveEvent(QMouseEvent* event) {
     // drag
     if (event->buttons() & Qt::LeftButton) {
-        QPoint new_global_pos = event->globalPosition().toPoint() - m_drag_start_pos;
-        m_offset = new_global_pos - m_mainWindow->pos();
-        move(new_global_pos);
+        // In the main window's coordinates, kept inside it.
+        const QPoint wanted = mapToParent(event->pos()) - m_drag_start_pos;
+        const auto offset = Common::ClampOverlayOffset({wanted.x(), wanted.y()},
+                                                       m_mainWindow->width(),
+                                                       m_mainWindow->height(), width(), height());
+        m_offset = QPoint{offset.x, offset.y};
+        move(m_offset);
     }
 }
 

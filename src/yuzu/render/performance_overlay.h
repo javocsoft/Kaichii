@@ -55,7 +55,7 @@ private:
     Ui::PerformanceOverlay* ui;
 
     // colors
-    QColor m_background{127, 127, 127, 190};
+    QColor m_background{72, 72, 72};
 
     QPoint m_offset{25, 75};
 
