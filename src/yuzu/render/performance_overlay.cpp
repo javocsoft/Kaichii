@@ -5,7 +5,9 @@
 #include <chrono>
 #include <vector>
 
+#include "common/overlay_position.h"
 #include "core/nx2_present_intervals.h"
+#include "qt_common/config/uisettings.h"
 #include "qt_common/qt_common.h"
 #include "video_core/gpu.h"
 #include "video_core/renderer_base.h"
@@ -24,6 +26,7 @@
 #include <QLineSeries>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QTimer>
 #include <QValueAxis>
 #include <QWindow>
 
@@ -107,6 +110,8 @@ PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
     ui->frametime->setFont(font);
 
     // pos/stats
+    m_offset = QPoint{UISettings::values.perf_overlay_x.GetValue(),
+                      UISettings::values.perf_overlay_y.GetValue()};
     resetPosition(m_mainWindow->pos());
     connect(parent, &MainWindow::positionChanged, this, &PerformanceOverlay::resetPosition);
     connect(m_mainWindow, &MainWindow::statsUpdated, this, &PerformanceOverlay::updateStats);
@@ -117,8 +122,26 @@ PerformanceOverlay::~PerformanceOverlay() {
 }
 
 void PerformanceOverlay::resetPosition(const QPoint& _) {
-    auto pos = m_mainWindow->pos();
-    move(pos.x() + m_offset.x(), pos.y() + m_offset.y());
+    const auto offset = Common::ClampOverlayOffset({m_offset.x(), m_offset.y()},
+                                                   m_mainWindow->width(), m_mainWindow->height(),
+                                                   width(), height());
+    const auto pos = m_mainWindow->pos();
+    move(pos.x() + offset.x, pos.y() + offset.y);
+}
+
+void PerformanceOverlay::showEvent(QShowEvent* event) {
+    QWidget::showEvent(event);
+    // A window manager places a window as it is mapped, wherever it was moved before (under
+    // XWayland the overlay ended up in the middle of the game): move it again once it is shown.
+    QTimer::singleShot(0, this, [this] { resetPosition({}); });
+    QTimer::singleShot(250, this, [this] { resetPosition({}); });
+}
+
+void PerformanceOverlay::mouseReleaseEvent(QMouseEvent* event) {
+    QWidget::mouseReleaseEvent(event);
+    // Remember where the user left it.
+    UISettings::values.perf_overlay_x.SetValue(m_offset.x());
+    UISettings::values.perf_overlay_y.SetValue(m_offset.y());
 }
 
 void PerformanceOverlay::updateStats(const Core::PerfStatsResults& results,

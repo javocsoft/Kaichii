@@ -84,6 +84,7 @@ add_library(
     log_file_rotation.h
     logging.cpp
     logging.h
+    overlay_position.h
     lz4_compression.cpp
     lz4_compression.h
     math_util.h

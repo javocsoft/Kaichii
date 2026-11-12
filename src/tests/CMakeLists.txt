@@ -10,6 +10,7 @@ add_executable(tests
     common/frame_pacing.cpp
     common/log_file_rotation.cpp
     common/nvidia_shader_cache.cpp
+    common/overlay_position.cpp
     common/qt_platform_choice.cpp
     core/control_metadata.cpp
     core/executable_headers.cpp
