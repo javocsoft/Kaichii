@@ -114,6 +114,7 @@ void BufferCache<P>::TickFrame() {
         return;
     }
     runtime.TickFrame(slot_buffers);
+    frame_created_buffers.clear();
     native_indirect_uniforms_this_frame.clear();
     if (frame_tick % 600 == 0 && !uploaded_buffer_ranges.empty()) {
         for (const auto& [address, size] : uploaded_buffer_ranges) {
@@ -2469,6 +2470,10 @@ typename BufferCache<P>::OverlapResult BufferCache<P>::ResolveOverlaps(DAddr dev
     // 2 GiB (and past what a u32 size holds). Such a buffer is deleted instead, after what the
     // GPU wrote of it is downloaded, as when the collector evicts one; what the game still reads
     // of it is uploaded again from its memory.
+    // A buffer made this frame is always joined. The callers resolve their ranges again after a
+    // buffer is deleted, and two large ranges of one draw or copy that share a page would
+    // otherwise delete each other's buffer in turn without end. This way a frame cuts only buffers
+    // older than itself, and once those are gone it joins as before.
     static constexpr u64 CHAIN_LIMIT = 128_MiB;
     int stream_score = 0;
     bool has_stream_leap = false;
@@ -2510,7 +2515,8 @@ typename BufferCache<P>::OverlapResult BufferCache<P>::ResolveOverlaps(DAddr dev
             continue;
         }
         const DAddr overlap_device_addr = overlap.CpuAddr();
-        if (overlap.SizeBytes() >= CHAIN_LIMIT) {
+        if (overlap.SizeBytes() >= CHAIN_LIMIT &&
+            std::ranges::find(frame_created_buffers, overlap_id) == frame_created_buffers.end()) {
             const DAddr shared_begin = (std::max)(overlap_device_addr, wanted_begin);
             const DAddr shared_end =
                 (std::min)(overlap_device_addr + overlap.SizeBytes(), wanted_end);
@@ -2591,6 +2597,7 @@ BufferId BufferCache<P>::CreateBuffer(DAddr device_addr, u32 wanted_size,
     const u32 size = static_cast<u32>(overlap.end - overlap.begin);
     const BufferId new_buffer_id =
         slot_buffers.insert(runtime, overlap.begin, size, sparse_compatible);
+    frame_created_buffers.push_back(new_buffer_id);
     auto& new_buffer = slot_buffers[new_buffer_id];
     const size_t size_bytes = new_buffer.SizeBytes();
     runtime.ClearBuffer(new_buffer, 0, size_bytes, 0);
