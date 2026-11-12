@@ -6,6 +6,7 @@
 
 add_executable(tests
     common/addon_config.cpp
+    common/auto_optimize.cpp
     common/frame_pacing.cpp
     common/log_file_rotation.cpp
     common/nvidia_shader_cache.cpp

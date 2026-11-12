@@ -24,6 +24,8 @@ add_executable(yuzu
     about_dialog.cpp
     about_dialog.h
     aboutdialog.ui
+    auto_optimize_dialog.cpp
+    auto_optimize_dialog.h
     compatibility_report.cpp
     compatibility_report.h
     applets/qt_amiibo_settings.cpp

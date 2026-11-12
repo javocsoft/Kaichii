@@ -90,6 +90,7 @@
     <addaction name="separator"/>
     <addaction name="action_Configure"/>
     <addaction name="action_Configure_Current_Game"/>
+    <addaction name="action_Optimize_Current_Game"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -453,6 +454,17 @@
   <action name="action_Configure_Tas">
    <property name="text">
     <string>&amp;Configure TAS...</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="action_Optimize_Current_Game">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Optimize for This Game...</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

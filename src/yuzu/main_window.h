@@ -388,6 +388,7 @@ private slots:
     void OnToggleGpuAccuracy();
     void OnToggleAdaptingFilter();
     void OnConfigurePerGame();
+    void OnOptimizeCurrentGame();
     void OnLoadAmiibo();
     void OnOpenRootDataFolder();
     void OnOpenNANDFolder();
