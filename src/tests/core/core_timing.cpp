@@ -144,3 +144,14 @@ TEST_CASE("CoreTiming[BasicOrderNoPausing]", "[core]") {
     printf("HostTimer No Pausing Timer Time: %.3f %.6f\n", timer_time / 1000.f,
            timer_time / 1000000.f);
 }
+
+TEST_CASE("CoreTiming[LatenessSincePause]", "[core]") {
+    using Core::Timing::LatenessSincePause;
+    // Due at 100, run at 150 with no pause since: 50 late.
+    REQUIRE(LatenessSincePause(100, 150, 0) == 50);
+    REQUIRE(LatenessSincePause(100, 150, 90) == 50);
+    // Due at 100, paused until 1'000'000, run at 1'000'020: late by the 20 since the pause only.
+    REQUIRE(LatenessSincePause(100, 1'000'020, 1'000'000) == 20);
+    // Due after the pause ended: plain lateness.
+    REQUIRE(LatenessSincePause(1'000'010, 1'000'020, 1'000'000) == 10);
+}
