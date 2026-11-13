@@ -123,7 +123,7 @@ bool GameListModel::IsEmpty() const {
         }
     }
 
-    return !invisibleRootItem()->hasChildren();
+    return HoldsNoGames(*invisibleRootItem());
 }
 
 void GameListModel::ToggleFavorite(u64 program_id) {

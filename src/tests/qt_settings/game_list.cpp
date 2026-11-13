@@ -3,17 +3,20 @@
 
 #include <QtTest>
 
+#include "qt_common/config/uisettings.h"
+#include "qt_common/game_list/game_list_p.h"
 #include "qt_common/game_list/placeholder_icon.h"
 
-class GameListIconTest : public QObject {
+class GameListTest : public QObject {
     Q_OBJECT
 
 private slots:
     void InitialsComeFromTheFirstTwoWords();
     void IconIsDrawnAtItsSize();
+    void AddAndFavoritesRowsAloneAreEmpty();
 };
 
-void GameListIconTest::InitialsComeFromTheFirstTwoWords() {
+void GameListTest::InitialsComeFromTheFirstTwoWords() {
     using QtCommon::PlaceholderInitials;
     QCOMPARE(PlaceholderInitials(QStringLiteral("Donkey Kong Bananza")), QStringLiteral("DK"));
     QCOMPARE(PlaceholderInitials(QStringLiteral("the Legend of Zelda: Ocarina of Time")),
@@ -22,7 +25,7 @@ void GameListIconTest::InitialsComeFromTheFirstTwoWords() {
     QCOMPARE(PlaceholderInitials(QStringLiteral("  -  ")), QString{});
 }
 
-void GameListIconTest::IconIsDrawnAtItsSize() {
+void GameListTest::IconIsDrawnAtItsSize() {
     const QImage icon = QtCommon::PlaceholderIcon(QStringLiteral("Donkey Kong Bananza"), 64);
     QCOMPARE(icon.size(), QSize(64, 64));
     // A filled square, transparent only at its rounded corners.
@@ -33,5 +36,16 @@ void GameListIconTest::IconIsDrawnAtItsSize() {
     QCOMPARE(icon.pixel(32, 5), again.pixel(32, 5));
 }
 
-QTEST_MAIN(GameListIconTest)
-#include "game_list_icon.moc"
+void GameListTest::AddAndFavoritesRowsAloneAreEmpty() {
+    QStandardItem root;
+    QVERIFY(HoldsNoGames(root));
+    root.appendRow(new GameListAddDir());
+    root.appendRow(new GameListFavorites());
+    QVERIFY(HoldsNoGames(root));
+    UISettings::GameDir folder{"/games", false, true};
+    root.appendRow(new GameListDir(folder));
+    QVERIFY(!HoldsNoGames(root));
+}
+
+QTEST_MAIN(GameListTest)
+#include "game_list.moc"

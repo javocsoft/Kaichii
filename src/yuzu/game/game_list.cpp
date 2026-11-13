@@ -810,21 +810,40 @@ bool GameList::eventFilter(QObject* obj, QEvent* event) {
 }
 
 GameListPlaceholder::GameListPlaceholder(MainWindow* parent) : QWidget{parent} {
+    // A welcome while there are no games: what to do, and the two ways to do it.
     layout = new QVBoxLayout;
     image = new QLabel;
+    title = new QLabel;
     text = new QLabel;
+    add_button = new QPushButton;
+    assistant_button = new QPushButton;
     layout->setAlignment(Qt::AlignCenter);
-    image->setPixmap(QIcon::fromTheme(QStringLiteral("plus_folder")).pixmap(200));
+    image->setPixmap(QIcon::fromTheme(QStringLiteral("plus_folder")).pixmap(160));
 
     RetranslateUI();
-    QFont font = text->font();
-    font.setPointSize(20);
-    text->setFont(font);
-    text->setAlignment(Qt::AlignHCenter);
+    QFont font = title->font();
+    font.setPointSize(font.pointSize() * 2);
+    font.setBold(true);
+    title->setFont(font);
     image->setAlignment(Qt::AlignHCenter);
+    title->setAlignment(Qt::AlignHCenter);
+    text->setAlignment(Qt::AlignHCenter);
+    text->setWordWrap(true);
+    add_button->setDefault(true);
+    connect(add_button, &QPushButton::clicked, this, &GameListPlaceholder::AddDirectory);
+    connect(assistant_button, &QPushButton::clicked, this,
+            &GameListPlaceholder::OpenSetupAssistant);
 
+    auto* const buttons = new QHBoxLayout;
+    buttons->addStretch(1);
+    buttons->addWidget(add_button);
+    buttons->addWidget(assistant_button);
+    buttons->addStretch(1);
     layout->addWidget(image);
+    layout->addWidget(title);
     layout->addWidget(text);
+    layout->addSpacing(12);
+    layout->addLayout(buttons);
     setLayout(layout);
 }
 
@@ -843,5 +862,9 @@ void GameListPlaceholder::changeEvent(QEvent* event) {
 }
 
 void GameListPlaceholder::RetranslateUI() {
-    text->setText(tr("Double-click to add a new folder to the game list"));
+    title->setText(tr("No games yet"));
+    text->setText(
+        tr("Add the folder where your games are, or let the setup assistant guide you."));
+    add_button->setText(tr("Add a games folder..."));
+    assistant_button->setText(tr("Setup Assistant..."));
 }

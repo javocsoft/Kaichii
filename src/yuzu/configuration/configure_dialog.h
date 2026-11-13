@@ -104,6 +104,7 @@ private:
     void BuildGoalPages();
     void BuildSidebar();
     void RetranslateGoalPages();
+    void UpdateSidebarWidth();
     /// Shows the options of the levels chosen, and saves the choice.
     void SetLevels(bool show_advanced, bool developer_mode);
     void Search(const QString& text);

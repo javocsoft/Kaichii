@@ -26,6 +26,7 @@
 #include "yuzu/configuration/per_game_summary.h"
 #include "yuzu/configuration/setting_help_panel.h"
 #include "yuzu/configuration/settings_organizer.h"
+#include "yuzu/configuration/settings_style.h"
 
 using namespace ConfigurationShared;
 
@@ -61,6 +62,7 @@ private slots:
     void OrganizerMovesAndGatesRows();
     void DisplayedValueReadsTheRow();
     void SummaryListsWhatTheGameChanges();
+    void StyleFollowsTheTheme();
 };
 
 void SettingHelpTest::EveryShownSettingIsExplained() {
@@ -431,6 +433,37 @@ void SettingHelpTest::SummaryListsWhatTheGameChanges() {
     const std::vector<u32> api_only{Settings::values.renderer_backend.Id()};
     QCOMPARE(summary.Listed(), api_only);
     QVERIFY(api != nullptr);
+}
+
+void SettingHelpTest::StyleFollowsTheTheme() {
+    // Each category has its own picture, in the color asked for and another while selected.
+    using enum CategoryGlyph;
+    std::vector<QImage> pictures;
+    for (const CategoryGlyph glyph :
+         {Performance, Image, Smoothness, Audio, Controls, System, Interface, Advanced}) {
+        const QIcon icon = CategoryIcon(glyph, Qt::black, Qt::white);
+        QVERIFY(!icon.isNull());
+        const QImage normal = icon.pixmap(20, QIcon::Normal).toImage();
+        const QImage selected = icon.pixmap(20, QIcon::Selected).toImage();
+        QVERIFY(normal != selected);
+        QVERIFY(std::ranges::none_of(pictures,
+                                     [&](const QImage& other) { return other == normal; }));
+        pictures.push_back(normal);
+    }
+
+    // The cards only on the system palette: the dark style sheets draw their own boxes.
+    const std::string theme = UISettings::values.theme;
+    QWidget dialog;
+    UISettings::values.theme = "colorful";
+    QVERIFY(UsesSystemPalette());
+    StyleSettingsDialog(dialog);
+    QCOMPARE(dialog.styleSheet(), SettingsDialogStyleSheet());
+    QWidget dark_dialog;
+    UISettings::values.theme = "qdarkstyle";
+    QVERIFY(!UsesSystemPalette());
+    StyleSettingsDialog(dark_dialog);
+    QVERIFY(dark_dialog.styleSheet().isEmpty());
+    UISettings::values.theme = theme;
 }
 
 QTEST_MAIN(SettingHelpTest)

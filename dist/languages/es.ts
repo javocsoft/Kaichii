@@ -4080,24 +4080,24 @@ Solo Windows y Linux.</translation>
 <context>
     <name>ConfigureDialog</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="+107"/>
+        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="+110"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+194"/>
+        <location line="+212"/>
         <source>Image</source>
         <translation>Imagen</translation>
     </message>
     <message>
-        <location line="-193"/>
-        <location line="+194"/>
+        <location line="-211"/>
+        <location line="+212"/>
         <source>Smoothness and shaders</source>
         <translation>Fluidez y shaders</translation>
     </message>
     <message>
-        <location line="-183"/>
+        <location line="-201"/>
         <source>Interface</source>
         <translation>Interfaz</translation>
     </message>
@@ -4107,7 +4107,7 @@ Solo Windows y Linux.</translation>
         <translation>Avanzado</translation>
     </message>
     <message>
-        <location line="+181"/>
+        <location line="+199"/>
         <source>GPU emulation</source>
         <translation>Emulación de GPU</translation>
     </message>
@@ -4137,7 +4137,7 @@ Solo Windows y Linux.</translation>
         <translation>Muestra también las opciones para depurar Lichii.</translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+126"/>
         <source>No settings match</source>
         <translation>Ningún ajuste coincide</translation>
     </message>
@@ -4165,7 +4165,7 @@ Solo Windows y Linux.</translation>
         <translation type="vanished">Applets</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="-333"/>
+        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="-357"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
@@ -6092,7 +6092,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
 <context>
     <name>ConfigurePerGame</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+420"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+422"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -8304,7 +8304,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameListItemCompat</name>
     <message>
-        <location filename="../../src/qt_common/game_list/game_list_p.h" line="+186"/>
+        <location filename="../../src/qt_common/game_list/game_list_p.h" line="+200"/>
         <source>Ingame</source>
         <translation>En juego</translation>
     </message>
@@ -8395,9 +8395,28 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameListPlaceholder</name>
     <message>
-        <location filename="../../src/yuzu/game/game_list.cpp" line="+142"/>
         <source>Double-click to add a new folder to the game list</source>
-        <translation>Haz doble clic para agregar un nuevo directorio a la lista de juegos.</translation>
+        <translation type="vanished">Haz doble clic para agregar un nuevo directorio a la lista de juegos.</translation>
+    </message>
+    <message>
+        <location filename="../../src/yuzu/game/game_list.cpp" line="+161"/>
+        <source>No games yet</source>
+        <translation>Aún no hay juegos</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Add the folder where your games are, or let the setup assistant guide you.</source>
+        <translation>Añade la carpeta donde están tus juegos, o deja que el asistente de configuración te guíe.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Add a games folder...</source>
+        <translation>Añadir una carpeta de juegos...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Setup Assistant...</source>
+        <translation>Asistente de configuración...</translation>
     </message>
 </context>
 <context>
@@ -9007,7 +9026,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+1971"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+1973"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -9461,7 +9480,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4613"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4615"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9591,7 +9610,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+406"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>

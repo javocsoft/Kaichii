@@ -24,6 +24,8 @@ add_executable(setting_help_tests
     ../../yuzu/configuration/per_game_summary.h
     ../../yuzu/configuration/settings_organizer.cpp
     ../../yuzu/configuration/settings_organizer.h
+    ../../yuzu/configuration/settings_style.cpp
+    ../../yuzu/configuration/settings_style.h
 )
 target_compile_features(setting_help_tests PRIVATE cxx_std_20)
 target_include_directories(setting_help_tests PRIVATE ../..)
@@ -32,13 +34,14 @@ target_link_libraries(setting_help_tests PRIVATE qt_common frontend_common commo
 add_test(NAME setting_help COMMAND setting_help_tests)
 set_tests_properties(setting_help PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
-# Game list icons for games without one.
-add_executable(game_list_icon_tests game_list_icon.cpp)
-target_compile_features(game_list_icon_tests PRIVATE cxx_std_20)
-target_include_directories(game_list_icon_tests PRIVATE ../..)
-target_link_libraries(game_list_icon_tests PRIVATE Qt6::Widgets Qt6::Test)
-add_test(NAME game_list_icon COMMAND game_list_icon_tests)
-set_tests_properties(game_list_icon PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+# The game list: icons for games without one, and when it counts as empty.
+add_executable(game_list_tests game_list.cpp)
+target_compile_features(game_list_tests PRIVATE cxx_std_20)
+target_include_directories(game_list_tests PRIVATE ../..)
+target_link_libraries(game_list_tests PRIVATE qt_common frontend_common common
+                      SimpleIni::SimpleIni Qt6::Widgets Qt6::Test)
+add_test(NAME game_list COMMAND game_list_tests)
+set_tests_properties(game_list PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
 # The first-run assistant: the preset it proposes and what it asks the main window to do.
 add_executable(first_run_assistant_tests

@@ -15,6 +15,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QScrollArea>
+#include <QStyle>
 #include <QTextDocument>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -46,6 +47,7 @@
 #include "yuzu/configuration/configure_ui.h"
 #include "yuzu/configuration/configure_web.h"
 #include "yuzu/configuration/settings_organizer.h"
+#include "yuzu/configuration/settings_style.h"
 #include "yuzu/configuration/setting_help_panel.h"
 #include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/hotkeys.h"
@@ -86,6 +88,7 @@ ConfigureDialog::ConfigureDialog(QWidget* parent, HotkeyRegistry& registry_,
     Settings::SetConfiguringGlobal(true);
 
     ui->setupUi(this);
+    ConfigurationShared::StyleSettingsDialog(*this);
 
     organizer = std::make_unique<ConfigurationShared::SettingsOrganizer>(builder->Help(), 0);
     BuildGoalPages();
@@ -239,12 +242,28 @@ void ConfigureDialog::HandleApplyButtonClicked() {
 void ConfigureDialog::PopulateSelectionList() {
     [[maybe_unused]] const QSignalBlocker blocker(ui->selectorList);
 
+    // In the order of `categories`.
+    using enum ConfigurationShared::CategoryGlyph;
+    constexpr std::array glyphs{Performance, Image,  Smoothness, Audio,
+                                Controls,    System, Interface,  Advanced};
+    // Drawn in the list's own colors, which a theme's style sheet may set.
+    ui->selectorList->ensurePolished();
+    const QPalette& palette = ui->selectorList->palette();
+    const QColor color = palette.color(QPalette::Text);
+    const QColor selected = palette.color(QPalette::HighlightedText);
+
     ui->selectorList->clear();
     for (size_t index = 0; index < categories.size(); ++index) {
         auto* const item = new QListWidgetItem(tr(categories[index].name));
+        if (index < glyphs.size()) {
+            item->setIcon(ConfigurationShared::CategoryIcon(glyphs[index], color, selected));
+        }
         item->setData(Qt::UserRole, static_cast<int>(index));
         ui->selectorList->addItem(item);
         item->setHidden(!organizer->Shows(categories[index].level));
+    }
+    if (sidebar != nullptr) {
+        UpdateSidebarWidth();
     }
 }
 
@@ -274,6 +293,8 @@ void ConfigureDialog::BuildSidebar() {
     delete ui->horizontalLayout->replaceWidget(ui->selectorList, sidebar);
     ui->selectorList->setMinimumWidth(0);
     ui->selectorList->setMaximumWidth(QWIDGETSIZE_MAX);
+    ui->selectorList->setIconSize(QSize{20, 20});
+    ui->selectorList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     layout->addWidget(search_box);
     layout->addWidget(ui->selectorList, 1);
     layout->addWidget(search_results, 1);
@@ -310,9 +331,15 @@ void ConfigureDialog::RetranslateGoalPages() {
            "Advanced category."));
     developer_mode_box->setText(tr("Developer mode"));
     developer_mode_box->setToolTip(tr("Also shows the options for debugging Lichii."));
-    // Wide enough for its own texts, and no wider: the pages need the room.
-    const int list_width =
-        ui->selectorList->sizeHintForColumn(0) + 2 * ui->selectorList->frameWidth();
+    UpdateSidebarWidth();
+}
+
+void ConfigureDialog::UpdateSidebarWidth() {
+    // Wide enough for its own texts, and no wider: the pages need the room. The categories'
+    // icons and padding count once they are in the list.
+    const int list_width = ui->selectorList->sizeHintForColumn(0) +
+                           2 * ui->selectorList->frameWidth() +
+                           ui->selectorList->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
     const int width = std::max({list_width, show_advanced_box->sizeHint().width(),
                                 developer_mode_box->sizeHint().width(), 160});
     sidebar->setFixedWidth(width);

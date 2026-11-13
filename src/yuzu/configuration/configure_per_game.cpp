@@ -81,6 +81,7 @@
 #include "yuzu/configuration/per_game_summary.h"
 #include "yuzu/configuration/setting_help_panel.h"
 #include "yuzu/configuration/settings_organizer.h"
+#include "yuzu/configuration/settings_style.h"
 #include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/util/util.h"
 
@@ -401,6 +402,7 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
     applets_tab = std::make_unique<ConfigureApplets>(system_, tab_group, *builder, this);
 
     ui->setupUi(this);
+    ConfigurationShared::StyleSettingsDialog(*this);
 
     // The same pages as the global settings, by what the options are for; the options of other
     // games are left out.
