@@ -46,6 +46,8 @@ private:
     /// Shows a Switch 2 game's per-frame pacing (frame times, 1% low, stutters). False when there
     /// are no recent presents to show: the overlay then shows its averages.
     bool ShowFramePacing();
+    /// Widens the overlay when its text no longer fits.
+    void FitWidth();
 
     MainWindow* m_mainWindow = nullptr;
     /// The renderer's generated-frame counter at its last reading, for the rate between readings.

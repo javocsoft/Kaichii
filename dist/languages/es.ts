@@ -10651,7 +10651,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+18"/>
         <source>Frametime</source>
-        <translation>Tiempo de fotograma</translation>
+        <translation>T. fotograma</translation>
     </message>
     <message>
         <location line="+13"/>

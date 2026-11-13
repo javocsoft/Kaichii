@@ -35,6 +35,9 @@ namespace {
 /// How far back the frame pacing view looks.
 constexpr double PacingWindowMs = 10000.0;
 
+/// Room for the longest lines ("36 fps (73 shown)", and their translations) at the default font.
+constexpr int MinimumWidth = 320;
+
 } // Anonymous namespace
 
 // TODO(crueter): Reset samples when user changes turbo, slow, etc.
@@ -114,6 +117,7 @@ PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
     // pos/stats
     m_offset = QPoint{UISettings::values.perf_overlay_x.GetValue(),
                       UISettings::values.perf_overlay_y.GetValue()};
+    setMinimumWidth(MinimumWidth);
     adjustSize();
     resetPosition({});
     raise();
@@ -288,7 +292,17 @@ bool PerformanceOverlay::ShowFramePacing() {
     m_fpsX->setRange(0.0, last_x);
     m_fpsY->setRange(0.0, std::clamp(pacing.max_ms * 1.1, 50.0, 250.0));
     m_fpsY->setLabelFormat(QStringLiteral("%d ms"));
+    FitWidth();
     return true;
+}
+
+void PerformanceOverlay::FitWidth() {
+    // A child widget keeps the size it was given: grow when a line no longer fits (a larger
+    // font, a longer translation), and never shrink, so it doesn't jitter as the numbers change.
+    if (const int wanted = sizeHint().width(); wanted > width()) {
+        resize(wanted, height());
+        resetPosition({});
+    }
 }
 
 void PerformanceOverlay::paintEvent(QPaintEvent* event) {
