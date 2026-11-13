@@ -562,13 +562,15 @@ jobs:
           compression-level: 0
           retention-days: 7
 
-  # Publishes every binary as a GitHub pre-release once every platform built: on pushes to
+  # Publishes the binaries as a GitHub pre-release once the builds are done: on pushes to
   # nx2-experimental, and on manual runs unless "Publish the binaries as a GitHub release" is
-  # unticked.
+  # unticked. A platform whose build failed, or that GitHub couldn't run (macOS runners are often
+  # short), is left out and named in the notes instead of holding back the others. A run cancelled
+  # by hand publishes nothing.
   release:
     name: Publish release
     needs: build
-    if: github.event_name == 'push' || inputs.publish_release
+    if: ${{ !cancelled() && needs.build.result != 'skipped' && (github.event_name == 'push' || inputs.publish_release) }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -603,6 +605,10 @@ jobs:
             fi
           done
           ls -la dist
+          if ! compgen -G 'dist/*' > /dev/null; then
+            echo "No platform built: nothing to publish"
+            exit 1
+          fi
 
       - name: Create release
         shell: bash
@@ -646,34 +652,46 @@ jobs:
             pgo_note="The PGO builds are the same programs compiled with profile-guided optimization. Linux uses clang with Eglantine's profile; Windows uses clang-cl and ThinLTO with a profile trained in Lichii on Ocarina of Time, so other games gain less. Prefer them when your CPU supports it."
           fi
 
-          cat > notes.md <<EOF
-          Automatic build of \`${GITHUB_REF_NAME}\` at ${GITHUB_SHA}.
+          # The build matrix's platforms. One whose build failed, or that GitHub couldn't run, has
+          # no files here: the notes name it rather than show an empty section.
+          missing=()
+          for platform in linux-x86_64 linux-x86_64-pgo linux-aarch64 linux-aarch64-pgo \
+                          windows-x86_64 windows-x86_64-pgo macos-arm64; do
+            compgen -G "dist/kaichii-${platform}.*" > /dev/null || missing+=("\`${platform}\`")
+          done
+          missing_note=""
+          if (( ${#missing[@]} )); then
+            list=$(printf '%s, ' "${missing[@]}")
+            missing_note="Not in this build: ${list%, }. Their builds failed or GitHub couldn't run them; the next build tries again."
+          fi
 
-          ## Linux
-
-          Linux packages come as an AppImage (self-contained, needs glibc 2.39 or newer: Ubuntu 24.04, Fedora 40, Debian 13, Arch) and a tar.gz (uses your system libraries, so Qt 6 and the usual libraries must be installed).
-
-          $({
+          linux_table=$({
             row amd64 "$(appimage_tar kaichii-linux-x86_64)" "$(appimage_tar kaichii-linux-x86_64-pgo)" "Make the AppImage executable (\`chmod +x\`) and run it"
             row "ARM (aarch64)" "$(appimage_tar kaichii-linux-aarch64)" "$(appimage_tar kaichii-linux-aarch64-pgo)" ""
           } | table)
-
-          ## Windows
-
-          Windows packages are in-place zip files: extract and run \`kaichii.exe\`, or \`eden-cli.exe\` from a terminal.
-
-          $({
+          windows_table=$({
             row "amd64 / x86_64" "$(link zip kaichii-windows-x86_64.zip)" "$(link "PGO zip" kaichii-windows-x86_64-pgo.zip)" "Both built with clang-cl and ThinLTO; the PGO zip adds a profile trained on Ocarina of Time"
           } | table)
+          macos_table=$(row "arm64 (Apple Silicon)" "$(link zip kaichii-macos-arm64.zip)" "" "macOS 15 or newer. Not notarized: right-click and choose Open the first time, or run \`xattr -dr com.apple.quarantine kaichii.app\`. \`eden-cli\` is inside the app, in \`Contents/MacOS\`" | table)
 
-          ## macOS
+          # A heading, its text and its table, only when the table has a row.
+          section() {
+            [[ -z "$3" ]] && return 0
+            printf '## %s\n\n' "$1"
+            [[ -n "$2" ]] && printf '%s\n\n' "$2"
+            printf '%s\n\n' "$3"
+          }
 
-          $(row "arm64 (Apple Silicon)" "$(link zip kaichii-macos-arm64.zip)" "" "macOS 15 or newer. Not notarized: right-click and choose Open the first time, or run \`xattr -dr com.apple.quarantine kaichii.app\`. \`eden-cli\` is inside the app, in \`Contents/MacOS\`" | table)
-
-          ${pgo_note}
-
-          Coming from a build named Lichii? It won't update itself to Kaichii: download Kaichii once by hand. Saves, settings and shader caches stay where they are and carry over.
-          EOF
+          {
+            printf 'Automatic build of `%s` at %s.\n\n' "${GITHUB_REF_NAME}" "${GITHUB_SHA}"
+            section Linux "Linux packages come as an AppImage (self-contained, needs glibc 2.39 or newer: Ubuntu 24.04, Fedora 40, Debian 13, Arch) and a tar.gz (uses your system libraries, so Qt 6 and the usual libraries must be installed)." "$linux_table"
+            section Windows "Windows packages are in-place zip files: extract and run \`kaichii.exe\`, or \`eden-cli.exe\` from a terminal." "$windows_table"
+            section macOS "" "$macos_table"
+            if [[ -n "$missing_note" ]]; then printf '%s\n\n' "$missing_note"; fi
+            if [[ -n "$pgo_note" ]]; then printf '%s\n\n' "$pgo_note"; fi
+            echo "Coming from a build named Lichii? It won't update itself to Kaichii: download Kaichii once by hand. Saves, settings and shader caches stay where they are and carry over."
+          } > notes.md
+          cat notes.md
 
           gh release create "${tag}" dist/* \
             --repo "${GITHUB_REPOSITORY}" \
