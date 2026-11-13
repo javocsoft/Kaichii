@@ -10,6 +10,10 @@
 #include <QComboBox>
 #include <QFocusEvent>
 #include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QSignalSpy>
+#include <QSlider>
 #include <QVBoxLayout>
 #include <QtTest>
 
@@ -19,6 +23,7 @@
 #include "qt_common/config/shared_translation.h"
 #include "qt_common/config/uisettings.h"
 #include "qt_common/util/vk.h"
+#include "yuzu/configuration/per_game_summary.h"
 #include "yuzu/configuration/setting_help_panel.h"
 #include "yuzu/configuration/settings_organizer.h"
 
@@ -54,6 +59,8 @@ private slots:
     void GraphicsSectionsPlaceEveryGraphicsSetting();
     void SearchFoldsCaseAndAccents();
     void OrganizerMovesAndGatesRows();
+    void DisplayedValueReadsTheRow();
+    void SummaryListsWhatTheGameChanges();
 };
 
 void SettingHelpTest::EveryShownSettingIsExplained() {
@@ -325,6 +332,105 @@ void SettingHelpTest::OrganizerMovesAndGatesRows() {
     SettingsOrganizer ocarina_settings(*tables.help, 0x0400486024DEC000);
     ocarina_settings.Gate(&game_page);
     QVERIFY(game_row->isVisibleTo(&game_page));
+}
+
+void SettingHelpTest::DisplayedValueReadsTheRow() {
+    const Tables tables;
+    QWidget list_row;
+    auto* const box = new QComboBox(&list_row);
+    box->addItems({QStringLiteral("1X"), QStringLiteral("2X")});
+    box->setCurrentIndex(1);
+    QCOMPARE(DisplayedValue(&list_row, Settings::values.resolution_setup, *tables.enums),
+             QStringLiteral("2X"));
+
+    QWidget switch_row;
+    auto* const check = new QCheckBox(QStringLiteral("Enable Frame Generation"), &switch_row);
+    check->setChecked(true);
+    QCOMPARE(DisplayedValue(&switch_row, Settings::values.frame_gen, *tables.enums),
+             QStringLiteral("on"));
+
+    // A slider's value is in its last label; the first is its name.
+    QWidget slider_row;
+    new QLabel(QStringLiteral("Sharpening:"), &slider_row);
+    new QSlider(&slider_row);
+    new QLabel(QStringLiteral("88%"), &slider_row);
+    QCOMPARE(DisplayedValue(&slider_row, Settings::values.fsr_sharpening_slider, *tables.enums),
+             QStringLiteral("88%"));
+
+    // VSync's modes are named by the Graphics page, not the enum table.
+    QCOMPARE(FormatSettingValue(Settings::values.vsync_mode,
+                                std::to_string(static_cast<u32>(Settings::VSyncMode::Mailbox)),
+                                *tables.enums),
+             QStringLiteral("Mailbox"));
+
+    // No row: the setting's value.
+    QCOMPARE(DisplayedValue(nullptr, Settings::values.frame_gen, *tables.enums),
+             FormatSettingValue(Settings::values.frame_gen,
+                                Settings::values.frame_gen.ToString(), *tables.enums));
+}
+
+void SettingHelpTest::SummaryListsWhatTheGameChanges() {
+    const Tables tables;
+    QWidget page;
+    auto* const layout = new QVBoxLayout(&page);
+    // A changed setting: its "use the global value" button is on.
+    const auto row = [&](const Settings::BasicSetting& setting, bool changed) {
+        auto* const widget = new QWidget(&page);
+        widget->setProperty(SettingIdProperty, setting.Id());
+        new QHBoxLayout(widget);
+        auto* const box = new QComboBox(widget);
+        box->addItem(QStringLiteral("value of %1").arg(setting.Id()));
+        auto* const restore = new QPushButton(widget);
+        restore->setProperty(RestoresSettingProperty, setting.Id());
+        restore->setEnabled(changed);
+        restore->setVisible(changed);
+        QObject::connect(restore, &QPushButton::clicked, restore, [restore] {
+            restore->setEnabled(false);
+            restore->setVisible(false);
+        });
+        layout->addWidget(widget);
+        return widget;
+    };
+    QWidget* const resolution = row(Settings::values.resolution_setup, true);
+    row(Settings::values.anti_aliasing, false);
+    // A page may put the button outside the row (the graphics API's sits beside its group).
+    QWidget* const api = row(Settings::values.renderer_backend, false);
+    auto* const outside = new QPushButton(&page);
+    outside->setProperty(RestoresSettingProperty, Settings::values.renderer_backend.Id());
+    layout->addWidget(outside);
+    // Enabled but hidden is not changed (VSync's button is always enabled).
+    auto* const vsync_restore = new QPushButton(&page);
+    vsync_restore->setProperty(RestoresSettingProperty, Settings::values.vsync_mode.Id());
+    vsync_restore->setVisible(false);
+    layout->addWidget(vsync_restore);
+
+    PerGameSummary summary(*tables.names, *tables.enums, EntryMachine());
+    summary.SetPages({&page});
+    const std::vector<u32> both{Settings::values.resolution_setup.Id(),
+                                Settings::values.renderer_backend.Id()};
+    QCOMPARE(summary.Listed(), both);
+    const auto labels = summary.findChildren<QLabel*>();
+    const auto shown = std::ranges::find_if(labels, [](const QLabel* label) {
+        return label->text().contains(QStringLiteral("Resolution"));
+    });
+    QVERIFY(shown != labels.end());
+    QVERIFY((*shown)->text().contains(
+        QStringLiteral("value of %1").arg(Settings::values.resolution_setup.Id())));
+
+    // Its link asks for the row.
+    QSignalSpy go_to(&summary, &PerGameSummary::GoToSetting);
+    emit(*shown)->linkActivated(QStringLiteral("setting"));
+    QCOMPARE(go_to.count(), 1);
+    QCOMPARE(go_to.front().front().value<QWidget*>(), resolution);
+
+    // "Use global" presses the setting's buttons, and the list follows.
+    auto* const use_global = (*shown)->parentWidget()->findChild<QPushButton*>();
+    QVERIFY(use_global != nullptr);
+    use_global->click();
+    QCoreApplication::processEvents();
+    const std::vector<u32> api_only{Settings::values.renderer_backend.Id()};
+    QCOMPARE(summary.Listed(), api_only);
+    QVERIFY(api != nullptr);
 }
 
 QTEST_MAIN(SettingHelpTest)

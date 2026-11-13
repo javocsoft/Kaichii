@@ -84,21 +84,6 @@ QString LevelText(SettingLevel level) {
     return {};
 }
 
-QString PresetName(Settings::PerformancePreset preset) {
-    const auto& tr = Translate;
-    switch (preset) {
-    case Settings::PerformancePreset::Performance:
-        return tr("Performance");
-    case Settings::PerformancePreset::Balanced:
-        return tr("Balanced");
-    case Settings::PerformancePreset::Quality:
-        return tr("Quality");
-    case Settings::PerformancePreset::Ultra:
-        return tr("Ultra");
-    }
-    return {};
-}
-
 } // Anonymous namespace
 
 std::unique_ptr<SettingHelpMap> InitializeSettingHelp() {
@@ -256,6 +241,21 @@ std::unique_ptr<SettingHelpMap> InitializeSettingHelp() {
     return help;
 }
 
+QString PresetName(Settings::PerformancePreset preset) {
+    const auto& tr = Translate;
+    switch (preset) {
+    case Settings::PerformancePreset::Performance:
+        return tr("Performance");
+    case Settings::PerformancePreset::Balanced:
+        return tr("Balanced");
+    case Settings::PerformancePreset::Quality:
+        return tr("Quality");
+    case Settings::PerformancePreset::Ultra:
+        return tr("Ultra");
+    }
+    return {};
+}
+
 QString GameName(u64 program_id) {
     switch (program_id) {
     case OcarinaOfTime:
@@ -284,6 +284,24 @@ Settings::BasicSetting* FindSetting(u32 id) {
 QString FormatSettingValue(const Settings::BasicSetting& setting, const std::string& value,
                            const ComboboxTranslationMap& enums) {
     const auto& tr = Translate;
+    // The Graphics page names VSync's modes itself, from what the device offers, so they are not
+    // in `enums`; the same words.
+    if (setting.IsEnum() &&
+        setting.EnumIndex() == Settings::EnumMetadata<Settings::VSyncMode>::Index() &&
+        !enums.contains(setting.EnumIndex())) {
+        switch (static_cast<Settings::VSyncMode>(QString::fromStdString(value).toUInt())) {
+        case Settings::VSyncMode::Immediate:
+            return QStringLiteral("Immediate (%1)")
+                .arg(QCoreApplication::translate("ConfigureGraphics", "VSync Off"));
+        case Settings::VSyncMode::Mailbox:
+            return QStringLiteral("Mailbox");
+        case Settings::VSyncMode::Fifo:
+            return QStringLiteral("FIFO (%1)")
+                .arg(QCoreApplication::translate("ConfigureGraphics", "VSync On"));
+        case Settings::VSyncMode::FifoRelaxed:
+            return QStringLiteral("FIFO Relaxed");
+        }
+    }
     if (setting.IsEnum()) {
         if (const auto it = enums.find(setting.EnumIndex()); it != enums.end()) {
             bool ok = false;

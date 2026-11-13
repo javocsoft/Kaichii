@@ -37,6 +37,8 @@ class ConfigurePerGameAddons;
 class QCheckBox;
 
 namespace ConfigurationShared {
+class PerGameSummary;
+class SettingHelpPanel;
 class SettingsOrganizer;
 } // namespace ConfigurationShared
 class ConfigureAudio;
@@ -86,6 +88,8 @@ private:
     /// Shows the tabs and options of the levels chosen, and saves the choice.
     void SetLevels(bool show_advanced, bool developer_mode);
     void RetranslateLevels();
+    /// Shows a setting's row: its tab, its level, scrolled to and explained.
+    void GoToSetting(QWidget* row);
     void UpdateIconPreview(const QPixmap& map);
     void OnUploadNupIcon();
     void OnDetectNupIcon();
@@ -136,6 +140,8 @@ private:
     };
     std::unique_ptr<ConfigurationShared::SettingsOrganizer> organizer;
     std::vector<PageTab> page_tabs;
+    ConfigurationShared::PerGameSummary* summary = nullptr;
+    ConfigurationShared::SettingHelpPanel* help_panel = nullptr;
     QCheckBox* show_advanced_box = nullptr;
     QCheckBox* developer_mode_box = nullptr;
 };

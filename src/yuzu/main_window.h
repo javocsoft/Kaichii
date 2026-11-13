@@ -280,6 +280,8 @@ private:
     void BootGame(const QString& filename, Service::AM::FrontendAppletParameters params,
                   StartGameType with_config = StartGameType::Normal);
     void BootGameFromList(const QString& filename, StartGameType with_config);
+    /// Optimize for This Game from the game list: starts the game when none runs.
+    void OnOptimizeGameFromList(const QString& game_path);
     void ShutdownGame();
     void TerminateEmulationThread();
 
@@ -566,6 +568,8 @@ private:
     bool close_pending = false;
     // The path to the game currently running
     QString current_game_path;
+    /// A game started from "Optimize for This Game": the hint goes out once it boots.
+    QString optimize_hint_path;
     // Whether a user was set on the command line (skips UserSelector if it's forced to show up)
     bool user_flag_cmd_line = false;
 

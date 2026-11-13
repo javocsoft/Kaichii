@@ -16,6 +16,7 @@
 namespace Settings {
 class BasicSetting;
 struct HostProfile;
+enum class PerformancePreset : u8;
 } // namespace Settings
 
 namespace ConfigurationShared {
@@ -23,6 +24,10 @@ namespace ConfigurationShared {
 /// The property a settings row carries with its setting's id, for the help panel and the
 /// organizer.
 inline constexpr char SettingIdProperty[] = "lichiiSettingId";
+
+/// The property a per-game "use the global value" button carries with its setting's id, wherever
+/// its page placed it.
+inline constexpr char RestoresSettingProperty[] = "lichiiRestoresSetting";
 
 /// Who an option is for.
 enum class SettingLevel : u8 {
@@ -62,6 +67,9 @@ using SettingHelpMap = std::map<u32, SettingHelp>;
 
 /// The level, effects and games of every setting the configuration pages show, by setting id.
 std::unique_ptr<SettingHelpMap> InitializeSettingHelp();
+
+/// A performance preset's name, translated.
+QString PresetName(Settings::PerformancePreset preset);
 
 /// The name of a game the help table names by program id.
 QString GameName(u64 program_id);

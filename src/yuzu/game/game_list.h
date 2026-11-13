@@ -99,6 +99,7 @@ public slots:
 signals:
     void ReportCompatibilityRequested(u64 program_id);
     void BootGame(const QString& game_path, StartGameType type);
+    void OptimizeGameRequested(const QString& game_path);
     void GameChosen(const QString& game_path, const u64 title_id = 0);
     void OpenFolderRequested(u64 program_id, GameListOpenTarget target,
                              const std::string& game_path);
