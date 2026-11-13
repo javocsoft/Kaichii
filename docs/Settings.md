@@ -94,8 +94,12 @@ add(v.your_setting_name, {.level = Advanced, .effects = {Faster, MayCauseGlitche
 The level says who it is for (Basic, Advanced, Expert, Developer). The effects say what turning
 it on, or raising it, does; leave them out when its values have no order. Add
 `.applies_at_boot = true` when it can change while a game runs but only acts at the next start,
-and `.program_ids` when it acts on one game only. The `setting_help` test fails for a shown
-setting without a description or a help entry.
+and `.program_ids` when it acts on one game only: the settings dialogs then show it only in that
+game's configuration. The level decides when it shows: Basic always, Advanced and Expert with
+"Show advanced options", Developer with "Developer mode" too. A graphics setting also needs its
+place in `GraphicsSections()` (same file): the section of the Image, Smoothness and shaders or GPU
+emulation page it goes in. The `setting_help` test fails for a shown setting without a
+description, a help entry or, for graphics, a section.
 
 ---
 

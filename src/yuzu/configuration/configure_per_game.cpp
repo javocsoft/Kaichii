@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <chrono>
 #include <filesystem>
@@ -12,6 +13,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -76,6 +78,7 @@
 #include "yuzu/configuration/configure_per_game_addons.h"
 #include "yuzu/configuration/configure_system.h"
 #include "yuzu/configuration/setting_help_panel.h"
+#include "yuzu/configuration/settings_organizer.h"
 #include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/util/util.h"
 
@@ -397,17 +400,46 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
 
     ui->setupUi(this);
 
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(performance_tab.get(), this), tr("Performance"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(addons_tab.get(), this), tr("Add-Ons"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(system_tab.get(), this), tr("System"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(cpu_tab.get(), this), tr("CPU"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(graphics_tab.get(), this), tr("Graphics"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(graphics_advanced_tab.get(), this), tr("Adv. Graphics"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(graphics_extensions_tab.get(), this), tr("Ext. Graphics"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(audio_tab.get(), this), tr("Audio"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(input_tab.get(), this), tr("Input Profiles"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(network_tab.get(), this), tr("Network"));
-    ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(applets_tab.get(), this), tr("Applets"));
+    // The same pages as the global settings, by what the options are for; the options of other
+    // games are left out.
+    organizer = std::make_unique<ConfigurationShared::SettingsOrganizer>(builder->Help(), title_id);
+    const std::array<QWidget*, 3> graphics_sources{
+        graphics_tab.get(), graphics_advanced_tab.get(), graphics_extensions_tab.get()};
+    const auto goal_pages = organizer->BuildGraphicsPages(
+        graphics_sources, graphics_tab->GraphicsCardGroup(), graphics_tab->BackgroundRow());
+    using ConfigurationShared::GoalPage;
+    using enum ConfigurationShared::SettingLevel;
+    const std::vector<std::tuple<QWidget*, const char*, ConfigurationShared::SettingLevel>> pages{
+        {performance_tab.get(), QT_TR_NOOP("Performance"), Basic},
+        {addons_tab.get(), QT_TR_NOOP("Add-Ons"), Basic},
+        {goal_pages[static_cast<size_t>(GoalPage::Image)], QT_TR_NOOP("Image"), Basic},
+        {goal_pages[static_cast<size_t>(GoalPage::Smoothness)],
+         QT_TR_NOOP("Smoothness and shaders"), Basic},
+        {system_tab.get(), QT_TR_NOOP("System"), Basic},
+        {audio_tab.get(), QT_TR_NOOP("Audio"), Basic},
+        {input_tab.get(), QT_TR_NOOP("Input Profiles"), Basic},
+        {network_tab.get(), QT_TR_NOOP("Network"), Advanced},
+        {applets_tab.get(), QT_TR_NOOP("Applets"), Advanced},
+        {goal_pages[static_cast<size_t>(GoalPage::GraphicsEmulation)], QT_TR_NOOP("GPU emulation"),
+         Advanced},
+        {cpu_tab.get(), QT_TR_NOOP("CPU"), Advanced},
+    };
+    for (const auto& [page, name, level] : pages) {
+        organizer->Gate(page);
+        page_tabs.push_back({new ConfigurationShared::SettingsPageScroll(page, this), name, level});
+    }
+
+    show_advanced_box = new QCheckBox(this);
+    developer_mode_box = new QCheckBox(this);
+    ui->horizontalLayout_2->insertWidget(0, show_advanced_box);
+    ui->horizontalLayout_2->insertWidget(1, developer_mode_box);
+    connect(show_advanced_box, &QCheckBox::toggled, this,
+            [this](bool on) { SetLevels(on, developer_mode_box->isChecked()); });
+    connect(developer_mode_box, &QCheckBox::toggled, this,
+            [this](bool on) { SetLevels(show_advanced_box->isChecked(), on); });
+    RetranslateLevels();
+    SetLevels(UISettings::values.settings_show_advanced.GetValue(),
+              UISettings::values.settings_developer_mode.GetValue());
 
     auto* const help_panel = new ConfigurationShared::SettingHelpPanel(
         builder->Translations(), builder->Help(), builder->ComboboxTranslations(),
@@ -526,6 +558,52 @@ void ConfigurePerGame::changeEvent(QEvent* event) {
 
 void ConfigurePerGame::RetranslateUI() {
     ui->retranslateUi(this);
+    RetranslateLevels();
+    for (int index = 0; index < ui->tabWidget->count(); ++index) {
+        QWidget* const scroll = ui->tabWidget->widget(index);
+        for (const PageTab& tab : page_tabs) {
+            if (tab.scroll == scroll) {
+                ui->tabWidget->setTabText(index, tr(tab.name));
+            }
+        }
+    }
+}
+
+void ConfigurePerGame::RetranslateLevels() {
+    organizer->Retranslate();
+    show_advanced_box->setText(tr("Show advanced options"));
+    show_advanced_box->setToolTip(
+        tr("Shows the options for fine tuning and for fixing problems in games, and their tabs."));
+    developer_mode_box->setText(tr("Developer mode"));
+    developer_mode_box->setToolTip(tr("Also shows the options for debugging Lichii."));
+}
+
+void ConfigurePerGame::SetLevels(bool show_advanced, bool developer_mode) {
+    UISettings::values.settings_show_advanced = show_advanced;
+    UISettings::values.settings_developer_mode = developer_mode;
+    {
+        const QSignalBlocker advanced_blocker(show_advanced_box);
+        const QSignalBlocker developer_blocker(developer_mode_box);
+        show_advanced_box->setChecked(show_advanced);
+        developer_mode_box->setChecked(developer_mode);
+        developer_mode_box->setEnabled(show_advanced);
+    }
+    organizer->SetShowAdvanced(show_advanced);
+    organizer->SetDeveloperMode(developer_mode);
+
+    QWidget* const current = ui->tabWidget->currentWidget();
+    const QSignalBlocker tabs_blocker(ui->tabWidget);
+    ui->tabWidget->clear();
+    for (const PageTab& tab : page_tabs) {
+        if (organizer->Shows(tab.level)) {
+            ui->tabWidget->addTab(tab.scroll, tr(tab.name));
+        } else {
+            tab.scroll->setVisible(false);
+        }
+    }
+    if (const int index = ui->tabWidget->indexOf(current); index >= 0) {
+        ui->tabWidget->setCurrentIndex(index);
+    }
 }
 
 void ConfigurePerGame::HandleApplyButtonClicked() {

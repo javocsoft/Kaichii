@@ -60,6 +60,11 @@ public:
     void ApplyConfiguration() override;
     void SetConfiguration() override;
 
+    /// The graphics API and device group, and the background color row: what the page builds
+    /// besides setting rows, for the settings dialogs to place.
+    [[nodiscard]] QWidget* GraphicsCardGroup() const;
+    [[nodiscard]] QWidget* BackgroundRow() const;
+
 private:
     void changeEvent(QEvent* event) override;
     void RetranslateUI();

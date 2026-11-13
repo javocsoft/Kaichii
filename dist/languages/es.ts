@@ -1813,12 +1813,13 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="+414"/>
+        <location filename="../../src/qt_common/config/shared_translation.cpp" line="+1"/>
         <source>GPU</source>
         <translation>GPU</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../../src/qt_common/config/shared_translation.cpp" line="+1"/>
         <source>CPU Asynchronous</source>
         <translation>CPU asíncrona</translation>
     </message>
@@ -1948,7 +1949,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Inmediato</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/config/setting_help.cpp" line="+46"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="-368"/>
         <source>▲ faster</source>
         <translation>▲ más rápido</translation>
     </message>
@@ -2077,6 +2078,51 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <location line="+7"/>
         <source>Recommended for this computer (%1 preset): %2</source>
         <translation>Recomendado para este equipo (preset %1): %2</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Graphics card</source>
+        <translation>Tarjeta gráfica</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Resolution and upscaling</source>
+        <translation>Resolución y escalado</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Picture</source>
+        <translation>Calidad de imagen</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Frame rate and display</source>
+        <translation>Fotogramas y pantalla</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Shaders</source>
+        <translation>Shaders</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Textures and video memory</source>
+        <translation>Texturas y memoria de vídeo</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>GPU emulation accuracy</source>
+        <translation>Precisión de la emulación de GPU</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Workarounds</source>
+        <translation>Soluciones alternativas</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Vulkan extensions</source>
+        <translation>Extensiones de Vulkan</translation>
     </message>
     <message>
         <location filename="../../src/qt_common/config/shared_translation.cpp" line="+8"/>
@@ -4034,10 +4080,71 @@ Solo Windows y Linux.</translation>
 <context>
     <name>ConfigureDialog</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="+75"/>
-        <location line="+116"/>
+        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="+107"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+194"/>
+        <source>Image</source>
+        <translation>Imagen</translation>
+    </message>
+    <message>
+        <location line="-193"/>
+        <location line="+194"/>
+        <source>Smoothness and shaders</source>
+        <translation>Fluidez y shaders</translation>
+    </message>
+    <message>
+        <location line="-183"/>
+        <source>Interface</source>
+        <translation>Interfaz</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Advanced</source>
+        <translation>Avanzado</translation>
+    </message>
+    <message>
+        <location line="+181"/>
+        <source>GPU emulation</source>
+        <translation>Emulación de GPU</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Search settings</source>
+        <translation>Buscar ajustes</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show advanced options</source>
+        <translation>Mostrar opciones avanzadas</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Shows the options for fine tuning and for fixing problems in games, and the Advanced category.</source>
+        <translation>Muestra las opciones de ajuste fino y para arreglar problemas en juegos, y la categoría Avanzado.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Developer mode</source>
+        <translation>Modo desarrollador</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Also shows the options for debugging Lichii.</source>
+        <translation>Muestra también las opciones para depurar Lichii.</translation>
+    </message>
+    <message>
+        <location line="+120"/>
+        <source>No settings match</source>
+        <translation>Ningún ajuste coincide</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>%1 › %2</source>
+        <translation>%1 › %2</translation>
     </message>
     <message>
         <source>Eden Configuration</source>
@@ -4054,90 +4161,71 @@ Solo Windows y Linux.</translation>
         <translation>Algunos ajustes solo están disponibles cuando no se estén ejecutando los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="-115"/>
         <source>Applets</source>
-        <translation>Applets</translation>
+        <translation type="vanished">Applets</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+123"/>
+        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="-333"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location line="-122"/>
-        <location line="+119"/>
         <source>CPU</source>
-        <translation>CPU</translation>
+        <translation type="vanished">CPU</translation>
     </message>
     <message>
-        <location line="-118"/>
         <source>Debug</source>
-        <translation>Depuración</translation>
+        <translation type="vanished">Depuración</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Filesystem</source>
-        <translation>Sistema de archivos</translation>
+        <translation type="vanished">Sistema de archivos</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+111"/>
         <source>General</source>
-        <translation>General</translation>
+        <translation type="vanished">General</translation>
     </message>
     <message>
-        <location line="-110"/>
-        <location line="+116"/>
         <source>Graphics</source>
-        <translation>Gráficos</translation>
+        <translation type="vanished">Gráficos</translation>
     </message>
     <message>
-        <location line="-115"/>
         <source>GraphicsAdvanced</source>
-        <translation>GráficosAvanzados</translation>
+        <translation type="vanished">GráficosAvanzados</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>GraphicsExtra</source>
-        <translation>GraficasExtra</translation>
+        <translation type="vanished">GraficasExtra</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Hotkeys</source>
-        <translation>Teclas de acceso rápido</translation>
+        <translation type="vanished">Teclas de acceso rápido</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+115"/>
+        <location line="+2"/>
         <source>Controls</source>
         <translation>Controles</translation>
     </message>
     <message>
-        <location line="-114"/>
         <source>Profiles</source>
-        <translation>Perfiles</translation>
+        <translation type="vanished">Perfiles</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Network</source>
-        <translation>Red</translation>
+        <translation type="vanished">Red</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+105"/>
         <source>System</source>
         <translation>Sistema</translation>
     </message>
     <message>
-        <location line="-104"/>
         <source>Game List</source>
-        <translation>Lista de juegos</translation>
+        <translation type="vanished">Lista de juegos</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Web</source>
-        <translation>Web</translation>
+        <translation type="vanished">Web</translation>
     </message>
 </context>
 <context>
@@ -4451,8 +4539,12 @@ Would you like to delete the old save data?</source>
     </message>
     <message>
         <location line="+8"/>
+        <source>Graphics card</source>
+        <translation>Tarjeta gráfica</translation>
+    </message>
+    <message>
         <source>API Settings</source>
-        <translation>Ajustes de la API</translation>
+        <translation type="vanished">Ajustes de la API</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -4465,7 +4557,7 @@ Would you like to delete the old save data?</source>
         <translation>Color de fondo:</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_graphics.cpp" line="+242"/>
+        <location filename="../../src/yuzu/configuration/configure_graphics.cpp" line="+250"/>
         <source>%</source>
         <comment>FSR/SGSR sharpening percentage (e.g. 50%)</comment>
         <translation>%</translation>
@@ -4476,7 +4568,7 @@ Would you like to delete the old save data?</source>
         <translation>Configurar efectos...</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+111"/>
         <source>Off</source>
         <translation>Desactivado</translation>
     </message>
@@ -5998,7 +6090,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
 <context>
     <name>ConfigurePerGame</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+400"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+413"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -6019,9 +6111,9 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+49"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+68"/>
         <location line="+10"/>
-        <location line="+221"/>
+        <location line="+267"/>
         <location line="+5"/>
         <source>Detect Icon</source>
         <translation>Detectar icono</translation>
@@ -6087,9 +6179,19 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Algunos ajustes solo están disponibles cuando no se estén ejecutando los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-284"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-349"/>
         <source>Add-Ons</source>
         <translation>Complementos</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Image</source>
+        <translation>Imagen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Smoothness and shaders</source>
+        <translation>Fluidez y shaders</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6097,27 +6199,24 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Sistema</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Graphics</source>
-        <translation>Gráficos</translation>
+        <translation type="vanished">Gráficos</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Adv. Graphics</source>
-        <translation>Gráficos avanz.</translation>
+        <translation type="vanished">Gráficos avanz.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Ext. Graphics</source>
-        <translation>Extensiones Gráficas</translation>
+        <translation type="vanished">Extensiones Gráficas</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-6"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
@@ -6137,12 +6236,37 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Applets</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+1"/>
+        <source>GPU emulation</source>
+        <translation>Emulación de GPU</translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
     <message>
-        <location line="+140"/>
+        <location line="+113"/>
+        <source>Show advanced options</source>
+        <translation>Mostrar opciones avanzadas</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Shows the options for fine tuning and for fixing problems in games, and their tabs.</source>
+        <translation>Muestra las opciones de ajuste fino y para arreglar problemas en juegos, y sus pestañas.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Developer mode</source>
+        <translation>Modo desarrollador</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Also shows the options for debugging Lichii.</source>
+        <translation>Muestra también las opciones para depurar Lichii.</translation>
+    </message>
+    <message>
+        <location line="+69"/>
         <source>Enter game name...</source>
         <translation>Escribe el nombre del juego...</translation>
     </message>
@@ -7241,9 +7365,13 @@ Arrastre los puntos para cambiar de posición, o haga doble clic en las celdas d
         <translation>Forma</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>UI</source>
-        <translation>Interfaz</translation>
+        <translation type="vanished">Interfaz</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Appearance</source>
+        <translation>Apariencia</translation>
     </message>
     <message>
         <location line="+6"/>

@@ -2,11 +2,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <array>
+#include <map>
+#include <memory>
 
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QFocusEvent>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <QtTest>
 
 #include "common/performance_presets.h"
@@ -16,6 +20,7 @@
 #include "qt_common/config/uisettings.h"
 #include "qt_common/util/vk.h"
 #include "yuzu/configuration/setting_help_panel.h"
+#include "yuzu/configuration/settings_organizer.h"
 
 using namespace ConfigurationShared;
 
@@ -46,6 +51,9 @@ private slots:
     void HelpTextNamesEffectsAndValues();
     void PanelFollowsPointerAndFocus();
     void SoftwareRenderersShareSystemMemory();
+    void GraphicsSectionsPlaceEveryGraphicsSetting();
+    void SearchFoldsCaseAndAccents();
+    void OrganizerMovesAndGatesRows();
 };
 
 void SettingHelpTest::EveryShownSettingIsExplained() {
@@ -193,6 +201,130 @@ void SettingHelpTest::SoftwareRenderersShareSystemMemory() {
     software.gpu_memory_bytes = u64{31} << 30;
     software.gpu_integrated = VkDeviceInfo::SharesSystemMemory(VK_PHYSICAL_DEVICE_TYPE_CPU);
     QCOMPARE(Settings::ClassifyHost(software), Settings::HardwareTier::Entry);
+}
+
+void SettingHelpTest::GraphicsSectionsPlaceEveryGraphicsSetting() {
+    const Tables tables;
+    std::map<u32, int> placed;
+    for (const GoalSection& section : GraphicsSections()) {
+        for (const u32 id : section.ids) {
+            ++placed[id];
+        }
+    }
+    QStringList problems;
+    using Settings::Category;
+    for (const Category category : {Category::Renderer, Category::RendererAdvanced,
+                                    Category::RendererHacks, Category::RendererExtensions}) {
+        for (const Settings::BasicSetting* setting :
+             Settings::values.linkage.by_category[category]) {
+            const auto it = tables.names->find(setting->Id());
+            if (it == tables.names->end() || it->second.first.isEmpty()) {
+                continue; // Not shown
+            }
+            if (placed[setting->Id()] != 1) {
+                problems << QStringLiteral("in %1 sections: %2")
+                                .arg(placed[setting->Id()])
+                                .arg(QString::fromStdString(setting->GetLabel()));
+            }
+        }
+    }
+    for (const auto& [id, count] : placed) {
+        const auto it = tables.names->find(id);
+        if (FindSetting(id) == nullptr || it == tables.names->end() || it->second.first.isEmpty()) {
+            problems << QStringLiteral("a section names a setting that is not shown: %1").arg(id);
+        }
+    }
+    QVERIFY2(problems.isEmpty(), qPrintable(problems.join(QLatin1Char('\n'))));
+}
+
+void SettingHelpTest::SearchFoldsCaseAndAccents() {
+    QVERIFY(MatchesSearch(QStringLiteral("Resolución"), QStringLiteral("resolucion")));
+    QVERIFY(MatchesSearch(QStringLiteral("Activar la generación de fotogramas"),
+                          QStringLiteral("fotogramas GENERACIÓN")));
+    QVERIFY(!MatchesSearch(QStringLiteral("Volumen"), QStringLiteral("volumen alto")));
+    // Words match from their start: the theme, not the system.
+    QVERIFY(MatchesSearch(QStringLiteral("Tema:"), QStringLiteral("tem")));
+    QVERIFY(!MatchesSearch(QStringLiteral("Sistema"), QStringLiteral("tema")));
+    QVERIFY(MatchesSearch(QStringLiteral("VSync Mode (Vulkan only)"), QStringLiteral("vulkan")));
+    QVERIFY(!MatchesSearch(QStringLiteral("Volumen"), QStringLiteral("  ")));
+}
+
+void SettingHelpTest::OrganizerMovesAndGatesRows() {
+    const Tables tables;
+    QWidget source;
+    auto* const source_layout = new QVBoxLayout(&source);
+    const auto row = [&](const Settings::BasicSetting& setting) {
+        auto* const widget = new QWidget(&source);
+        widget->setProperty(SettingIdProperty, setting.Id());
+        source_layout->addWidget(widget);
+        return widget;
+    };
+    QWidget* const resolution = row(Settings::values.resolution_setup); // Basic
+    QWidget* const anisotropy = row(Settings::values.max_anisotropy);    // Advanced
+    QWidget* const dump = row(Settings::values.frame_gen_dump_flow);     // Developer
+    QWidget* const ocarina = row(Settings::values.oot_anti_aliasing);    // Ocarina of Time only
+    // A group a page wraps a setting in is its row.
+    QWidget* const dlss = row(Settings::values.nvidia_dlss);
+    auto* const inner = new QWidget(dlss);
+    inner->setProperty(SettingIdProperty, Settings::values.nvidia_dlss.Id());
+    QCOMPARE(FindSettingRow(&source, Settings::values.nvidia_dlss.Id()), dlss);
+
+    SettingsOrganizer global(*tables.help, 0);
+    const std::array<QWidget*, 1> sources{&source};
+    std::vector<PageSection> sections;
+    sections.push_back({.title = "Picture",
+                        .ids = {Settings::values.oot_anti_aliasing.Id(),
+                                Settings::values.max_anisotropy.Id(),
+                                Settings::values.resolution_setup.Id(),
+                                Settings::values.frame_gen_dump_flow.Id()}});
+    sections.push_back({.title = "Nothing here", .ids = {Settings::values.sample_shading.Id()}});
+    const std::unique_ptr<QWidget> page{global.BuildPage(sources, std::move(sections))};
+
+    // In the order given, and without the section that found nothing.
+    const auto boxes = page->findChildren<QGroupBox*>();
+    QCOMPARE(boxes.size(), 1);
+    QLayout* const box_layout = boxes[0]->layout();
+    QVERIFY(box_layout->indexOf(ocarina) < box_layout->indexOf(anisotropy));
+    QVERIFY(box_layout->indexOf(anisotropy) < box_layout->indexOf(resolution));
+    QCOMPARE(dlss->parentWidget(), &source);
+
+    global.Gate(page.get());
+    QVERIFY(resolution->isVisibleTo(page.get()));
+    QVERIFY(!anisotropy->isVisibleTo(page.get()));
+    QVERIFY(!dump->isVisibleTo(page.get()));
+    QVERIFY(!ocarina->isVisibleTo(page.get()));
+
+    global.SetShowAdvanced(true);
+    QVERIFY(anisotropy->isVisibleTo(page.get()));
+    QVERIFY(!dump->isVisibleTo(page.get()));
+    global.SetDeveloperMode(true);
+    QVERIFY(dump->isVisibleTo(page.get()));
+    // Another game's option never shows in the global settings.
+    QVERIFY(!ocarina->isVisibleTo(page.get()));
+
+    // A row its page hid stays hidden when its level shows again, and its wrapper takes no room.
+    anisotropy->setVisible(false);
+    global.SetShowAdvanced(false);
+    global.SetShowAdvanced(true);
+    QVERIFY(!anisotropy->isVisibleTo(page.get()));
+    QVERIFY(!anisotropy->parentWidget()->isVisibleTo(page.get()));
+    anisotropy->setVisible(true);
+    QVERIFY(anisotropy->isVisibleTo(page.get()));
+
+    // Gating a page again doesn't wrap its rows again.
+    const auto widgets = page->findChildren<QWidget*>().size();
+    global.Gate(page.get());
+    QCOMPARE(page->findChildren<QWidget*>().size(), widgets);
+
+    // In Ocarina of Time's own configuration, its option shows.
+    QWidget game_page;
+    auto* const game_layout = new QVBoxLayout(&game_page);
+    auto* const game_row = new QWidget(&game_page);
+    game_row->setProperty(SettingIdProperty, Settings::values.oot_anti_aliasing.Id());
+    game_layout->addWidget(game_row);
+    SettingsOrganizer ocarina_settings(*tables.help, 0x0400486024DEC000);
+    ocarina_settings.Gate(&game_page);
+    QVERIFY(game_row->isVisibleTo(&game_page));
 }
 
 QTEST_MAIN(SettingHelpTest)

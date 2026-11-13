@@ -26,9 +26,10 @@ public:
     QSize sizeHint() const override;
 };
 
-/// Sizes a dialog that holds settings pages: the size its content asks for, at most `fraction` of
-/// the available area of its parent's screen. QDialog centres it on its parent when shown.
-void FitDialogToScreen(QDialog& dialog, double fraction = 0.9);
+/// Sizes a dialog that holds settings pages: the size its content asks for, or `at_least`, at most
+/// `fraction` of the available area of its parent's screen. QDialog centres it on its parent when
+/// shown.
+void FitDialogToScreen(QDialog& dialog, double fraction = 0.9, QSize at_least = {});
 
 /// The size FitDialogToScreen gives a dialog wanting `wanted` on a screen whose free area is
 /// `available`.

@@ -112,6 +112,9 @@ struct Values {
                                                            true};
 
     Setting<bool> first_start{linkage, true, "firstStart", Category::Ui};
+    // The settings dialogs: whether options above the basic level show, and developer options.
+    Setting<bool> settings_show_advanced{linkage, false, "settingsShowAdvanced", Category::Ui};
+    Setting<bool> settings_developer_mode{linkage, false, "settingsDeveloperMode", Category::Ui};
     // Whether the hardware-based performance preset was offered once already.
     Setting<bool> performance_preset_offered{linkage, false, "performancePresetOffered",
                                              Category::Ui};

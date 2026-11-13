@@ -206,6 +206,14 @@ void ConfigureGraphics::UpdateDeviceSelection(int device) {
 
 ConfigureGraphics::~ConfigureGraphics() = default;
 
+QWidget* ConfigureGraphics::GraphicsCardGroup() const {
+    return ui->groupBox_2;
+}
+
+QWidget* ConfigureGraphics::BackgroundRow() const {
+    return ui->bg_widget;
+}
+
 void ConfigureGraphics::SetConfiguration() {}
 
 void ConfigureGraphics::Setup(const ConfigurationShared::Builder& builder) {
@@ -334,6 +342,7 @@ void ConfigureGraphics::Setup(const ConfigurationShared::Builder& builder) {
         } else if (setting->Id() == Settings::values.nvidia_dlss.Id()) {
             // NVIDIA's files and a download button under the checkbox.
             QWidget* group = new QWidget(this);
+            group->setProperty(ConfigurationShared::SettingIdProperty, setting->Id());
             QVBoxLayout* group_layout = new QVBoxLayout(group);
             group_layout->setContentsMargins(0, 0, 0, 0);
             group_layout->setSpacing(2);

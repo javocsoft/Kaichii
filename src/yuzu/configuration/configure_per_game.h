@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <QDialog>
@@ -33,6 +34,11 @@ class InputSubsystem;
 }
 
 class ConfigurePerGameAddons;
+class QCheckBox;
+
+namespace ConfigurationShared {
+class SettingsOrganizer;
+} // namespace ConfigurationShared
 class ConfigureAudio;
 class ConfigureCpu;
 class ConfigureGraphics;
@@ -77,6 +83,9 @@ private:
     void HandleApplyButtonClicked();
 
     void LoadConfiguration();
+    /// Shows the tabs and options of the levels chosen, and saves the choice.
+    void SetLevels(bool show_advanced, bool developer_mode);
+    void RetranslateLevels();
     void UpdateIconPreview(const QPixmap& map);
     void OnUploadNupIcon();
     void OnDetectNupIcon();
@@ -118,4 +127,15 @@ private:
     std::unique_ptr<ConfigureSystem> system_tab;
     std::unique_ptr<ConfigureNetwork> network_tab;
     std::unique_ptr<ConfigureApplets> applets_tab;
+
+    /// A tab: its scroll area, its name (untranslated, ConfigurePerGame context) and who it is for.
+    struct PageTab {
+        QWidget* scroll;
+        const char* name;
+        ConfigurationShared::SettingLevel level;
+    };
+    std::unique_ptr<ConfigurationShared::SettingsOrganizer> organizer;
+    std::vector<PageTab> page_tabs;
+    QCheckBox* show_advanced_box = nullptr;
+    QCheckBox* developer_mode_box = nullptr;
 };

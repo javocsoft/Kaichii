@@ -20,6 +20,10 @@ struct HostProfile;
 
 namespace ConfigurationShared {
 
+/// The property a settings row carries with its setting's id, for the help panel and the
+/// organizer.
+inline constexpr char SettingIdProperty[] = "lichiiSettingId";
+
 /// Who an option is for.
 enum class SettingLevel : u8 {
     Basic,     ///< What most players change
@@ -84,5 +88,28 @@ QString SettingHelpHtml(const Settings::BasicSetting& setting, const SettingHelp
 
 /// The help panel's text for a control that is not a setting, from its name and tooltip.
 QString ControlHelpHtml(const QString& name, const QString& description);
+
+/// The pages the graphics settings are grouped in by what they are for.
+enum class GoalPage : u8 {
+    Image,             ///< What the picture looks like, and its frame rate
+    Smoothness,        ///< Stutter, shaders and memory
+    GraphicsEmulation, ///< Accuracy options and workarounds, under Advanced
+};
+
+struct GoalSection {
+    GoalPage page;
+    const char* title; ///< Untranslated, in the ConfigurationShared context
+    std::vector<u32> ids;
+};
+
+/// The sections of the goal pages in order, each with its settings in order. Every shown graphics
+/// setting is in exactly one.
+std::vector<GoalSection> GraphicsSections();
+
+/// Text folded for searching: lower case, without accents.
+QString SearchKey(const QString& text);
+
+/// Whether every word of `query` starts a word of `text`, both folded with SearchKey.
+bool MatchesSearch(const QString& text, const QString& query);
 
 } // namespace ConfigurationShared
