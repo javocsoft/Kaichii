@@ -43,7 +43,7 @@ std::string Env(const char* name) {
 }
 } // namespace
 
-TEST_CASE("The NVIDIA shader cache gets Lichii's own folder and a 10 GiB limit",
+TEST_CASE("The NVIDIA shader cache keeps its own lichii folder and a 10 GiB limit",
           "[common][nvidia_shader_cache]") {
     const auto temp = std::filesystem::temp_directory_path() /
                       ("nvidia-cache-test-" +

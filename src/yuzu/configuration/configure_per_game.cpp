@@ -630,7 +630,7 @@ void ConfigurePerGame::RetranslateLevels() {
     show_advanced_box->setToolTip(
         tr("Shows the options for fine tuning and for fixing problems in games, and their tabs."));
     developer_mode_box->setText(tr("Developer mode"));
-    developer_mode_box->setToolTip(tr("Also shows the options for debugging Lichii."));
+    developer_mode_box->setToolTip(tr("Also shows the options for debugging Kaichii."));
 }
 
 void ConfigurePerGame::SetLevels(bool show_advanced, bool developer_mode) {

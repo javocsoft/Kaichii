@@ -16,7 +16,7 @@ inline constexpr bool DefaultForceX11 = true;
 /// The QT_QPA_PLATFORM value the Qt frontend sets before it starts, or empty to leave Qt's choice.
 /// `current` is the variable as the frontend found it. Wayland desktops set it for every
 /// application: COSMIC exports "wayland;xcb", so a value that prefers Wayland is the desktop's
-/// default, not a choice for Lichii, and is replaced; the setting is where a player picks Wayland.
+/// default, not a choice for Kaichii, and is replaced; the setting is where a player picks Wayland.
 /// Any other value (xcb, offscreen, eglfs...) is kept. X11 comes first and Wayland second, so a
 /// session without an X server still starts.
 [[nodiscard]] constexpr std::string_view QtPlatformOverride(bool force_x11,

@@ -764,15 +764,15 @@ endif()
 
 # TODO: Icon/install handling n such should be put into dist/CMakeLists.txt
 if(ENABLE_QT AND UNIX AND NOT APPLE)
-    install(FILES "dist/io.github.zortos293.lichii.desktop"
+    install(FILES "dist/io.github.javocsoft.kaichii.desktop"
         DESTINATION "share/applications")
-    install(FILES "dist/lichii.png"
+    install(FILES "dist/kaichii.png"
         DESTINATION "share/icons/hicolor/256x256/apps"
-        RENAME "io.github.zortos293.lichii.png")
+        RENAME "io.github.javocsoft.kaichii.png")
 
-    install(FILES "dist/io.github.zortos293.lichii.xml"
+    install(FILES "dist/io.github.javocsoft.kaichii.xml"
         DESTINATION "share/mime/packages")
-    install(FILES "dist/io.github.zortos293.lichii.metainfo.xml"
+    install(FILES "dist/io.github.javocsoft.kaichii.metainfo.xml"
         DESTINATION "share/metainfo")
 endif()
 

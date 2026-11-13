@@ -2,20 +2,17 @@
 
 #pragma once
 
-#include <QByteArray>
+#include <functional>
+
 #include <QDialog>
 #include <QList>
 #include <QMap>
-#include <QPointer>
 #include <QString>
 #include <QUrl>
 
-class QCheckBox;
 class QComboBox;
 class QLabel;
 class QLineEdit;
-class QNetworkAccessManager;
-class QNetworkReply;
 class QPlainTextEdit;
 class QPushButton;
 class QTabWidget;
@@ -46,59 +43,60 @@ struct Session {
     QString updates;
 };
 
+/// The issue form the reports fill in, in .github/ISSUE_TEMPLATE, and its report field.
+inline constexpr char IssueTemplate[] = "compatibility_report.yml";
+inline constexpr char ReportField[] = "report";
+
+struct IssueLink {
+    QUrl url;
+    /// False when the report was too long for a link and was left out of it.
+    bool report_included{};
+};
+
+/// The GitHub page that opens a new compatibility report on `repository` ("owner/name") with
+/// `title` and `report` filled in. A report too long for a link is left out. An invalid
+/// repository gives an empty URL.
+[[nodiscard]] IssueLink NewIssueLink(const QString& repository, const QString& title,
+                                     const QString& report);
+
+/// Prepares a compatibility report for the last session and opens it on GitHub, where the player
+/// reviews and publishes it. Kaichii itself sends nothing.
 class Dialog final : public QDialog {
     Q_OBJECT
 
 public:
-    explicit Dialog(const Session& session, QWidget* parent = nullptr);
+    /// Opens a URL in the browser; the tests replace it.
+    using UrlOpener = std::function<bool(const QUrl&)>;
+
+    Dialog(const Session& session, const QString& repository, QWidget* parent = nullptr,
+           UrlOpener open_url = {});
     ~Dialog() override;
-    void reject() override;
+
+    /// The report as Markdown, as it goes to GitHub.
+    [[nodiscard]] QString Markdown() const;
+    /// The issue's title.
+    [[nodiscard]] QString Title() const;
 
 private:
     friend class DialogTest;
-    Dialog(const Session& session, QNetworkAccessManager* network, QWidget* parent);
-    enum class State { Editing, Searching, Submitting, Finished, Closed };
-    void Search();
-    void ConfirmGame();
-    void Submit();
+    void Open();
+    void Copy();
     void Clear();
-    void Edited();
     void Refresh();
-    void Abort();
-    void Request(bool submission, const QByteArray& payload = {});
-    void Finished(bool submission, int status, const QByteArray& body,
-                  const QByteArray& retry_after, bool network_error);
-    QByteArray Payload() const;
-    QString ValidationError() const;
+    [[nodiscard]] QString ValidationError() const;
+    [[nodiscard]] QString Text(const QString& key) const;
 
-    QNetworkAccessManager* network;
-    QPointer<QNetworkReply> reply;
-    State state{State::Editing};
-    qint64 confirmed_game{};
-    QString confirmed_title;
-    QByteArray submitted_payload;
-    QByteArray submission_key;
-    qint64 retry_at{};
-    int page{1};
-    int page_count{1};
-    QUrl receipt_url;
+    QString repository;
+    UrlOpener open_url;
+    quint64 program_id;
     QMap<QString, QLineEdit*> fields;
     QMap<QString, QPlainTextEdit*> paragraphs;
-    QLineEdit* query;
-    QComboBox* games;
     QComboBox* outcome;
     QComboBox* graphics_api;
-    QCheckBox* public_consent;
-    QCheckBox* safe_files_consent;
-    QPushButton* search;
-    QPushButton* confirm;
-    QPushButton* previous;
-    QPushButton* next;
-    QPushButton* submit;
+    QPushButton* open;
+    QPushButton* copy;
     QPushButton* clear;
-    QPushButton* open_receipt;
     QLabel* status;
-    QLabel* match;
     QTabWidget* tabs;
     QPlainTextEdit* preview;
 };

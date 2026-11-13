@@ -23,8 +23,8 @@ AboutDialog::AboutDialog(QWidget* parent)
 
     ui->setupUi(this);
     // Try and request the icon from Qt theme (Linux?)
-    const QIcon yuzu_logo = QIcon::fromTheme(QStringLiteral("io.github.zortos293.lichii"),
-                                           QIcon(QStringLiteral(":/img/lichii.ico")));
+    const QIcon yuzu_logo = QIcon::fromTheme(QStringLiteral("io.github.javocsoft.kaichii"),
+                                           QIcon(QStringLiteral(":/img/kaichii.ico")));
     if (!yuzu_logo.isNull()) {
         ui->labelLogo->setPixmap(yuzu_logo.pixmap(200));
     }

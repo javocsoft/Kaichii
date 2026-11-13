@@ -1,7 +1,7 @@
 # Contributing
 
-Lichii is developed in this fork. Open issues and pull requests on
-[zortos293/eglantine](https://github.com/zortos293/eglantine).
+Kaichii is developed in this repository. Open issues and pull requests on
+[javocsoft/Kaichii](https://github.com/javocsoft/Kaichii).
 
 See the [build guide](docs/Build.md) for your platform and the
 [coding guidelines](docs/Coding.md) for technical guidance. Keep changes focused,

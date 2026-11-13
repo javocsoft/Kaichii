@@ -2,131 +2,74 @@
 
 #include "yuzu/compatibility_report.h"
 
-#include <algorithm>
-#include <cstring>
-#include <memory>
 #include <QApplication>
-#include <QCheckBox>
+#include <QClipboard>
 #include <QComboBox>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
+#include <QFile>
 #include <QLabel>
 #include <QLineEdit>
-#include <QNetworkAccessManager>
-#include <QNetworkCookie>
-#include <QNetworkCookieJar>
-#include <QNetworkReply>
 #include <QPlainTextEdit>
 #include <QPushButton>
-#include <QScrollBar>
 #include <QTabWidget>
-#include <QTcpServer>
-#include <QTcpSocket>
 #include <QTest>
-#include <QTextCursor>
 #include <QTranslator>
 #include <QUrlQuery>
 
 namespace CompatibilityReporting {
 
-class FakeReply final : public QNetworkReply {
-public:
-    FakeReply(const QNetworkRequest& request, QObject* parent) : QNetworkReply(parent) {
-        setRequest(request);
-        setUrl(request.url());
-        open(QIODevice::ReadOnly | QIODevice::Unbuffered);
-    }
-
-    void abort() override {
-        aborted = true;
-        setError(OperationCanceledError, QStringLiteral("Cancelled"));
-        emit finished();
-    }
-
-    void Complete(int status, QByteArray bytes, QByteArray retry_after = {}) {
-        data = std::move(bytes);
-        setAttribute(QNetworkRequest::HttpStatusCodeAttribute, status);
-        setRawHeader("Retry-After", retry_after);
-        emit readyRead();
-        setFinished(true);
-        emit finished();
-    }
-
-    qint64 bytesAvailable() const override {
-        return data.size() - offset + QNetworkReply::bytesAvailable();
-    }
-
-    bool aborted{};
-
-protected:
-    qint64 readData(char* output, qint64 maximum) override {
-        const auto count = std::min(maximum, qint64(data.size() - offset));
-        if (count <= 0) {
-            return -1;
-        }
-        std::memcpy(output, data.constData() + offset, size_t(count));
-        offset += count;
-        return count;
-    }
-
-private:
-    QByteArray data;
-    qint64 offset{};
-};
-
-class FakeNetwork final : public QNetworkAccessManager {
-public:
-    struct Request {
-        Operation operation;
-        QNetworkRequest request;
-        QByteArray body;
-        QPointer<FakeReply> reply;
-    };
-    QList<Request> requests;
-
-protected:
-    QNetworkReply* createRequest(Operation operation, const QNetworkRequest& request,
-                                 QIODevice* data) override {
-        auto* reply = new FakeReply(request, this);
-        requests.push_back({operation, request, data ? data->readAll() : QByteArray{}, reply});
-        return reply;
-    }
-};
-
-class DialogTest final : public QObject {
+class DialogTest : public QObject {
     Q_OBJECT
 
 public:
     static Session Seed();
-    static QByteArray Catalog(int page = 1, int pages = 1);
-    static void Prepare(Dialog& dialog, FakeNetwork& network);
     static int Preview(QApplication& app, const QString& screenshot = {});
 
+private:
+    /// Answers the assessment and the required experience fields.
+    static void Fill(Dialog& dialog);
+    static QString Report(const QUrl& url);
+
 private slots:
-    void noImplicitTraffic();
-    void explicitCatalogAndPaging();
-    void consentAndDoubleSubmit();
-    void retryIdentityAndEdits();
-    void rateLimitAndCancellation();
-    void invalidCatalog_data();
-    void invalidCatalog();
-    void unsafeReceiptAndRedirect();
-    void localValidationAndClear();
-    void isolatedHttpTransport();
-    void serverRejections_data();
-    void serverRejections();
-    void reconfirmationKeepsRetryIdentity();
-    void cooldownPreservesPreviewSelection();
+    void opensAPrefilledIssueOnTheBuildsRepository();
+    void needsTheAssessmentAndTheRequiredFields();
+    void sendsNothingByItself();
+    void keepsTableValuesInTheirRow();
+    void longReportsGoThroughTheClipboard();
+    void browserFailureKeepsTheReport();
+    void refusesAnInvalidRepository();
+    void clearEmptiesTheDraft();
+    void matchesTheIssueTemplate();
     void dialogTranslationContext();
     void machinePrefillsRemainEditable();
     void enabledAddonPrefills();
 };
 
+namespace {
+
+const QString Repository = QStringLiteral("javocsoft/Kaichii");
+
+/// Records the links the dialog opens, and answers with `opens`.
+struct Browser {
+    QList<QUrl> opened;
+    bool opens = true;
+
+    Dialog::UrlOpener Opener() {
+        return [this](const QUrl& url) {
+            opened.append(url);
+            return opens;
+        };
+    }
+};
+
+/// For dialogs that never open a link.
+const Dialog::UrlOpener NoBrowser = [](const QUrl&) { return true; };
+
+} // namespace
+
 Session DialogTest::Seed() {
-    return {.program_id = 0x0400000000000000ULL,
+    return {.program_id = 0x0400486024DEC000ULL,
             .title = QStringLiteral("Synthetic Switch 2 game"),
-            .build = QStringLiteral("Lichii prototype (synthetic)"),
+            .build = QStringLiteral("Kaichii build-91 (c5bc78e1b99a)"),
             .game_version = QStringLiteral("1.0.0"),
             .cpu = QStringLiteral("Example CPU"),
             .gpu = {},
@@ -134,476 +77,174 @@ Session DialogTest::Seed() {
             .os = QStringLiteral("Example OS"),
             .ram = QStringLiteral("16 GiB"),
             .graphics_api = QStringLiteral("Vulkan"),
-            .settings = QStringLiteral("Launch settings: handheld mode; resolution scale 1x."),
+            .settings = QStringLiteral("Launch settings: Handheld mode; resolution scale 1x."),
             .mods = {},
             .updates = {}};
 }
 
-QByteArray DialogTest::Catalog(int page, int pages) {
-    return QJsonDocument(
-               QJsonObject{
-                   {QStringLiteral("games"),
-                    QJsonArray{QJsonObject{
-                        {QStringLiteral("sgdbId"), 12345},
-                        {QStringLiteral("slug"), QStringLiteral("synthetic-game")},
-                        {QStringLiteral("title"), QStringLiteral("Synthetic Switch 2 game")}}}},
-                   {QStringLiteral("page"), page},
-                   {QStringLiteral("pageCount"), pages},
-                   {QStringLiteral("total"), 1}})
-        .toJson();
+void DialogTest::Fill(Dialog& dialog) {
+    dialog.outcome->setCurrentIndex(dialog.outcome->findData(QStringLiteral("Playable")));
+    dialog.fields[QStringLiteral("summary")]->setText(QStringLiteral("Synthetic summary"));
+    dialog.paragraphs[QStringLiteral("progress")]->setPlainText(QStringLiteral("First area"));
+    dialog.paragraphs[QStringLiteral("details")]->setPlainText(QStringLiteral("Menus worked."));
 }
 
-void DialogTest::Prepare(Dialog& dialog, FakeNetwork& network) {
-    dialog.search->click();
-    network.requests.last().reply->Complete(200, Catalog());
-    dialog.confirm->click();
-    dialog.fields[QStringLiteral("summary")]->setText(
-        QStringLiteral("Synthetic test, never sent to the Internet"));
-    dialog.paragraphs[QStringLiteral("progress")]->setPlainText(
-        QStringLiteral("Played the opening area in a synthetic session."));
-    dialog.paragraphs[QStringLiteral("details")]->setPlainText(
-        QStringLiteral("Example report for local UI verification only."));
-    dialog.outcome->setCurrentIndex(2);
+QString DialogTest::Report(const QUrl& url) {
+    return QUrlQuery(url).queryItemValue(QString::fromLatin1(ReportField), QUrl::FullyDecoded);
 }
 
 int DialogTest::Preview(QApplication& app, const QString& screenshot) {
-    FakeNetwork network;
     auto session = Seed();
     session.gpu = QStringLiteral("Example active GPU");
     session.driver = QStringLiteral("Example driver 1.2.3");
-    Dialog dialog(session, &network, nullptr);
-    Prepare(dialog, network);
-    dialog.status->setText(
-        QStringLiteral("LOCAL MOCK ONLY. No report or catalog request reaches the Internet."));
+    Dialog dialog(session, Repository, nullptr, [](const QUrl&) { return true; });
+    Fill(dialog);
+    dialog.status->setText(QStringLiteral("LOCAL MOCK ONLY. Open on GitHub opens nothing here."));
     dialog.show();
     if (!screenshot.isEmpty()) {
-        dialog.tabs->setCurrentIndex(1);
+        dialog.tabs->setCurrentIndex(2);
         QTest::qWait(100);
         return dialog.grab().save(screenshot) ? 0 : 1;
     }
     return app.exec();
 }
 
-void DialogTest::noImplicitTraffic() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    QCOMPARE(dialog.query->text(), Seed().title);
-    QVERIFY(network.requests.empty());
-    QVERIFY(!dialog.public_consent->isChecked());
-    QVERIFY(!dialog.safe_files_consent->isChecked());
-    QVERIFY(!dialog.submit->isEnabled());
-    dialog.query->setText(QStringLiteral("A different title"));
-    dialog.fields[QStringLiteral("name")]->setText(QStringLiteral("Player"));
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
+void DialogTest::opensAPrefilledIssueOnTheBuildsRepository() {
+    Browser browser;
+    Dialog dialog(Seed(), Repository, nullptr, browser.Opener());
+    Fill(dialog);
+    QVERIFY(dialog.open->isEnabled());
+    dialog.open->click();
+    QCOMPARE(browser.opened.size(), 1);
+    const QUrl url = browser.opened.front();
+    QCOMPARE(url.scheme(), QStringLiteral("https"));
+    QCOMPARE(url.host(), QStringLiteral("github.com"));
+    QCOMPARE(url.path(), QStringLiteral("/javocsoft/Kaichii/issues/new"));
+    const QUrlQuery query(url);
+    QCOMPARE(query.queryItemValue(QStringLiteral("template")),
+             QString::fromLatin1(IssueTemplate));
+    QCOMPARE(query.queryItemValue(QStringLiteral("title"), QUrl::FullyDecoded),
+             QStringLiteral("[Compatibility] Synthetic Switch 2 game (1.0.0): Playable"));
+    const QString report = Report(url);
+    QCOMPARE(report, dialog.Markdown());
+    QVERIFY(report.startsWith(QStringLiteral("**Compatibility:** Playable\n\nSynthetic summary")));
+    QVERIFY(report.contains(QStringLiteral("| Program ID | 0400486024DEC000 |")));
+    QVERIFY(
+        report.contains(QStringLiteral("| Kaichii build | Kaichii build-91 (c5bc78e1b99a) |")));
+    QVERIFY(report.contains(QStringLiteral("| GPU | Unknown |")));
+    QVERIFY(!report.contains(QStringLiteral("Steps to reproduce")));
+    QVERIFY(!dialog.status->text().isEmpty());
+}
+
+void DialogTest::needsTheAssessmentAndTheRequiredFields() {
+    Browser browser;
+    Dialog dialog(Seed(), Repository, nullptr, browser.Opener());
+    QVERIFY(!dialog.open->isEnabled());
+    QVERIFY(!dialog.open->toolTip().isEmpty());
+    dialog.outcome->setCurrentIndex(dialog.outcome->findData(QStringLiteral("Runs")));
+    QVERIFY(!dialog.open->isEnabled());
+    Fill(dialog);
+    QVERIFY(dialog.open->isEnabled());
+    dialog.fields[QStringLiteral("title")]->clear();
+    QVERIFY(!dialog.open->isEnabled());
+    dialog.fields[QStringLiteral("title")]->setText(QStringLiteral("Synthetic Switch 2 game"));
+    dialog.paragraphs[QStringLiteral("details")]->setPlainText(QStringLiteral("bad\u0007char"));
+    QVERIFY(!dialog.open->isEnabled());
+    dialog.Open();
+    QVERIFY(browser.opened.isEmpty());
+    // Optional fields may stay empty.
+    dialog.paragraphs[QStringLiteral("details")]->setPlainText(QStringLiteral("Fine"));
+    dialog.fields[QStringLiteral("ram")]->clear();
+    dialog.paragraphs[QStringLiteral("mods")]->clear();
+    QVERIFY(dialog.open->isEnabled());
+}
+
+void DialogTest::sendsNothingByItself() {
+    Browser browser;
+    {
+        Dialog dialog(Seed(), Repository, nullptr, browser.Opener());
+        Fill(dialog);
+        dialog.copy->click();
+        dialog.clear->click();
+        dialog.reject();
+    }
+    QVERIFY(browser.opened.isEmpty());
+}
+
+void DialogTest::keepsTableValuesInTheirRow() {
+    auto session = Seed();
+    session.cpu = QStringLiteral("A | B");
+    session.settings = QStringLiteral("first line\nsecond line");
+    Dialog dialog(session, Repository, nullptr, NoBrowser);
+    Fill(dialog);
+    const QString report = dialog.Markdown();
+    QVERIFY(report.contains(QStringLiteral("| CPU | A \\| B |")));
+    QVERIFY(report.contains(QStringLiteral("| Launch settings | first line<br>second line |")));
+    // The player's own paragraphs keep their lines.
+    dialog.paragraphs[QStringLiteral("details")]->setPlainText(QStringLiteral("one\ntwo"));
+    QVERIFY(dialog.Markdown().contains(QStringLiteral("**What worked or failed**\n\none\ntwo")));
+}
+
+void DialogTest::longReportsGoThroughTheClipboard() {
+    Browser browser;
+    Dialog dialog(Seed(), Repository, nullptr, browser.Opener());
+    Fill(dialog);
+    dialog.paragraphs[QStringLiteral("details")]->setPlainText(QString(5900, QLatin1Char('&')));
+    QGuiApplication::clipboard()->clear();
+    dialog.open->click();
+    QCOMPARE(browser.opened.size(), 1);
+    QVERIFY(browser.opened.front().toEncoded().size() < 7000);
+    QVERIFY(Report(browser.opened.front()).contains(QStringLiteral("clipboard")));
+    QCOMPARE(QGuiApplication::clipboard()->text(), dialog.Markdown());
+    const auto link = NewIssueLink(Repository, dialog.Title(), dialog.Markdown());
+    QVERIFY(!link.report_included);
+    QVERIFY(NewIssueLink(Repository, dialog.Title(), QStringLiteral("short")).report_included);
+}
+
+void DialogTest::browserFailureKeepsTheReport() {
+    Browser browser;
+    browser.opens = false;
+    Dialog dialog(Seed(), Repository, nullptr, browser.Opener());
+    Fill(dialog);
+    QGuiApplication::clipboard()->clear();
+    dialog.open->click();
+    QCOMPARE(browser.opened.size(), 1);
+    QCOMPARE(QGuiApplication::clipboard()->text(), dialog.Markdown());
+    QVERIFY(dialog.status->text().contains(QStringLiteral("github.com/javocsoft/Kaichii")));
+}
+
+void DialogTest::refusesAnInvalidRepository() {
+    for (const auto& repository :
+         {QString{}, QStringLiteral("Kaichii"), QStringLiteral("evil.example/x?y"),
+          QStringLiteral("a/b/c"), QStringLiteral("owner/repo#fragment")}) {
+        QVERIFY2(NewIssueLink(repository, QStringLiteral("t"), QStringLiteral("r")).url.isEmpty(),
+                 qPrintable(repository));
+    }
+    Browser browser;
+    Dialog dialog(Seed(), QString{}, nullptr, browser.Opener());
+    Fill(dialog);
+    dialog.open->click();
+    QVERIFY(browser.opened.isEmpty());
+    QVERIFY(!dialog.status->text().isEmpty());
+}
+
+void DialogTest::clearEmptiesTheDraft() {
+    Dialog dialog(Seed(), Repository, nullptr, NoBrowser);
+    Fill(dialog);
     dialog.clear->click();
-    dialog.reject();
-    QCOMPARE(network.requests.size(), 0);
-}
-
-void DialogTest::explicitCatalogAndPaging() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    dialog.search->click();
-    QCOMPARE(network.requests.size(), 1);
-    const auto& request = network.requests.first().request;
-    QCOMPARE(request.url().path(), QStringLiteral("/api/games"));
-    QCOMPARE(QUrlQuery(request.url()).queryItemValue(QStringLiteral("sort")),
-             QStringLiteral("title"));
-    QVERIFY(!request.hasRawHeader("X-Lichii-Client"));
-    network.requests.last().reply->Complete(200, Catalog(1, 2));
-    QCOMPARE(dialog.confirmed_game, 0);
-    dialog.confirm->click();
-    QCOMPARE(dialog.confirmed_game, 12345);
-    QCOMPARE(network.requests.size(), 1);
-    dialog.next->click();
-    QCOMPARE(network.requests.size(), 2);
-    QCOMPARE(
-        QUrlQuery(network.requests.last().request.url()).queryItemValue(QStringLiteral("page")),
-        QStringLiteral("2"));
-    QCOMPARE(dialog.confirmed_game, 0);
-    network.requests.last().reply->Complete(200, Catalog(2, 2));
-    QVERIFY(!dialog.next->isEnabled());
-    dialog.previous->click();
-    QCOMPARE(network.requests.size(), 3);
-    auto pending = network.requests.last().reply;
-    dialog.query->setText(QStringLiteral("Changed title"));
-    QVERIFY(pending->aborted);
-    pending->Complete(200, Catalog());
-    QCOMPARE(dialog.games->count(), 0);
-    QCOMPARE(dialog.confirmed_game, 0);
-}
-
-void DialogTest::consentAndDoubleSubmit() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    Prepare(dialog, network);
-    QVERIFY(dialog.ValidationError().isEmpty());
-    dialog.Submit();
-    QCOMPARE(network.requests.size(), 1);
-    dialog.public_consent->setChecked(true);
-    dialog.Submit();
-    QCOMPARE(network.requests.size(), 1);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    dialog.Submit();
-    QCOMPARE(network.requests.size(), 2);
-    QVERIFY(!dialog.submit->isEnabled());
-    const auto& sent = network.requests.last();
-    QCOMPARE(sent.operation, QNetworkAccessManager::PostOperation);
-    QCOMPARE(sent.request.url().toString(),
-             QStringLiteral("https://lichii.zortos.me/api/v1/desktop/reports"));
-    QCOMPARE(sent.request.rawHeader("X-Lichii-Client"), QByteArray("desktop/1"));
-    QVERIFY(!QUuid(QString::fromUtf8(sent.request.rawHeader("Idempotency-Key"))).isNull());
-    for (const auto& header : {"Cookie", "Authorization", "Origin", "Sec-Fetch-Site"}) {
-        QVERIFY(!sent.request.hasRawHeader(header));
-    }
-    QCOMPARE(sent.request.attribute(QNetworkRequest::CookieLoadControlAttribute).toInt(),
-             int(QNetworkRequest::Manual));
-    QCOMPARE(sent.request.attribute(QNetworkRequest::CookieSaveControlAttribute).toInt(),
-             int(QNetworkRequest::Manual));
-    QCOMPARE(sent.request.attribute(QNetworkRequest::AuthenticationReuseAttribute).toInt(),
-             int(QNetworkRequest::Manual));
-    QCOMPARE(sent.request.attribute(QNetworkRequest::RedirectPolicyAttribute).toInt(),
-             int(QNetworkRequest::ManualRedirectPolicy));
-    const auto object = QJsonDocument::fromJson(sent.body).object();
-    const QStringList expected_fields{
-        QStringLiteral("build"),         QStringLiteral("cpu"),
-        QStringLiteral("details"),       QStringLiteral("driver"),
-        QStringLiteral("gameId"),        QStringLiteral("gameVersion"),
-        QStringLiteral("gpu"),           QStringLiteral("graphicsApi"),
-        QStringLiteral("handle"),        QStringLiteral("mods"),
-        QStringLiteral("name"),          QStringLiteral("os"),
-        QStringLiteral("outcome"),       QStringLiteral("progress"),
-        QStringLiteral("publicConsent"), QStringLiteral("ram"),
-        QStringLiteral("reproduction"),  QStringLiteral("safeFilesConsent"),
-        QStringLiteral("settings"),      QStringLiteral("summary"),
-        QStringLiteral("updates")};
-    QCOMPARE(object.keys(), expected_fields);
-    QCOMPARE(object.value(QStringLiteral("gameId")).toInt(), 12345);
-    QVERIFY(object.value(QStringLiteral("publicConsent")).toBool());
-    QVERIFY(object.value(QStringLiteral("safeFilesConsent")).toBool());
-    for (const auto& key : {"log", "privateLogConsent", "website", "programId", "title", "path"}) {
-        QVERIFY(!object.contains(QString::fromLatin1(key)));
-    }
-    QCOMPARE(object.value(QStringLiteral("gpu")).toString(), QStringLiteral("Unknown"));
-    network.requests.last().reply->Complete(
-        201,
-        R"({"id":"12345678-1234-4234-8234-123456789abc","url":"https://lichii.zortos.me/reports/12345678-1234-4234-8234-123456789abc"})");
-    QCOMPARE(dialog.state, Dialog::State::Finished);
-    dialog.Submit();
-    QCOMPARE(network.requests.size(), 2);
-}
-
-void DialogTest::retryIdentityAndEdits() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    Prepare(dialog, network);
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    const auto original = network.requests.last();
-    original.reply->Complete(503, "{}");
-    QCOMPARE(network.requests.size(), 2);
-    QVERIFY(!dialog.public_consent->isChecked());
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    QCOMPARE(network.requests.size(), 3);
-    QCOMPARE(network.requests.last().body, original.body);
-    QCOMPARE(network.requests.last().request.rawHeader("Idempotency-Key"),
-             original.request.rawHeader("Idempotency-Key"));
-    network.requests.last().reply->Complete(400, R"({"fields":{"summary":["Too long"]}})");
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.fields[QStringLiteral("summary")]->setText(QStringLiteral("Edited synthetic draft"));
-    QVERIFY(!dialog.public_consent->isChecked());
-    QVERIFY(!dialog.safe_files_consent->isChecked());
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    QVERIFY(network.requests.last().request.rawHeader("Idempotency-Key") !=
-            original.request.rawHeader("Idempotency-Key"));
-}
-
-void DialogTest::rateLimitAndCancellation() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    Prepare(dialog, network);
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    network.requests.last().reply->Complete(429, "{}", "1");
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    QVERIFY(!dialog.submit->isEnabled());
-    dialog.Submit();
-    QCOMPARE(network.requests.size(), 2);
-    QTest::qWait(1100);
-    dialog.Refresh();
-    QVERIFY(dialog.submit->isEnabled());
-    dialog.Submit();
-    auto pending = network.requests.last().reply;
-    dialog.reject();
-    QVERIFY(pending->aborted);
-    pending->Complete(201, "{}");
-    QCOMPARE(dialog.state, Dialog::State::Closed);
-    QCOMPARE(network.requests.size(), 3);
-}
-
-void DialogTest::invalidCatalog_data() {
-    QTest::addColumn<QByteArray>("body");
-    QTest::newRow("not-json") << QByteArray("invalid");
-    QTest::newRow("wrong-id") << QByteArray(
-        R"({"games":[{"sgdbId":"123","title":"Title","slug":"title"}],"page":1,"pageCount":1})");
-    QTest::newRow("fractional-id") << QByteArray(
-        R"({"games":[{"sgdbId":1.5,"title":"Title","slug":"title"}],"page":1,"pageCount":1})");
-    QTest::newRow("missing-games") << QByteArray(R"({"page":1,"pageCount":1})");
-    QTest::newRow("oversized") << QByteArray(256 * 1024 + 1, 'x');
-}
-
-void DialogTest::invalidCatalog() {
-    QFETCH(QByteArray, body);
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    dialog.search->click();
-    network.requests.last().reply->Complete(200, body);
-    QCOMPARE(dialog.games->count(), 0);
-    QCOMPARE(dialog.confirmed_game, 0);
-    QVERIFY(!dialog.submit->isEnabled());
-}
-
-void DialogTest::unsafeReceiptAndRedirect() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    Prepare(dialog, network);
-    for (const auto http_status : {302, 201}) {
-        dialog.public_consent->setChecked(true);
-        dialog.safe_files_consent->setChecked(true);
-        dialog.Submit();
-        network.requests.last().reply->Complete(
-            http_status,
-            R"({"id":"12345678-1234-4234-8234-123456789abc","url":"https://evil.example/reports/12345678-1234-4234-8234-123456789abc"})");
-        QVERIFY(dialog.receipt_url.isEmpty());
-        QCOMPARE(dialog.state, Dialog::State::Editing);
-    }
-    QCOMPARE(network.requests.size(), 3);
-}
-
-void DialogTest::localValidationAndClear() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    Prepare(dialog, network);
-    dialog.fields[QStringLiteral("handle")]->setText(QStringLiteral("not valid!"));
-    QVERIFY(!dialog.ValidationError().isEmpty());
-    dialog.fields[QStringLiteral("handle")]->clear();
-    dialog.paragraphs[QStringLiteral("details")]->setPlainText(QString(6001, QLatin1Char('x')));
-    QVERIFY(!dialog.ValidationError().isEmpty());
-    dialog.paragraphs[QStringLiteral("details")]->setPlainText(QStringLiteral("Text") + QChar(1));
-    QVERIFY(!dialog.ValidationError().isEmpty());
-    dialog.clear->click();
-    QCOMPARE(dialog.confirmed_game, 0);
+    QCOMPARE(dialog.outcome->currentIndex(), 0);
+    QVERIFY(dialog.fields[QStringLiteral("summary")]->text().isEmpty());
     QVERIFY(dialog.fields[QStringLiteral("cpu")]->text().isEmpty());
     QVERIFY(dialog.paragraphs[QStringLiteral("details")]->toPlainText().isEmpty());
-    QCOMPARE(network.requests.size(), 1);
+    QVERIFY(!dialog.open->isEnabled());
 }
 
-void DialogTest::isolatedHttpTransport() {
-    QTcpServer server;
-    QVERIFY(server.listen(QHostAddress::LocalHost));
-    class LocalNetwork final : public QNetworkAccessManager {
-    public:
-        quint16 port{};
-        int count{};
-
-    protected:
-        QNetworkReply* createRequest(Operation operation, const QNetworkRequest& request,
-                                     QIODevice* body) override {
-            auto local = request;
-            auto url = local.url();
-            if (url.host() != QStringLiteral("lichii.zortos.me")) {
-                qFatal("Unexpected request destination in local-only test");
-            }
-            url.setScheme(QStringLiteral("http"));
-            url.setHost(QStringLiteral("127.0.0.1"));
-            url.setPort(port);
-            local.setUrl(url);
-            ++count;
-            return QNetworkAccessManager::createRequest(operation, local, body);
-        }
-    } network;
-    network.port = server.serverPort();
-    network.cookieJar()->setCookiesFromUrl(
-        {QNetworkCookie("test-session", "must-not-be-sent")},
-        QUrl(QStringLiteral("http://127.0.0.1:%1/").arg(network.port)));
-    QList<QByteArray> wire_requests;
-    connect(&server, &QTcpServer::newConnection, &server, [&] {
-        auto* socket = server.nextPendingConnection();
-        auto bytes = std::make_shared<QByteArray>();
-        connect(socket, &QTcpSocket::readyRead, &server, [&, socket, bytes] {
-            bytes->append(socket->readAll());
-            const auto split = bytes->indexOf("\r\n\r\n");
-            if (split < 0) {
-                return;
-            }
-            qsizetype content_length = 0;
-            for (const auto& line : bytes->left(split).split('\n')) {
-                if (line.toLower().startsWith("content-length:")) {
-                    content_length = line.mid(line.indexOf(':') + 1).trimmed().toLongLong();
-                }
-            }
-            if (bytes->size() < split + 4 + content_length) {
-                return;
-            }
-            wire_requests.append(*bytes);
-            const QByteArray body =
-                bytes->startsWith("GET ")
-                    ? Catalog()
-                    : QByteArray(
-                          R"({"id":"12345678-1234-4234-8234-123456789abc","url":"https://lichii.zortos.me/reports/12345678-1234-4234-8234-123456789abc"})");
-            socket->write("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: "
-                          "close\r\nContent-Length: " +
-                          QByteArray::number(body.size()) + "\r\n\r\n" + body);
-            socket->disconnectFromHost();
-        });
-    });
-    Dialog dialog(Seed(), &network, nullptr);
-    QTest::qWait(20);
-    QCOMPARE(network.count, 0);
-    const auto query_text = QStringLiteral("Café + %2B & #?");
-    dialog.query->setText(QStringLiteral("  %1  ").arg(query_text));
-    dialog.search->click();
-    QTRY_COMPARE(dialog.games->count(), 1);
-    dialog.confirm->click();
-    dialog.fields[QStringLiteral("summary")]->setText(QStringLiteral("Loopback fixture only"));
-    dialog.paragraphs[QStringLiteral("progress")]->setPlainText(QStringLiteral("Opening area"));
-    dialog.paragraphs[QStringLiteral("details")]->setPlainText(
-        QStringLiteral("Synthetic local fixture"));
-    dialog.outcome->setCurrentIndex(2);
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    QCOMPARE(network.count, 1);
-    dialog.submit->click();
-    dialog.Submit();
-    QTRY_COMPARE(dialog.state, Dialog::State::Finished);
-    QCOMPARE(network.count, 2);
-    QCOMPARE(wire_requests.size(), 2);
-    const auto target = wire_requests.first().split(' ').value(1);
-    QByteArray encoded_query;
-    for (const auto& item : target.mid(target.indexOf('?') + 1).split('&')) {
-        if (item.startsWith("q=")) {
-            encoded_query = item.mid(2);
-        }
-    }
-    QCOMPARE(QUrl::fromPercentEncoding(encoded_query.replace('+', ' ')), query_text);
-    for (const auto& request : wire_requests) {
-        const auto headers = request.left(request.indexOf("\r\n\r\n")).toLower();
-        QVERIFY(!headers.contains("\r\ncookie:"));
-        QVERIFY(!headers.contains("\r\nauthorization:"));
-        QVERIFY(!headers.contains("\r\norigin:"));
-        QVERIFY(!headers.contains("\r\nsec-fetch-"));
-    }
-    const auto request = wire_requests.last();
-    QMap<QByteArray, QByteArray> headers;
-    for (const auto& line : request.left(request.indexOf("\r\n\r\n")).split('\n')) {
-        const auto colon = line.indexOf(':');
-        if (colon > 0) {
-            headers.insert(line.left(colon).trimmed().toLower(), line.mid(colon + 1).trimmed());
-        }
-    }
-    QCOMPARE(headers.value("x-lichii-client"), QByteArray("desktop/1"));
-    const auto body = request.mid(request.indexOf("\r\n\r\n") + 4);
-    QCOMPARE(body, dialog.submitted_payload);
-    QVERIFY(!body.contains("must-not-be-sent"));
-}
-
-void DialogTest::serverRejections_data() {
-    QTest::addColumn<int>("code");
-    for (const int code : {400, 403, 409, 413, 415, 500, 503}) {
-        QTest::newRow(QByteArray::number(code).constData()) << code;
-    }
-}
-
-void DialogTest::serverRejections() {
-    QFETCH(int, code);
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    Prepare(dialog, network);
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    network.requests.last().reply->Complete(
-        code,
-        R"({"error":"<script>untrusted</script>","fields":{"summary":["Untrusted server text"]}})");
-    QCOMPARE(dialog.state, Dialog::State::Editing);
-    QCOMPARE(network.requests.size(), 2);
-    QVERIFY(!dialog.public_consent->isChecked());
-    QVERIFY(!dialog.safe_files_consent->isChecked());
-    QVERIFY(!dialog.status->text().contains(QStringLiteral("untrusted"), Qt::CaseInsensitive));
-    QVERIFY(!dialog.fields[QStringLiteral("summary")]->text().isEmpty());
-    if (code == 400) {
-        QVERIFY(dialog.status->text().contains(QStringLiteral("summary")));
-    }
-}
-
-void DialogTest::reconfirmationKeepsRetryIdentity() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    Prepare(dialog, network);
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    const auto original = network.requests.last();
-    original.reply->Complete(503, "{}");
-    dialog.confirm->click();
-    QCOMPARE(network.requests.size(), 2);
-    QCOMPARE(dialog.submission_key, original.request.rawHeader("Idempotency-Key"));
-    QCOMPARE(dialog.submitted_payload, original.body);
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    QCOMPARE(network.requests.last().request.rawHeader("Idempotency-Key"),
-             original.request.rawHeader("Idempotency-Key"));
-    QCOMPARE(network.requests.last().body, original.body);
-    network.requests.last().reply->Complete(503, "{}");
-    dialog.games->addItem(QStringLiteral("Different catalog game"), 98765);
-    dialog.games->setCurrentIndex(1);
-    dialog.confirm->click();
-    QVERIFY(dialog.submission_key.isEmpty());
-    QVERIFY(!dialog.public_consent->isChecked());
-    QVERIFY(!dialog.safe_files_consent->isChecked());
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    QVERIFY(network.requests.last().request.rawHeader("Idempotency-Key") !=
-            original.request.rawHeader("Idempotency-Key"));
-}
-
-void DialogTest::cooldownPreservesPreviewSelection() {
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
-    Prepare(dialog, network);
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.Submit();
-    network.requests.last().reply->Complete(429, "{}", "60");
-    dialog.tabs->setCurrentWidget(dialog.preview);
-    dialog.show();
-    QTest::qWait(20);
-    auto cursor = dialog.preview->textCursor();
-    cursor.setPosition(20);
-    cursor.setPosition(80, QTextCursor::KeepAnchor);
-    dialog.preview->setTextCursor(cursor);
-    auto* scroll = dialog.preview->verticalScrollBar();
-    scroll->setValue(scroll->maximum());
-    const auto position = scroll->value();
-    const auto selected = cursor.selectedText();
-    QTest::qWait(1200);
-    QCOMPARE(dialog.preview->textCursor().selectedText(), selected);
-    QCOMPARE(scroll->value(), position);
-    QVERIFY(!dialog.submit->isEnabled());
-    QCOMPARE(network.requests.size(), 2);
+void DialogTest::matchesTheIssueTemplate() {
+    QFile file(QStringLiteral(ISSUE_TEMPLATE_DIR "/") + QString::fromLatin1(IssueTemplate));
+    QVERIFY2(file.open(QIODevice::ReadOnly), qPrintable(file.fileName()));
+    const QString form = QString::fromUtf8(file.readAll());
+    QVERIFY(form.contains(QStringLiteral("id: ") + QString::fromLatin1(ReportField)));
+    QVERIFY(form.contains(QStringLiteral("title: \"[Compatibility] \"")));
 }
 
 void DialogTest::dialogTranslationContext() {
@@ -622,40 +263,27 @@ void DialogTest::dialogTranslationContext() {
         }
     } translator;
     QCoreApplication::installTranslator(&translator);
-    FakeNetwork network;
-    Dialog dialog(Seed(), &network, nullptr);
+    Dialog dialog(Seed(), Repository, nullptr, NoBrowser);
     const auto title = dialog.windowTitle();
     QCoreApplication::removeTranslator(&translator);
     QCOMPARE(title, QStringLiteral("Translated report title"));
 }
 
 void DialogTest::machinePrefillsRemainEditable() {
-    FakeNetwork network;
     auto session = Seed();
     session.gpu = QStringLiteral(" Active rendering GPU ");
     session.driver = QStringLiteral(" Driver 123.45 ");
-    Dialog dialog(session, &network, nullptr);
-    QCOMPARE(network.requests.size(), 0);
+    Dialog dialog(session, Repository, nullptr, NoBrowser);
     QCOMPARE(dialog.fields[QStringLiteral("gpu")]->text(), QStringLiteral("Active rendering GPU"));
     QCOMPARE(dialog.fields[QStringLiteral("driver")]->text(), QStringLiteral("Driver 123.45"));
     QCOMPARE(dialog.graphics_api->currentText(), QStringLiteral("Vulkan"));
     QCOMPARE(dialog.fields[QStringLiteral("cpu")]->text(), session.cpu);
     QCOMPARE(dialog.fields[QStringLiteral("ram")]->text(), session.ram);
     QCOMPARE(dialog.fields[QStringLiteral("os")]->text(), session.os);
-    session.gpu.clear();
-    session.driver.clear();
-    QCOMPARE(dialog.fields[QStringLiteral("gpu")]->text(), QStringLiteral("Active rendering GPU"));
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
+    QCOMPARE(dialog.fields[QStringLiteral("title")]->text(), session.title);
     dialog.fields[QStringLiteral("driver")]->setText(QStringLiteral("Corrected driver"));
-    QVERIFY(!dialog.public_consent->isChecked());
-    QVERIFY(!dialog.safe_files_consent->isChecked());
-    const auto payload = QJsonDocument::fromJson(dialog.Payload()).object();
-    QCOMPARE(payload.value(QStringLiteral("driver")).toString(),
-             QStringLiteral("Corrected driver"));
-    QCOMPARE(payload.value(QStringLiteral("gpu")).toString(),
-             QStringLiteral("Active rendering GPU"));
-    QCOMPARE(network.requests.size(), 0);
+    QVERIFY(dialog.Markdown().contains(QStringLiteral("| GPU driver | Corrected driver |")));
+    QVERIFY(dialog.preview->toPlainText().contains(QStringLiteral("Corrected driver")));
 }
 
 void DialogTest::enabledAddonPrefills() {
@@ -675,19 +303,10 @@ void DialogTest::enabledAddonPrefills() {
     const auto long_summary = SummarizeEnabledAddons({{QString(700, QLatin1Char('x')), {}, true}});
     QVERIFY(long_summary.size() <= 500);
     QVERIFY(long_summary.endsWith(QStringLiteral("(list truncated; review)")));
-    FakeNetwork network;
-    Dialog dialog(session, &network, nullptr);
+    Dialog dialog(session, Repository, nullptr, NoBrowser);
     QCOMPARE(dialog.paragraphs[QStringLiteral("mods")]->toPlainText(), session.mods);
     QCOMPARE(dialog.paragraphs[QStringLiteral("updates")]->toPlainText(), session.updates);
-    const auto object = QJsonDocument::fromJson(dialog.Payload()).object();
-    QCOMPARE(object.value(QStringLiteral("mods")).toString(), session.mods);
-    QCOMPARE(object.value(QStringLiteral("updates")).toString(), session.updates);
-    dialog.public_consent->setChecked(true);
-    dialog.safe_files_consent->setChecked(true);
-    dialog.paragraphs[QStringLiteral("mods")]->setPlainText(QStringLiteral("Corrected mod list"));
-    QVERIFY(!dialog.public_consent->isChecked());
-    QVERIFY(!dialog.safe_files_consent->isChecked());
-    QCOMPARE(network.requests.size(), 0);
+    QVERIFY(dialog.Markdown().contains(QStringLiteral("| Mods | ") + session.mods));
 }
 
 } // namespace CompatibilityReporting

@@ -152,7 +152,7 @@ void SettingHelpTest::HelpTextNamesEffectsAndValues() {
     QVERIFY(!frame_gen.contains(QStringLiteral("option")));
 
     const QString dump = SettingHelpHtml(Settings::values.frame_gen_dump_flow, context);
-    QVERIFY(dump.contains(QStringLiteral("Developer option: for debugging Lichii")));
+    QVERIFY(dump.contains(QStringLiteral("Developer option: for debugging Kaichii")));
 
     // Interface settings don't wait for a game, and no preset sets them.
     const QString updates = SettingHelpHtml(UISettings::values.check_for_updates, context);
