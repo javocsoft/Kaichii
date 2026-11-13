@@ -470,7 +470,10 @@ private:
     void UpdateGPUAccuracyButton();
     void UpdateStatusButtons();
     void UpdateUISettings();
-    void OfferPerformancePreset();
+    /// Games folder, preset and console mode for a new installation; also in the Help menu.
+    void ShowFirstRunAssistant();
+    /// Adds a folder to the game list and scans it.
+    void AddGameDirectory(const QString& dir_path);
     void UpdateInputDrivers();
     void HideMouseCursor();
     void ShowMouseCursor();
