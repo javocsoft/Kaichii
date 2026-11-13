@@ -71,6 +71,7 @@ add_executable(tests
     video_core/storage_write_extent.cpp
     video_core/storage_buffer_control_flow.cpp
     core/nup_validation.cpp
+    core/ncz_io_guards.cpp
     input_common/calibration_lifetime.cpp
     input_common/motion_stall_watch.cpp
     video_core/ampere_logged_numeric.cpp
