@@ -10,7 +10,7 @@ skip here because the remote already exists.
 
 | Remote | Repository | Use |
 |---|---|---|
-| `origin` | `javocsoft/Lichii` | Your fork. Push here |
+| `origin` | `javocsoft/Kaichii` | Your fork. Push here |
 | `lichii` | `zortos293/Lichii` | The main project. Read-only: pushing is disabled |
 | `upstream` | `Djihads80/Eglantine` | The project Lichii forks. Check it before writing a game fix |
 
@@ -21,7 +21,7 @@ git merge lichii/nx2
 ```
 
 `nx2` is protected, so push the branch and open a PR. `gh pr create` in a fork targets the parent
-repository by default, so pass `-R javocsoft/Lichii`. The merge can bring switches or typos the gate
+repository by default, so pass `-R javocsoft/Kaichii`. The merge can bring switches or typos the gate
 rejects: fix those on the same branch.
 
 ## Lower a new Ampere instruction

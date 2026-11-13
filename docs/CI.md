@@ -14,7 +14,7 @@ workflow added, renamed or removed must be updated here in the same commit.
 | `release-binaries.yml` | Manual, or pushes to `nx2-experimental` that change build inputs | Builds every platform and publishes a `build-<run number>` GitHub release. | No |
 | `label-issues.yml` | New issues | Labels issues from their form fields. | No |
 
-Merge blocking is a repository setting. `nx2` in `javocsoft/Lichii` requires all four checks on an
+Merge blocking is a repository setting. `nx2` in `javocsoft/Kaichii` requires all four checks on an
 up-to-date branch, for admins too, and allows no force pushes. So every change reaches `nx2` through
 a pull request, including a sync from another repository. `zortos293/Lichii` has no branch protection.
 
@@ -66,7 +66,7 @@ to `nx2-experimental` that touches `src/` (other than `src/tests/`), `CMakeLists
 `externals/`, `dist/`, `tools/`, `.patch/`, `cpmfile.json` or the workflow itself.
 
 Its builds check for updates in the releases of the repository that built them: CMake's
-`LICHII_UPDATE_REPO` defaults to `GITHUB_REPOSITORY`, and to `javocsoft/Lichii` outside GitHub
+`LICHII_UPDATE_REPO` defaults to `GITHUB_REPOSITORY`, and to `javocsoft/Kaichii` outside GitHub
 Actions. Another repository's builds carry their own build numbers, so offering them would replace
 this fork's build with one that lacks its changes.
 

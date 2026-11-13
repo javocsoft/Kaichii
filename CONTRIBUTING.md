@@ -1,7 +1,7 @@
 # Contributing
 
 Kaichii is developed in this repository. Open issues and pull requests on
-[javocsoft/Lichii](https://github.com/javocsoft/Lichii).
+[javocsoft/Kaichii](https://github.com/javocsoft/Kaichii).
 
 See the [build guide](docs/Build.md) for your platform and the
 [coding guidelines](docs/Coding.md) for technical guidance. Keep changes focused,

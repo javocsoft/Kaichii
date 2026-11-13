@@ -22,7 +22,7 @@ ManifestDPIAware true
 
 !define PRODUCT_NAME "Kaichii"
 !define PRODUCT_PUBLISHER "JavocSoft"
-!define PRODUCT_WEB_SITE "https://github.com/javocsoft/Lichii"
+!define PRODUCT_WEB_SITE "https://github.com/javocsoft/Kaichii"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 

@@ -28,8 +28,8 @@
     </message>
     <message>
         <location line="+26"/>
-        <source>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/javocsoft/Lichii&quot;&gt;Source code&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii/issues&quot;&gt;Report an issue&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii#credits-and-license&quot;&gt;Credits and license&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/javocsoft/Lichii&quot;&gt;Código fuente&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii/issues&quot;&gt;Informar de un problema&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii#credits-and-license&quot;&gt;Créditos y licencia&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/javocsoft/Kaichii&quot;&gt;Source code&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Kaichii/issues&quot;&gt;Report an issue&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Kaichii#credits-and-license&quot;&gt;Credits and license&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/javocsoft/Kaichii&quot;&gt;Código fuente&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Kaichii/issues&quot;&gt;Informar de un problema&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Kaichii#credits-and-license&quot;&gt;Créditos y licencia&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Kaichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>

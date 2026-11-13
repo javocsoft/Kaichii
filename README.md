@@ -49,7 +49,7 @@ Kaichii is developed and measured on a laptop with an RTX 3050 (4 GB of video me
 - **PGO builds**, compiled with profiles recorded while playing.
 
 On that laptop, the hardware presets, texture decoding on the processor and stall-free reads took
-Ocarina of Time from 14 to 42 fps ([#9](https://github.com/javocsoft/Lichii/pull/9)). Results vary
+Ocarina of Time from 14 to 42 fps ([#9](https://github.com/javocsoft/Kaichii/pull/9)). Results vary
 with the game, the hardware and the driver.
 
 ### Settings anyone can follow
@@ -81,7 +81,7 @@ with the game, the hardware and the driver.
 
 ## Download
 
-Builds are on the [releases page](https://github.com/javocsoft/Lichii/releases). The PGO builds are
+Builds are on the [releases page](https://github.com/javocsoft/Kaichii/releases). The PGO builds are
 recommended.
 
 | System | File | How to run it |
@@ -99,7 +99,7 @@ they are. A build still named Lichii won't update itself to Kaichii: download Ka
 
 ## Reporting a problem
 
-Open an [issue](https://github.com/javocsoft/Lichii/issues) and include:
+Open an [issue](https://github.com/javocsoft/Kaichii/issues) and include:
 
 - The build (the first line of the log, `Kaichii Version: ...`), the game and its version, and your
   processor, graphics card and driver version.

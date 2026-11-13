@@ -121,7 +121,7 @@
        <item>
         <widget class="QLabel" name="labelLinks">
          <property name="text">
-          <string>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/javocsoft/Lichii&quot;&gt;Source code&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii/issues&quot;&gt;Report an issue&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii#credits-and-license&quot;&gt;Credits and license&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/javocsoft/Kaichii&quot;&gt;Source code&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Kaichii/issues&quot;&gt;Report an issue&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Kaichii#credits-and-license&quot;&gt;Credits and license&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="openExternalLinks">
           <bool>true</bool>
