@@ -102,7 +102,7 @@ Two settings are easy to get wrong:
 ## Running a game
 
 A machine with a GPU and your own legally obtained game can run one without anyone at the controls.
-`eden-cli` from the container runs on an Ubuntu 24.04 host as it is; `lichii` needs the container's
+`eden-cli` from the container runs on an Ubuntu 24.04 host as it is; `kaichii` needs the container's
 Qt. A `.nup` boots with no keys or firmware.
 
 Point every data directory somewhere else first, even for `--help`, or the run writes into the

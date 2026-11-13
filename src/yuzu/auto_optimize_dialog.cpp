@@ -43,7 +43,7 @@ AutoOptimizeDialog::AutoOptimizeDialog(QWidget* parent, Core::System& system_,
     text->setWordWrap(true);
     text->setTextFormat(Qt::RichText);
     text->setText(
-        tr("<p>Lichii measures the game as it runs now, tries frame generation for a few "
+        tr("<p>Kaichii measures the game as it runs now, tries frame generation for a few "
            "seconds, and then proposes changes. Nothing is changed until you accept.</p>"
            "<p><b>Before you start:</b> stand somewhere demanding (outdoors, with the camera "
            "still) and don't pause or open menus for about %1 seconds.</p>")

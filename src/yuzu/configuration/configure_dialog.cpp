@@ -330,7 +330,7 @@ void ConfigureDialog::RetranslateGoalPages() {
         tr("Shows the options for fine tuning and for fixing problems in games, and the "
            "Advanced category."));
     developer_mode_box->setText(tr("Developer mode"));
-    developer_mode_box->setToolTip(tr("Also shows the options for debugging Lichii."));
+    developer_mode_box->setToolTip(tr("Also shows the options for debugging Kaichii."));
     UpdateSidebarWidth();
 }
 

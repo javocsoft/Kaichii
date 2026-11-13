@@ -79,7 +79,7 @@ QString LevelText(SettingLevel level) {
     case SettingLevel::Expert:
         return tr("Expert option: change it only to fix a problem in a game");
     case SettingLevel::Developer:
-        return tr("Developer option: for debugging Lichii");
+        return tr("Developer option: for debugging Kaichii");
     }
     return {};
 }

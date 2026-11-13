@@ -4,9 +4,9 @@ Graphical enhancements and visual quality improvements. This doesn't cover textu
 
 ## Performance presets
 
-**Configure > Performance** shows what Lichii found about the computer (graphics card, video
+**Configure > Performance** shows what Kaichii found about the computer (graphics card, video
 memory, processor threads, RAM) and four presets. The one for that hardware is marked as
-recommended, and Lichii offers it once on its first start.
+recommended, and Kaichii offers it once on its first start.
 
 | Preset | Resolution | For |
 |---|---|---|

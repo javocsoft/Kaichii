@@ -38,7 +38,7 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
 
     // Applets
     const QString applet_modes =
-        tr("Custom frontend: Lichii answers in the applet's place, with its own window where it "
+        tr("Custom frontend: Kaichii answers in the applet's place, with its own window where it "
            "has one, and needs no firmware. Real applet: the console's own screen, from the "
            "installed firmware.");
     INSERT(Settings, cabinet_applet_mode, tr("Amiibo editor"),
@@ -92,7 +92,7 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
 
     // Audio
     INSERT(Settings, sink_id, tr("Output Engine:"),
-           tr("The system Lichii plays sound through. Auto picks one that works here; change it "
+           tr("The system Kaichii plays sound through. Auto picks one that works here; change it "
               "only if there is no sound or it crackles. Null plays nothing."));
     INSERT(Settings, audio_output_device_id, tr("Output Device:"),
            tr("Where the game's sound plays. Auto follows your system's default output."));
@@ -187,9 +187,9 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
 
     // Renderer
     INSERT(Settings, renderer_backend, tr("API:"),
-           tr("The graphics API Lichii draws with. Vulkan is recommended."));
+           tr("The graphics API Kaichii draws with. Vulkan is recommended."));
     INSERT(Settings, vulkan_device, tr("Device:"),
-           tr("The graphics card Lichii draws with, when the computer has more than one."));
+           tr("The graphics card Kaichii draws with, when the computer has more than one."));
     INSERT(Settings, resolution_setup, tr("Resolution:"),
            tr("The size games are drawn at, as a multiple of their size on the console. Higher is "
               "sharper but needs a faster graphics card and more video memory. Below 1x is faster "
@@ -204,14 +204,14 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
            tr("Runs a Switch 2 game's own DLSS (its upscaling network, translated for this GPU) "
               "instead of AMD FSR 3.1 in its place.\nAMD FSR 3.1 still draws while the network is "
               "checked, when it can't run on this GPU, with resolution scaling, and for the rest "
-              "of the session if its output fails Lichii's checks."));
+              "of the session if its output fails Kaichii's checks."));
     INSERT(Settings, fsr_sharpening_slider, tr("Sharpening:"),
            tr("How strongly FSR 1, FSR 1 Soft and SGSR sharpen the image as they resize it, and "
               "AMD FSR 3.1 where it stands in for a game's DLSS. 0% turns sharpening off."));
     INSERT(Settings, nvidia_dlss, tr("Use NVIDIA DLSS in place of a game's DLSS (experimental)"),
            tr("Uses NVIDIA DLSS on GeForce RTX cards in place of a Switch 2 game's own DLSS, "
               "instead of AMD FSR 3.1.\nNeeds NVIDIA's Streamline loader, and NVIDIA DLSS unless "
-              "the NVIDIA app has downloaded it; Lichii does not ship NVIDIA's files. Use the "
+              "the NVIDIA app has downloaded it; Kaichii does not ship NVIDIA's files. Use the "
               "download button below.\nFire Emblem: Fortune's Weave also needs "
               "EDEN_NX2_DLSS_REPLACEMENT=dlss. Without that override, its spatial workaround "
               "remains active.\nIn The Legend of Zelda: Ocarina of Time it replaces the game's "
@@ -259,7 +259,7 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
            tr("Controls how the emulator manages frame pacing to reduce stuttering and make the "
               "frame rate smoother and more consistent."));
     INSERT(Settings, vram_usage_mode, tr("VRAM Usage Mode:"),
-           tr("Whether Lichii keeps its use of video memory low or uses as much as the card has, "
+           tr("Whether Kaichii keeps its use of video memory low or uses as much as the card has, "
               "for speed. Aggressive can slow other programs that use the graphics card, such as "
               "recording software."));
     INSERT(Settings, skip_cpu_inner_invalidation, tr("Skip CPU Inner Invalidation"),
@@ -287,7 +287,7 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "menu) measures whether it pays off for a game."));
     INSERT(Settings, frame_gen_type, tr("Frame Generation Type"),
            tr("Optical Flow is built in. LSFG uses Lossless Scaling's frame generation and needs "
-              "Lossless.dll from Lossless Scaling in Lichii's \"lossless\" folder."));
+              "Lossless.dll from Lossless Scaling in Kaichii's \"lossless\" folder."));
     INSERT(Settings, frame_gen_multiplier, tr("Frame Generation Multiplier"),
            tr("How many frames reach the screen for each one the game draws: 2x adds one, 3x two, "
               "4x three. More is smoother but adds lag and artifacts."));
@@ -486,9 +486,9 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
     INSERT(UISettings, pause_when_in_background, tr("Pause when not in focus"),
            tr("Pauses emulation when focusing on other windows."));
     INSERT(UISettings, confirm_before_stopping, tr("Confirm before stopping emulation"),
-           tr("Whether Lichii asks before it stops a running game. \"Only if game specifies not to "
-              "stop\" asks only while the game says stopping now could lose data, such as during a "
-              "save."));
+           tr("Whether Kaichii asks before it stops a running game. \"Only if game specifies not "
+              "to stop\" asks only while the game says stopping now could lose data, such as "
+              "during a save."));
     INSERT(UISettings, hide_mouse, tr("Hide mouse on inactivity"),
            tr("Hides the mouse after 2.5s of inactivity."));
     INSERT(UISettings, check_for_updates, tr("Check for updates"),
@@ -500,9 +500,9 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "settings while a game runs."));
 #ifdef __unix__
     INSERT(UISettings, gui_force_x11, tr("Force X11 as Graphics Backend"),
-           tr("Runs Lichii's windows through X11 (XWayland) instead of Wayland. On by default "
+           tr("Runs Kaichii's windows through X11 (XWayland) instead of Wayland. On by default "
               "because under Wayland some desktops cut message boxes short. Takes effect when "
-              "Lichii restarts."));
+              "Kaichii restarts."));
     INSERT(UISettings, gui_hide_backend_warning, QString(), QString());
 #endif
 

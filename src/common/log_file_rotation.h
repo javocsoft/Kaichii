@@ -9,7 +9,7 @@
 namespace Common::Log {
 
 /// Moves a log over its ".old.txt" copy. The rename replaces the copy in one step, and fails if
-/// the log is still open elsewhere (a Lichii process that hasn't exited yet, on Windows). A log
+/// the log is still open elsewhere (a Kaichii process that hasn't exited yet, on Windows). A log
 /// that can't even be checked counts as a failure, so it is never truncated.
 /// @returns Whether the log is out of the way (moved, or there was none).
 inline bool RotateLogFile(const std::filesystem::path& path) {

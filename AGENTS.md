@@ -1,6 +1,6 @@
 # AGENTS
 
-Lichii is an experimental Nintendo Switch and Switch 2 emulator in C++20: a fork of Eglantine, Eden and yuzu. Current work is almost entirely the Switch 2 path, from the native shader lowering in `src/shader_recompiler/frontend/ampere` through the GPU in `src/video_core` to game-specific fixes.
+Kaichii is an experimental Nintendo Switch and Switch 2 emulator in C++20: JavocSoft's fork of Lichii (`zortos293/Lichii`), itself a fork of Eglantine, Eden and yuzu. Current work is almost entirely the Switch 2 path, from the native shader lowering in `src/shader_recompiler/frontend/ampere` through the GPU in `src/video_core` to game-specific fixes.
 
 See `docs/Coding.md` for technical coding guidance.
 
@@ -42,7 +42,7 @@ Everything builds in the container from `tools/dev/Dockerfile`, so these work on
 
 ## Game bug reports
 
-Users report game bugs with Lichii logs (`eden_log.txt`, `eden_log.txt.old`). Each `Booting game: <program id>` line starts a session; the build is on the first line (`Lichii Version: ... | nx2-<sha>`). Known program ids:
+Users report game bugs with Kaichii logs (`eden_log.txt`, `eden_log.txt.old`). Each `Booting game: <program id>` line starts a session; the build is on the first line (`Kaichii Version: ... | nx2-<sha>`; builds from before the rename write `Lichii Version`). Known program ids:
 
 | Program id | Game |
 |---|---|
@@ -123,7 +123,7 @@ Use these before guessing. All are off unless the variable is set. Read them fro
 | Unmapped device reads (`Unmapped Device ReadBlock`) | `EDEN_NX2_READBLOCK_TRACE=1` | Every read of unmapped device memory, one line per read with its first unmapped address, unmapped byte count and caller (`file:line`). Without it only the first 16 are logged. |
 | Device loss (`Device loss occurred!`) | Always on | The `Device fault` lines after it: what VK_EXT_device_fault reports (fault addresses and their type, vendor fault codes). `not supported by the driver` means the driver has no such data. |
 | Driver crash, stall or slow pipeline builds | `EDEN_NX2_PIPELINE_BUILD_TRACE=<file>` | A flushed `BEGIN`/`END` line per driver pipeline build with the pipeline and stage hashes; `END` adds the wall time (`ms=`). The last `BEGIN` without an `END` names the shaders the driver crashed or is stuck on. Times include waiting on other builds, so compare runs from the same cleared driver cache rather than single builds. |
-| Host crash (log just stops) | Windows minidump in `%LOCALAPPDATA%\CrashDumps\lichii.exe.<pid>.dmp` | Read the exception and stack with the `minidump` Python package, then symbolize with `llvm-symbolizer --obj=lichii.exe --inlines --relative-address <offset>` next to the build's `lichii.pdb`. |
+| Host crash (log just stops) | Windows minidump in `%LOCALAPPDATA%\CrashDumps\kaichii.exe.<pid>.dmp` (`lichii.exe` before the rename) | Read the exception and stack with the `minidump` Python package, then symbolize with `llvm-symbolizer --obj=kaichii.exe --inlines --relative-address <offset>` next to the build's `kaichii.pdb`. |
 
 ## Builds
 

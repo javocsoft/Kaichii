@@ -34,7 +34,7 @@ QLabel* WrappedLabel(const QString& text, QWidget* parent) {
 FirstRunAssistant::FirstRunAssistant(QWidget* parent, std::optional<Settings::HostProfile> host_,
                                      QStringList controllers, bool docked, Hooks hooks_)
     : QWizard(parent), host{std::move(host_)}, hooks{std::move(hooks_)} {
-    setWindowTitle(tr("Welcome to Lichii"));
+    setWindowTitle(tr("Welcome to Kaichii"));
     // The same look on every desktop.
     setWizardStyle(QWizard::ModernStyle);
     setOption(QWizard::NoBackButtonOnStartPage);
@@ -49,7 +49,7 @@ FirstRunAssistant::~FirstRunAssistant() = default;
 QWizardPage* FirstRunAssistant::GamesPage() {
     auto* const page = new QWizardPage(this);
     page->setTitle(tr("Your games"));
-    page->setSubTitle(tr("Lichii lists the games in the folders you add, and looks in them again "
+    page->setSubTitle(tr("Kaichii lists the games in the folders you add, and looks in them again "
                          "each time it starts."));
     auto* const layout = new QVBoxLayout(page);
     folders = new QListWidget(page);
@@ -102,12 +102,12 @@ QWizardPage* FirstRunAssistant::ComputerPage() {
     auto* const layout = new QVBoxLayout(page);
     presets = new QButtonGroup(page);
     if (!host) {
-        page->setSubTitle(tr("Lichii couldn't read the graphics card, so it keeps the current "
+        page->setSubTitle(tr("Kaichii couldn't read the graphics card, so it keeps the current "
                              "settings."));
     } else {
         // The header cuts a long subtitle, so the explanation goes on the page.
         page->setSubTitle(
-            tr("Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of "
+            tr("Kaichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of "
                "memory.")
                 .arg(QString::fromStdString(host->gpu_name))
                 .arg(static_cast<double>(host->gpu_memory_bytes) / (1ULL << 30), 0, 'f', 1)

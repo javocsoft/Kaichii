@@ -13,21 +13,34 @@
     </message>
     <message>
         <location filename="../../src/yuzu/aboutdialog.ui" line="+14"/>
-        <source>About Lichii</source>
-        <translation>Acerca de Lichii</translation>
+        <source>About Kaichii</source>
+        <translation>Acerca de Kaichii</translation>
     </message>
     <message>
         <location line="+58"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Lichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Lichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt; font-weight:600;&quot;&gt;Kaichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt; font-weight:600;&quot;&gt;Kaichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+26"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Kaichii is JavocSoft&apos;s fork of Lichii: an experimental, open-source Nintendo Switch and Switch 2 emulator for laptops and modest graphics cards, with settings that explain themselves.&lt;/p&gt;&lt;p&gt;It builds on Lichii, Eglantine, Eden, yuzu and Sudachi, and on everyone who contributed to them.&lt;/p&gt;&lt;p&gt;This software should not be used to play games you have not legally obtained.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Kaichii es el fork de Lichii de JavocSoft: un emulador experimental y de código abierto de Nintendo Switch y Switch 2 para portátiles y tarjetas gráficas modestas, con ajustes que se explican solos.&lt;/p&gt;&lt;p&gt;Se apoya en Lichii, Eglantine, Eden, yuzu y Sudachi, y en todas las personas que han contribuido a ellos.&lt;/p&gt;&lt;p&gt;Este software no debe usarse para jugar a juegos que no hayas obtenido legalmente.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/javocsoft/Lichii&quot;&gt;Source code&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii/issues&quot;&gt;Report an issue&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii#credits-and-license&quot;&gt;Credits and license&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/javocsoft/Lichii&quot;&gt;Código fuente&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii/issues&quot;&gt;Informar de un problema&lt;/a&gt; | &lt;a href=&quot;https://github.com/javocsoft/Lichii#credits-and-license&quot;&gt;Créditos y licencia&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Kaichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Kaichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location line="-39"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;%1 (%2)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;%1 (%2)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location line="+13"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -35,25 +48,24 @@ hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: &quot;\2610&quot;; }
 li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Noto Sans&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;Lichii is an experimental open-source emulator for the Nintendo Switch 2, based on Eglantine and Eden. &lt;br /&gt;&lt;br /&gt;This software should not be used to play games you have not legally obtained.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;Kaichii is an experimental open-source emulator for the Nintendo Switch 2, based on Eglantine and Eden. &lt;br /&gt;&lt;br /&gt;This software should not be used to play games you have not legally obtained.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: &quot;\2610&quot;; }
 li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Noto Sans&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;Lichii es un emulador experimental de código abierto para Nintendo Switch 2, basado en Eglantine y Eden. &lt;br /&gt;&lt;br /&gt;Este software no debe usarse para jugar a juegos que no hayas obtenido legalmente.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:12pt;&quot;&gt;Kaichii es un emulador experimental de código abierto para Nintendo Switch 2, basado en Eglantine y Eden. &lt;br /&gt;&lt;br /&gt;Este software no debe usarse para jugar a juegos que no hayas obtenido legalmente.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location line="+33"/>
         <source>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/zortos293/Eglantine&quot;&gt;Source Code&lt;/a&gt; | &lt;a href=&quot;https://github.com/zortos293/Eglantine/issues&quot;&gt;Report an Issue&lt;/a&gt; | &lt;a href=&quot;https://github.com/zortos293/Eglantine#credits-and-license&quot;&gt;Credits and License&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/zortos293/Eglantine&quot;&gt;Código fuente&lt;/a&gt; | &lt;a href=&quot;https://github.com/zortos293/Eglantine/issues&quot;&gt;Informar de un problema&lt;/a&gt; | &lt;a href=&quot;https://github.com/zortos293/Eglantine#credits-and-license&quot;&gt;Créditos y licencia&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/zortos293/Eglantine&quot;&gt;Código fuente&lt;/a&gt; | &lt;a href=&quot;https://github.com/zortos293/Eglantine/issues&quot;&gt;Informar de un problema&lt;/a&gt; | &lt;a href=&quot;https://github.com/zortos293/Eglantine#credits-and-license&quot;&gt;Créditos y licencia&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt;&quot;&gt;&amp;quot;Nintendo Switch&amp;quot; is a trademark of Nintendo. Lichii is not affiliated with Nintendo in any way.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt;&quot;&gt;&amp;quot;Nintendo Switch&amp;quot; es una marca registrada de Nintendo. Lichii no está afiliado a Nintendo de ninguna manera.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <location line="+55"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt;&quot;&gt;&amp;quot;Nintendo Switch&amp;quot; is a trademark of Nintendo. Kaichii is not affiliated with Nintendo in any way.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt;&quot;&gt;&amp;quot;Nintendo Switch&amp;quot; es una marca registrada de Nintendo. Kaichii no está afiliado a Nintendo de ninguna manera.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -91,8 +103,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <location line="+7"/>
-        <source>&lt;p&gt;Lichii measures the game as it runs now, tries frame generation for a few seconds, and then proposes changes. Nothing is changed until you accept.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Before you start:&lt;/b&gt; stand somewhere demanding (outdoors, with the camera still) and don&apos;t pause or open menus for about %1 seconds.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Lichii mide el juego tal como funciona ahora, prueba la generación de fotogramas durante unos segundos y después propone cambios. No se cambia nada hasta que aceptes.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Antes de empezar:&lt;/b&gt; colócate en una zona exigente (en exteriores, con la cámara quieta) y no pauses ni abras menús durante unos %1 segundos.&lt;/p&gt;</translation>
+        <source>&lt;p&gt;Kaichii measures the game as it runs now, tries frame generation for a few seconds, and then proposes changes. Nothing is changed until you accept.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Before you start:&lt;/b&gt; stand somewhere demanding (outdoors, with the camera still) and don&apos;t pause or open menus for about %1 seconds.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Kaichii mide el juego tal como funciona ahora, prueba la generación de fotogramas durante unos segundos y después propone cambios. No se cambia nada hasta que aceptes.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Antes de empezar:&lt;/b&gt; colócate en una zona exigente (en exteriores, con la cámara quieta) y no pauses ni abras menús durante unos %1 segundos.&lt;/p&gt;</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -472,8 +484,8 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Lichii build</source>
-        <translation>Versión de Lichii</translation>
+        <source>Kaichii build</source>
+        <translation>Versión de Kaichii</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2015,8 +2027,8 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="+2"/>
-        <source>Developer option: for debugging Lichii</source>
-        <translation>Opción de desarrollo: para depurar Lichii</translation>
+        <source>Developer option: for debugging Kaichii</source>
+        <translation>Opción de desarrollo: para depurar Kaichii</translation>
     </message>
     <message>
         <location line="+166"/>
@@ -2290,8 +2302,8 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="-616"/>
-        <source>Custom frontend: Lichii answers in the applet&apos;s place, with its own window where it has one, and needs no firmware. Real applet: the console&apos;s own screen, from the installed firmware.</source>
-        <translation>Interfaz personalizada: Lichii responde en lugar del applet, con su propia ventana cuando la tiene, y no necesita firmware. Applet real: la pantalla de la propia consola, del firmware instalado.</translation>
+        <source>Custom frontend: Kaichii answers in the applet&apos;s place, with its own window where it has one, and needs no firmware. Real applet: the console&apos;s own screen, from the installed firmware.</source>
+        <translation>Interfaz personalizada: Kaichii responde en lugar del applet, con su propia ventana cuando la tiene, y no necesita firmware. Applet real: la pantalla de la propia consola, del firmware instalado.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2380,8 +2392,8 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="+5"/>
-        <source>The system Lichii plays sound through. Auto picks one that works here; change it only if there is no sound or it crackles. Null plays nothing.</source>
-        <translation>El sistema por el que Lichii reproduce el sonido. Auto elige uno que funcione aquí; cámbialo solo si no hay sonido o chisporrotea. Ninguno no reproduce nada.</translation>
+        <source>The system Kaichii plays sound through. Auto picks one that works here; change it only if there is no sound or it crackles. Null plays nothing.</source>
+        <translation>El sistema por el que Kaichii reproduce el sonido. Auto elige uno que funcione aquí; cámbialo solo si no hay sonido o chisporrotea. Ninguno no reproduce nada.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2430,13 +2442,13 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="+38"/>
-        <source>The graphics API Lichii draws with. Vulkan is recommended.</source>
-        <translation>La API gráfica con la que dibuja Lichii. Se recomienda Vulkan.</translation>
+        <source>The graphics API Kaichii draws with. Vulkan is recommended.</source>
+        <translation>La API gráfica con la que dibuja Kaichii. Se recomienda Vulkan.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>The graphics card Lichii draws with, when the computer has more than one.</source>
-        <translation>La tarjeta gráfica con la que dibuja Lichii, si el equipo tiene más de una.</translation>
+        <source>The graphics card Kaichii draws with, when the computer has more than one.</source>
+        <translation>La tarjeta gráfica con la que dibuja Kaichii, si el equipo tiene más de una.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2451,9 +2463,9 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     <message>
         <location line="+5"/>
         <source>Runs a Switch 2 game&apos;s own DLSS (its upscaling network, translated for this GPU) instead of AMD FSR 3.1 in its place.
-AMD FSR 3.1 still draws while the network is checked, when it can&apos;t run on this GPU, with resolution scaling, and for the rest of the session if its output fails Lichii&apos;s checks.</source>
+AMD FSR 3.1 still draws while the network is checked, when it can&apos;t run on this GPU, with resolution scaling, and for the rest of the session if its output fails Kaichii&apos;s checks.</source>
         <translation>Ejecuta el DLSS propio de un juego de Switch 2 (su red de escalado, traducida para esta GPU) en lugar de AMD FSR 3.1.
-AMD FSR 3.1 sigue dibujando mientras se comprueba la red, cuando no puede ejecutarse en esta GPU, con el escalado de resolución, y durante el resto de la sesión si su salida no supera las comprobaciones de Lichii.</translation>
+AMD FSR 3.1 sigue dibujando mientras se comprueba la red, cuando no puede ejecutarse en esta GPU, con el escalado de resolución, y durante el resto de la sesión si su salida no supera las comprobaciones de Kaichii.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2468,11 +2480,11 @@ AMD FSR 3.1 sigue dibujando mientras se comprueba la red, cuando no puede ejecut
     <message>
         <location line="+3"/>
         <source>Uses NVIDIA DLSS on GeForce RTX cards in place of a Switch 2 game&apos;s own DLSS, instead of AMD FSR 3.1.
-Needs NVIDIA&apos;s Streamline loader, and NVIDIA DLSS unless the NVIDIA app has downloaded it; Lichii does not ship NVIDIA&apos;s files. Use the download button below.
+Needs NVIDIA&apos;s Streamline loader, and NVIDIA DLSS unless the NVIDIA app has downloaded it; Kaichii does not ship NVIDIA&apos;s files. Use the download button below.
 Fire Emblem: Fortune&apos;s Weave also needs EDEN_NX2_DLSS_REPLACEMENT=dlss. Without that override, its spatial workaround remains active.
 In The Legend of Zelda: Ocarina of Time it replaces the game&apos;s upscaler at 1x resolution scale.</source>
         <translation>Usa NVIDIA DLSS en tarjetas GeForce RTX en lugar del DLSS propio de un juego de Switch 2, en vez de AMD FSR 3.1.
-Necesita el cargador Streamline de NVIDIA, y NVIDIA DLSS salvo que la aplicación de NVIDIA ya lo haya descargado; Lichii no incluye archivos de NVIDIA. Usa el botón de descarga de abajo.
+Necesita el cargador Streamline de NVIDIA, y NVIDIA DLSS salvo que la aplicación de NVIDIA ya lo haya descargado; Kaichii no incluye archivos de NVIDIA. Usa el botón de descarga de abajo.
 Fire Emblem: Fortune&apos;s Weave también necesita EDEN_NX2_DLSS_REPLACEMENT=dlss. Sin esa variable, su solución espacial sigue activa.
 En The Legend of Zelda: Ocarina of Time sustituye el escalador del juego con la resolución a 1x.</translation>
     </message>
@@ -2516,8 +2528,8 @@ CPU asíncrona: en el procesador en segundo plano, lo que quita los tirones pero
     </message>
     <message>
         <location line="+7"/>
-        <source>Whether Lichii keeps its use of video memory low or uses as much as the card has, for speed. Aggressive can slow other programs that use the graphics card, such as recording software.</source>
-        <translation>Si Lichii mantiene bajo su uso de memoria de vídeo o usa toda la que tiene la tarjeta, para ir más rápido. Agresivo puede ralentizar otros programas que usan la tarjeta gráfica, como los de grabación.</translation>
+        <source>Whether Kaichii keeps its use of video memory low or uses as much as the card has, for speed. Aggressive can slow other programs that use the graphics card, such as recording software.</source>
+        <translation>Si Kaichii mantiene bajo su uso de memoria de vídeo o usa toda la que tiene la tarjeta, para ir más rápido. Agresivo puede ralentizar otros programas que usan la tarjeta gráfica, como los de grabación.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2531,8 +2543,8 @@ CPU asíncrona: en el procesador en segundo plano, lo que quita los tirones pero
     </message>
     <message>
         <location line="+5"/>
-        <source>Optical Flow is built in. LSFG uses Lossless Scaling&apos;s frame generation and needs Lossless.dll from Lossless Scaling in Lichii&apos;s &quot;lossless&quot; folder.</source>
-        <translation>Flujo óptico viene incluido. LSFG usa la generación de fotogramas de Lossless Scaling y necesita Lossless.dll de Lossless Scaling en la carpeta &quot;lossless&quot; de Lichii.</translation>
+        <source>Optical Flow is built in. LSFG uses Lossless Scaling&apos;s frame generation and needs Lossless.dll from Lossless Scaling in Kaichii&apos;s &quot;lossless&quot; folder.</source>
+        <translation>Flujo óptico viene incluido. LSFG usa la generación de fotogramas de Lossless Scaling y necesita Lossless.dll de Lossless Scaling en la carpeta &quot;lossless&quot; de Kaichii.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2660,8 +2672,8 @@ Solo Windows y Linux.</translation>
     </message>
     <message>
         <location line="+28"/>
-        <source>Whether Lichii asks before it stops a running game. &quot;Only if game specifies not to stop&quot; asks only while the game says stopping now could lose data, such as during a save.</source>
-        <translation>Si Lichii pregunta antes de detener un juego en marcha. &quot;Solo si el juego pide no ser cerrado&quot; pregunta solo mientras el juego indica que detenerlo ahora podría perder datos, por ejemplo al guardar.</translation>
+        <source>Whether Kaichii asks before it stops a running game. &quot;Only if game specifies not to stop&quot; asks only while the game says stopping now could lose data, such as during a save.</source>
+        <translation>Si Kaichii pregunta antes de detener un juego en marcha. &quot;Solo si el juego pide no ser cerrado&quot; pregunta solo mientras el juego indica que detenerlo ahora podría perder datos, por ejemplo al guardar.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2670,8 +2682,8 @@ Solo Windows y Linux.</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Runs Lichii&apos;s windows through X11 (XWayland) instead of Wayland. On by default because under Wayland some desktops cut message boxes short. Takes effect when Lichii restarts.</source>
-        <translation>Muestra las ventanas de Lichii mediante X11 (XWayland) en vez de Wayland. Activado por defecto porque con Wayland algunos escritorios recortan los cuadros de mensaje. Se aplica al reiniciar Lichii.</translation>
+        <source>Runs Kaichii&apos;s windows through X11 (XWayland) instead of Wayland. On by default because under Wayland some desktops cut message boxes short. Takes effect when Kaichii restarts.</source>
+        <translation>Muestra las ventanas de Kaichii mediante X11 (XWayland) en vez de Wayland. Activado por defecto porque con Wayland algunos escritorios recortan los cuadros de mensaje. Se aplica al reiniciar Kaichii.</translation>
     </message>
     <message>
         <location line="+155"/>
@@ -4062,8 +4074,8 @@ Solo Windows y Linux.</translation>
     </message>
     <message>
         <location line="+36"/>
-        <source>**This will be reset automatically when Lichii closes.</source>
-        <translation>**Esto se restablecerá automáticamente cuando se cierre Lichii.</translation>
+        <source>**This will be reset automatically when Kaichii closes.</source>
+        <translation>**Esto se restablecerá automáticamente cuando se cierre Kaichii.</translation>
     </message>
     <message>
         <source>**This will be reset automatically when Eden closes.</source>
@@ -4163,8 +4175,8 @@ Solo Windows y Linux.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Also shows the options for debugging Lichii.</source>
-        <translation>Muestra también las opciones para depurar Lichii.</translation>
+        <source>Also shows the options for debugging Kaichii.</source>
+        <translation>Muestra también las opciones para depurar Kaichii.</translation>
     </message>
     <message>
         <location line="+126"/>
@@ -4182,8 +4194,8 @@ Solo Windows y Linux.</translation>
     </message>
     <message>
         <location filename="../../src/yuzu/configuration/configure.ui" line="+14"/>
-        <source>Lichii Configuration</source>
-        <translation>Configuración de Lichii</translation>
+        <source>Kaichii Configuration</source>
+        <translation>Configuración de Kaichii</translation>
     </message>
     <message>
         <location line="+47"/>
@@ -4531,8 +4543,8 @@ Would you like to delete the old save data?</source>
     </message>
     <message>
         <location filename="../../src/yuzu/configuration/configure_general.cpp" line="+101"/>
-        <source>Lichii</source>
-        <translation>Lichii</translation>
+        <source>Kaichii</source>
+        <translation>Kaichii</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5107,8 +5119,8 @@ Would you like to delete the old save data?</source>
         <location line="+7"/>
         <location line="+42"/>
         <location line="+16"/>
-        <source>Requires restarting Lichii</source>
-        <translation>Requiere reiniciar Lichii</translation>
+        <source>Requires restarting Kaichii</source>
+        <translation>Requiere reiniciar Kaichii</translation>
     </message>
     <message>
         <source>Requires restarting Eden</source>
@@ -5933,8 +5945,8 @@ Para invertir los ejes, mueve primero el joystick de manera vertical, y luego ho
         <location line="+6"/>
         <location line="+6"/>
         <location line="+94"/>
-        <source>Lichii</source>
-        <translation>Lichii</translation>
+        <source>Kaichii</source>
+        <translation>Kaichii</translation>
     </message>
     <message>
         <location line="-110"/>
@@ -6299,8 +6311,8 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Also shows the options for debugging Lichii.</source>
-        <translation>Muestra también las opciones para depurar Lichii.</translation>
+        <source>Also shows the options for debugging Kaichii.</source>
+        <translation>Muestra también las opciones para depurar Kaichii.</translation>
     </message>
     <message>
         <location line="+69"/>
@@ -7321,8 +7333,8 @@ Arrastre los puntos para cambiar de posición, o haga doble clic en las celdas d
     </message>
     <message>
         <location line="+12"/>
-        <source>Warning: The settings in this page affect the inner workings of Lichii&apos;s emulated touchscreen. Changing them may result in undesirable behavior, such as the touchscreen partially or not working. You should only use this page if you know what you are doing.</source>
-        <translation>Aviso: los ajustes de esta página afectan al funcionamiento interno de la pantalla táctil emulada de Lichii. Cambiarlos puede provocar comportamientos no deseados, como que la pantalla táctil funcione solo en parte o deje de funcionar. Usa esta página solo si sabes lo que haces.</translation>
+        <source>Warning: The settings in this page affect the inner workings of Kaichii&apos;s emulated touchscreen. Changing them may result in undesirable behavior, such as the touchscreen partially or not working. You should only use this page if you know what you are doing.</source>
+        <translation>Aviso: los ajustes de esta página afectan al funcionamiento interno de la pantalla táctil emulada de Kaichii. Cambiarlos puede provocar comportamientos no deseados, como que la pantalla táctil funcione solo en parte o deje de funcionar. Usa esta página solo si sabes lo que haces.</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -7624,8 +7636,8 @@ Arrastre los puntos para cambiar de posición, o haga doble clic en las celdas d
     </message>
     <message>
         <location line="+8"/>
-        <source>Lichii Web Service</source>
-        <translation>Servicio web de Lichii</translation>
+        <source>Kaichii Web Service</source>
+        <translation>Servicio web de Kaichii</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -7792,18 +7804,18 @@ Arrastre los puntos para cambiar de posición, o haga doble clic en las celdas d
     </message>
     <message>
         <location filename="../../src/yuzu/deps_dialog.ui" line="+14"/>
-        <source>Lichii Dependencies</source>
-        <translation>Dependencias de Lichii</translation>
+        <source>Kaichii Dependencies</source>
+        <translation>Dependencias de Kaichii</translation>
     </message>
     <message>
         <location line="+58"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Lichii Dependencies&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Dependencias de Lichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Kaichii Dependencies&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Dependencias de Kaichii&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+13"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The projects that make Lichii possible&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Los proyectos que hacen posible Lichii&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The projects that make Kaichii possible&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Los proyectos que hacen posible Kaichii&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -7978,8 +7990,8 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
     <name>FirstRunAssistant</name>
     <message>
         <location filename="../../src/yuzu/first_run_assistant.cpp" line="+37"/>
-        <source>Welcome to Lichii</source>
-        <translation>Te damos la bienvenida a Lichii</translation>
+        <source>Welcome to Kaichii</source>
+        <translation>Te damos la bienvenida a Kaichii</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -7988,8 +8000,8 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
     </message>
     <message>
         <location line="+1"/>
-        <source>Lichii lists the games in the folders you add, and looks in them again each time it starts.</source>
-        <translation>Lichii muestra los juegos de las carpetas que añadas, y vuelve a buscarlos cada vez que arranca.</translation>
+        <source>Kaichii lists the games in the folders you add, and looks in them again each time it starts.</source>
+        <translation>Kaichii muestra los juegos de las carpetas que añadas, y vuelve a buscarlos cada vez que arranca.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -8023,13 +8035,13 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
     </message>
     <message>
         <location line="+4"/>
-        <source>Lichii couldn&apos;t read the graphics card, so it keeps the current settings.</source>
-        <translation>Lichii no ha podido leer la tarjeta gráfica, así que mantiene los ajustes actuales.</translation>
+        <source>Kaichii couldn&apos;t read the graphics card, so it keeps the current settings.</source>
+        <translation>Kaichii no ha podido leer la tarjeta gráfica, así que mantiene los ajustes actuales.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of memory.</source>
-        <translation>Lichii ha encontrado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria.</translation>
+        <source>Kaichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of memory.</source>
+        <translation>Kaichii ha encontrado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -8105,8 +8117,8 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
     </message>
     <message>
         <location line="+17"/>
-        <source>Lichii has not been compiled with OpenGL support.</source>
-        <translation>Lichii no se ha compilado con soporte para OpenGL.</translation>
+        <source>Kaichii has not been compiled with OpenGL support.</source>
+        <translation>Kaichii no se ha compilado con soporte para OpenGL.</translation>
     </message>
     <message>
         <location line="+24"/>
@@ -8789,8 +8801,8 @@ Mensaje de depuración:</translation>
     </message>
     <message>
         <location filename="../../src/yuzu/configuration/configure_hotkeys.cpp" line="-399"/>
-        <source>Exit Lichii</source>
-        <translation>Salir de Lichii</translation>
+        <source>Exit Kaichii</source>
+        <translation>Salir de Kaichii</translation>
     </message>
 </context>
 <context>
@@ -9071,8 +9083,8 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Lichii could not allocate the game&apos;s memory. Close other applications and check that your system has enough available memory and paging-file space, then try again.</source>
-        <translation>Lichii no pudo reservar la memoria del juego. Cierra otras aplicaciones y comprueba que el sistema tiene suficiente memoria disponible y espacio para el archivo de paginación; después vuelve a intentarlo.</translation>
+        <source>Kaichii could not allocate the game&apos;s memory. Close other applications and check that your system has enough available memory and paging-file space, then try again.</source>
+        <translation>Kaichii no pudo reservar la memoria del juego. Cierra otras aplicaciones y comprueba que el sistema tiene suficiente memoria disponible y espacio para el archivo de paginación; después vuelve a intentarlo.</translation>
     </message>
     <message>
         <location line="+1227"/>
@@ -9254,18 +9266,18 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <location filename="../../src/yuzu/main_window.cpp" line="+3691"/>
         <location line="+106"/>
         <location line="+12"/>
-        <source>Lichii</source>
-        <translation>Lichii</translation>
+        <source>Kaichii</source>
+        <translation>Kaichii</translation>
     </message>
     <message>
         <location line="+48"/>
-        <source>Open &amp;Lichii Folders</source>
-        <translation>Abrir carpetas de &amp;Lichii</translation>
+        <source>Open &amp;Kaichii Folders</source>
+        <translation>Abrir carpetas de &amp;Kaichii</translation>
     </message>
     <message>
         <location line="+235"/>
-        <source>&amp;About Lichii</source>
-        <translation>&amp;Acerca de Lichii</translation>
+        <source>&amp;About Kaichii</source>
+        <translation>&amp;Acerca de Kaichii</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -9490,8 +9502,8 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>&amp;Lichii Dependencies</source>
-        <translation>Dependencias de &amp;Lichii</translation>
+        <source>&amp;Kaichii Dependencies</source>
+        <translation>Dependencias de &amp;Kaichii</translation>
     </message>
     <message>
         <source>&amp;Eden Dependencies</source>
@@ -9745,12 +9757,12 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
 
 Vulkan, 1x resolution, GPU Fast, asynchronous shaders, BC3, conservative VRAM, reactive flushing off, FIFO Relaxed VSync, handheld mode, ScaleForce, and FXAA.
 
-They apply to Mario Kart World until Lichii is closed. Your saved settings are not changed.</source>
+They apply to Mario Kart World until Kaichii is closed. Your saved settings are not changed.</source>
         <translation>¿Usar los ajustes recomendados para Mario Kart World?
 
 Vulkan, resolución 1x, GPU Rápido, shaders asíncronos, BC3, VRAM conservadora, vaciado reactivo desactivado, VSync FIFO Relaxed, modo portátil, ScaleForce y FXAA.
 
-Se aplican a Mario Kart World hasta que se cierre Lichii. Tus ajustes guardados no cambian.</translation>
+Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados no cambian.</translation>
     </message>
     <message>
         <location line="+36"/>
@@ -10387,8 +10399,8 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
     </message>
     <message>
         <location line="+15"/>
-        <source>Could not check for updates: GitHub rate limit reached. Lichii will try again at the next start.</source>
-        <translation>No se pudo buscar actualizaciones: se alcanzó el límite de peticiones de GitHub. Lichii lo volverá a intentar en el próximo inicio.</translation>
+        <source>Could not check for updates: GitHub rate limit reached. Kaichii will try again at the next start.</source>
+        <translation>No se pudo buscar actualizaciones: se alcanzó el límite de peticiones de GitHub. Kaichii lo volverá a intentar en el próximo inicio.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -10658,20 +10670,20 @@ Se recomienda usar X11 en su lugar.
     </message>
     <message>
         <location line="+1"/>
-        <source>Restart Lichii to apply the X11 backend.</source>
-        <translation>Reinicia Lichii para aplicar el backend X11.</translation>
+        <source>Restart Kaichii to apply the X11 backend.</source>
+        <translation>Reinicia Kaichii para aplicar el backend X11.</translation>
     </message>
     <message>
         <location line="+119"/>
-        <source>Are you sure you want to close Lichii?</source>
-        <translation>¿Seguro que quieres cerrar Lichii?</translation>
+        <source>Are you sure you want to close Kaichii?</source>
+        <translation>¿Seguro que quieres cerrar Kaichii?</translation>
     </message>
     <message>
         <location line="+116"/>
-        <source>The currently running application has requested Lichii to not exit.
+        <source>The currently running application has requested Kaichii to not exit.
 
 Would you like to bypass this and exit anyway?</source>
-        <translation>La aplicación en ejecución ha pedido a Lichii que no se cierre.
+        <translation>La aplicación en ejecución ha pedido a Kaichii que no se cierre.
 
 ¿Quieres ignorarlo y salir de todos modos?</translation>
     </message>
@@ -11080,8 +11092,8 @@ Proceed anyway?</source>
     </message>
     <message>
         <location line="+7"/>
-        <source>Lichii</source>
-        <translation>Lichii</translation>
+        <source>Kaichii</source>
+        <translation>Kaichii</translation>
     </message>
     <message>
         <source>Eden</source>
@@ -13625,17 +13637,17 @@ Seleccionando &quot;Desde Eden&quot;, los datos de guardado anteriores alojados 
     </message>
     <message>
         <location line="+12"/>
-        <source>Linking save data to Ryujinx lets both Ryujinx and Lichii reference the same save files for your games.
+        <source>Linking save data to Ryujinx lets both Ryujinx and Kaichii reference the same save files for your games.
 
-By selecting &quot;From Lichii&quot;, previous save data stored in Ryujinx will be deleted, and vice versa for &quot;From Ryujinx&quot;.</source>
-        <translation>Vincular las partidas guardadas con Ryujinx hace que Ryujinx y Lichii usen los mismos archivos de guardado para tus juegos.
+By selecting &quot;From Kaichii&quot;, previous save data stored in Ryujinx will be deleted, and vice versa for &quot;From Ryujinx&quot;.</source>
+        <translation>Vincular las partidas guardadas con Ryujinx hace que Ryujinx y Kaichii usen los mismos archivos de guardado para tus juegos.
 
-Si eliges &quot;Desde Lichii&quot;, se borrarán las partidas guardadas anteriores de Ryujinx, y al revés con &quot;Desde Ryujinx&quot;.</translation>
+Si eliges &quot;Desde Kaichii&quot;, se borrarán las partidas guardadas anteriores de Ryujinx, y al revés con &quot;Desde Ryujinx&quot;.</translation>
     </message>
     <message>
         <location line="+14"/>
-        <source>From Lichii</source>
-        <translation>Desde Lichii</translation>
+        <source>From Kaichii</source>
+        <translation>Desde Kaichii</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -13806,8 +13818,8 @@ Si eliges &quot;Desde Lichii&quot;, se borrarán las partidas guardadas anterior
     </message>
     <message>
         <location line="+63"/>
-        <source>Another Lichii window is already updating this installation.</source>
-        <translation>Otra ventana de Lichii ya está actualizando esta instalación.</translation>
+        <source>Another Kaichii window is already updating this installation.</source>
+        <translation>Otra ventana de Kaichii ya está actualizando esta instalación.</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -13850,10 +13862,10 @@ Restart now?</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>Lichii will close, install the update and start again. The previous version is kept, and your settings and data are not changed.
+        <source>Kaichii will close, install the update and start again. The previous version is kept, and your settings and data are not changed.
 
 Restart now?</source>
-        <translation>Lichii se cerrará, instalará la actualización y volverá a iniciarse. La versión anterior se conserva y tus ajustes y datos no cambian.
+        <translation>Kaichii se cerrará, instalará la actualización y volverá a iniciarse. La versión anterior se conserva y tus ajustes y datos no cambian.
 
 ¿Reiniciar ahora?</translation>
     </message>

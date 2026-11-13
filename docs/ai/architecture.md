@@ -1,6 +1,6 @@
 # Architecture
 
-Lichii is about 790,000 lines of C++20 that emulate a Nintendo Switch and Switch 2 by high-level
+Kaichii is about 790,000 lines of C++20 that emulate a Nintendo Switch and Switch 2 by high-level
 emulation: it recompiles the game's CPU and GPU code and reimplements the system services, instead of
 emulating hardware or running firmware. [Design Overview](../DesignOverview.md) and
 [HOS Kernel](../HosKernel.md) explain the inherited Switch 1 design. This page covers the map and the
@@ -8,7 +8,7 @@ Switch 2 path, where nearly all current work happens.
 
 ## Names that mislead
 
-The project was renamed several times (yuzu, Eden, Eglantine, Lichii) and deliberately kept the old
+The project was renamed several times (yuzu, Eden, Eglantine, Lichii, Kaichii) and deliberately kept the old
 identifiers so that saves and settings keep working. Do not rename them in passing.
 
 | You will see | It means |
@@ -17,9 +17,11 @@ identifiers so that saves and settings keep working. Do not rename them in passi
 | Ampere | The Switch 2 GPU. Its shaders are "native programs" |
 | Maxwell | The Switch 1 GPU, and the instruction set native programs are lowered to |
 | NVN2, NvRm | The Switch 2 graphics API and driver inside the game |
-| Target `yuzu` | The Qt desktop app, output `lichii` or `lichii.exe` |
+| Target `yuzu` | The Qt desktop app, output `kaichii` or `kaichii.exe` |
 | Target `yuzu-cmd` | The SDL command line app, output `eden-cli` |
 | `eden` directory, `EDEN_*` | The user data directory and the switch prefix, unchanged on purpose |
+| `LICHII_*`, the `lichii` cache folder | Build variables and the NVIDIA shader cache folder from before Kaichii, kept |
+| Lichii, the `lichii` remote | The upstream project this fork follows (`zortos293/Lichii`) |
 | Front, back, the split | The two halves of the GPU thread |
 | DKB | Donkey Kong Bananza |
 | Title 1, 2, 3, 4 in comments and `docs/nx2/notes.md` | Mario Kart World, Pokémon Pokopia, Kirby Air Riders Global Test Ride, Raiders |

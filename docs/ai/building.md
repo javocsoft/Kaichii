@@ -47,7 +47,7 @@ The target names are not the file names:
 
 | Target | Output in `build/<compiler>/bin` | Needs |
 |---|---|---|
-| `yuzu` | `lichii` | `ENABLE_QT=ON` |
+| `yuzu` | `kaichii` | `ENABLE_QT=ON` |
 | `yuzu-cmd` | `eden-cli` | `YUZU_CMD=ON` |
 | `tests` | `tests` | `YUZU_TESTS=ON` |
 | `dynarmic_tests` | `dynarmic_tests` | `DYNARMIC_TESTS=ON` |
@@ -64,7 +64,7 @@ tools/dev/in-docker.sh build/clang/bin/tests '[ampere]'
 
 ## Running the emulator
 
-You can build `lichii` and `eden-cli` here, but running a game needs your own legally obtained game
+You can build `kaichii` and `eden-cli` here, but running a game needs your own legally obtained game
 files, plus a GPU with a recent Vulkan driver, and keys and firmware for anything but a `.nup`. The
 container has neither a GPU nor a display, so run the binaries on the host. [Testing](testing.md#running-a-game)
 shows how to do that without touching a player's data.

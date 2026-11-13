@@ -70,6 +70,10 @@ Its builds check for updates in the releases of the repository that built them: 
 Actions. Another repository's builds carry their own build numbers, so offering them would replace
 this fork's build with one that lacks its changes.
 
+Release assets are named `kaichii-<platform>[-pgo].<extension>`, and the update checker looks for
+exactly those names. Builds from before the rename to Kaichii published `lichii-*` assets and look
+for those, so they don't update to Kaichii by themselves; the release notes say so.
+
 | Platform | Runner | Variants |
 |---|---|---|
 | Linux x86-64 | `ubuntu-24.04` | Standard and PGO |

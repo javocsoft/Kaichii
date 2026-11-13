@@ -53,9 +53,9 @@ set(BUILD_AUTO_UPDATE_API_PATH "/repos/${LICHII_UPDATE_REPO}/releases?per_page=1
 set(BUILD_AUTO_UPDATE_WEBSITE "https://github.com")
 set(BUILD_AUTO_UPDATE_REPO "${LICHII_UPDATE_REPO}")
 if (NIGHTLY_BUILD)
-    set(REPO_NAME "Lichii Nightly")
+    set(REPO_NAME "Kaichii Nightly")
 else()
-    set(REPO_NAME "Lichii")
+    set(REPO_NAME "Kaichii")
 endif()
 
 set(BUILD_ID ${GIT_REFSPEC})
