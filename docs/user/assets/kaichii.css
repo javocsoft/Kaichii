@@ -1,0 +1,47 @@
+/* Kaichii's colours on the guide: the logo's navy, teal and orange. */
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #1d0f65;
+  --md-primary-fg-color--light: #2e1d8a;
+  --md-primary-fg-color--dark: #0e0251;
+  --md-accent-fg-color: #e68300;
+  --md-typeset-a-color: #0b7f79;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #1d0f65;
+  --md-primary-fg-color--light: #2e1d8a;
+  --md-primary-fg-color--dark: #0e0251;
+  --md-accent-fg-color: #ffa94d;
+  --md-typeset-a-color: #3fe6dc;
+  --md-default-bg-color: #12102a;
+}
+
+/* The compatibility list. */
+.kaichii-ratings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.kaichii-rating {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.kaichii-rating--perfect { background: #1b7f3b; }
+.kaichii-rating--playable { background: #2f8f2f; }
+.kaichii-rating--runs { background: #a66d00; }
+.kaichii-rating--loads { background: #b5480c; }
+.kaichii-rating--unplayable { background: #b3261e; }
+.kaichii-rating--unknown { background: #666; }
+
+.kaichii-compatibility td {
+  vertical-align: top;
+}

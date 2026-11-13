@@ -24,7 +24,7 @@ python3 tools/ci/check_repo.py --base "$base" || fail check_repo
 
 # Suites that need Vulkan run in .github/workflows/linux-extended.yml instead. Listing what to skip,
 # not what to run, means a new suite joins the gate on its own.
-for suite in tools/ci/test_*.py tools/nx2/test_*.py; do
+for suite in tools/ci/test_*.py tools/nx2/test_*.py tools/site/test_*.py; do
     case "$suite" in
         */test_fsr3_shaders.py | */test_buffer_host_visibility.py) continue ;;
     esac

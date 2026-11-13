@@ -76,6 +76,15 @@ Follow [Settings](../Settings.md) and the wording rules in [Development](../Deve
 Qt's own text (standard buttons, wizard buttons, file dialogs) comes from Qt's `qtbase_<language>.qm`,
 which the frontend carries next to its own catalogs.
 
+## Change the player's guide
+
+The guide is `docs/user`, published at `https://javocsoft.github.io/Kaichii/` by `pages.yml` (see
+[CI](../CI.md#the-players-guide)). A page has an English `Page.md` and a Spanish `Page.es.md`; in a
+Spanish page, link to the other Spanish pages (`Install.es.md`), so readers stay in Spanish on
+GitHub too, and use their Spanish anchors. A change to the program that a guide page describes
+updates both versions in the same commit. New pages go in `mkdocs.yml`'s `nav`, with their Spanish
+title in `nav_translations`. `mkdocs build --strict` must pass.
+
 ## Add a C++ test
 
 See [Testing](testing.md#adding-a-c-test).

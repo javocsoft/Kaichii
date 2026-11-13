@@ -88,6 +88,7 @@
 #include <QFutureWatcher>
 #include <QGuiApplication>
 #include <QInputDialog>
+#include <QLocale>
 #include <QMimeData>
 #include <QPalette>
 #include <QProgressDialog>
@@ -114,6 +115,7 @@
 #include "qt_common/util/meta.h"
 #include "qt_common/util/mod.h"
 #include "qt_common/util/path.h"
+#include "qt_common/util/guide.h"
 #include "qt_common/util/translations.h"
 
 #include "qt_common/render/emu_thread.h"
@@ -1586,6 +1588,7 @@ void MainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Stop, &MainWindow::OnStopGame);
     connect_menu(ui->action_Open_Mods_Page, &MainWindow::OnOpenModsPage);
     connect_menu(ui->action_Open_UserHandbook, &MainWindow::OnOpenUserHandbook);
+    connect_menu(ui->action_Compatibility_List, &MainWindow::OnOpenCompatibilityList);
     connect_menu(ui->action_Restart, &MainWindow::OnRestartGame);
     connect_menu(ui->action_Configure, &MainWindow::OnConfigure);
     connect_menu(ui->action_Configure_Current_Game, &MainWindow::OnConfigurePerGame);
@@ -1986,10 +1989,9 @@ bool MainWindow::LoadROM(const QString& filename, Service::AM::FrontendAppletPar
         case Core::SystemResultStatus::ErrorVideoCore:
             QMessageBox::critical(
                 this, tr("An error occurred initializing the video core."),
-                tr("This is usually caused by outdated GPU drivers. "
-                   "Please see the log for more details. See: "
-                   "<a href='https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/HowToAccessLogs.md'>"
-                   "How to access log files</a>."));
+                tr("This is usually caused by outdated GPU drivers. The log has the details: "
+                   "<a href='%1'>where to find it</a>.")
+                    .arg(QtCommon::Guide::Page(QStringLiteral("Troubleshooting/")).toString()));
             break;
         default:
             if (result > Core::SystemResultStatus::ErrorLoader) {
@@ -3541,48 +3543,6 @@ void MainWindow::ErrorDisplayRequestExit() {
     }
 }
 
-void MainWindow::OnMenuReportCompatibility() {
-    QtCommon::Frontend::Critical(
-        tr("Function Disabled"),
-        tr("Compatibility list reporting is currently disabled. Check back later!"));
-
-    // #if defined(ARCHITECTURE_x86_64) && !defined(__APPLE__)
-    //     const auto& caps = g_cpu_caps;
-    //     const bool has_fma = caps.fma;
-    //     const auto processor_count = std::thread::hardware_concurrency();
-    //     const bool has_4threads = processor_count == 0 || processor_count >= 4;
-    //     const bool has_8gb_ram = Common::GetMemInfo().TotalPhysicalMemory >= 8_GiB;
-    //     const bool has_broken_vulkan = UISettings::values.has_broken_vulkan;
-
-    //     if (!has_fma || !has_4threads || !has_8gb_ram || has_broken_vulkan) {
-    //         QMessageBox::critical(this, tr("Hardware requirements not met"),
-    //                               tr("Your system does not meet the recommended hardware
-    //                               requirements. "
-    //                                  "Compatibility reporting has been disabled."));
-    //         return;
-    //     }
-
-    //     if (!Settings::values.eden_token.GetValue().empty() &&
-    //         !Settings::values.eden_username.GetValue().empty()) {
-    //     } else {
-    //         QMessageBox::critical(
-    //             this, tr("Missing yuzu Account"),
-    //             tr("In order to submit a game compatibility test case, you must set up your web
-    //             token "
-    //                "and "
-    //                "username.<br><br/>To link your eden account, go to Emulation &gt;
-    //                Configuration "
-    //                "&gt; "
-    //                "Web."));
-    //     }
-    // #else
-    //     QMessageBox::critical(this, tr("Hardware requirements not met"),
-    //                           tr("Your system does not meet the recommended hardware
-    //                           requirements. "
-    //                              "Compatibility reporting has been disabled."));
-    // #endif
-}
-
 void MainWindow::OpenURL(const QUrl& url) {
     const bool open = QDesktopServices::openUrl(url);
     if (!open) {
@@ -3596,7 +3556,11 @@ void MainWindow::OnOpenModsPage() {
 }
 
 void MainWindow::OnOpenUserHandbook() {
-    OpenURL(QUrl(QStringLiteral("https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/README.md")));
+    OpenURL(QtCommon::Guide::Page());
+}
+
+void MainWindow::OnOpenCompatibilityList() {
+    OpenURL(QtCommon::Guide::Page(QStringLiteral("Compatibility/")));
 }
 
 void MainWindow::ToggleFullscreen() {

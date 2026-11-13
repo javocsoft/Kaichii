@@ -4,6 +4,7 @@
 #include "core/file_sys/card_image.h"
 #include "qt_common/util/content.h"
 #include "qt_common/util/game.h"
+#include "qt_common/util/guide.h"
 
 #include "common/fs/fs.h"
 #include "core/hle/service/acc/profile_manager.h"
@@ -326,7 +327,7 @@ void FixProfiles() {
     QtCommon::Frontend::Critical(
         tr("Orphaned Profiles Detected!"),
         tr("UNEXPECTED BAD THINGS MAY HAPPEN IF YOU DON'T READ THIS!<br>"
-           "Eden has detected the following save directories with no attached profile:<br>"
+           "Kaichii has detected the following save directories with no attached profile:<br>"
            "%1<br><br>"
            "The following profiles are valid:<br>"
            "%2<br><br>"
@@ -334,10 +335,9 @@ void FixProfiles() {
            "Hint: copy the contents of the largest or last-modified folder elsewhere, "
            "delete all orphaned profiles, and move your copied contents to the good "
            "profile.<br><br>"
-           "Still confused? See the <a "
-           "href='https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/"
-           "Orphaned.md'>help page</a>.<br>")
-            .arg(qorphaned, qgood));
+           "Still confused? See the <a href='%3'>help page</a>.<br>")
+            .arg(qorphaned, qgood,
+                 QtCommon::Guide::Page(QStringLiteral("Orphaned/")).toString()));
 
     QtCommon::Game::OpenSaveFolder();
 }

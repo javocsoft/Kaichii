@@ -123,7 +123,7 @@ Unstable multithreaded optimisations are offered by the stock proprietary NVIDIA
 
 ### swrast/LLVMpipe crashes under high load
 
-The OpenGL backend would invoke behaviour that would result in swarst/LLVMpipe writing an invalid SSA IR (on old versions of Mesa), and then proceeding to crash. The solution is using a script found in [tools/llvmpipe-run.sh](../../tools/llvmpipe-run.sh).
+The OpenGL backend would invoke behaviour that would result in swarst/LLVMpipe writing an invalid SSA IR (on old versions of Mesa), and then proceeding to crash. The solution is using a script found in [tools/llvmpipe-run.sh](https://github.com/javocsoft/Kaichii/blob/nx2/tools/llvmpipe-run.sh).
 
 ### HaikuOS compatibility
 

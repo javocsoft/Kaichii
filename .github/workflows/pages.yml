@@ -1,0 +1,79 @@
+# SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Publishes the player's guide (docs/user, mkdocs.yml) on GitHub Pages, with the compatibility list
+# built from the issues labelled `compatibility`. Runs when the guide changes on nx2, when a report
+# is opened, edited, closed or relabelled, every day, and on demand.
+name: Player's guide
+
+on:
+  push:
+    branches: [nx2]
+    paths:
+      - docs/user/**
+      - mkdocs.yml
+      - tools/site/**
+      - .github/workflows/pages.yml
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled, deleted]
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build the guide
+    # An issue event only matters for compatibility reports.
+    if: >-
+      github.event_name != 'issues' ||
+      contains(github.event.issue.labels.*.name, 'compatibility') ||
+      github.event.label.name == 'compatibility'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: Install MkDocs
+        run: |
+          python3 -m venv "$RUNNER_TEMP/site"
+          "$RUNNER_TEMP/site/bin/pip" install --quiet -r tools/site/requirements.txt
+
+      # Report text is data: the script escapes it and builds every link itself.
+      - name: Build the compatibility list
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 -I tools/site/compatibility.py --repo "$GITHUB_REPOSITORY" --out docs/user
+
+      - name: Build the site
+        run: '"$RUNNER_TEMP/site/bin/mkdocs" build --strict'
+
+      - name: Configure Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
+        with:
+          path: build/site
+
+  deploy:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e

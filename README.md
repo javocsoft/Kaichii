@@ -92,6 +92,11 @@ recommended.
 
 Kaichii checks this repository's releases for updates and offers to install them.
 
+New to Kaichii? The **[player's guide](https://javocsoft.github.io/Kaichii/)** (also
+[en español](https://javocsoft.github.io/Kaichii/es/)) takes you from the download to playing:
+installing, the first launch, games and keys, settings for your computer, and fixes for common
+problems. *Help > User Handbook* opens it from Kaichii.
+
 ### Coming from Lichii
 
 Kaichii uses the same data folder (`eden`), so it finds your saves, settings and shader caches as
@@ -102,12 +107,16 @@ they are. A build still named Lichii won't update itself to Kaichii: download Ka
 After playing a Switch 2 game, stop it, right-click it and choose **Submit compatibility report**.
 Kaichii fills in your system and settings; you add how it went. **Open on GitHub** shows the report
 on a new issue here, where you review it and publish it with your GitHub account. Kaichii sends
-nothing by itself. Published reports are under the
-[compatibility label](https://github.com/javocsoft/Kaichii/issues?q=label%3Acompatibility).
+nothing by itself. The reports make up the
+[compatibility list](https://javocsoft.github.io/Kaichii/Compatibility/) (*Help > Compatibility
+List*), refreshed every day.
 
-## Reporting a problem
+## Questions, tips and problems
 
-Open an [issue](https://github.com/javocsoft/Kaichii/issues) and include:
+Questions and tips go to [Discussions](https://github.com/javocsoft/Kaichii/discussions); the
+[troubleshooting page](https://javocsoft.github.io/Kaichii/Troubleshooting/) covers the usual
+problems. To report a bug, open an [issue](https://github.com/javocsoft/Kaichii/issues/new/choose)
+and include:
 
 - The build (the first line of the log, `Kaichii Version: ...`), the game and its version, and your
   processor, graphics card and driver version.

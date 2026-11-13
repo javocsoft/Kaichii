@@ -1,52 +1,44 @@
-# User Handbook
+# Kaichii player's guide
 
-The "FAQ".
+Kaichii is a Nintendo Switch and Switch 2 emulator for the computers people actually have: laptops
+and graphics cards with 4 GB of video memory included. This guide takes you from the download to
+playing, and helps when something goes wrong.
 
-This handbook is primarily aimed at the end-user - baking useful knowledge for enhancing their emulation experience.
+> [!NOTE]
+> Kaichii is not affiliated with Nintendo. Games, keys and firmware are not included: use only games
+> and system files you have legally obtained from your own console.
 
-A copy of this handbook is [available online](https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/README.md).
+## Start here
 
-## Basics
+1. [Install Kaichii](Install.md) on Linux, Windows or macOS.
+2. [First launch](FirstLaunch.md): the setup assistant, your games folder and your controller.
+3. [Games, keys and firmware](Games.md): what each kind of game file needs.
+4. [Settings for your computer](Performance.md): presets, *Optimize for This Game*, and what to
+   expect on a 4 GB card.
 
-- **[The Basics](Basics.md)**
-- **[Quickstart](./QuickStart.md)**
-    - **[Windows](./QuickStart.md#windows)**
-    - **[Steamdeck](./QuickStart.md#steamdeck)**
-    - **[macOS](./QuickStart.md#macos)**
-- **[Settings](./Settings.md)**
-- **[Controllers](./Controllers.md)**
-    - **[Controller profiles](./Controllers.md#configuring-controller-profiles)**
-- **[Audio](Audio.md)**
-- **[Graphics](Graphics.md)**
-- **[Installing Mods](./Mods.md)**
-- **[Data, Savefiles and Storage](Storage.md)**
-- **[Orphaned Profiles](Orphaned.md)**
-- **[Troubleshooting](./Troubleshoot.md)**
-- **[Using Amiibo](./UsingAmiibo.md)**
-- **[Using Cheats](./UsingCheats.md)**
-- **[Importing Saves](./ImportingSaves.md)**
-- **[Installing Atmosphere Mods](./InstallingAtmosphereMods.md)**
-- **[Installing Updates & DLCs](./InstallingUpdatesDLC.md)**
-- **[Multiplayer](./Multiplayer.md)**
+## Games
 
-## 3rd-party Integration
+- [The Legend of Zelda: Ocarina of Time](OcarinaOfTime.md)
+- [Compatibility list](Compatibility.md): how games run, as players report them.
+- [Sending a compatibility report](CompatibilityReports.md)
 
-- **[Configuring Steam ROM Manager](./SteamROM.md)**
-- **[Server hosting](./ServerHosting.md)**
-- **[Syncthing Guide](./SyncthingGuide.md)**
-- **[Third Party](./ThirdParty.md)**
-    - **[Obtainium](./ThirdParty.md#configuring-obtainium)**
-    - **[ES-DE](./ThirdParty.md#configuring-es-de)**
-    - **[Mirrors](./ThirdParty.md#mirrors)**
-    - **[GameMode](./ThirdParty.md#configuring-gamemode)**
+## When something goes wrong
 
-## Advanced
+- [Troubleshooting](Troubleshooting.md): the usual problems, where the log is, and how to report a
+  bug.
+- Questions and tips: [Discussions](https://github.com/javocsoft/Kaichii/discussions).
 
-- **[Command Line](./CommandLine.md)**
-- **[Custom Firmware](./CFW.md)**
-- **[Alter Date & Time](./AlterDateTime.md)**
-- **[How To Access Logs](./HowToAccessLogs.md)**
-- **[Gyro Controls](./GyroControls.md)**
-- **[Platforms and Architectures](./Architectures.md)**
-- **[Native Application Development](./Native.md)**
-- **[Testing](./Testing.md)**
+## More guides
+
+These come from the projects Kaichii builds on (Eden and yuzu). They still apply, but may mention
+those names; the data folder is still called `eden`.
+
+- [Controllers](Controllers.md) and [gyro controls on the Steam Deck](GyroControls.md)
+- [Updates and DLC](InstallingUpdatesDLC.md), [mods](Mods.md),
+  [Atmosphère mods](InstallingAtmosphereMods.md), [cheats](UsingCheats.md) and
+  [amiibo](UsingAmiibo.md)
+- [Importing saves](ImportingSaves.md), [data and storage](Storage.md) and
+  [orphaned profiles](Orphaned.md)
+- [Multiplayer](Multiplayer.md), the [command line](CommandLine.md) and
+  [a custom date and time](AlterDateTime.md)
+- [Graphics settings in detail](Graphics.md)

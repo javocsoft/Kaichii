@@ -13,6 +13,7 @@
 #include <QTranslator>
 #include <QtTest>
 
+#include "qt_common/util/guide.h"
 #include "qt_common/util/translations.h"
 #include "yuzu/configuration/per_game_summary.h"
 #include "yuzu/first_run_assistant.h"
@@ -49,6 +50,7 @@ private slots:
     void ClearsQtWithoutItsCatalog();
     void TranslatesTheGameSummary();
     void TranslatesTheAssistantButtons();
+    void OpensTheGuideInTheInterfaceLanguage();
 
 private:
     /// Loads `language` and installs both catalogs, as the main window does.
@@ -130,6 +132,27 @@ void TranslationTest::TranslatesTheAssistantButtons() {
     const QString next = assistant.button(QWizard::NextButton)->text();
     QVERIFY(next != QStringLiteral("&Next >"));
     QCOMPARE(next, qt.translate("QWizard", "&Next >"));
+}
+
+void TranslationTest::OpensTheGuideInTheInterfaceLanguage() {
+    using QtCommon::Guide::PageUrl;
+    const QString repository = QStringLiteral("JavocSoft/Kaichii");
+    const QString english = QStringLiteral("https://javocsoft.github.io/Kaichii/");
+    const QString spanish = english + QStringLiteral("es/");
+    for (const char* language : {"es", "es_ES", "es-MX"}) {
+        QCOMPARE(PageUrl(repository, QString::fromLatin1(language)).toString(), spanish);
+    }
+    for (const char* language : {"", "en", "pt_BR", "eslabon"}) {
+        QCOMPARE(PageUrl(repository, QString::fromLatin1(language)).toString(), english);
+    }
+    QCOMPARE(PageUrl(repository, QStringLiteral("es"), QStringLiteral("Compatibility/")).toString(),
+             spanish + QStringLiteral("Compatibility/"));
+    for (const char* bad : {"", "Kaichii", "a/b/c", "evil.example/x?y"}) {
+        QVERIFY(PageUrl(QString::fromLatin1(bad), QStringLiteral("es")).isEmpty());
+    }
+    for (const char* bad : {"../x/", "Compatibility", "https://evil.example/", "a/#b/"}) {
+        QVERIFY(PageUrl(repository, QStringLiteral("es"), QString::fromLatin1(bad)).isEmpty());
+    }
 }
 
 QTEST_MAIN(TranslationTest)

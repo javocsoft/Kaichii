@@ -1,0 +1,122 @@
+# The player's guide website: docs/user, published on GitHub Pages by .github/workflows/pages.yml.
+# Pages come in English (Page.md) and Spanish (Page.es.md); a page without a Spanish version shows
+# the English one in the Spanish site.
+site_name: Kaichii
+site_description: A Switch 2 emulator for the computers people actually have.
+site_url: https://javocsoft.github.io/Kaichii/
+repo_url: https://github.com/javocsoft/Kaichii
+repo_name: javocsoft/Kaichii
+edit_uri: edit/nx2/docs/user/
+docs_dir: docs/user
+site_dir: build/site
+strict: true
+
+theme:
+  name: material
+  logo: assets/kaichii.png
+  favicon: assets/kaichii.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - content.code.copy
+
+extra_css:
+  - assets/kaichii.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - github-callouts
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: es
+          name: Español
+          build: true
+          site_description: Un emulador de Switch 2 para los ordenadores que la gente tiene de verdad.
+          nav_translations:
+            Home: Inicio
+            Getting started: Primeros pasos
+            Install: Instalar
+            First launch: Primer arranque
+            Games, keys and firmware: Juegos, claves y firmware
+            Settings for your computer: Ajustes para tu equipo
+            Games: Juegos
+            Compatibility list: Lista de compatibilidad
+            Sending a report: Enviar un informe
+            Troubleshooting: Solución de problemas
+            More guides: Más guías
+            Controllers: Mandos
+            Gyro on the Steam Deck: Giroscopio en Steam Deck
+            Updates and DLC: Actualizaciones y DLC
+            Mods: Mods
+            Atmosphère mods: Mods de Atmosphère
+            Cheats: Trucos
+            Amiibo: Amiibo
+            Importing saves: Importar partidas
+            Data and storage: Datos y almacenamiento
+            Orphaned profiles: Perfiles huérfanos
+            Multiplayer: Multijugador
+            Command line: Línea de comandos  # codespell:ignore comandos
+            Date and time: Fecha y hora
+            Graphics settings in detail: Ajustes gráficos en detalle
+
+nav:
+  - Home: README.md
+  - Getting started:
+      - Install: Install.md
+      - First launch: FirstLaunch.md
+      - Games, keys and firmware: Games.md
+      - Settings for your computer: Performance.md
+  - Games:
+      - "The Legend of Zelda: Ocarina of Time": OcarinaOfTime.md
+      - Compatibility list: Compatibility.md
+      - Sending a report: CompatibilityReports.md
+  - Troubleshooting: Troubleshooting.md
+  - More guides:
+      - Controllers: Controllers.md
+      - Gyro on the Steam Deck: GyroControls.md
+      - Updates and DLC: InstallingUpdatesDLC.md
+      - Mods: Mods.md
+      - Atmosphère mods: InstallingAtmosphereMods.md
+      - Cheats: UsingCheats.md
+      - Amiibo: UsingAmiibo.md
+      - Importing saves: ImportingSaves.md
+      - Data and storage: Storage.md
+      - Orphaned profiles: Orphaned.md
+      - Multiplayer: Multiplayer.md
+      - Command line: CommandLine.md
+      - Date and time: AlterDateTime.md
+      - Graphics settings in detail: Graphics.md
