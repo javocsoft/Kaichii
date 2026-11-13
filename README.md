@@ -17,6 +17,14 @@
   <i>kai (改): to renew, to change for the better</i>
 </p>
 
+<p align="center">
+  <a href="https://javocsoft.github.io/Kaichii/"><b>Player's guide</b></a> ·
+  <a href="https://javocsoft.github.io/Kaichii/es/"><b>Guía en español</b></a> ·
+  <a href="https://javocsoft.github.io/Kaichii/Compatibility/">Compatibility list</a> ·
+  <a href="https://github.com/javocsoft/Kaichii/releases">Downloads</a> ·
+  <a href="https://github.com/javocsoft/Kaichii/discussions">Discussions</a>
+</p>
+
 Kaichii is JavocSoft's fork of [Lichii](https://github.com/zortos293/Lichii), an experimental,
 open-source Nintendo Switch and Switch 2 emulator written in C++. Lichii and the projects before it
 taught Switch 2 games to boot. Kaichii works on the next step: making them playable on an ordinary
