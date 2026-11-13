@@ -5,6 +5,12 @@
 #include <chrono>
 #include <vector>
 
+#include "common/overlay_position.h"
+#include "core/nx2_present_intervals.h"
+#include "qt_common/config/uisettings.h"
+#include "qt_common/qt_common.h"
+#include "video_core/gpu.h"
+#include "video_core/renderer_base.h"
 #include "common/frame_pacing.h"
 #include "core/core.h"
 #include "core/perf_stats.h"
@@ -20,6 +26,7 @@
 #include <QLineSeries>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QTimer>
 #include <QValueAxis>
 #include <QWindow>
 
@@ -28,42 +35,8 @@ namespace {
 /// How far back the frame pacing view looks.
 constexpr double PacingWindowMs = 10000.0;
 
-/// A Switch 2 game's present-to-present intervals (ms) over the last `window_ms`, oldest first.
-/// Empty for other games, which don't fill the present history, and when the newest present is
-/// more than two seconds old (paused or loading): the overlay then shows its average view.
-std::vector<double> RecentPresentIntervals(double window_ms) {
-    std::vector<double> intervals;
-    u64 last = Core::g_nx2_present_count.load(std::memory_order_acquire);
-    if (last >= 1 && Core::Nx2PresentTime(last).load(std::memory_order_relaxed) == 0) {
-        --last; // the newest present may not have stored its time yet
-    }
-    if (last < 2) {
-        return intervals;
-    }
-    u64 newer = Core::Nx2PresentTime(last).load(std::memory_order_relaxed);
-    const u64 now = static_cast<u64>(
-        std::chrono::steady_clock::now().time_since_epoch() / std::chrono::nanoseconds{1});
-    if (newer == 0 || now - newer > 2'000'000'000ULL) {
-        return intervals;
-    }
-    const u64 first = last > Core::Nx2PresentHistory - 1 ? last - (Core::Nx2PresentHistory - 1) : 1;
-    double total = 0.0;
-    for (u64 number = last - 1; number >= first && total < window_ms; --number) {
-        const u64 older = Core::Nx2PresentTime(number).load(std::memory_order_relaxed);
-        if (older == 0 || older >= newer) {
-            break;
-        }
-        const double ms = static_cast<double>(newer - older) / 1e6;
-        intervals.push_back(ms);
-        total += ms;
-        newer = older;
-        if (number == first) {
-            break;
-        }
-    }
-    std::ranges::reverse(intervals);
-    return intervals;
-}
+/// Room for the longest lines ("36 fps (73 shown)", and their translations) at the default font.
+constexpr int MinimumWidth = 320;
 
 } // Anonymous namespace
 
@@ -72,9 +45,11 @@ PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
     : QWidget(parent), m_mainWindow{parent}, ui(new Ui::PerformanceOverlay) {
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_TranslucentBackground);
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
-    raise();
+    // A child of the main window with a native window of its own, stacked over the game's. As a
+    // top-level tool window its place was the window manager's to choose: COSMIC centred it over
+    // the game and ignored every move, the user's drags included.
+    setAttribute(Qt::WA_NativeWindow);
+    setCursor(Qt::SizeAllCursor);
 
     // chart setup
     m_fpsSeries = new QLineSeries(this);
@@ -140,8 +115,12 @@ PerformanceOverlay::PerformanceOverlay(MainWindow* parent)
     ui->frametime->setFont(font);
 
     // pos/stats
-    resetPosition(m_mainWindow->pos());
-    connect(parent, &MainWindow::positionChanged, this, &PerformanceOverlay::resetPosition);
+    m_offset = QPoint{UISettings::values.perf_overlay_x.GetValue(),
+                      UISettings::values.perf_overlay_y.GetValue()};
+    setMinimumWidth(MinimumWidth);
+    adjustSize();
+    resetPosition({});
+    raise();
     connect(m_mainWindow, &MainWindow::statsUpdated, this, &PerformanceOverlay::updateStats);
 }
 
@@ -150,8 +129,23 @@ PerformanceOverlay::~PerformanceOverlay() {
 }
 
 void PerformanceOverlay::resetPosition(const QPoint& _) {
-    auto pos = m_mainWindow->pos();
-    move(pos.x() + m_offset.x(), pos.y() + m_offset.y());
+    const auto offset = Common::ClampOverlayOffset({m_offset.x(), m_offset.y()},
+                                                   m_mainWindow->width(), m_mainWindow->height(),
+                                                   width(), height());
+    move(offset.x, offset.y);
+}
+
+void PerformanceOverlay::showEvent(QShowEvent* event) {
+    QWidget::showEvent(event);
+    resetPosition({});
+    raise();
+}
+
+void PerformanceOverlay::mouseReleaseEvent(QMouseEvent* event) {
+    QWidget::mouseReleaseEvent(event);
+    // Remember where the user left it.
+    UISettings::values.perf_overlay_x.SetValue(m_offset.x());
+    UISettings::values.perf_overlay_y.SetValue(m_offset.y());
 }
 
 void PerformanceOverlay::updateStats(const Core::PerfStatsResults& results,
@@ -244,12 +238,38 @@ void PerformanceOverlay::updateStats(const Core::PerfStatsResults& results,
 }
 
 bool PerformanceOverlay::ShowFramePacing() {
-    const std::vector<double> intervals = RecentPresentIntervals(PacingWindowMs);
+    const std::vector<double> intervals = Core::RecentPresentIntervals(PacingWindowMs);
     if (intervals.size() < 10) {
         return false;
     }
     const Common::FramePacing pacing = Common::ComputeFramePacing(intervals);
-    ui->fps->setText(tr("%1 fps").arg(pacing.fps, 0, 'f', 0));
+    // With frame generation the screen shows more frames than the game presents: say both, or
+    // the counter reads as if nothing had changed.
+    double generated_fps = 0.0;
+    if (QtCommon::system && QtCommon::system->IsPoweredOn()) {
+        const u64 generated =
+            QtCommon::system->GPU().Renderer().GetFrameGenStatus().generated_frames;
+        const auto now = std::chrono::steady_clock::now();
+        if (m_generatedTime != std::chrono::steady_clock::time_point{}) {
+            const double seconds = std::chrono::duration<double>(now - m_generatedTime).count();
+            if (seconds >= 1.0) {
+                m_generatedFps = Common::GeneratedFrameRate(m_generatedFrames, generated, seconds);
+                m_generatedFrames = generated;
+                m_generatedTime = now;
+            }
+        } else {
+            m_generatedFrames = generated;
+            m_generatedTime = now;
+        }
+        generated_fps = m_generatedFps;
+    }
+    if (generated_fps >= 1.0) {
+        ui->fps->setText(tr("%1 fps (%2 shown)")
+                             .arg(pacing.fps, 0, 'f', 0)
+                             .arg(pacing.fps + generated_fps, 0, 'f', 0));
+    } else {
+        ui->fps->setText(tr("%1 fps").arg(pacing.fps, 0, 'f', 0));
+    }
     ui->fps_avg->setText(tr("Avg: %1").arg(pacing.average_fps, 0, 'f', 0));
     ui->fps_min->setText(tr("1% low: %1").arg(pacing.low_1pct_fps, 0, 'f', 0));
     ui->fps_max->setText(tr("Stutters: %1").arg(pacing.stutters));
@@ -272,7 +292,17 @@ bool PerformanceOverlay::ShowFramePacing() {
     m_fpsX->setRange(0.0, last_x);
     m_fpsY->setRange(0.0, std::clamp(pacing.max_ms * 1.1, 50.0, 250.0));
     m_fpsY->setLabelFormat(QStringLiteral("%d ms"));
+    FitWidth();
     return true;
+}
+
+void PerformanceOverlay::FitWidth() {
+    // A child widget keeps the size it was given: grow when a line no longer fits (a larger
+    // font, a longer translation), and never shrink, so it doesn't jitter as the numbers change.
+    if (const int wanted = sizeHint().width(); wanted > width()) {
+        resize(wanted, height());
+        resetPosition({});
+    }
 }
 
 void PerformanceOverlay::paintEvent(QPaintEvent* event) {
@@ -280,20 +310,12 @@ void PerformanceOverlay::paintEvent(QPaintEvent* event) {
 
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setBrush(m_background);
-    painter.setPen(Qt::NoPen);
-
-    painter.drawRoundedRect(rect(), 10.0, 10.0);
+    // Opaque: a native child window cannot blend with the game's window under it.
+    painter.fillRect(rect(), m_background);
 }
 
 void PerformanceOverlay::mousePressEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) {
-        return;
-    }
-    // Wayland ignores move() on top-level windows, so the overlay sat where the compositor put it:
-    // let the compositor drag it instead.
-    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland")) && windowHandle() &&
-        windowHandle()->startSystemMove()) {
         return;
     }
     m_drag_start_pos = event->pos();
@@ -302,9 +324,13 @@ void PerformanceOverlay::mousePressEvent(QMouseEvent* event) {
 void PerformanceOverlay::mouseMoveEvent(QMouseEvent* event) {
     // drag
     if (event->buttons() & Qt::LeftButton) {
-        QPoint new_global_pos = event->globalPosition().toPoint() - m_drag_start_pos;
-        m_offset = new_global_pos - m_mainWindow->pos();
-        move(new_global_pos);
+        // In the main window's coordinates, kept inside it.
+        const QPoint wanted = mapToParent(event->pos()) - m_drag_start_pos;
+        const auto offset = Common::ClampOverlayOffset({wanted.x(), wanted.y()},
+                                                       m_mainWindow->width(),
+                                                       m_mainWindow->height(), width(), height());
+        m_offset = QPoint{offset.x, offset.y};
+        move(m_offset);
     }
 }
 

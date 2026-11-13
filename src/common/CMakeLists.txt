@@ -24,6 +24,7 @@ add_library(
     address_space.cpp
     address_space.h
     algorithm.h
+    auto_optimize.h
     alignment.h
     announce_multiplayer_room.h
     assert.cpp
@@ -83,6 +84,7 @@ add_library(
     log_file_rotation.h
     logging.cpp
     logging.h
+    overlay_position.h
     lz4_compression.cpp
     lz4_compression.h
     math_util.h

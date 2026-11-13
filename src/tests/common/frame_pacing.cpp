@@ -45,3 +45,11 @@ TEST_CASE("Frame pacing's current rate looks at the recent frames only", "[commo
     CHECK(pacing.stutters == 0);
     CHECK(ComputeFramePacing({}).frames == 0);
 }
+
+TEST_CASE("The generated frame rate comes from two counter readings", "[common][frame_pacing]") {
+    using Common::GeneratedFrameRate;
+    REQUIRE(GeneratedFrameRate(1000, 1320, 10.0) == 32.0);
+    REQUIRE(GeneratedFrameRate(1000, 1000, 10.0) == 0.0);
+    REQUIRE(GeneratedFrameRate(1000, 40, 10.0) == 0.0); // a new game started the counter again
+    REQUIRE(GeneratedFrameRate(0, 300, 0.0) == 0.0);
+}

@@ -83,6 +83,113 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
 </context>
 <context>
+    <name>AutoOptimizeDialog</name>
+    <message>
+        <location filename="../../src/yuzu/auto_optimize_dialog.cpp" line="+38"/>
+        <source>Optimize for This Game</source>
+        <translation>Optimizar para este juego</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>&lt;p&gt;Lichii measures the game as it runs now, tries frame generation for a few seconds, and then proposes changes. Nothing is changed until you accept.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Before you start:&lt;/b&gt; stand somewhere demanding (outdoors, with the camera still) and don&apos;t pause or open menus for about %1 seconds.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Lichii mide el juego tal como funciona ahora, prueba la generación de fotogramas durante unos segundos y después propone cambios. No se cambia nada hasta que aceptes.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Antes de empezar:&lt;/b&gt; colócate en una zona exigente (en exteriores, con la cámara quieta) y no pauses ni abras menús durante unos %1 segundos.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Start</source>
+        <translation>Empezar</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Apply</source>
+        <translation>Aplicar</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Close</source>
+        <translation>Cerrar</translation>
+    </message>
+    <message>
+        <location line="+69"/>
+        <source>Measuring the game as it is…</source>
+        <translation>Midiendo el juego tal como está…</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Trying frame generation…</source>
+        <translation>Probando la generación de fotogramas…</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>The game stopped. Start it again to optimize.</source>
+        <translation>El juego se ha detenido. Vuelve a iniciarlo para optimizar.</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>No frames could be measured: this works with Switch 2 games while they are running and not paused.</source>
+        <translation>No se ha podido medir ningún fotograma: esto funciona con juegos de Switch 2 mientras están en marcha y sin pausar.</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;Measured:&lt;/b&gt; %1 fps (slowest 1 %: %2 fps), %3 stutters in %4 s.</source>
+        <translation type="vanished">&lt;p&gt;&lt;b&gt;Medido:&lt;/b&gt; %1 fps (1 % más lento: %2 fps), %3 tirones en %4 s.</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>&lt;p&gt;&lt;b&gt;Measured:&lt;/b&gt; %1 fps (slowest 1 %: %2 fps), stutters in %4 s: %3.</source>
+        <translation>&lt;p&gt;&lt;b&gt;Medido:&lt;/b&gt; %1 fps (1 % más lento: %2 fps), tirones en %4 s: %3.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>&lt;br&gt;Video memory: %1 of %2 MiB, and %3 MiB in system memory.</source>
+        <translation>&lt;br&gt;Memoria de vídeo: %1 de %2 MiB, y %3 MiB en la memoria del sistema.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>&lt;br&gt;With frame generation: %1 fps from the game plus %2 generated, %3 shown.</source>
+        <translation>&lt;br&gt;Con generación de fotogramas: %1 fps del juego más %2 generados, %3 en pantalla.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&lt;p&gt;Frame generation is left off: under %1 fps it shows artefacts and the controls feel slow.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;La generación de fotogramas se deja desactivada: por debajo de %1 fps muestra defectos y el control se nota lento.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&lt;p&gt;Frame generation is left off: it took too many of the game&apos;s own frames, so the graphics card has no room for it here.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;La generación de fotogramas se deja desactivada: le quitaba demasiados fotogramas propios al juego, así que la tarjeta gráfica no tiene margen para ella aquí.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&lt;p&gt;Frame generation is left off: it could not run on this system.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;La generación de fotogramas se deja desactivada: no ha podido funcionar en este equipo.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>&lt;p&gt;The current settings already fit this game here: nothing to change.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;La configuración actual ya es adecuada para este juego en este equipo: no hay nada que cambiar.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>&lt;p&gt;&lt;b&gt;Proposed changes&lt;/b&gt; (saved for this game only):&lt;/p&gt;</source>
+        <translation>&lt;p&gt;&lt;b&gt;Cambios propuestos&lt;/b&gt; (se guardan solo para este juego):&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Turn on frame generation: smoother motion at almost no cost here</source>
+        <translation>Activar la generación de fotogramas: movimiento más fluido casi sin coste en este equipo</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Lower the resolution one step: the game&apos;s images don&apos;t fit in video memory (takes effect the next time the game starts)</source>
+        <translation>Bajar la resolución un escalón: las imágenes del juego no caben en la memoria de vídeo (se aplica la próxima vez que arranque el juego)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Skip objects while their shaders build: fewer stutters, objects may appear a moment late</source>
+        <translation>Omitir objetos mientras se compilan sus shaders: menos tirones, algún objeto puede aparecer un instante tarde</translation>
+    </message>
+</context>
+<context>
     <name>CalibrationConfigurationDialog</name>
     <message>
         <location filename="../../src/yuzu/configuration/configure_motion_touch.cpp" line="+26"/>
@@ -3409,7 +3516,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
 <context>
     <name>ConfigureDialog</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="+73"/>
+        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="+74"/>
         <location line="+107"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
@@ -3419,7 +3526,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation type="vanished">Configuración de Eden</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure.ui" line="+20"/>
+        <location filename="../../src/yuzu/configuration/configure.ui" line="+14"/>
         <source>Lichii Configuration</source>
         <translation>Configuración de Lichii</translation>
     </message>
@@ -5369,12 +5476,12 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
 <context>
     <name>ConfigurePerGame</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+398"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+399"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.ui" line="+20"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.ui" line="+14"/>
         <source>Dialog</source>
         <translation>Diálogo</translation>
     </message>
@@ -5390,9 +5497,9 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+33"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+41"/>
         <location line="+10"/>
-        <location line="+220"/>
+        <location line="+221"/>
         <location line="+5"/>
         <source>Detect Icon</source>
         <translation>Detectar icono</translation>
@@ -5458,7 +5565,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Algunos ajustes solo están disponibles cuando no se estén ejecutando los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-267"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-276"/>
         <source>Add-Ons</source>
         <translation>Complementos</translation>
     </message>
@@ -5508,12 +5615,12 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Applets</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+11"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+140"/>
         <source>Enter game name...</source>
         <translation>Escribe el nombre del juego...</translation>
     </message>
@@ -8055,7 +8162,7 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+5143"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+5165"/>
         <source>Performance preset</source>
         <translation>Ajuste predefinido de rendimiento</translation>
     </message>
@@ -8078,7 +8185,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Rendimiento</translation>
     </message>
     <message>
-        <location line="-3184"/>
+        <location line="-3203"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -8088,12 +8195,12 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Lichii no pudo reservar la memoria del juego. Cierra otras aplicaciones y comprueba que el sistema tiene suficiente memoria disponible y espacio para el archivo de paginación; después vuelve a intentarlo.</translation>
     </message>
     <message>
-        <location line="+1196"/>
+        <location line="+1201"/>
         <source>Installable Switch File (*.nca *.nsp *.nsz *.xci *.xcz);;Nintendo Content Archive (*.nca);;Nintendo Submission Package (*.nsp *.nsz);;NX Cartridge Image (*.xci *.xcz)</source>
         <translation>Archivo instalable de Switch (*.nca *.nsp *.nsz *.xci *.xcz);;Archivo de contenido de Nintendo (*.nca);;Paquete de envío de Nintendo (*.nsp *.nsz);;Imagen de cartucho NX (*.xci *.xcz)</translation>
     </message>
     <message>
-        <location line="+1987"/>
+        <location line="+2001"/>
         <source>Balanced</source>
         <translation>Equilibrado</translation>
     </message>
@@ -8131,7 +8238,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Emulación</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>&amp;View</source>
         <translation>&amp;Ver</translation>
     </message>
@@ -8247,7 +8354,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-3347"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-3366"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -8266,8 +8373,8 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">&amp;Acerca de Eden</translation>
     </message>
     <message>
-        <location line="-276"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3602"/>
+        <location line="-277"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3621"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Lichii</source>
@@ -8279,7 +8386,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Abrir carpetas de &amp;Lichii</translation>
     </message>
     <message>
-        <location line="+233"/>
+        <location line="+234"/>
         <source>&amp;About Lichii</source>
         <translation>&amp;Acerca de Lichii</translation>
     </message>
@@ -8410,6 +8517,11 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+11"/>
+        <source>&amp;Optimize for This Game...</source>
+        <translation>&amp;Optimizar para este juego...</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Configure C&amp;urrent Game...</source>
         <translation>Configurar el j&amp;uego actual...</translation>
     </message>
@@ -8521,7 +8633,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4558"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4579"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -8651,7 +8763,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+400"/>
+        <location line="+401"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -8676,7 +8788,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>No se pudo restaurar la versión anterior: %1</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>&amp;Continue</source>
         <translation>&amp;Continuar</translation>
     </message>
@@ -8771,30 +8883,30 @@ Se aplican a Mario Kart World hasta que se cierre Lichii. Tus ajustes guardados 
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2481"/>
+        <location line="+2500"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2481"/>
-        <location line="+2481"/>
+        <location line="-2500"/>
+        <location line="+2500"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2480"/>
-        <location line="+2482"/>
+        <location line="-2499"/>
+        <location line="+2501"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2389"/>
+        <location line="-2408"/>
         <source>Closing software...</source>
         <translation>Cerrando el programa...</translation>
     </message>
     <message>
-        <location line="+210"/>
+        <location line="+215"/>
         <source>Save Data</source>
         <translation>Datos de guardado</translation>
     </message>
@@ -9168,7 +9280,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>El mando del modo portátil no puede usarse en el modo sobremesa. El mando pro será seleccionado en su lugar.</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+163"/>
         <location line="+51"/>
         <source>Amiibo</source>
         <translation>Amiibo</translation>
@@ -10539,7 +10651,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+18"/>
         <source>Frametime</source>
-        <translation>Tiempo de fotograma</translation>
+        <translation>T. fotograma</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -10575,40 +10687,45 @@ p, li { white-space: pre-wrap; }
         <translation>0 fps</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+168"/>
-        <location line="+84"/>
+        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+135"/>
+        <location line="+109"/>
         <source>%1 fps</source>
         <translation>%1 fps</translation>
     </message>
     <message>
-        <location line="-63"/>
+        <location line="-88"/>
         <location line="+52"/>
-        <location line="+12"/>
+        <location line="+38"/>
         <source>Avg: %1</source>
         <translation>Prom: %1</translation>
     </message>
     <message>
-        <location line="-55"/>
+        <location line="-81"/>
         <location line="+32"/>
-        <location line="+29"/>
+        <location line="+55"/>
         <source>Min: %1</source>
         <translation>Mín: %1</translation>
     </message>
     <message>
-        <location line="-60"/>
+        <location line="-86"/>
         <location line="+32"/>
-        <location line="+30"/>
+        <location line="+56"/>
         <source>Max: %1</source>
         <translation>Máx: %1</translation>
     </message>
     <message>
-        <location line="-43"/>
-        <location line="+40"/>
+        <location line="-69"/>
+        <location line="+66"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location line="-4"/>
+        <location line="-11"/>
+        <source>%1 fps (%2 shown)</source>
+        <translation>%1 fps (%2 en pantalla)</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>1% low: %1</source>
         <translation>1 % bajo: %1</translation>
     </message>

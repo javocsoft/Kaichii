@@ -15,6 +15,7 @@
 #include <QStringList>
 #include <QVector>
 #include <qdir.h>
+#include "common/overlay_position.h"
 #include "common/qt_platform_choice.h"
 #include "common/common_types.h"
 #include "common/settings.h"
@@ -231,6 +232,11 @@ struct Values {
 
     // perf overlay
     Setting<bool> show_perf_overlay{linkage, false, "show_perf_overlay", Category::UiGameList};
+    /// Where the user left it, from the main window's top left corner.
+    Setting<int> perf_overlay_x{linkage, Common::DefaultOverlayOffset.x, "perf_overlay_x",
+                                Category::UiGameList};
+    Setting<int> perf_overlay_y{linkage, Common::DefaultOverlayOffset.y, "perf_overlay_y",
+                                Category::UiGameList};
 
     // Size & File Types Column
     Setting<bool> show_size{linkage, true, "show_size", Category::UiGameList};

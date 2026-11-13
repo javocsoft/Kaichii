@@ -92,6 +92,18 @@ TOOLS = [
         },
     },
     {
+        "name": "setting",
+        "description": "Reads a setting by its config key (e.g. 'frame_gen', 'resolution_setup') "
+                       "and, with 'value', changes it while the game runs. Returns the previous "
+                       "and the new value. Only settings the emulator reads as it goes take "
+                       "effect at once; the others wait for the next boot.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"key": {"type": "string"}, "value": {"type": "string"}},
+            "required": ["key"],
+        },
+    },
+    {
         "name": "capture_frame",
         "description": "EDEN_NX2_FRAME_DUMP for the next frame, now: every pass colour target, "
                        "dispatch storage image and the present source as PNG and .raw.zst, plus "

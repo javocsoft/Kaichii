@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include <chrono>
 #include <deque>
+#include "common/common_types.h"
 #include <QWidget>
 
 namespace VideoCore {
@@ -34,6 +36,8 @@ protected:
 
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void showEvent(QShowEvent* event) override;
     void closeEvent(QCloseEvent* event) override;
 
 private:
@@ -42,12 +46,18 @@ private:
     /// Shows a Switch 2 game's per-frame pacing (frame times, 1% low, stutters). False when there
     /// are no recent presents to show: the overlay then shows its averages.
     bool ShowFramePacing();
+    /// Widens the overlay when its text no longer fits.
+    void FitWidth();
 
     MainWindow* m_mainWindow = nullptr;
+    /// The renderer's generated-frame counter at its last reading, for the rate between readings.
+    u64 m_generatedFrames = 0;
+    std::chrono::steady_clock::time_point m_generatedTime{};
+    double m_generatedFps = 0.0;
     Ui::PerformanceOverlay* ui;
 
     // colors
-    QColor m_background{127, 127, 127, 190};
+    QColor m_background{72, 72, 72};
 
     QPoint m_offset{25, 75};
 

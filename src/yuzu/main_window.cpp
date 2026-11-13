@@ -45,6 +45,7 @@
 #include "set_play_time_dialog.h"
 #include "util/util.h"
 #include "yuzu/game/game_list.h"
+#include "yuzu/auto_optimize_dialog.h"
 #include "yuzu/nup_dialogs.h"
 
 #include "applets/qt_amiibo_settings.h"
@@ -1573,6 +1574,7 @@ void MainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Restart, &MainWindow::OnRestartGame);
     connect_menu(ui->action_Configure, &MainWindow::OnConfigure);
     connect_menu(ui->action_Configure_Current_Game, &MainWindow::OnConfigurePerGame);
+    connect_menu(ui->action_Optimize_Current_Game, &MainWindow::OnOptimizeCurrentGame);
 
     // View
     connect_menu(ui->action_Fullscreen, &MainWindow::ToggleFullscreen);
@@ -1764,6 +1766,7 @@ void MainWindow::UpdateMenuState() {
         ui->action_Stop,
         ui->action_Restart,
         ui->action_Configure_Current_Game,
+        ui->action_Optimize_Current_Game,
         ui->action_Load_Amiibo,
         ui->action_Pause,
     };
@@ -4083,6 +4086,20 @@ void MainWindow::OnToggleGraphicsAPI() {
 void MainWindow::OnConfigurePerGame() {
     const u64 title_id = QtCommon::system->GetApplicationProcessProgramID();
     OpenPerGameConfiguration(title_id, current_game_path.toStdString());
+}
+
+void MainWindow::OnOptimizeCurrentGame() {
+    const u64 title_id = QtCommon::system->GetApplicationProcessProgramID();
+    const auto file_path = std::filesystem::path{
+        Common::U16StringFromBuffer(current_game_path.utf16(), current_game_path.size())};
+    // The same name the game's settings were loaded under when it booted.
+    const std::string config_name = title_id == 0
+                                        ? Common::FS::PathToUTF8String(file_path.filename())
+                                        : fmt::format("{:016X}", title_id);
+    Settings::SetConfiguringGlobal(false);
+    AutoOptimizeDialog dialog(this, *QtCommon::system, config_name);
+    dialog.exec();
+    Settings::SetConfiguringGlobal(true);
 }
 
 void MainWindow::OpenPerGameConfiguration(u64 title_id, const std::string& file_name) {

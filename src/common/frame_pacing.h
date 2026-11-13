@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "common/common_types.h"
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -65,6 +66,15 @@ inline FramePacing ComputeFramePacing(std::span<const double> intervals_ms,
     pacing.stutters = static_cast<size_t>(
         std::ranges::count_if(intervals_ms, [stutter_ms](double ms) { return ms > stutter_ms; }));
     return pacing;
+}
+
+/// Frames generated a second between two readings of a renderer's generated-frame counter, taken
+/// `seconds` apart. Zero when the counter went back (a new game) or no time passed.
+[[nodiscard]] constexpr double GeneratedFrameRate(u64 before, u64 after, double seconds) {
+    if (after < before || seconds <= 0.0) {
+        return 0.0;
+    }
+    return static_cast<double>(after - before) / seconds;
 }
 
 } // namespace Common

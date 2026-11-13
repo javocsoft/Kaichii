@@ -1076,6 +1076,11 @@ FN_MAX_LIMIT_LIST
     /// subtracted: see GetDeviceMemorySlack().
     u64 GetDeviceMemoryBudget() const;
 
+    /// What this process has allocated outside the device-local heaps (system memory). Images
+    /// land there once video memory is full: Ocarina of Time on a 4 GB card holds about 0.7 GiB
+    /// there at half resolution and 2.9 GiB at native.
+    u64 GetHostMemoryUsage() const;
+
     /// Memory the allocator holds from the driver in the main device-local heap but has no
     /// allocation in (the unused part of its blocks). GetDeviceMemoryUsage() does not count it,
     /// yet the driver does: with the heap at its budget it is not available to new images.
