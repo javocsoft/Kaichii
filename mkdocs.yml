@@ -89,7 +89,7 @@ plugins:
             Data and storage: Datos y almacenamiento
             Orphaned profiles: Perfiles huérfanos
             Multiplayer: Multijugador
-            Command line: Línea de comandos
+            Command line: Línea de comandos  # codespell:ignore comandos
             Date and time: Fecha y hora
             Graphics settings in detail: Ajustes gráficos en detalle
 

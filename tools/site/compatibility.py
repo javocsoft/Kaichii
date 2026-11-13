@@ -52,7 +52,8 @@ TEXT = {
                  "depende del equipo: fíjate en la tarjeta gráfica y la versión.",
         "send": "¿Has jugado a algo? [Envía un informe](CompatibilityReports.es.md).",
         "count": "{n} informes",
-        "none": "Todavía no hay informes: el tuyo puede ser el primero.",
+        "none": ("Todavía no hay informes: el tuyo puede ser "  # codespell:ignore ser
+                 "el primero."),
         "unavailable": "No se pudieron cargar los informes al construir esta página.",
         "browse": "Consúltalos en GitHub",
         "columns": ("Juego", "Valoración", "Versión del juego", "Versión de Kaichii",

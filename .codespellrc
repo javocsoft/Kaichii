@@ -2,7 +2,8 @@
 ; SPDX-License-Identifier: GPL-2.0-or-later
 
 [codespell]
-skip = ./.git,./build,./dist,./Doxyfile,./externals,./LICENSES,./src/android/app/src/main/res
+skip = ./.git,./build,./dist,*.es.md,./Doxyfile,./externals,./LICENSES,./src/android/app/src/main/res
 ignore-words-list = aci,allright,ba,canonicalizations,commitish,deques,fpr,froms,hda,inout,lod,masia,nam,nax,nce,nd,optin,pullrequests,pullrequest,te,titel,transfered,unstall,uscaled,vas,zink
 ; RFC 4648 base64 test vectors
 ignore-regex = encode\("fo"\)
+; The Spanish pages of the player's guide (docs/user/*.es.md) are skipped above.
