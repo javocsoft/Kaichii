@@ -42,18 +42,25 @@ struct Measurements {
     u32 lowest_resolution = 0;
     /// Whether draws already skip while their shaders build (native_async_draws other than Wait).
     bool skips_unbuilt_draws = false;
+    /// Pipelines the disk cache held that the game needed before they were built, during `base`:
+    /// shaders built again while playing.
+    u64 cached_pipelines_built_late = 0;
+    /// Whether shader_preload_memory is on.
+    bool preloads_shaders = false;
 };
 
 enum class Action : u8 {
     EnableFrameGeneration,
     LowerResolution,       ///< One step down, at the next boot
     SkipUnbuiltDraws,      ///< native_async_draws = Bounded
+    PreloadShaders,        ///< shader_preload_memory = Auto, at the next boot
 };
 
 enum class Reason : u8 {
     FrameGenerationCostsLittle, ///< The trial kept nearly all the real frames
     VideoMemoryFull,            ///< Much of the game's images live in system memory
     ManyStutters,
+    ShadersBuiltAgain, ///< The game kept needing cached shaders that were not built yet
 };
 
 struct Recommendation {
@@ -84,6 +91,10 @@ inline constexpr double MaxFrameGenerationLoss = 0.07;
 inline constexpr double SpilledVideoMemoryShare = 0.5;
 /// Stutters a minute from which draws should skip while their shaders build.
 inline constexpr double ManyStuttersPerMinute = 20.0;
+/// Cached shaders built again a minute from which preloading them is proposed. Walking in
+/// Ocarina of Time's Kokiri Forest built 24-414 a minute that the disk cache held, and the frames
+/// they were built in included the walk's slowest (383 ms).
+inline constexpr double ManyCachedBuildsPerMinute = 20.0;
 
 [[nodiscard]] constexpr FrameGenerationVerdict JudgeFrameGeneration(const Measurements& m) {
     if (m.frame_gen_enabled) {
@@ -121,6 +132,11 @@ inline constexpr double ManyStuttersPerMinute = 20.0;
     if (!m.skips_unbuilt_draws && m.base.seconds > 0.0 &&
         static_cast<double>(m.base.stutters) * 60.0 / m.base.seconds >= ManyStuttersPerMinute) {
         result.push_back({Action::SkipUnbuiltDraws, Reason::ManyStutters, false});
+    }
+    if (!m.preloads_shaders && m.base.seconds > 0.0 &&
+        static_cast<double>(m.cached_pipelines_built_late) * 60.0 / m.base.seconds >=
+            ManyCachedBuildsPerMinute) {
+        result.push_back({Action::PreloadShaders, Reason::ShadersBuiltAgain, true});
     }
     return result;
 }

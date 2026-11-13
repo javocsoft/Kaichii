@@ -314,6 +314,11 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "and Bounded, a new pipeline is also translated on a worker thread instead of the "
               "GPU thread, and the draws that may be skipped are skipped meanwhile. The "
               "EDEN_NX2_ASYNC_DISCARD=1 environment variable still forces Skip."));
+    INSERT(Settings, shader_preload_memory, tr("Memory for preloaded shaders:"),
+           tr("After a game starts, builds in the background the shaders earlier sessions used "
+              "but the last few did not, most recent first, up to this much system memory. Areas "
+              "you come back to then stutter less the first time. Off builds only the shaders "
+              "of the last few sessions. Takes effect the next time the game starts."));
     INSERT(Settings, native_pipeline_wait_ms, tr("Pipeline wait per frame (ms):"),
            tr("Used by the Bounded mode: the most time per frame that Switch 2 draws may wait in "
               "total for pipelines that are still building. Once spent, the remaining unbuilt "
@@ -718,6 +723,15 @@ std::unique_ptr<ComboboxTranslationMap> ComboboxEnumeration(QObject* parent) {
                               PAIR(NativeAsyncDraws, Wait, tr("Wait")),
                               PAIR(NativeAsyncDraws, Bounded, tr("Bounded wait")),
                               PAIR(NativeAsyncDraws, Skip, tr("Skip")),
+                          }});
+    translations->insert({Settings::EnumMetadata<Settings::ShaderPreloadMemory>::Index(),
+                          {
+                              PAIR(ShaderPreloadMemory, Off, tr("Off")),
+                              PAIR(ShaderPreloadMemory, Auto, tr("Automatic")),
+                              PAIR(ShaderPreloadMemory, Gib1, tr("1 GB")),
+                              PAIR(ShaderPreloadMemory, Gib2, tr("2 GB")),
+                              PAIR(ShaderPreloadMemory, Gib4, tr("4 GB")),
+                              PAIR(ShaderPreloadMemory, Gib8, tr("8 GB")),
                           }});
     translations->insert({Settings::EnumMetadata<Settings::CpuClock>::Index(),
                           {

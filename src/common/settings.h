@@ -648,6 +648,13 @@ struct Values {
                                                            true,
                                                            true};
 
+    // Host memory for graphics pipelines built at boot, in the background, from the disk cache:
+    // those earlier sessions used, most recent first (VideoCommon::ShaderPreloadBytes).
+    SwitchableSetting<ShaderPreloadMemory> shader_preload_memory{linkage,
+                                                                 ShaderPreloadMemory::Off,
+                                                                 "shader_preload_memory",
+                                                                 Category::RendererAdvanced};
+
     SwitchableSetting<u32, true> native_pipeline_wait_ms{linkage,
                                                          8,
                                                          1,

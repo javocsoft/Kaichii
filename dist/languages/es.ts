@@ -85,7 +85,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
 <context>
     <name>AutoOptimizeDialog</name>
     <message>
-        <location filename="../../src/yuzu/auto_optimize_dialog.cpp" line="+38"/>
+        <location filename="../../src/yuzu/auto_optimize_dialog.cpp" line="+39"/>
         <source>Optimize for This Game</source>
         <translation>Optimizar para este juego</translation>
     </message>
@@ -110,7 +110,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Measuring the game as it is…</source>
         <translation>Midiendo el juego tal como está…</translation>
     </message>
@@ -125,7 +125,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>El juego se ha detenido. Vuelve a iniciarlo para optimizar.</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+22"/>
         <source>No frames could be measured: this works with Switch 2 games while they are running and not paused.</source>
         <translation>No se ha podido medir ningún fotograma: esto funciona con juegos de Switch 2 mientras están en marcha y sin pausar.</translation>
     </message>
@@ -187,6 +187,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <location line="+4"/>
         <source>Skip objects while their shaders build: fewer stutters, objects may appear a moment late</source>
         <translation>Omitir objetos mientras se compilan sus shaders: menos tirones, algún objeto puede aparecer un instante tarde</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Preload shaders from earlier sessions in system memory: fewer stutters in areas you come back to (takes effect the next time the game starts)</source>
+        <translation>Precargar en la memoria del sistema los shaders de sesiones anteriores: menos tirones en las zonas a las que vuelves (se aplica la próxima vez que arranque el juego)</translation>
     </message>
 </context>
 <context>
@@ -1513,6 +1518,16 @@ Esperar detiene la GPU hasta que la canalización está lista (no falta ningún 
     </message>
     <message>
         <location line="+8"/>
+        <source>Memory for preloaded shaders:</source>
+        <translation>Memoria para shaders precargados:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>After a game starts, builds in the background the shaders earlier sessions used but the last few did not, most recent first, up to this much system memory. Areas you come back to then stutter less the first time. Off builds only the shaders of the last few sessions. Takes effect the next time the game starts.</source>
+        <translation>Al arrancar un juego, prepara en segundo plano los shaders que usaron sesiones anteriores pero no las últimas, empezando por los más recientes, hasta esta cantidad de memoria del sistema. Así las zonas a las que vuelves dan menos tirones la primera vez. Desactivado prepara solo los shaders de las últimas sesiones. Se aplica la próxima vez que arranque el juego.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Pipeline wait per frame (ms):</source>
         <translation>Espera de canalizaciones por fotograma (ms):</translation>
     </message>
@@ -1812,12 +1827,12 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+322"/>
+        <location line="+331"/>
         <source>Disabled</source>
         <translation>Desactivado</translation>
     </message>
     <message>
-        <location line="-317"/>
+        <location line="-326"/>
         <source>Never</source>
         <translation>Nunca</translation>
     </message>
@@ -2237,11 +2252,12 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="+4"/>
+        <location line="+124"/>
         <source>Automatic</source>
         <translation>Automático</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-122"/>
         <source>2x</source>
         <translation>x2</translation>
     </message>
@@ -2687,6 +2703,31 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <location line="+1"/>
         <source>Skip</source>
         <translation>Saltar</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Off</source>
+        <translation>Desactivado</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>1 GB</source>
+        <translation>1 GB</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>2 GB</source>
+        <translation>2 GB</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>4 GB</source>
+        <translation>4 GB</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>8 GB</source>
+        <translation>8 GB</translation>
     </message>
     <message>
         <location line="+4"/>

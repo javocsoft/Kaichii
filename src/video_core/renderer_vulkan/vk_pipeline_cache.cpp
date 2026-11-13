@@ -34,6 +34,7 @@
 #include "shader_recompiler/frontend/maxwell/translate_program.h"
 #include "shader_recompiler/ir_opt/passes.h"
 #include "shader_recompiler/program_header.h"
+#include "video_core/pipeline_build_stats.h"
 #include "video_core/engines/kepler_compute.h"
 #include "video_core/engines/maxwell_3d.h"
 #include "video_core/memory_manager.h"
@@ -790,8 +791,9 @@ void PipelineCache::SaveUsedPipelines() {
     for (const u64 hash : used_and_evicted) {
         next.emplace(hash, u8{0});
     }
+    // Kept well past the boot window: the shader preload builds the older ones.
     for (const auto& [hash, age] : used_pipelines) {
-        if (age + 1 < MaxUsedPipelineAge(device)) {
+        if (age + 1 < VideoCommon::UsedPipelinesKeptSessions) {
             next.try_emplace(hash, static_cast<u8>(age + 1));
         }
     }
@@ -998,11 +1000,35 @@ void PipelineCache::LoadDiskResources(u64 title_id, std::stop_token stop_loading
             VideoCommon::VersionedPipelineCachePath(base_dir, "vulkan_used", *migrated_from),
             used_pipelines_filename, std::filesystem::copy_options::none, migration_error);
     }
-    used_pipelines = LoadUsedPipelines(used_pipelines_filename, MaxUsedPipelineAge(device));
+    used_pipelines =
+        LoadUsedPipelines(used_pipelines_filename, VideoCommon::UsedPipelinesKeptSessions);
     used_pipelines_saved = std::chrono::steady_clock::now();
     size_t skipped_pipelines = 0;
     size_t deferred_pipelines = 0;
     size_t queued_graphics = 0;
+    const u8 boot_window = MaxUsedPipelineAge(device);
+    const auto built_at_boot = [&](u64 hash) {
+        const auto it = used_pipelines.find(hash);
+        return it != used_pipelines.end() && it->second < boot_window;
+    };
+    // shader_preload_memory: the pipelines older sessions used, most recent first, are built in
+    // the background up to that much memory. Off keeps the small background prebuild of the first
+    // pipelines the disk cache holds.
+    const u64 preload_bytes = VideoCommon::ShaderPreloadBytes(
+        Settings::values.shader_preload_memory.GetValue(),
+        Common::GetMemInfo().TotalPhysicalMemory);
+    u32 preload_age_limit = 0;
+    u64 preloaded_bytes = 0;
+    if (preload_bytes != 0) {
+        std::vector<u8> ages;
+        ages.reserve(used_pipelines.size());
+        for (const auto& [hash, age] : used_pipelines) {
+            ages.push_back(age);
+        }
+        const size_t count = static_cast<size_t>(preload_bytes / VideoCommon::PreloadedPipelineBytes);
+        preload_age_limit = VideoCommon::PreloadAgeLimit(ages, boot_window, count);
+        background_pipelines.SetLimits(count, static_cast<size_t>(preload_bytes));
+    }
 
     if (use_vulkan_pipeline_cache) {
         vulkan_pipeline_cache_filename =
@@ -1110,11 +1136,20 @@ void PipelineCache::LoadDiskResources(u64 title_id, std::stop_token stop_loading
         }
         if (!PreloadAllPipelines() &&
             (used_pipelines.empty() ? queued_graphics >= MaxPipelinesWithoutUsedList
-                                    : !used_pipelines.contains(hash))) {
+                                    : !built_at_boot(hash))) {
             ++skipped_pipelines;
             size_t capture_bytes = (envs.capacity() - envs.size()) * sizeof(FileEnvironment);
             for (const auto& env : envs) {
                 capture_bytes += env.MemorySize();
+            }
+            if (preload_bytes != 0) {
+                // Only pipelines older sessions used, and only within the memory given.
+                const auto it = used_pipelines.find(hash);
+                if (it == used_pipelines.end() || it->second >= preload_age_limit ||
+                    preloaded_bytes + VideoCommon::PreloadedPipelineBytes + capture_bytes >
+                        preload_bytes) {
+                    return;
+                }
             }
             if (background_pipelines.Add(
                     key, capture_bytes, [this, key, envs = std::move(envs)]() mutable {
@@ -1133,6 +1168,7 @@ void PipelineCache::LoadDiskResources(u64 title_id, std::stop_token stop_loading
                         return pipeline;
                     })) {
                 ++deferred_pipelines;
+                preloaded_bytes += VideoCommon::PreloadedPipelineBytes + capture_bytes;
             }
             return;
         }
@@ -1172,6 +1208,13 @@ void PipelineCache::LoadDiskResources(u64 title_id, std::stop_token stop_loading
             Render_Vulkan,
             "{} cached graphics pipelines skipped at boot, {} admitted for background prebuild",
             skipped_pipelines, deferred_pipelines);
+        if (preload_bytes != 0) {
+            LOG_INFO(Render_Vulkan,
+                     "Shader preload: {} pipelines of older sessions (under {} sessions ago), "
+                     "about {} MiB of the {} MiB given",
+                     deferred_pipelines, preload_age_limit, preloaded_bytes >> 20,
+                     preload_bytes >> 20);
+        }
     }
 
     std::unique_lock lock{state.mutex};
@@ -1359,6 +1402,9 @@ GraphicsPipeline* PipelineCache::CurrentGraphicsPipelineSlowPath() {
         ReportNewPipelineKey(graphics_key);
         pipeline = background_pipelines.Take(graphics_key);
         if (!pipeline) {
+            if (disk_pipelines.contains(graphics_key.Hash())) {
+                VideoCommon::g_cached_pipelines_built_late.fetch_add(1, std::memory_order_relaxed);
+            }
             const auto keep = evicted_pointer_slots.Take(graphics_key.Hash());
             const auto* const keep_pointers = keep ? &*keep : nullptr;
             if (!(TranslatesInBackground() && SubmitGraphicsPipeline(keep_pointers))) {

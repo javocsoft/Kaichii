@@ -8,6 +8,7 @@
 #include <span>
 
 #include "common/common_types.h"
+#include "common/settings_enums.h"
 
 namespace VideoCommon {
 
@@ -76,6 +77,56 @@ constexpr u64 KeyedAttributeTypes(u64 attribute_types, std::span<const u64> uniq
         }
     }
     return attribute_types;
+}
+
+/// Sessions a graphics pipeline stays in the used list after its last use (the file stores a u8).
+/// The pipelines of the last few are built at boot (the boot window); the older ones are what the
+/// shader preload builds in the background.
+constexpr u8 UsedPipelinesKeptSessions = 254;
+
+/// Host memory a graphics pipeline built ahead of use holds: building 17,162 cached Ocarina of
+/// Time pipelines took 17.9 GB of resident memory on an RTX 3050 Laptop.
+constexpr u64 PreloadedPipelineBytes = 1'050'000;
+
+/// Memory the shader_preload_memory setting gives pipelines built ahead of use. Auto takes 1/16
+/// of the RAM, from 512 MiB to 4 GiB.
+constexpr u64 ShaderPreloadBytes(Settings::ShaderPreloadMemory mode, u64 host_ram) {
+    constexpr u64 GiB = u64{1} << 30;
+    switch (mode) {
+    case Settings::ShaderPreloadMemory::Off:
+        return 0;
+    case Settings::ShaderPreloadMemory::Auto:
+        return std::clamp(host_ram / 16, GiB / 2, 4 * GiB);
+    case Settings::ShaderPreloadMemory::Gib1:
+        return GiB;
+    case Settings::ShaderPreloadMemory::Gib2:
+        return 2 * GiB;
+    case Settings::ShaderPreloadMemory::Gib4:
+        return 4 * GiB;
+    case Settings::ShaderPreloadMemory::Gib8:
+        return 8 * GiB;
+    }
+    return 0;
+}
+
+/// The preload takes used pipelines whose sessions since their last use are at least
+/// `boot_window` (younger ones are built at boot anyway) and under the returned limit: the
+/// smallest limit that reaches `count` pipelines, so the most recently used come first. 256 when
+/// the list holds fewer.
+/// @param ages Sessions since each used pipeline's last use.
+constexpr u32 PreloadAgeLimit(std::span<const u8> ages, u8 boot_window, size_t count) {
+    std::array<size_t, 256> per_age{};
+    for (const u8 age : ages) {
+        ++per_age[age];
+    }
+    size_t taken = 0;
+    for (u32 age = boot_window; age < per_age.size(); ++age) {
+        taken += per_age[age];
+        if (taken >= count) {
+            return age + 1;
+        }
+    }
+    return 256;
 }
 
 } // namespace VideoCommon

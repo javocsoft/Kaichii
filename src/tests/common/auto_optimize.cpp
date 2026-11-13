@@ -99,3 +99,21 @@ TEST_CASE("Many stutters propose skipping draws whose shaders still build", "[co
     m.base.stutters = 2;
     REQUIRE_FALSE(Has(Recommend(m), Action::SkipUnbuiltDraws));
 }
+
+TEST_CASE("Shaders built again while playing propose preloading them", "[common][optimize]") {
+    auto m = Laptop();
+    m.cached_pipelines_built_late = 9; // in 15 s: 36 a minute, as walking in Kokiri Forest
+    const auto list = Recommend(m);
+    REQUIRE(Has(list, Action::PreloadShaders));
+    for (const auto& item : list) {
+        if (item.action == Action::PreloadShaders) {
+            REQUIRE(item.reason == Reason::ShadersBuiltAgain);
+            REQUIRE(item.needs_restart);
+        }
+    }
+    m.preloads_shaders = true;
+    REQUIRE_FALSE(Has(Recommend(m), Action::PreloadShaders));
+    m.preloads_shaders = false;
+    m.cached_pipelines_built_late = 2; // standing still: a few
+    REQUIRE_FALSE(Has(Recommend(m), Action::PreloadShaders));
+}
