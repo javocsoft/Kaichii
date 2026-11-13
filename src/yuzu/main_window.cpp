@@ -1539,6 +1539,8 @@ void MainWindow::ConnectWidgetEvents() {
     connect(game_list, &GameList::AddDirectory, this, &MainWindow::OnGameListAddDirectory);
     connect(game_list_placeholder, &GameListPlaceholder::AddDirectory, this,
             &MainWindow::OnGameListAddDirectory);
+    connect(game_list_placeholder, &GameListPlaceholder::OpenSetupAssistant, this,
+            &MainWindow::ShowFirstRunAssistant);
     connect(game_list, &GameList::ShowList, this, &MainWindow::OnGameListShowList);
     connect(game_list, &GameList::PopulatingCompleted,
             [this] { multiplayer_state->UpdateGameList(game_list->GetModel()); });

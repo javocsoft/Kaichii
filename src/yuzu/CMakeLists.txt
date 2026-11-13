@@ -171,6 +171,8 @@ add_executable(yuzu
     configuration/setting_help_panel.h
     configuration/settings_organizer.cpp
     configuration/settings_organizer.h
+    configuration/settings_style.cpp
+    configuration/settings_style.h
     configuration/shared_widget.cpp
     configuration/shared_widget.h
     debugger/console.cpp

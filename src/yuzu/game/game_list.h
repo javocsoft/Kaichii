@@ -187,6 +187,7 @@ public:
 
 signals:
     void AddDirectory();
+    void OpenSetupAssistant();
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent* event) override;
@@ -197,5 +198,8 @@ private:
 
     QVBoxLayout* layout = nullptr;
     QLabel* image = nullptr;
+    QLabel* title = nullptr;
     QLabel* text = nullptr;
+    QPushButton* add_button = nullptr;
+    QPushButton* assistant_button = nullptr;
 };

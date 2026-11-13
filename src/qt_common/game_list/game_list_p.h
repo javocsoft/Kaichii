@@ -38,6 +38,20 @@ enum class GameListItemType {
 
 Q_DECLARE_METATYPE(GameListItemType);
 
+/// Whether a game list's top level has no games or folders: nothing but the row that adds a folder
+/// and an empty Favorites row. The window then shows its welcome instead of the list.
+[[nodiscard]] inline bool HoldsNoGames(const QStandardItem& root) {
+    for (int row = 0; row < root.rowCount(); ++row) {
+        const QStandardItem* const child = root.child(row);
+        const auto type = static_cast<GameListItemType>(child->type());
+        const bool empty_favorites = type == GameListItemType::Favorites && !child->hasChildren();
+        if (type != GameListItemType::AddDir && !empty_favorites) {
+            return false;
+        }
+    }
+    return true;
+}
+
 static QPixmap ThemeIcon(const char* name) {
     const int size = UISettings::values.folder_icon_size.GetValue();
 
