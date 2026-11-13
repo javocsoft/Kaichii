@@ -237,6 +237,9 @@ std::unique_ptr<SettingHelpMap> InitializeSettingHelp() {
 #ifdef __unix__
     add(ui.gui_force_x11, {.level = Advanced});
 #endif
+#ifdef __linux__
+    add(ui.desktop_integration, {});
+#endif
 
     return help;
 }

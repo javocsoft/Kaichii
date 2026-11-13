@@ -165,6 +165,13 @@ struct Values {
     Setting<bool> gui_hide_backend_warning{linkage, false, "gui_hide_backend_warning",
                                            Category::UiGeneral};
 #endif
+#ifdef __linux__
+    // Running as an AppImage: whether Kaichii adds itself to the applications menu, so desktops
+    // show its icon, and whether the player was asked.
+    Setting<bool> desktop_integration{linkage, false, "desktop_integration", Category::UiGeneral};
+    Setting<bool> desktop_integration_asked{linkage, false, "desktop_integration_asked",
+                                            Category::Ui};
+#endif
 
     // Discord RPC
     Setting<bool> enable_discord_presence{linkage, false, "enable_discord_presence", Category::Ui};

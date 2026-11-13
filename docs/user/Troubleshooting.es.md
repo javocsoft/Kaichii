@@ -33,6 +33,11 @@ La primera vez que aparece cada efecto se construyen sus shaders, y eso puede da
 desapareciendo al jugar y las siguientes visitas son más fluidas (consulta
 [Tirones por shaders](Performance.es.md#tirones-por-shaders)).
 
+## Un icono genérico en la barra de tareas en Linux
+
+La barra de tareas toma el icono de una aplicación de su entrada en el menú de aplicaciones. Activa
+**Añadir Kaichii al menú de aplicaciones** en *Configurar > Interfaz* y vuelve a abrir Kaichii.
+
 ## Las ventanas o los diálogos se ven mal en Linux
 
 En escritorios Wayland, Kaichii dibuja sus ventanas a través de X11 (XWayland) por defecto, para que

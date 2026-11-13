@@ -84,6 +84,7 @@
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include <QFileDialog>
+#include <QFile>
 #include <QFileInfo>
 #include <QFutureWatcher>
 #include <QGuiApplication>
@@ -115,6 +116,7 @@
 #include "qt_common/util/meta.h"
 #include "qt_common/util/mod.h"
 #include "qt_common/util/path.h"
+#include "qt_common/util/desktop_integration.h"
 #include "qt_common/util/guide.h"
 #include "qt_common/util/translations.h"
 
@@ -516,6 +518,7 @@ MainWindow::MainWindow(bool has_broken_vulkan)
             if (!UISettings::values.performance_preset_offered.GetValue()) {
                 ShowFirstRunAssistant();
             }
+            SyncDesktopIntegration(true);
         });
     }
 
@@ -3873,6 +3876,7 @@ void MainWindow::OnConfigure() {
         GraphicsBackend::SetForceX11(UISettings::values.gui_force_x11.GetValue());
     }
 #endif
+    SyncDesktopIntegration(false);
 
     if (!multiplayer_state->IsHostingPublicRoom()) {
         multiplayer_state->UpdateCredentials();
@@ -5177,6 +5181,46 @@ void MainWindow::UpdateStatusButtons() {
     UpdateAAText();
     UpdateFrameGenButton();
     UpdateVolumeUI();
+}
+
+void MainWindow::SyncDesktopIntegration([[maybe_unused]] bool ask) {
+#ifdef __linux__
+    namespace Desktop = QtCommon::DesktopIntegration;
+    auto& values = UISettings::values;
+    const QString appimage = Desktop::CurrentAppImage();
+    if (!values.desktop_integration_asked.GetValue()) {
+        if (!ask || appimage.isEmpty()) {
+            return;
+        }
+        values.desktop_integration_asked = true;
+        values.desktop_integration =
+            QMessageBox::question(
+                this, tr("Add Kaichii to the applications menu?"),
+                tr("Kaichii runs as an AppImage, which your desktop doesn't know yet: the taskbar "
+                   "shows a generic icon, and the applications menu doesn't list it.\n\nAdd "
+                   "Kaichii to the applications menu? You can change this later in Configure > "
+                   "Interface.")) == QMessageBox::Yes;
+    }
+    const QString data_home = Desktop::DataHome();
+    if (!values.desktop_integration.GetValue()) {
+        Desktop::Remove(data_home);
+        return;
+    }
+    // A build that doesn't run from an AppImage leaves the entry as it is.
+    if (appimage.isEmpty()) {
+        return;
+    }
+    QFile shipped(QStringLiteral(":/img/kaichii.desktop"));
+    QFile icon(QStringLiteral(":/icons/default/256x256/kaichii.png"));
+    if (!shipped.open(QIODevice::ReadOnly) || !icon.open(QIODevice::ReadOnly)) {
+        return;
+    }
+    if (Desktop::Install(QString::fromUtf8(shipped.readAll()), appimage, icon.readAll(),
+                         data_home) == Desktop::Result::Failed) {
+        LOG_WARNING(Frontend, "Could not add Kaichii to the applications menu in {}",
+                    data_home.toStdString());
+    }
+#endif
 }
 
 void MainWindow::ShowFirstRunAssistant() {

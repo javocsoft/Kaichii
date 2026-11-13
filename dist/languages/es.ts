@@ -1837,7 +1837,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Activar Modo Juego</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+10"/>
         <source>Force X11 as Graphics Backend</source>
         <translation>Forzar X11 como motor gráfico</translation>
     </message>
@@ -1878,7 +1878,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/config/setting_help.cpp" line="+433"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="+436"/>
         <location filename="../../src/qt_common/config/shared_translation.cpp" line="+1"/>
         <source>GPU</source>
         <translation>GPU</translation>
@@ -2014,7 +2014,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Inmediato</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/config/setting_help.cpp" line="-386"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="-389"/>
         <source>▲ faster</source>
         <translation>▲ más rápido</translation>
     </message>
@@ -2084,7 +2084,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Opción de desarrollo: para depurar Kaichii</translation>
     </message>
     <message>
-        <location line="+166"/>
+        <location line="+169"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -2354,7 +2354,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation type="vanished">Super Resolución AMD FidelityFX</translation>
     </message>
     <message>
-        <location line="-616"/>
+        <location line="-622"/>
         <source>Custom frontend: Kaichii answers in the applet&apos;s place, with its own window where it has one, and needs no firmware. Real applet: the console&apos;s own screen, from the installed firmware.</source>
         <translation>Interfaz personalizada: Kaichii responde en lugar del applet, con su propia ventana cuando la tiene, y no necesita firmware. Applet real: la pantalla de la propia consola, del firmware instalado.</translation>
     </message>
@@ -2735,6 +2735,16 @@ Solo Windows y Linux.</translation>
     </message>
     <message>
         <location line="+4"/>
+        <source>Add Kaichii to the applications menu</source>
+        <translation>Añadir Kaichii al menú de aplicaciones</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>When Kaichii runs as an AppImage, it adds itself to your desktop&apos;s applications menu, so you can start it from there and the taskbar shows its icon. Turning it off removes the entry.</source>
+        <translation>Cuando Kaichii se ejecuta como AppImage, se añade al menú de aplicaciones de tu escritorio, para que puedas abrirlo desde ahí y la barra de tareas muestre su icono. Al desactivarlo se quita la entrada.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Runs Kaichii&apos;s windows through X11 (XWayland) instead of Wayland. On by default because under Wayland some desktops cut message boxes short. Takes effect when Kaichii restarts.</source>
         <translation>Muestra las ventanas de Kaichii mediante X11 (XWayland) en vez de Wayland. Activado por defecto porque con Wayland algunos escritorios recortan los cuadros de mensaje. Se aplica al reiniciar Kaichii.</translation>
     </message>
@@ -9130,7 +9140,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+1979"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+1982"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -9321,7 +9331,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="-278"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3652"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3693"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -9488,7 +9498,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-656"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-696"/>
         <source>&amp;Start</source>
         <translation>&amp;Iniciar</translation>
     </message>
@@ -9594,7 +9604,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4579"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4581"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9650,7 +9660,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>La inicialización de Vulkan falló durante el arranque.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+29"/>
         <source>Running a game</source>
         <extracomment>TRANSLATORS: This string is shown to the user to explain why yuzu needs to prevent the computer from sleeping</extracomment>
         <translation>Ejecutando un juego</translation>
@@ -9843,25 +9853,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2488"/>
+        <location line="+2489"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2488"/>
-        <location line="+2488"/>
+        <location line="-2489"/>
+        <location line="+2489"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2487"/>
-        <location line="+2489"/>
+        <location line="-2488"/>
+        <location line="+2490"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2476"/>
+        <location line="-2477"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -10025,12 +10035,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2132"/>
+        <location line="+2173"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2099"/>
+        <location line="-2140"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
@@ -10234,7 +10244,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>No se pudo abrir URL &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location line="+414"/>
+        <location line="+415"/>
         <source>TAS Recording</source>
         <translation>Grabación TAS</translation>
     </message>
@@ -10683,7 +10693,21 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>Vuelve a buscar juegos en las carpetas de juegos.</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+24"/>
+        <source>Add Kaichii to the applications menu?</source>
+        <translation>¿Añadir Kaichii al menú de aplicaciones?</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Kaichii runs as an AppImage, which your desktop doesn&apos;t know yet: the taskbar shows a generic icon, and the applications menu doesn&apos;t list it.
+
+Add Kaichii to the applications menu? You can change this later in Configure &gt; Interface.</source>
+        <translation>Kaichii se ejecuta como AppImage, que tu escritorio todavía no conoce: la barra de tareas muestra un icono genérico y el menú de aplicaciones no lo incluye.
+
+¿Añadir Kaichii al menú de aplicaciones? Puedes cambiarlo más tarde en Configurar &gt; Interfaz.</translation>
+    </message>
+    <message>
+        <location line="+136"/>
         <source>Derivation Components Missing</source>
         <translation>Componentes de derivación ausentes</translation>
     </message>
