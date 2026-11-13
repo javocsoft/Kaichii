@@ -999,6 +999,16 @@ struct Values {
     Setting<std::string> log_filter{linkage, "*:Info", "log_filter", Category::Miscellaneous};
     Setting<bool> log_flush_line{linkage, false, "flush_line", Category::Miscellaneous, Specialization::Default, true, true};
     Setting<bool> censor_username{linkage, true, "censor_username", Category::Miscellaneous};
+    // The hardware test's last results (Configure > Performance), kept for the GPU they were
+    // measured on: compute and CPU as thousandths of the reference machine's, free video memory.
+    Setting<std::string> hardware_test_gpu{linkage, std::string{}, "hardware_test_gpu",
+                                           Category::Miscellaneous};
+    Setting<u32> hardware_test_gpu_permille{linkage, 0, "hardware_test_gpu_permille",
+                                            Category::Miscellaneous};
+    Setting<u32> hardware_test_free_memory_mib{linkage, 0, "hardware_test_free_memory_mib",
+                                               Category::Miscellaneous};
+    Setting<u32> hardware_test_cpu_permille{linkage, 0, "hardware_test_cpu_permille",
+                                            Category::Miscellaneous};
     Setting<bool> first_launch{linkage, true, "first_launch", Category::Miscellaneous};
 
     // Network

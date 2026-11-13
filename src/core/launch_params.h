@@ -33,6 +33,8 @@ struct LaunchParams {
     std::optional<std::string> edit_nup_icon{};
     std::optional<std::string> edit_nup_version{};
     std::optional<std::string> edit_nup_publisher{};
+    // --hardware-test: measures the GPU, its free memory and the CPU, prints them and exits.
+    bool hardware_test = false;
     u16 port = Network::DefaultRoomPort;
     bool use_multiplayer = false;
     bool fullscreen = false;

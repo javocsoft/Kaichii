@@ -113,6 +113,14 @@ Settings::HostProfile DetectHostProfile(const std::vector<Record>& records, int 
         host.gpu_vendor_id = record.vendor_id;
         host.gpu_integrated = record.integrated;
         host.gpu_memory_bytes = record.device_local_bytes;
+        // The hardware test's figures count only for the GPU they were measured on.
+        if (!host.gpu_name.empty() &&
+            Settings::values.hardware_test_gpu.GetValue() == host.gpu_name) {
+            host.measured_gpu_ratio =
+                Settings::values.hardware_test_gpu_permille.GetValue() / 1000.0;
+            host.measured_free_memory_bytes =
+                u64{Settings::values.hardware_test_free_memory_mib.GetValue()} << 20;
+        }
     }
     return host;
 }

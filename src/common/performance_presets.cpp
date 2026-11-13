@@ -72,16 +72,38 @@ AstcDecodeMode AstcModeFor(const HostProfile& host) {
 
 } // Anonymous namespace
 
+HardwareTier ComputeTier(double gpu_ratio) {
+    if (gpu_ratio >= 4.7) {
+        return HardwareTier::Enthusiast;
+    }
+    if (gpu_ratio >= 2.1) {
+        return HardwareTier::High;
+    }
+    if (gpu_ratio >= 0.6) {
+        return HardwareTier::Mid;
+    }
+    return HardwareTier::Entry;
+}
+
 HardwareTier ClassifyHost(const HostProfile& host) {
+    // Other programs holding a quarter of the video memory or more: class by what is left.
+    u64 memory = host.gpu_memory_bytes;
+    if (host.measured_free_memory_bytes != 0 &&
+        host.measured_free_memory_bytes < memory / 4 * 3) {
+        memory = host.measured_free_memory_bytes;
+    }
     HardwareTier tier = HardwareTier::Entry;
     if (!host.gpu_integrated) {
-        if (host.gpu_memory_bytes >= 15 * GiB) {
+        if (memory >= 15 * GiB) {
             tier = HardwareTier::Enthusiast;
-        } else if (host.gpu_memory_bytes >= 10 * GiB) {
+        } else if (memory >= 10 * GiB) {
             tier = HardwareTier::High;
-        } else if (host.gpu_memory_bytes >= 6 * GiB) {
+        } else if (memory >= 6 * GiB) {
             tier = HardwareTier::Mid;
         }
+    }
+    if (host.measured_gpu_ratio > 0.0) {
+        tier = (std::min)(tier, ComputeTier(host.measured_gpu_ratio));
     }
     if (IsLaptopGpu(host.gpu_name)) {
         tier = (std::min)(tier, HardwareTier::High);

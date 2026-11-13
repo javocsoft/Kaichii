@@ -4,6 +4,7 @@
 // SPDX-FileCopyrightText: 2014 Citra Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <thread>
 #include <algorithm>
 #include <atomic>
 #include <iterator>
@@ -37,6 +38,9 @@
 #include "common/fs/path_util.h"
 #include "common/logging.h"
 #include "common/scm_rev.h"
+#include "common/thread.h"
+#include "video_core/vulkan_common/hardware_test.h"
+#include "common/hardware_test.h"
 #include "common/settings.h"
 #include "common/string_util.h"
 #include "core/core.h"
@@ -343,6 +347,35 @@ static std::atomic_bool pack_nup_cancel{false};
 static std::atomic_bool unpack_nup_cancel{false};
 static std::atomic_bool edit_nup_cancel{false};
 
+// eden-cli --hardware-test: the hardware test the Qt frontend's Performance page runs, on the
+// Vulkan device the settings select, printed.
+static bool RunHardwareTest() {
+    const auto device_index = static_cast<size_t>(Settings::values.vulkan_device.GetValue());
+    try {
+        const auto gpu = Vulkan::RunGpuTest(device_index);
+        std::printf("GPU: %s\n  %.2f TFLOPS (%.0f %% of the reference)\n", gpu.device_name.c_str(),
+                    gpu.tflops, 100.0 * gpu.tflops / Common::HardwareTest::ReferenceGpuTflops);
+        std::printf("  video memory: %llu MiB, %llu MiB free for this process\n",
+                    static_cast<unsigned long long>(gpu.heap_bytes >> 20),
+                    static_cast<unsigned long long>(gpu.budget_bytes >> 20));
+    } catch (const std::exception& error) {
+        std::fprintf(stderr, "GPU test failed: %s\n", error.what());
+        std::fflush(stderr);
+        return false;
+    }
+    double cpu = 0.0;
+    std::thread cpu_thread([&cpu] {
+        Common::SetCurrentThreadToPerformanceCores();
+        cpu = Common::HardwareTest::MeasureCpuRate(std::chrono::milliseconds{1500});
+    });
+    cpu_thread.join();
+    std::printf("CPU: %.1f million rounds a second (%.0f %% of the reference)\n", cpu * 1e-6,
+                100.0 * cpu / Common::HardwareTest::ReferenceCpuRate);
+    std::printf("Reference: %s\n", Common::HardwareTest::ReferenceMachine);
+    std::fflush(stdout);
+    return true;
+}
+
 // eden-cli --pack-nup <dump> [<out.nup>]; the output defaults to <dump>.nup next to the dump.
 static bool PackNup(const std::string& source, const std::string& output) {
     const auto to_path = [](const std::string& utf8) {
@@ -536,6 +569,10 @@ extern "C" SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     // archive operation so --help/--version never packs, unpacks or edits.
     if (lp.print_help || lp.print_version) {
         return SDL_APP_SUCCESS;
+    }
+
+    if (lp.hardware_test) {
+        return RunHardwareTest() ? SDL_APP_SUCCESS : SDL_APP_FAILURE;
     }
 
     if (lp.pack_nup_source) {

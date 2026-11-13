@@ -17,6 +17,7 @@
 
 class QButtonGroup;
 class QLabel;
+class QPushButton;
 class QRadioButton;
 
 namespace ConfigurationShared {
@@ -40,12 +41,16 @@ public:
 private:
     void ApplySelectedPreset();
     void UpdateCurrent();
+    /// The class and the recommended preset, after the hardware test changed what is known.
+    void UpdateRecommendation();
+    void StartHardwareTest();
+    void ShowMeasured();
     /// A setting's name as the settings pages show it.
     QString SettingName(const Settings::BasicSetting& setting) const;
     /// A value of a setting (as Setting::ToString writes it) as the settings pages show it.
     QString SettingValue(const Settings::BasicSetting& setting, const std::string& value) const;
 
-    const Settings::HostProfile host;
+    Settings::HostProfile host;
     const ConfigurationShared::Builder& builder;
     QButtonGroup* preset_buttons{};
     std::array<QRadioButton*, Settings::AllPerformancePresets.size()> preset_radios{};
@@ -53,4 +58,7 @@ private:
     std::unique_ptr<ConfigurationShared::TranslationMap> setting_names;
     QLabel* current_label{};
     QLabel* status_label{};
+    QLabel* class_label{};
+    QLabel* measured_label{};
+    QPushButton* test_button{};
 };
