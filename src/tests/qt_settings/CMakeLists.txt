@@ -84,3 +84,13 @@ if (ENABLE_QT_TRANSLATION)
     add_test(NAME translation COMMAND translation_tests)
     set_tests_properties(translation PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 endif()
+
+# Adding Kaichii to the applications menu when it runs as an AppImage.
+add_executable(desktop_integration_tests desktop_integration.cpp)
+target_compile_features(desktop_integration_tests PRIVATE cxx_std_20)
+target_compile_definitions(desktop_integration_tests PRIVATE
+    SHIPPED_DESKTOP_ENTRY="${PROJECT_SOURCE_DIR}/dist/io.github.javocsoft.kaichii.desktop")
+target_include_directories(desktop_integration_tests PRIVATE ../..)
+target_link_libraries(desktop_integration_tests PRIVATE qt_common frontend_common common
+                      SimpleIni::SimpleIni Qt6::Widgets Qt6::Test)
+add_test(NAME desktop_integration COMMAND desktop_integration_tests)

@@ -19,6 +19,10 @@ The AppImage carries everything it needs. It runs on systems with glibc 2.39 or 
 
 - **It says it needs FUSE.** Install your distribution's FUSE 2 package (`libfuse2t64` on Ubuntu
   24.04, `fuse2` on Arch), or start it with `APPIMAGE_EXTRACT_AND_RUN=1 ./kaichii-…AppImage`.
+- **The applications menu and the taskbar icon.** Desktops show an app's icon from its entry in
+  the applications menu, which an AppImage doesn't install by itself. The first time it starts,
+  Kaichii offers to add itself there; say yes and the taskbar shows its icon. **Add Kaichii to
+  the applications menu** in *Configure > Interface* changes it later.
 - **You'd rather use your system's libraries.** The `.tar.gz` holds the same programs without
   their libraries; Qt 6 and the usual libraries must be installed.
 

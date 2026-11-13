@@ -10,4 +10,4 @@ Exec=kaichii %f
 Categories=Game;Emulator;Qt;
 MimeType=application/x-nx-nro;application/x-nx-nso;application/x-nx-nsp;application/x-nx-xci;application/x-nx-nup;application/x-nx-nsz;application/x-nx-xcz;
 Keywords=Nintendo;Switch;Kaichii;
-StartupWMClass=kaichii
+StartupWMClass=Kaichii

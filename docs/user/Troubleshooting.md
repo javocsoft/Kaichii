@@ -29,6 +29,11 @@ names the build. Attach it when you report a problem, after checking it for pers
 The first time each effect appears its shaders are built, and that can stutter. It fades as you play
 and is smoother on later visits (see [Shader stutter](Performance.md#shader-stutter)).
 
+## A generic icon in the taskbar on Linux
+
+The taskbar takes an app's icon from its entry in the applications menu. Turn on **Add Kaichii to
+the applications menu** in *Configure > Interface*, then start Kaichii again.
+
 ## Windows or dialogs look wrong on Linux
 
 On Wayland desktops Kaichii draws its windows through X11 (XWayland) by default, so its dialogs fit

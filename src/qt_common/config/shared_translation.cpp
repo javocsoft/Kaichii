@@ -499,6 +499,12 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
            tr("Asks Feral GameMode, when it is installed, to switch the system to its performance "
               "settings while a game runs."));
 #ifdef __unix__
+#ifdef __linux__
+    INSERT(UISettings, desktop_integration, tr("Add Kaichii to the applications menu"),
+           tr("When Kaichii runs as an AppImage, it adds itself to your desktop's applications "
+              "menu, so you can start it from there and the taskbar shows its icon. Turning it off "
+              "removes the entry."));
+#endif
     INSERT(UISettings, gui_force_x11, tr("Force X11 as Graphics Backend"),
            tr("Runs Kaichii's windows through X11 (XWayland) instead of Wayland. On by default "
               "because under Wayland some desktops cut message boxes short. Takes effect when "

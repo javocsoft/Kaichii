@@ -472,6 +472,9 @@ private:
     void UpdateUISettings();
     /// Games folder, preset and console mode for a new installation; also in the Help menu.
     void ShowFirstRunAssistant();
+    /// Adds Kaichii to the applications menu, or removes it, as the setting says; when running
+    /// as an AppImage for the first time and `ask`, asks first.
+    void SyncDesktopIntegration(bool ask);
     /// Adds a folder to the game list and scans it.
     void AddGameDirectory(const QString& dir_path);
     void UpdateInputDrivers();
