@@ -1,5 +1,5 @@
 name: UI Bug
-description: UI Doesnt works as expected
+description: The interface does not work as expected
 title: "[UIBug] "
 labels: ["bug", "Kaichii-UI"]
 body:
