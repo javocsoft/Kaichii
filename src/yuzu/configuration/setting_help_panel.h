@@ -16,9 +16,6 @@ class QScrollArea;
 
 namespace ConfigurationShared {
 
-/// The property a settings widget carries with its setting's id, for the help panel.
-inline constexpr char SettingIdProperty[] = "lichiiSettingId";
-
 /// A box under the settings pages that explains the option under the pointer or with the
 /// keyboard focus: what it does, what it costs, when it applies and the recommended value. Other
 /// controls show their tooltip there.

@@ -84,7 +84,7 @@ QSize FitSizeToScreen(QSize wanted, QSize available, double fraction) {
     return wanted.boundedTo(limit);
 }
 
-void FitDialogToScreen(QDialog& dialog, double fraction) {
+void FitDialogToScreen(QDialog& dialog, double fraction, QSize at_least) {
     const QWidget* const anchor = dialog.parentWidget() ? dialog.parentWidget() : &dialog;
     QScreen* screen = anchor->screen();
     if (screen == nullptr) {
@@ -94,7 +94,8 @@ void FitDialogToScreen(QDialog& dialog, double fraction) {
         dialog.adjustSize();
         return;
     }
-    dialog.resize(FitSizeToScreen(dialog.sizeHint(), screen->availableGeometry().size(), fraction));
+    dialog.resize(FitSizeToScreen(dialog.sizeHint().expandedTo(at_least),
+                                  screen->availableGeometry().size(), fraction));
 }
 
 } // namespace ConfigurationShared

@@ -7,10 +7,13 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 #include <unordered_map>
 #include <vector>
 #include <QDialog>
+#include <QPointer>
 #include "configuration/shared_widget.h"
+#include "qt_common/config/setting_help.h"
 #include "qt_common/config/shared_translation.h"
 #include "qt_common/util/vk.h"
 #include "yuzu/configuration/configuration_shared.h"
@@ -38,6 +41,14 @@ class ConfigureUi;
 class ConfigureWeb;
 
 class HotkeyRegistry;
+class QCheckBox;
+class QLineEdit;
+class QListWidget;
+
+namespace ConfigurationShared {
+class SettingHelpPanel;
+class SettingsOrganizer;
+} // namespace ConfigurationShared
 
 namespace InputCommon {
 class InputSubsystem;
@@ -72,9 +83,31 @@ private:
 
     void HandleApplyButtonClicked();
 
+    /// A category of the list on the left: its pages and who each is for.
+    struct Category {
+        const char* name; ///< Untranslated, in the ConfigureDialog context
+        ConfigurationShared::SettingLevel level;
+        std::vector<std::pair<QWidget*, ConfigurationShared::SettingLevel>> pages;
+        bool search_controls = true; ///< Whether search looks at its controls besides settings
+    };
+    /// A control the search found, and where.
+    struct SearchHit {
+        size_t category;
+        QWidget* page;
+        QPointer<QWidget> control;
+        ConfigurationShared::SettingLevel level;
+    };
+
     void SetConfiguration();
     void UpdateVisibleTabs();
     void PopulateSelectionList();
+    void BuildGoalPages();
+    void BuildSidebar();
+    void RetranslateGoalPages();
+    /// Shows the options of the levels chosen, and saves the choice.
+    void SetLevels(bool show_advanced, bool developer_mode);
+    void Search(const QString& text);
+    void OpenSearchHit(int index);
     /// The scroll area a settings page is shown in, made on first use (see SettingsPageScroll).
     QWidget* ScrollPage(QWidget* page);
 
@@ -104,4 +137,17 @@ private:
     std::unique_ptr<ConfigureWeb> web_tab;
 
     std::unordered_map<QWidget*, QWidget*> scroll_pages;
+
+    std::unique_ptr<ConfigurationShared::SettingsOrganizer> organizer;
+    ConfigurationShared::SettingHelpPanel* help_panel = nullptr;
+    QWidget* image_page = nullptr;
+    QWidget* smoothness_page = nullptr;
+    QWidget* gpu_emulation_page = nullptr;
+    std::vector<Category> categories;
+    std::vector<SearchHit> search_hits;
+    QWidget* sidebar = nullptr;
+    QLineEdit* search_box = nullptr;
+    QListWidget* search_results = nullptr;
+    QCheckBox* show_advanced_box = nullptr;
+    QCheckBox* developer_mode_box = nullptr;
 };

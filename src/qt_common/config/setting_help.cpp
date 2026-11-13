@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #include <QCoreApplication>
+#include <QRegularExpression>
 #include <QStringList>
 #include <QTextDocument>
 
@@ -163,7 +164,7 @@ std::unique_ptr<SettingHelpMap> InitializeSettingHelp() {
     add(v.cpuopt_unsafe_ignore_global_monitor, {.level = Expert, .effects = {Faster, MayFreeze}});
 
     // Graphics
-    add(v.renderer_backend, {.level = Advanced});
+    add(v.renderer_backend, {});
     add(v.vulkan_device, {});
     add(v.resolution_setup, {.effects = {BetterImage, Slower, MoreVideoMemory}});
     add(v.scaling_filter, {});
@@ -178,10 +179,10 @@ std::unique_ptr<SettingHelpMap> InitializeSettingHelp() {
     add(v.use_disk_shader_cache, {.level = Advanced, .effects = {LessStutter}});
     add(v.use_asynchronous_gpu_emulation, {.level = Expert, .effects = {Faster}});
     add(v.nvdec_emulation, {.level = Advanced});
-    add(v.accelerate_astc, {.level = Advanced});
+    add(v.accelerate_astc, {});
     add(v.astc_recompression, {.level = Advanced});
     add(v.frame_pacing_mode, {.level = Advanced});
-    add(v.vram_usage_mode, {.level = Advanced});
+    add(v.vram_usage_mode, {});
     add(v.skip_cpu_inner_invalidation, {.level = Expert, .effects = {Faster, MayFreeze}});
     add(v.fps_limit, {});
     add(v.vsync_mode, {});
@@ -212,7 +213,7 @@ std::unique_ptr<SettingHelpMap> InitializeSettingHelp() {
     add(v.gpu_unswizzle_chunk_size, {.level = Expert});
     add(v.pin_gpu_threads, {.level = Advanced, .applies_at_boot = true});
     add(v.use_vulkan_driver_pipeline_cache, {.level = Advanced, .effects = {LessStutter}});
-    add(v.native_async_draws, {.level = Advanced});
+    add(v.native_async_draws, {});
     add(v.shader_preload_memory, {.effects = {LessStutter}, .applies_at_boot = true});
     add(v.native_pipeline_wait_ms, {.level = Advanced});
     add(v.enable_compute_pipelines, {.level = Expert, .effects = {MayFreeze}});
@@ -385,6 +386,75 @@ QString SettingHelpHtml(const Settings::BasicSetting& setting, const SettingHelp
         html += Paragraph(fact);
     }
     return html;
+}
+
+std::vector<GoalSection> GraphicsSections() {
+    auto& v = Settings::values;
+    using enum GoalPage;
+    return {
+        {Image, QT_TRANSLATE_NOOP("ConfigurationShared", "Graphics card"),
+         {v.renderer_backend.Id(), v.vulkan_device.Id()}},
+        {Image, QT_TRANSLATE_NOOP("ConfigurationShared", "Resolution and upscaling"),
+         {v.resolution_setup.Id(), v.scaling_filter.Id(), v.fsr_sharpening_slider.Id(),
+          v.game_dlss_network.Id(), v.nvidia_dlss.Id()}},
+        {Image, QT_TRANSLATE_NOOP("ConfigurationShared", "Picture"),
+         {v.anti_aliasing.Id(), v.oot_anti_aliasing.Id(), v.max_anisotropy.Id(),
+          v.post_shader_enabled.Id(), v.aspect_ratio.Id()}},
+        {Image, QT_TRANSLATE_NOOP("ConfigurationShared", "Frame rate and display"),
+         {v.vsync_mode.Id(), v.fps_limit.Id(), v.frame_gen.Id(), v.frame_gen_type.Id(),
+          v.frame_gen_multiplier.Id(), v.frame_gen_target_rate.Id(),
+          v.frame_gen_flow_scale_auto.Id(), v.frame_gen_flow_scale.Id(),
+          v.frame_gen_queue_target.Id(), v.frame_gen_dump_flow.Id(), v.mkw_30fps.Id(),
+          v.mkw_dynamic_fps.Id(), v.fullscreen_mode.Id()}},
+        {Smoothness, QT_TRANSLATE_NOOP("ConfigurationShared", "Shaders"),
+         {v.use_asynchronous_shaders.Id(), v.native_async_draws.Id(),
+          v.native_pipeline_wait_ms.Id(), v.shader_preload_memory.Id(),
+          v.use_disk_shader_cache.Id(), v.use_vulkan_driver_pipeline_cache.Id()}},
+        {Smoothness, QT_TRANSLATE_NOOP("ConfigurationShared", "Textures and video memory"),
+         {v.accelerate_astc.Id(), v.astc_recompression.Id(), v.vram_usage_mode.Id()}},
+        {Smoothness, QT_TRANSLATE_NOOP("ConfigurationShared", "GPU"),
+         {v.gpu_accuracy.Id(), v.frame_pacing_mode.Id(), v.async_presentation.Id(),
+          v.renderer_force_max_clock.Id(), v.pin_gpu_threads.Id(), v.nvdec_emulation.Id(),
+          v.use_video_framerate.Id()}},
+        {GraphicsEmulation, QT_TRANSLATE_NOOP("ConfigurationShared", "GPU emulation accuracy"),
+         {v.dma_accuracy.Id(), v.gpu_fence_behavior.Id(), v.native_compute_write_mark.Id(),
+          v.sync_memory_operations.Id(), v.use_reactive_flushing.Id(),
+          v.barrier_feedback_loops.Id(), v.enable_buffer_history.Id(),
+          v.use_asynchronous_gpu_emulation.Id(), v.enable_compute_pipelines.Id()}},
+        {GraphicsEmulation, QT_TRANSLATE_NOOP("ConfigurationShared", "Workarounds"),
+         {v.skip_cpu_inner_invalidation.Id(), v.fix_bloom_effects.Id(),
+          v.gpu_unswizzle_enabled.Id(), v.gpu_unswizzle_texture_size.Id(),
+          v.gpu_unswizzle_stream_size.Id(), v.gpu_unswizzle_chunk_size.Id()}},
+        {GraphicsEmulation, QT_TRANSLATE_NOOP("ConfigurationShared", "Vulkan extensions"),
+         {v.dyna_state.Id(), v.vertex_input_dynamic_state.Id(), v.sample_shading.Id()}},
+    };
+}
+
+QString SearchKey(const QString& text) {
+    QString key;
+    const QString decomposed = text.normalized(QString::NormalizationForm_KD);
+    key.reserve(decomposed.size());
+    for (const QChar c : decomposed) {
+        const auto category = c.category();
+        if (category == QChar::Mark_NonSpacing || category == QChar::Mark_SpacingCombining ||
+            category == QChar::Mark_Enclosing) {
+            continue;
+        }
+        key += c.toCaseFolded();
+    }
+    return key;
+}
+
+bool MatchesSearch(const QString& text, const QString& query) {
+    // Words start where a letter or digit follows anything else.
+    static const QRegularExpression separators(QStringLiteral("[^\\p{L}\\p{N}]+"));
+    const QStringList words = SearchKey(text).split(separators, Qt::SkipEmptyParts);
+    const QStringList wanted = SearchKey(query).split(separators, Qt::SkipEmptyParts);
+    // Each word typed starts a word of the text, so "tema" doesn't find "sistema".
+    return !wanted.isEmpty() && std::ranges::all_of(wanted, [&](const QString& prefix) {
+        return std::ranges::any_of(words,
+                                   [&](const QString& word) { return word.startsWith(prefix); });
+    });
 }
 
 QString ControlHelpHtml(const QString& name, const QString& description) {

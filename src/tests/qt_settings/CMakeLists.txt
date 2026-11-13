@@ -14,11 +14,14 @@ target_link_libraries(settings_page_scroll_tests PRIVATE Qt6::Widgets Qt6::Test)
 add_test(NAME settings_page_scroll COMMAND settings_page_scroll_tests)
 set_tests_properties(settings_page_scroll PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
-# The settings help: every shown setting is explained, and the panel follows the pointer and focus.
+# The settings help and layout: every shown setting is explained and placed, the panel follows the
+# pointer and focus, and the organizer moves rows and shows them by level.
 add_executable(setting_help_tests
     setting_help.cpp
     ../../yuzu/configuration/setting_help_panel.cpp
     ../../yuzu/configuration/setting_help_panel.h
+    ../../yuzu/configuration/settings_organizer.cpp
+    ../../yuzu/configuration/settings_organizer.h
 )
 target_compile_features(setting_help_tests PRIVATE cxx_std_20)
 target_include_directories(setting_help_tests PRIVATE ../..)
