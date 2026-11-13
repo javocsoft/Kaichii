@@ -17,6 +17,7 @@
 #include <QStringLiteral>
 #include <QWidget>
 #include <qobjectdefs.h>
+#include "qt_common/config/setting_help.h"
 #include "qt_common/config/shared_translation.h"
 
 class QCheckBox;
@@ -182,6 +183,8 @@ public:
                         const QString& suffix = default_suffix) const;
 
     const ComboboxTranslationMap& ComboboxTranslations() const;
+    const TranslationMap& Translations() const;
+    const SettingHelpMap& Help() const;
 
     /// The widget built for a setting, if one was and still exists.
     [[nodiscard]] Widget* FindWidget(const Settings::BasicSetting& setting) const;
@@ -189,6 +192,7 @@ public:
 private:
     std::unique_ptr<TranslationMap> translations;
     std::unique_ptr<ComboboxTranslationMap> combobox_translations;
+    std::unique_ptr<SettingHelpMap> help;
     mutable std::unordered_map<u32, QPointer<Widget>> built_widgets;
 
     QWidget* parent;

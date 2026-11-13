@@ -31,6 +31,7 @@
 #include "yuzu/configuration/configure_system.h"
 #include "yuzu/configuration/configure_ui.h"
 #include "yuzu/configuration/configure_web.h"
+#include "yuzu/configuration/setting_help_panel.h"
 #include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/hotkeys.h"
 
@@ -88,6 +89,15 @@ ConfigureDialog::ConfigureDialog(QWidget* parent, HotkeyRegistry& registry_,
     ui->tabWidget->addTab(ScrollPage(system_tab.get()), tr("System"));
     ui->tabWidget->addTab(ScrollPage(ui_tab.get()), tr("Game List"));
     ui->tabWidget->addTab(ScrollPage(web_tab.get()), tr("Web"));
+
+    // What the option under the pointer or the focus does, under the pages.
+    auto* const help_panel = new ConfigurationShared::SettingHelpPanel(
+        builder->Translations(), builder->Help(), builder->ComboboxTranslations(),
+        VkDeviceInfo::DetectHostProfile(vk_device_records,
+                                        Settings::values.vulkan_device.GetValue()),
+        this);
+    ui->verticalLayout->insertWidget(1, help_panel);
+    help_panel->Watch(ui->tabWidget);
 
     web_tab->SetWebServiceConfigEnabled(enable_web_config);
     hotkeys_tab->Populate(registry);

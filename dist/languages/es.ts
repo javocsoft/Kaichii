@@ -669,139 +669,136 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
 <context>
     <name>ConfigurationShared</name>
     <message>
-        <location filename="../../src/yuzu/configuration/shared_widget.cpp" line="+67"/>
+        <location filename="../../src/yuzu/configuration/shared_widget.cpp" line="+68"/>
         <source>%</source>
         <translation>%</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/config/shared_translation.cpp" line="+40"/>
+        <location filename="../../src/qt_common/config/shared_translation.cpp" line="+44"/>
         <source>Amiibo editor</source>
         <translation>Editor de Amiibo</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Controller configuration</source>
         <translation>Configuración del mando</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Data erase</source>
         <translation>Borrar datos</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Net connect</source>
         <translation>Conexión a la red</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Player select</source>
         <translation>Selección de jugador</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Software keyboard</source>
         <translation>Teclado de software</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Mii Edit</source>
         <translation>Editor de Mii</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Online web</source>
         <translation>Web en línea</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Shop</source>
         <translation>Tienda</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Photo viewer</source>
         <translation>Álbum</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Offline web</source>
         <translation>Web fuera de línea</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Login share</source>
         <translation>Inicio de sesión</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Wifi web auth</source>
         <translation>Autenticación Wi-Fi</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>My page</source>
         <translation>Mi página</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Enable Overlay Applet</source>
-        <translation>Habilitar applet de superposición</translation>
+        <translation type="vanished">Habilitar applet de superposición</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Enables Horizon&apos;s built-in overlay applet. Press and hold the home button for 1 second to show it.</source>
-        <translation>Activa el applet integrado de superpuesto de Horizon. Mantén pulsado el botón de inicio durante 1 segundo para que aparezca.</translation>
+        <translation type="vanished">Activa el applet integrado de superpuesto de Horizon. Mantén pulsado el botón de inicio durante 1 segundo para que aparezca.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+8"/>
         <source>Output Engine:</source>
         <translation>Motor de salida:</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Output Device:</source>
         <translation>Dispositivo de salida:</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Input Device:</source>
         <translation>Dispositivo de entrada:</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Mute audio</source>
         <translation>Silenciar audio</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Volume:</source>
         <translation>Volumen:</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Mute audio when in background</source>
         <translation>Silenciar el audio en segundo plano</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Multicore CPU Emulation</source>
         <translation>Emulación de la CPU multinúcleo </translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>This option increases CPU emulation thread use from 1 to the maximum of 4.
 This is mainly a debug option and shouldn&apos;t be disabled.</source>
-        <translation>Esta opción aumenta el uso de hilos de emulación de la CPU de 1 a un máximo de 4.
+        <translation type="vanished">Esta opción aumenta el uso de hilos de emulación de la CPU de 1 a un máximo de 4.
 Esta es una opción principalmente de depuración y no debería desactivarse.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Memory Layout</source>
         <translation>Distribución de memoria</translation>
     </message>
@@ -864,18 +861,16 @@ Puede ayudar a reducir los tirones o parpadeos en las tasas de fotogramas bajas.
         <translation>Precisión: </translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Change the accuracy of the emulated CPU (for debugging only).</source>
-        <translation>Cambia la precisión de la CPU emulada (solo para depuración)</translation>
+        <translation type="vanished">Cambia la precisión de la CPU emulada (solo para depuración)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+10"/>
+        <location line="+4"/>
         <source>Backend:</source>
         <translation>Motor:</translation>
     </message>
     <message>
-        <location line="-8"/>
+        <location line="+4"/>
         <source>CPU Clocks</source>
         <translation>Relojes de CPU</translation>
     </message>
@@ -892,9 +887,8 @@ Las CPU menos potentes pueden rendir peor, y algunos juegos pueden comportarse d
         <translation>Ticks de CPU personalizados</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Set a custom value of CPU ticks. Higher values can increase performance, but may cause deadlocks. A range of 77-21000 is recommended.</source>
-        <translation>Establece un valor personalizado para los ticks de la CPU. Valores más altos pueden aumentar el rendimiento, pero también pueden causar bloqueos. Se recomienda un rango de 77-21000.</translation>
+        <translation type="vanished">Establece un valor personalizado para los ticks de la CPU. Valores más altos pueden aumentar el rendimiento, pero también pueden causar bloqueos. Se recomienda un rango de 77-21000.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -981,38 +975,35 @@ Ten en cuenta que puede resultar en bloqueos y otras condiciones de carrera.</tr
         <translation>API:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Changes the output graphics API.
 Vulkan is recommended.</source>
-        <translation>Cambia la API de salida gráfica.
+        <translation type="vanished">Cambia la API de salida gráfica.
 Se recomienda Vulkan.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Device:</source>
         <translation>Dispositivo:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>This setting selects the GPU to use (Vulkan only).</source>
-        <translation>Este ajuste selecciona la GPU a usar (solo Vulkan).</translation>
+        <translation type="vanished">Este ajuste selecciona la GPU a usar (solo Vulkan).</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Resolution:</source>
         <translation>Resolución:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Forces to render at a different resolution.
 Higher resolutions require more VRAM and bandwidth.
 Options lower than 1X can cause artifacts.</source>
-        <translation>Obliga al renderizado a realizarse en una resolución diferente.
+        <translation type="vanished">Obliga al renderizado a realizarse en una resolución diferente.
 Las resoluciones altas requieren más VRAM y ancho de banda.
 Las opciones inferiores a 1X pueden generar errores visuales.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>Window Adapting Filter:</source>
         <translation>Filtro adaptable de ventana:</translation>
     </message>
@@ -1025,16 +1016,15 @@ Las opciones inferiores a 1X pueden generar errores visuales.</translation>
         <translation type="vanished">Determina el grado de nitidez que tendrá la imagen usando el contraste dinámico de FSR o SGSR.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+21"/>
         <source>Anti-Aliasing Method:</source>
         <translation>Método de suavizado de bordes:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The anti-aliasing method to use.
 SMAA offers the best quality.
 FXAA can produce a more stable picture in lower resolutions.</source>
-        <translation>El método de suavizado de bordes que se usará.
+        <translation type="vanished">El método de suavizado de bordes que se usará.
 SMAA ofrece mejor calidad.
 FXAA puede producir mejores resultados visuales en resoluciones bajas.</translation>
     </message>
@@ -1044,12 +1034,11 @@ FXAA puede producir mejores resultados visuales en resoluciones bajas.</translat
         <translation>Activar efectos de posprocesado</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Applies post-processing effects to the final image.</source>
-        <translation>Aplica efectos de posprocesado a la imagen final.</translation>
+        <translation type="vanished">Aplica efectos de posprocesado a la imagen final.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Fullscreen Mode:</source>
         <translation>Modo pantalla completa:</translation>
     </message>
@@ -1082,14 +1071,13 @@ También controla la relación de aspecto de las capturas de pantalla.</translat
         <translation>Usar el caché de canalización persistente</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Allows saving shaders to storage for faster loading on following game boots.
 Disabling it is only intended for debugging.</source>
-        <translation>Permite almacenar los sombreadores para que carguen más rápido la próxima vez que inicies el juego.
+        <translation type="vanished">Permite almacenar los sombreadores para que carguen más rápido la próxima vez que inicies el juego.
 Desactivarlo solo está destinado para depuración.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Use asynchronous GPU emulation</source>
         <translation> Usar emulación asíncrona de la GPU</translation>
     </message>
@@ -1120,13 +1108,12 @@ En la mayoría de casos, descodificar mediante la GPU es la mejor opción.</tran
         <translation>Modo descodificación ASTC:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>This option controls how ASTC textures should be decoded.
 CPU: Use the CPU for decoding.
 GPU: Use the GPU&apos;s compute shaders to decode ASTC textures (recommended).
 CPU Asynchronously: Use the CPU to decode ASTC textures on demand. EliminatesASTC decoding
 stuttering but may present artifacts.</source>
-        <translation>Esta opción controla cómo deben descodificarse las texturas ASTC.
+        <translation type="vanished">Esta opción controla cómo deben descodificarse las texturas ASTC.
 CPU: utiliza la CPU para la descodificación.
 GPU: utiliza los sombreadores computables de la GPU para descodificar las texturas ASTC (recomendado).
 CPU asíncrona: usa la CPU para descodificar las texturas ASTC bajo demanda. Elimina los tirones causados por la descodificación ASTC, pero puede generar errores visuales.</translation>
@@ -1137,11 +1124,10 @@ CPU asíncrona: usa la CPU para descodificar las texturas ASTC bajo demanda. Eli
         <translation>Modo recompresión ASTC:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Most GPUs lack support for ASTC textures and must decompress to anintermediate format: RGBA8.
 BC1/BC3: The intermediate format will be recompressed to BC1 or BC3 format,
  saving VRAM but degrading image quality.</source>
-        <translation>La mayoría de las GPU no son compatibles con texturas ASTC y deben descomprimirse a un formato intermedio: RGBA8.
+        <translation type="vanished">La mayoría de las GPU no son compatibles con texturas ASTC y deben descomprimirse a un formato intermedio: RGBA8.
 BC1/BC3: El formato intermedio será recomprimido a BC1 o BC3, lo que ahorra VRAM, pero degrada la calidad de la imagen.</translation>
     </message>
     <message>
@@ -1160,84 +1146,77 @@ BC1/BC3: El formato intermedio será recomprimido a BC1 o BC3, lo que ahorra VRA
         <translation>Modo de uso de la VRAM:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Selects whether the emulator should prefer to conserve memory or make maximum usage of available video memory for performance.
 Aggressive mode may impact performance of other applications such as recording software.</source>
-        <translation>Selecciona si el emulador prefiere ahorrar memoria o maximizar el uso de memoria de video disponible para mejorar el rendimiento.
+        <translation type="vanished">Selecciona si el emulador prefiere ahorrar memoria o maximizar el uso de memoria de video disponible para mejorar el rendimiento.
 El modo agresivo puede afectar al rendimiento de otras aplicaciones, como a los programas de grabación.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Skip CPU Inner Invalidation</source>
         <translation>Saltar invalidación interna de la CPU</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Skips certain cache invalidations during memory updates, reducing CPU usage and improving latency. This may cause soft-crashes.</source>
-        <translation>Omite ciertas invalidaciones de caché durante las actualizaciones de memoria, reduciendo el uso de la CPU y mejorando la latencia. Esto puede causar bloqueos leves.</translation>
+        <translation type="vanished">Omite ciertas invalidaciones de caché durante las actualizaciones de memoria, reduciendo el uso de la CPU y mejorando la latencia. Esto puede causar bloqueos leves.</translation>
     </message>
     <message>
-        <location line="-68"/>
+        <location line="-62"/>
         <source>Use the game&apos;s own DLSS</source>
         <translation>Usar el DLSS propio del juego</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Runs a Switch 2 game&apos;s own DLSS (its upscaling network, translated for this GPU) instead of AMD FSR 3.1 in its place.
 AMD FSR 3.1 still draws while the network is checked, when it can&apos;t run on this GPU, with resolution scaling, and for the rest of the session if its output fails Lichii&apos;s checks.
 Takes effect when a game starts.</source>
-        <translation>Ejecuta el DLSS propio de un juego de Switch 2 (su red de escalado, traducida para esta GPU) en lugar de AMD FSR 3.1.
+        <translation type="vanished">Ejecuta el DLSS propio de un juego de Switch 2 (su red de escalado, traducida para esta GPU) en lugar de AMD FSR 3.1.
 AMD FSR 3.1 sigue dibujando mientras se comprueba la red, cuando no puede ejecutarse en esta GPU, con el escalado de resolución, y durante el resto de la sesión si su salida no supera las comprobaciones de Lichii.
 Se aplica al iniciar un juego.</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>RCAS Sharpness:</source>
-        <translation>Nitidez RCAS:</translation>
+        <translation type="vanished">Nitidez RCAS:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Strength of RCAS (AMD&apos;s contrast-adaptive sharpening) on the upscaler used in place of a game&apos;s DLSS (AMD FSR 3.1); 0% turns it off.
 Also sets the sharpening of the AMD FSR 1 and SGSR window adapting filters.</source>
-        <translation>Intensidad de RCAS (el enfoque adaptativo al contraste de AMD) en el escalador que sustituye al DLSS de un juego (AMD FSR 3.1); 0 % lo desactiva.
+        <translation type="vanished">Intensidad de RCAS (el enfoque adaptativo al contraste de AMD) en el escalador que sustituye al DLSS de un juego (AMD FSR 3.1); 0 % lo desactiva.
 También ajusta la nitidez de los filtros adaptables de ventana AMD FSR 1 y SGSR.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+8"/>
         <source>Use NVIDIA DLSS in place of a game&apos;s DLSS (experimental)</source>
         <translation>Usar NVIDIA DLSS en lugar del DLSS del juego (experimental)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Uses NVIDIA DLSS on GeForce RTX cards in place of a Switch 2 game&apos;s own DLSS, instead of AMD FSR 3.1.
 Needs NVIDIA&apos;s Streamline loader, and NVIDIA DLSS unless the NVIDIA app has downloaded it; Lichii does not ship NVIDIA&apos;s files. Use the download button below.
 Fire Emblem: Fortune&apos;s Weave also needs EDEN_NX2_DLSS_REPLACEMENT=dlss. Without that override, its spatial workaround remains active.
 In The Legend of Zelda: Ocarina of Time it replaces the game&apos;s upscaler at 1x resolution scale.
 Takes effect when a game starts.</source>
-        <translation>Usa NVIDIA DLSS en tarjetas GeForce RTX en lugar del DLSS propio de un juego de Switch 2, en vez de AMD FSR 3.1.
+        <translation type="vanished">Usa NVIDIA DLSS en tarjetas GeForce RTX en lugar del DLSS propio de un juego de Switch 2, en vez de AMD FSR 3.1.
 Necesita el cargador Streamline de NVIDIA, y NVIDIA DLSS salvo que la aplicación de NVIDIA ya lo haya descargado; Lichii no incluye archivos de NVIDIA. Usa el botón de descarga de abajo.
 Fire Emblem: Fortune&apos;s Weave también necesita EDEN_NX2_DLSS_REPLACEMENT=dlss. Sin esa variable, su solución espacial sigue activa.
 En The Legend of Zelda: Ocarina of Time sustituye el escalador del juego con la resolución a 1x.
 Se aplica al iniciar un juego.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>Ocarina of Time anti-aliasing:</source>
         <translation>Antialiasing de Ocarina of Time:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The Legend of Zelda: Ocarina of Time only.
 Game: the game&apos;s own anti-aliasing network, which sharpens heavily.
 No sharpening: the image as the game renders it, without the network (faster; pairs well with a higher resolution). Has no effect while NVIDIA DLSS is on.
 Takes effect when the game starts.</source>
-        <translation>Solo The Legend of Zelda: Ocarina of Time.
+        <translation type="vanished">Solo The Legend of Zelda: Ocarina of Time.
 Juego: la red de antialiasing propia del juego, que enfoca mucho.
 Sin enfoque: la imagen tal como la dibuja el juego, sin la red (más rápido; combina bien con una resolución mayor). No tiene efecto con NVIDIA DLSS activado.
 Se aplica al iniciar el juego.</translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+47"/>
         <source>FPS Limit</source>
         <translation>Límite de FPS</translation>
     </message>
@@ -1263,47 +1242,47 @@ Mailbox ofrece menor latencia que FIFO y evita el tearing, aunque puede perder a
 Immediate (sin sincronización) muestra los fotogramas tan pronto están disponibles, pero puede generar desgarros de imagen.</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Enable Frame Generation</source>
         <translation>Activar la generación de fotogramas</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+5"/>
         <source>Frame Generation Type</source>
         <translation>Tipo de generación de fotogramas</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Frame Generation Multiplier</source>
         <translation>Multiplicador de generación de fotogramas</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Target Frame Rate</source>
         <translation>Frecuencia de imagen objetivo</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Auto Flow Scale</source>
         <translation>Escala de flujo automática</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Flow Scale</source>
         <translation>Escala de flujo</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Queue Target</source>
         <translation>Objetivo de cola</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Dump Optical Flow</source>
         <translation>Volcar el flujo óptico</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Sync Memory Operations</source>
         <translation>Sincronizar operaciones de memoria</translation>
     </message>
@@ -1368,34 +1347,32 @@ Las partículas suelen verse correctamente solo en el modo Preciso.</translation
         <translation>Precisión de DMA:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Controls the DMA read mode.
 Unsafe is faster, while Safe is more stable and can fix issues in some games.
 Default follows the GPU Accuracy setting.</source>
-        <translation>Controla el modo de lectura DMA.
+        <translation type="vanished">Controla el modo de lectura DMA.
 Inseguro es más rápido, mientras que seguro es más estable y puede solucionar fallos en algunos juegos.
 Predeterminado sigue el ajuste de la precisión de GPU.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>GPU Fence Behavior:</source>
         <translation>Comportamiento de vallado de la GPU:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Controls the GPU fence synchronization behavior.
 Immediate is the fastest option, but can introduce some issues.
 Balanced offers better compatibility and may fix issues in some games.
 Accurate further improves compatibility at the cost of some performance.
 Default follows the GPU Mode setting.</source>
-        <translation>Controla cómo se sincronizan las barreras (fences) de la GPU.
+        <translation type="vanished">Controla cómo se sincronizan las barreras (fences) de la GPU.
 Inmediato es la opción más rápida, pero puede causar algunos problemas.
 Equilibrado ofrece mejor compatibilidad y puede corregir problemas en algunos juegos.
 Preciso mejora aún más la compatibilidad a costa de algo de rendimiento.
 Predeterminado sigue el ajuste del modo de la GPU.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Native compute write mark:</source>
         <translation>Marcado de escrituras de cómputo nativo:</translation>
     </message>
@@ -1416,12 +1393,11 @@ Límite de 64 KiB marca como mucho 64 KiB, lo que puede pasar por alto datos que
         <translation>Activa la compilación de shaders asincrónicos</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>May reduce shader stutter.</source>
-        <translation>Puede reducir los tirones causados por la carga de sombreadores.</translation>
+        <translation type="vanished">Puede reducir los tirones causados por la carga de sombreadores.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>GPU Clocks</source>
         <translation>Relojes de GPU</translation>
     </message>
@@ -1436,14 +1412,13 @@ Límite de 64 KiB marca como mucho 64 KiB, lo que puede pasar por alto datos que
         <translation>Desentrelazado de la GPU</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Accelerates BCn 3D texture decoding using GPU compute.
 Disable if experiencing crashes or graphical glitches.</source>
-        <translation>Acelera la decodificación de texturas 3D BCn mediante computación de la GPU.
+        <translation type="vanished">Acelera la decodificación de texturas 3D BCn mediante computación de la GPU.
 Desactívela si experimenta problemas o fallos gráficos.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>GPU Unswizzle Max Texture Size</source>
         <translation>Tamaño máximo de textura de desentrelazado de la GPU</translation>
     </message>
@@ -1484,16 +1459,15 @@ Increasing this can improve throughput on high-end GPUs but may cause TDR or dri
         <translation>Fijar los hilos de la GPU a sus propios núcleos (experimental)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Pins the emulator&apos;s GPU threads to dedicated physical CPU cores and keeps the emulated CPU cores off them.
 Can hurt performance on CPUs with few cores. Skipped on CPUs with fewer than 6 physical performance cores.
 Windows and Linux only. Takes effect when a game starts.</source>
-        <translation>Fija los hilos de GPU del emulador a núcleos físicos de CPU dedicados y mantiene fuera de ellos los núcleos de la CPU emulada.
+        <translation type="vanished">Fija los hilos de GPU del emulador a núcleos físicos de CPU dedicados y mantiene fuera de ellos los núcleos de la CPU emulada.
 Puede empeorar el rendimiento en CPU con pocos núcleos. No se aplica en CPU con menos de 6 núcleos físicos de rendimiento.
 Solo Windows y Linux. Se aplica al iniciar un juego.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Use Vulkan pipeline cache</source>
         <translation>Usar caché de canalización de Vulkan</translation>
     </message>
@@ -1522,12 +1496,11 @@ Esperar detiene la GPU hasta que la canalización está lista (no falta ningún 
         <translation>Memoria para shaders precargados:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>After a game starts, builds in the background the shaders earlier sessions used but the last few did not, most recent first, up to this much system memory. Areas you come back to then stutter less the first time. Off builds only the shaders of the last few sessions. Takes effect the next time the game starts.</source>
-        <translation>Al arrancar un juego, prepara en segundo plano los shaders que usaron sesiones anteriores pero no las últimas, empezando por los más recientes, hasta esta cantidad de memoria del sistema. Así las zonas a las que vuelves dan menos tirones la primera vez. Desactivado prepara solo los shaders de las últimas sesiones. Se aplica la próxima vez que arranque el juego.</translation>
+        <translation type="vanished">Al arrancar un juego, prepara en segundo plano los shaders que usaron sesiones anteriores pero no las últimas, empezando por los más recientes, hasta esta cantidad de memoria del sistema. Así las zonas a las que vuelves dan menos tirones la primera vez. Desactivado prepara solo los shaders de las últimas sesiones. Se aplica la próxima vez que arranque el juego.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Pipeline wait per frame (ms):</source>
         <translation>Espera de canalizaciones por fotograma (ms):</translation>
     </message>
@@ -1551,17 +1524,16 @@ Este ajuste solo existe para los controladores propietarios de Intel y puede cau
 En los demás controladores, la canalización de cómputo siempre está activada.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
         <source>Enable Reactive Flushing</source>
         <translation>Activar limpieza reactiva</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Uses reactive flushing instead of predictive flushing, allowing more accurate memory syncing.</source>
-        <translation>Usa limpieza de memoria reactiva en vez de predictiva, permitiendo una sincronización de memoria más precisa.</translation>
+        <translation type="vanished">Usa limpieza de memoria reactiva en vez de predictiva, permitiendo una sincronización de memoria más precisa.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Sync to framerate of video playback</source>
         <translation>Sincronizar a fotogramas de reproducción de vídeo</translation>
     </message>
@@ -1576,9 +1548,8 @@ En los demás controladores, la canalización de cómputo siempre está activada
         <translation>Mario Kart World: modo de 30 FPS</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Forces the game to use its native 30 FPS mode at normal game speed. Takes effect after restarting the game.</source>
-        <translation>Obliga al juego a usar su modo nativo de 30 FPS a velocidad de juego normal. Se aplica tras reiniciar el juego.</translation>
+        <translation type="vanished">Obliga al juego a usar su modo nativo de 30 FPS a velocidad de juego normal. Se aplica tras reiniciar el juego.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1586,9 +1557,8 @@ En los demás controladores, la canalización de cómputo siempre está activada
         <translation>Mario Kart World: FPS dinámicos (experimental)</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Lets the game adjust between 30 and 60 FPS using whole-frame timing to maintain normal game speed. Takes effect after restarting the game and takes precedence over the 30 FPS mode.</source>
-        <translation>Permite que el juego varíe entre 30 y 60 FPS midiendo fotogramas completos para mantener la velocidad de juego normal. Se aplica tras reiniciar el juego y tiene prioridad sobre el modo de 30 FPS.</translation>
+        <translation type="vanished">Permite que el juego varíe entre 30 y 60 FPS midiendo fotogramas completos para mantener la velocidad de juego normal. Se aplica tras reiniciar el juego y tiene prioridad sobre el modo de 30 FPS.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1596,34 +1566,31 @@ En los demás controladores, la canalización de cómputo siempre está activada
         <translation>Bucles de feedback de barrera</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Improves rendering of transparency effects in specific games.</source>
-        <translation>Mejora la renderización de los efectos de transparencia en ciertos juegos.</translation>
+        <translation type="vanished">Mejora la renderización de los efectos de transparencia en ciertos juegos.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Enable buffer history</source>
         <translation>Activar el historial del búfer</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Enables access to previous buffer states.
 This option may improve rendering quality and performance consistency in some games.</source>
-        <translation>Habilita el acceso a estados de búfer anteriores.
+        <translation type="vanished">Habilita el acceso a estados de búfer anteriores.
 Esta opción puede mejorar la calidad de renderizado y la consistencia en el rendimiento de algunos juegos.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Fix bloom effects</source>
         <translation>Arreglar efectos de resplandor</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>Removes bloom in Burnout.</source>
-        <translation>Elimina el resplandor en Burnout.</translation>
+        <translation type="vanished">Elimina el resplandor en Burnout.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>Extended Dynamic State</source>
         <translation>Estado dinámico extendido</translation>
     </message>
@@ -1640,12 +1607,11 @@ Números más altos permiten úsar más funciones y pueden aumentar el rendimien
         <translation>Estado dinámico de entrada de vértices</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Enables vertex input dynamic state feature for better quality and performance.</source>
-        <translation>Activa la función de estado dinámico de entrada de vértices para una mejor calidad y rendimiento.</translation>
+        <translation type="vanished">Activa la función de estado dinámico de entrada de vértices para una mejor calidad y rendimiento.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>Sample Shading</source>
         <translation>Sombreado de muestra</translation>
     </message>
@@ -1674,12 +1640,11 @@ Usado principalmente para speedrunning.</translation>
         <translation>Nombre del dispositivo</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>The name of the console.</source>
-        <translation>El nombre de la consola</translation>
+        <translation type="vanished">El nombre de la consola</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Homebrew Args</source>
         <translation>Argumentos Homebrew</translation>
     </message>
@@ -1694,29 +1659,26 @@ Usado principalmente para speedrunning.</translation>
         <translation>Fecha Personalizada RTC:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>This option allows to change the clock of the console.
 Can be used to manipulate time in games.</source>
-        <translation>Esta opción permite cambiar el reloj de la consola.
+        <translation type="vanished">Esta opción permite cambiar el reloj de la consola.
 Puede ser usado para manipular el tiempo en juegos.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>The number of seconds from the current unix time</source>
-        <translation>Número de segundos de la hora actual de Unix</translation>
+        <translation type="vanished">Número de segundos de la hora actual de Unix</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+6"/>
         <source>Language:</source>
         <translation>Idioma:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>This option can be overridden when region setting is auto-select</source>
-        <translation>Esta opción puede ser reemplazada cuando la configuración de región está en selección automática.</translation>
+        <translation type="vanished">Esta opción puede ser reemplazada cuando la configuración de región está en selección automática.</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Region:</source>
         <translation>Región:</translation>
     </message>
@@ -1741,7 +1703,7 @@ Puede ser usado para manipular el tiempo en juegos.</translation>
         <translation>Método de salida de sonido:</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
         <source>Console Mode:</source>
         <translation>Modo consola:</translation>
     </message>
@@ -1780,13 +1742,12 @@ Configurar el modo portátil puede mejorar el rendimiento en sistemas de gama ba
         <translation>Confirmar detención</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Overrides prompts asking to confirm stopping the emulation.
 Enabling it bypasses such prompts and directly exits the emulation.</source>
-        <translation>Anula las solicitudes de confirmación para detener la emulación. Al habilitar esta opción, se omiten dichas solicitudes y se sale directamente de la emulación.</translation>
+        <translation type="vanished">Anula las solicitudes de confirmación para detener la emulación. Al habilitar esta opción, se omiten dichas solicitudes y se sale directamente de la emulación.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Hide mouse on inactivity</source>
         <translation>Ocultar el cursor por inactividad.</translation>
     </message>
@@ -1811,12 +1772,12 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Activar Modo Juego</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Force X11 as Graphics Backend</source>
         <translation>Forzar X11 como motor gráfico</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+30"/>
         <source>Custom frontend</source>
         <translation>Interfaz personalizada</translation>
     </message>
@@ -1987,12 +1948,138 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Inmediato</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="+46"/>
+        <source>▲ faster</source>
+        <translation>▲ más rápido</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>▼ slower</source>
+        <translation>▼ más lento</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>▲ sharper or cleaner image</source>
+        <translation>▲ imagen más nítida o limpia</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>▼ image quality</source>
+        <translation>▼ calidad de imagen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>▲ less stutter</source>
+        <translation>▲ menos tirones</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>▲ more frames on screen</source>
+        <translation>▲ más fotogramas en pantalla</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>▼ more input lag</source>
+        <translation>▼ más retraso de respuesta</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>▲ more video memory</source>
+        <translation>▲ más memoria de vídeo</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>▼ less video memory</source>
+        <translation>▼ menos memoria de vídeo</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>⚠ can cause graphical glitches</source>
+        <translation>⚠ puede causar fallos gráficos</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>⚠ can freeze or crash games</source>
+        <translation>⚠ puede colgar o cerrar juegos</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Advanced option</source>
+        <translation>Opción avanzada</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Expert option: change it only to fix a problem in a game</source>
+        <translation>Opción experta: cámbiala solo para arreglar un problema en un juego</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Developer option: for debugging Lichii</source>
+        <translation>Opción de desarrollo: para depurar Lichii</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Performance</source>
+        <translation>Rendimiento</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location filename="../../src/qt_common/config/shared_translation.cpp" line="+1"/>
         <source>Balanced</source>
         <translation>Balanceado</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+2"/>
+        <source>Quality</source>
+        <translation>Calidad</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ultra</source>
+        <translation>Ultra</translation>
+    </message>
+    <message>
+        <location line="+202"/>
+        <source>on</source>
+        <translation>activado</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>off</source>
+        <translation>desactivado</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>When on:</source>
+        <translation>Al activarla:</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Higher:</source>
+        <translation>Más alto:</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Takes effect when a game starts.</source>
+        <translation>Se aplica al iniciar un juego.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Only acts on %1.</source>
+        <translation>Solo afecta a %1.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Default: %1</source>
+        <translation>Por defecto: %1</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Recommended for this computer (%1 preset): %2</source>
+        <translation>Recomendado para este equipo (preset %1): %2</translation>
+    </message>
+    <message>
+        <location filename="../../src/qt_common/config/shared_translation.cpp" line="+8"/>
         <source>Unsafe</source>
         <translation>Impreciso</translation>
     </message>
@@ -2156,7 +2243,392 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation type="vanished">Super Resolución AMD FidelityFX</translation>
     </message>
     <message>
+        <location line="-616"/>
+        <source>Custom frontend: Lichii answers in the applet&apos;s place, with its own window where it has one, and needs no firmware. Real applet: the console&apos;s own screen, from the installed firmware.</source>
+        <translation>Interfaz personalizada: Lichii responde en lugar del applet, con su propia ventana cuando la tiene, y no necesita firmware. Applet real: la pantalla de la propia consola, del firmware instalado.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The screen where a game registers, renames or erases an amiibo.</source>
+        <translation>La pantalla en la que un juego registra, renombra o borra un amiibo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The screen where a game asks which controllers to use. Disabled skips it, and the game keeps the controllers already connected.</source>
+        <translation>La pantalla en la que un juego pregunta qué mandos usar. Desactivado la omite, y el juego se queda con los mandos ya conectados.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The screen for erasing a game&apos;s save data.</source>
+        <translation>La pantalla para borrar los datos guardados de un juego.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>How the error messages a game raises are shown.</source>
+        <translation>Cómo se muestran los mensajes de error de un juego.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The screen a game opens to connect to the internet.</source>
+        <translation>La pantalla que abre un juego para conectarse a internet.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The screen where a game asks which user profile plays.</source>
+        <translation>La pantalla en la que un juego pregunta qué perfil de usuario juega.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The on-screen keyboard a game opens to type text.</source>
+        <translation>El teclado en pantalla que abre un juego para escribir texto.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The Mii editor a game opens.</source>
+        <translation>El editor de Mii que abre un juego.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The browser a game opens for online pages.</source>
+        <translation>El navegador que abre un juego para páginas en línea.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The Nintendo eShop pages a game opens.</source>
+        <translation>Las páginas de la Nintendo eShop que abre un juego.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The album a game opens to show its screenshots.</source>
+        <translation>El álbum que abre un juego para mostrar sus capturas.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The browser a game opens for its manual and the other pages stored with it.</source>
+        <translation>El navegador que abre un juego para su manual y las demás páginas que trae consigo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The Nintendo Account login a game opens.</source>
+        <translation>El inicio de sesión de la cuenta Nintendo que abre un juego.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The page for logging in to a network that asks for it.</source>
+        <translation>La página para iniciar sesión en una red que lo pide.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The user page, with friends and profile, that a game opens.</source>
+        <translation>La página de usuario, con amigos y perfil, que abre un juego.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Console overlay menu (hold Home)</source>
+        <translation>Menú superpuesto de la consola (mantener Home)</translation>
+    </message>
+    <message>
         <location line="+1"/>
+        <source>Enables the console&apos;s own overlay menu (Horizon&apos;s overlay applet), from the installed firmware. Hold the Home button for one second to show it.</source>
+        <translation>Activa el menú superpuesto de la propia consola (el applet de superposición de Horizon), del firmware instalado. Mantén pulsado el botón Home un segundo para mostrarlo.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The system Lichii plays sound through. Auto picks one that works here; change it only if there is no sound or it crackles. Null plays nothing.</source>
+        <translation>El sistema por el que Lichii reproduce el sonido. Auto elige uno que funcione aquí; cámbialo solo si no hay sonido o chisporrotea. Ninguno no reproduce nada.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Where the game&apos;s sound plays. Auto follows your system&apos;s default output.</source>
+        <translation>Dónde suena el juego. Auto sigue la salida predeterminada de tu sistema.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The microphone games hear. Auto uses your system&apos;s default input.</source>
+        <translation>El micrófono que oyen los juegos. Auto usa la entrada predeterminada de tu sistema.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Silences the game.</source>
+        <translation>Silencia el juego.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The game&apos;s volume.</source>
+        <translation>El volumen del juego.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Silences the game while another window has the focus.</source>
+        <translation>Silencia el juego mientras otra ventana tiene el foco.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Runs the console&apos;s processor cores on several threads of your processor. Off makes games far slower; it is only for finding emulator bugs.</source>
+        <translation>Ejecuta los núcleos del procesador de la consola en varios hilos de tu procesador. Desactivado hace los juegos mucho más lentos; solo sirve para buscar fallos del emulador.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>How faithfully the console&apos;s processor is emulated. Auto suits nearly every game, and Accurate is slower. Unsafe allows the speed-ups below, which bend the rules. Paranoid and Debugging are for finding emulator bugs.</source>
+        <translation>Con qué fidelidad se emula el procesador de la consola. Auto sirve para casi todos los juegos, y Preciso es más lento. Impreciso permite las aceleraciones de abajo, que se saltan las reglas. Paranoico y Depuración sirven para buscar fallos del emulador.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>What runs the game&apos;s processor code. Dynarmic translates it and works on every processor; native code execution runs it directly, on ARM64 processors only.</source>
+        <translation>Lo que ejecuta el código de procesador del juego. DynARMic lo traduce y funciona en cualquier procesador; la ejecución de código nativo lo ejecuta directamente, solo en procesadores ARM64.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>A custom count of CPU ticks for the emulated processor. Higher values can raise performance but can freeze games. A range of 77-21000 is recommended.</source>
+        <translation>Un número personalizado de ciclos para el procesador emulado. Los valores altos pueden mejorar el rendimiento pero pueden colgar los juegos. Se recomienda un valor entre 77 y 21000.</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The graphics API Lichii draws with. Vulkan is recommended.</source>
+        <translation>La API gráfica con la que dibuja Lichii. Se recomienda Vulkan.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The graphics card Lichii draws with, when the computer has more than one.</source>
+        <translation>La tarjeta gráfica con la que dibuja Lichii, si el equipo tiene más de una.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The size games are drawn at, as a multiple of their size on the console. Higher is sharper but needs a faster graphics card and more video memory. Below 1x is faster but blurrier and can show artifacts; a window adapting filter such as FSR 1 still fills the window.</source>
+        <translation>El tamaño al que se dibujan los juegos, como múltiplo de su tamaño en la consola. Más alto es más nítido pero necesita una tarjeta gráfica más rápida y más memoria de vídeo. Por debajo de 1x es más rápido pero más borroso y puede mostrar defectos; un filtro adaptable de ventana como FSR 1 sigue llenando la ventana.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>How the image is resized to fit the window. FSR 1 and SGSR sharpen as they enlarge, which suits resolutions below 1x; FSR 1 Soft sharpens less. Bilinear and Bicubic are smooth, Nearest keeps hard pixel edges, and ScaleForce and MMPX suit pixel art.</source>
+        <translation>Cómo se ajusta la imagen al tamaño de la ventana. FSR 1 y SGSR enfocan al ampliar, lo que va bien con resoluciones por debajo de 1x; FSR 1 suave enfoca menos. Bilineal y Bicúbico son suaves, Más cercano mantiene los píxeles nítidos, y ScaleForce y MMPX van bien con el pixel art.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Runs a Switch 2 game&apos;s own DLSS (its upscaling network, translated for this GPU) instead of AMD FSR 3.1 in its place.
+AMD FSR 3.1 still draws while the network is checked, when it can&apos;t run on this GPU, with resolution scaling, and for the rest of the session if its output fails Lichii&apos;s checks.</source>
+        <translation>Ejecuta el DLSS propio de un juego de Switch 2 (su red de escalado, traducida para esta GPU) en lugar de AMD FSR 3.1.
+AMD FSR 3.1 sigue dibujando mientras se comprueba la red, cuando no puede ejecutarse en esta GPU, con el escalado de resolución, y durante el resto de la sesión si su salida no supera las comprobaciones de Lichii.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Sharpening:</source>
+        <translation>Nitidez:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>How strongly FSR 1, FSR 1 Soft and SGSR sharpen the image as they resize it, and AMD FSR 3.1 where it stands in for a game&apos;s DLSS. 0% turns sharpening off.</source>
+        <translation>Cuánto enfocan la imagen FSR 1, FSR 1 suave y SGSR al ajustar su tamaño, y AMD FSR 3.1 donde sustituye al DLSS de un juego. 0% desactiva el enfoque.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Uses NVIDIA DLSS on GeForce RTX cards in place of a Switch 2 game&apos;s own DLSS, instead of AMD FSR 3.1.
+Needs NVIDIA&apos;s Streamline loader, and NVIDIA DLSS unless the NVIDIA app has downloaded it; Lichii does not ship NVIDIA&apos;s files. Use the download button below.
+Fire Emblem: Fortune&apos;s Weave also needs EDEN_NX2_DLSS_REPLACEMENT=dlss. Without that override, its spatial workaround remains active.
+In The Legend of Zelda: Ocarina of Time it replaces the game&apos;s upscaler at 1x resolution scale.</source>
+        <translation>Usa NVIDIA DLSS en tarjetas GeForce RTX en lugar del DLSS propio de un juego de Switch 2, en vez de AMD FSR 3.1.
+Necesita el cargador Streamline de NVIDIA, y NVIDIA DLSS salvo que la aplicación de NVIDIA ya lo haya descargado; Lichii no incluye archivos de NVIDIA. Usa el botón de descarga de abajo.
+Fire Emblem: Fortune&apos;s Weave también necesita EDEN_NX2_DLSS_REPLACEMENT=dlss. Sin esa variable, su solución espacial sigue activa.
+En The Legend of Zelda: Ocarina of Time sustituye el escalador del juego con la resolución a 1x.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Smooths jagged edges in the final image. SMAA looks best; FXAA is lighter and steadier at low resolutions.</source>
+        <translation>Suaviza los bordes dentados de la imagen final. SMAA se ve mejor; FXAA es más ligero y más estable a resoluciones bajas.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Game: the game&apos;s own anti-aliasing network, which sharpens heavily.
+No sharpening: the image as the game renders it, without the network (faster; pairs well with a higher resolution). Has no effect while NVIDIA DLSS is on.</source>
+        <translation>Juego: la red de antialiasing propia del juego, que enfoca mucho.
+Sin enfoque: la imagen tal como la dibuja el juego, sin la red (más rápido; combina bien con una resolución mayor). No tiene efecto con NVIDIA DLSS activado.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Applies the effects chosen under Configure Effects to the final image.</source>
+        <translation>Aplica a la imagen final los efectos elegidos en Configurar efectos.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Saves the shaders each game builds, so later sessions load them instead of building them again while you play. Turn it off only to debug.</source>
+        <translation>Guarda los shaders que construye cada juego, para que las sesiones siguientes los carguen en vez de construirlos otra vez mientras juegas. Desactívalo solo para depurar.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>How the game&apos;s ASTC textures are unpacked, since PC graphics cards can&apos;t read them directly.
+GPU: on the graphics card.
+CPU: on the processor, while the game waits.
+CPU Asynchronous: on the processor in the background, which removes the stutter but can show a texture blurry or missing for a moment.</source>
+        <translation>Cómo se descomprimen las texturas ASTC del juego, que las tarjetas gráficas de PC no pueden leer directamente.
+GPU: en la tarjeta gráfica.
+CPU: en el procesador, mientras el juego espera.
+CPU asíncrona: en el procesador en segundo plano, lo que quita los tirones pero puede mostrar una textura borrosa o ausente durante un momento.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Unpacked ASTC textures take four bytes of video memory a pixel. BC3 packs them again into a quarter of that with a small loss of quality, BC1 into an eighth with a visible one. Uncompressed keeps full quality.</source>
+        <translation>Las texturas ASTC descomprimidas ocupan cuatro bytes de memoria de vídeo por píxel. BC3 las vuelve a comprimir a la cuarta parte con una pequeña pérdida de calidad, BC1 a la octava parte con una pérdida visible. Sin compresión mantiene toda la calidad.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Whether Lichii keeps its use of video memory low or uses as much as the card has, for speed. Aggressive can slow other programs that use the graphics card, such as recording software.</source>
+        <translation>Si Lichii mantiene bajo su uso de memoria de vídeo o usa toda la que tiene la tarjeta, para ir más rápido. Agresivo puede ralentizar otros programas que usan la tarjeta gráfica, como los de grabación.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Skips clearing some of the GPU&apos;s cached copies of memory when the game writes to it. Uses less processor time, but the GPU can then use stale data: wrong images, or a game that freezes.</source>
+        <translation>Omite borrar algunas copias de memoria que la GPU guarda en caché cuando el juego escribe en ella. Usa menos tiempo de procesador, pero la GPU puede usar datos desfasados: imágenes erróneas o un juego que se cuelga.</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Draws extra frames between the game&apos;s own from the motion between them, so movement looks smoother. Costs some of the game&apos;s own frame rate and adds input lag; works best when the game already reaches about 30 fps. Optimize for This Game (Emulation menu) measures whether it pays off for a game.</source>
+        <translation>Dibuja fotogramas extra entre los del juego a partir del movimiento entre ellos, para que el movimiento se vea más fluido. Cuesta parte de los fotogramas del propio juego y añade retraso de respuesta; funciona mejor cuando el juego ya llega a unos 30 fps. Optimizar para este juego (menú Emulación) mide si compensa en cada juego.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Optical Flow is built in. LSFG uses Lossless Scaling&apos;s frame generation and needs Lossless.dll from Lossless Scaling in Lichii&apos;s &quot;lossless&quot; folder.</source>
+        <translation>Flujo óptico viene incluido. LSFG usa la generación de fotogramas de Lossless Scaling y necesita Lossless.dll de Lossless Scaling en la carpeta &quot;lossless&quot; de Lichii.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>How many frames reach the screen for each one the game draws: 2x adds one, 3x two, 4x three. More is smoother but adds lag and artifacts.</source>
+        <translation>Cuántos fotogramas llegan a la pantalla por cada uno que dibuja el juego: 2x añade uno, 3x dos, 4x tres. Más es más fluido pero añade retraso y defectos.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Adds as many frames as it takes to reach this frame rate, up to 4x, instead of a fixed multiplier. 0 uses the multiplier.</source>
+        <translation>Añade los fotogramas que hagan falta para llegar a esta tasa, hasta 4x, en vez de un multiplicador fijo. 0 usa el multiplicador.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Estimates motion at the resolution the game renders at, relative to the window. Off uses the Flow Scale below.</source>
+        <translation>Estima el movimiento a la resolución a la que dibuja el juego, respecto a la ventana. Desactivado usa la Escala de flujo de abajo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The resolution motion is estimated at, as a share of the window&apos;s. Lower is faster but less precise around moving edges.</source>
+        <translation>La resolución a la que se estima el movimiento, como parte de la de la ventana. Más baja es más rápida pero menos precisa en los bordes que se mueven.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>How many finished frames wait for the screen. More can make pacing steadier but adds lag; 0 keeps lag lowest.</source>
+        <translation>Cuántos fotogramas terminados esperan a la pantalla. Más puede dar un ritmo más regular pero añade retraso; 0 mantiene el retraso al mínimo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Writes the motion frame generation estimates to image files, to debug it.</source>
+        <translation>Escribe en archivos de imagen el movimiento que estima la generación de fotogramas, para depurarla.</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Whether the emulated GPU waits for its earlier work before it reads the game&apos;s commands and data. Safe waits, which can fix corrupted images in some games; Unsafe doesn&apos;t, and is faster. Default follows GPU Mode.</source>
+        <translation>Si la GPU emulada espera a su trabajo anterior antes de leer los comandos y datos del juego. Seguro espera, lo que puede arreglar imágenes corruptas en algunos juegos; Impreciso no espera y es más rápido. Predeterminado sigue al Modo de la GPU.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>When the game is told its GPU work is done. Immediate tells it at once: fastest, but it can cause flickering or wrong images. Balanced, and Accurate even more, wait for the graphics card first, which costs some speed. Default follows GPU Mode.</source>
+        <translation>Cuándo se le dice al juego que su trabajo de GPU ha terminado. Inmediato se lo dice enseguida: lo más rápido, pero puede causar parpadeos o imágenes erróneas. Balanceado, y Preciso aún más, esperan antes a la tarjeta gráfica, lo que cuesta algo de velocidad. Predeterminado sigue al Modo de la GPU.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Builds new shaders in the background while the game keeps running, instead of pausing it. Removes most of the stutter of new effects, but what they draw can be missing for a moment.</source>
+        <translation>Construye los shaders nuevos en segundo plano mientras el juego sigue, en vez de pausarlo. Quita la mayoría de los tirones de los efectos nuevos, pero lo que dibujan puede faltar durante un momento.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Rearranges compressed (BCn) 3D textures into the graphics card&apos;s layout on the card itself instead of on the processor. Turn it off if a game crashes or shows broken textures.</source>
+        <translation>Reordena las texturas 3D comprimidas (BCn) al formato de la tarjeta gráfica en la propia tarjeta en vez de en el procesador. Desactívalo si un juego se cierra o muestra texturas rotas.</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Pins the emulator&apos;s GPU threads to dedicated physical CPU cores and keeps the emulated CPU cores off them.
+Can hurt performance on CPUs with few cores. Skipped on CPUs with fewer than 6 physical performance cores.
+Windows and Linux only.</source>
+        <translation>Fija los hilos de GPU del emulador a núcleos físicos de CPU dedicados y mantiene fuera de ellos los núcleos de la CPU emulada.
+Puede empeorar el rendimiento en CPU con pocos núcleos. No se aplica en CPU con menos de 6 núcleos físicos de rendimiento.
+Solo Windows y Linux.</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>After a game starts, builds in the background the shaders earlier sessions used but the last few did not, most recent first, up to this much system memory. Areas you come back to then stutter less the first time. Off builds only the shaders of the last few sessions.</source>
+        <translation>Al arrancar un juego, prepara en segundo plano los shaders que usaron sesiones anteriores pero no las últimas, empezando por los más recientes, hasta esta cantidad de memoria del sistema. Así las zonas a las que vuelves dan menos tirones la primera vez. Desactivado prepara solo los shaders de las últimas sesiones.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Copies the images the GPU draws back to the game&apos;s memory only when the game reads them, instead of every time. Faster; turn it off only if an image the game reads back comes out wrong.</source>
+        <translation>Copia a la memoria del juego las imágenes que dibuja la GPU solo cuando el juego las lee, en vez de cada vez. Más rápido; desactívalo solo si una imagen que el juego lee sale mal.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Forces the game to use its native 30 FPS mode at normal game speed.</source>
+        <translation>Obliga al juego a usar su modo nativo de 30 FPS a velocidad de juego normal.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Lets the game adjust between 30 and 60 FPS using whole-frame timing to maintain normal game speed. Takes precedence over the 30 FPS mode.</source>
+        <translation>Permite que el juego varíe entre 30 y 60 FPS midiendo fotogramas completos para mantener la velocidad de juego normal. Tiene prioridad sobre el modo de 30 FPS.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Makes the GPU finish writing a depth image before a draw reads it back, which fixes some transparency effects at a small cost.</source>
+        <translation>Hace que la GPU termine de escribir una imagen de profundidad antes de que un dibujo la lea, lo que arregla algunos efectos de transparencia con un coste pequeño.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Records when each frame was queued and shown, for games that ask the system for that history. Some of them pace their frames better with it.</source>
+        <translation>Registra cuándo se puso en cola y se mostró cada fotograma, para los juegos que piden ese historial al sistema. Algunos de ellos regulan mejor sus fotogramas con él.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Removes the bloom glow in Burnout Paradise Remastered, which renders wrongly there.</source>
+        <translation>Quita el resplandor (bloom) en Burnout Paradise Remastered, donde se dibuja mal.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Lets the graphics card change the layout of vertex data without building a new pipeline: fewer pipelines and less stutter. Turn it off if a driver draws models wrong.</source>
+        <translation>Permite a la tarjeta gráfica cambiar el formato de los datos de vértices sin construir un pipeline nuevo: menos pipelines y menos tirones. Desactívalo si un controlador dibuja mal los modelos.</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>The console&apos;s name, as games and local multiplayer show it.</source>
+        <translation>El nombre de la consola, tal como lo muestran los juegos y el multijugador local.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Sets the console&apos;s clock to this date and time instead of your computer&apos;s. Some games use the clock for daily events.</source>
+        <translation>Pone el reloj de la consola en esta fecha y hora en vez de la de tu equipo. Algunos juegos usan el reloj para eventos diarios.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>How far the console&apos;s clock is from your computer&apos;s, in seconds.</source>
+        <translation>Cuánto se separa el reloj de la consola del de tu equipo, en segundos.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The language the console reports to games. With Region on Auto-select, the game&apos;s region can override it.</source>
+        <translation>El idioma que la consola comunica a los juegos. Con la Región en selección automática, la región del juego puede cambiarlo.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The speakers the console tells games it has: mono, stereo or surround. Games mix their sound for them.</source>
+        <translation>Los altavoces que la consola dice a los juegos que tiene: mono, estéreo o envolvente. Los juegos mezclan su sonido para ellos.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Whether Lichii asks before it stops a running game. &quot;Only if game specifies not to stop&quot; asks only while the game says stopping now could lose data, such as during a save.</source>
+        <translation>Si Lichii pregunta antes de detener un juego en marcha. &quot;Solo si el juego pide no ser cerrado&quot; pregunta solo mientras el juego indica que detenerlo ahora podría perder datos, por ejemplo al guardar.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Asks Feral GameMode, when it is installed, to switch the system to its performance settings while a game runs.</source>
+        <translation>Pide a Feral GameMode, si está instalado, que ponga el sistema en sus ajustes de rendimiento mientras se juega.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Runs Lichii&apos;s windows through X11 (XWayland) instead of Wayland. On by default because under Wayland some desktops cut message boxes short. Takes effect when Lichii restarts.</source>
+        <translation>Muestra las ventanas de Lichii mediante X11 (XWayland) en vez de Wayland. Activado por defecto porque con Wayland algunos escritorios recortan los cuadros de mensaje. Se aplica al reiniciar Lichii.</translation>
+    </message>
+    <message>
+        <location line="+155"/>
         <source>Area</source>
         <translation>Área</translation>
     </message>
@@ -2862,6 +3334,11 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <source>Grid View</source>
         <translation>Vista en cuadrícula</translation>
     </message>
+    <message>
+        <location filename="../../src/yuzu/configuration/setting_help_panel.cpp" line="+129"/>
+        <source>Point at an option, or move to it with the keyboard, to read here what it does.</source>
+        <translation>Señala una opción, o llega a ella con el teclado, para leer aquí lo que hace.</translation>
+    </message>
 </context>
 <context>
     <name>ConfigureApplets</name>
@@ -3557,8 +4034,8 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
 <context>
     <name>ConfigureDialog</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="+74"/>
-        <location line="+107"/>
+        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="+75"/>
+        <location line="+116"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -3577,24 +4054,24 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Algunos ajustes solo están disponibles cuando no se estén ejecutando los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="-106"/>
+        <location filename="../../src/yuzu/configuration/configure_dialog.cpp" line="-115"/>
         <source>Applets</source>
         <translation>Applets</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+114"/>
+        <location line="+123"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+110"/>
+        <location line="-122"/>
+        <location line="+119"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location line="-109"/>
+        <location line="-118"/>
         <source>Debug</source>
         <translation>Depuración</translation>
     </message>
@@ -3605,18 +4082,18 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+102"/>
+        <location line="+111"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location line="-101"/>
-        <location line="+107"/>
+        <location line="-110"/>
+        <location line="+116"/>
         <source>Graphics</source>
         <translation>Gráficos</translation>
     </message>
     <message>
-        <location line="-106"/>
+        <location line="-115"/>
         <source>GraphicsAdvanced</source>
         <translation>GráficosAvanzados</translation>
     </message>
@@ -3632,12 +4109,12 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+106"/>
+        <location line="+115"/>
         <source>Controls</source>
         <translation>Controles</translation>
     </message>
     <message>
-        <location line="-105"/>
+        <location line="-114"/>
         <source>Profiles</source>
         <translation>Perfiles</translation>
     </message>
@@ -3648,12 +4125,12 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+96"/>
+        <location line="+105"/>
         <source>System</source>
         <translation>Sistema</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-104"/>
         <source>Game List</source>
         <translation>Lista de juegos</translation>
     </message>
@@ -4061,8 +4538,12 @@ Would you like to delete the old save data?</source>
     </message>
     <message>
         <location line="+6"/>
+        <source>Changing these options from their defaults can cause graphical glitches or crashes. Change one only to fix a problem in a game.</source>
+        <translation>Cambiar estas opciones puede causar fallos gráficos o cierres. Cambia una solo para arreglar un problema en un juego.</translation>
+    </message>
+    <message>
         <source>Changing these options from their default may cause issues. Novitii cavete!</source>
-        <translation>Cambiar estas opciones predeterminadas puede causar problemas. ¡Cuidado!</translation>
+        <translation type="vanished">Cambiar estas opciones predeterminadas puede causar problemas. ¡Cuidado!</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -5517,7 +5998,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
 <context>
     <name>ConfigurePerGame</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+399"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+400"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -5538,7 +6019,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+41"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+49"/>
         <location line="+10"/>
         <location line="+221"/>
         <location line="+5"/>
@@ -5606,7 +6087,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Algunos ajustes solo están disponibles cuando no se estén ejecutando los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-276"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-284"/>
         <source>Add-Ons</source>
         <translation>Complementos</translation>
     </message>
@@ -5656,7 +6137,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Applets</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+19"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
@@ -5849,7 +6330,7 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
 <context>
     <name>ConfigurePerformance</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_performance.cpp" line="+58"/>
+        <location filename="../../src/yuzu/configuration/configure_performance.cpp" line="+59"/>
         <source>This computer</source>
         <translation>Este equipo</translation>
     </message>
@@ -6077,17 +6558,15 @@ Referencia: %1, donde Ocarina of Time va a unos 30 fps en exteriores.</translati
         <translation>%1 %2 (el preset usa %3)</translation>
     </message>
     <message>
-        <location line="+36"/>
         <source>on</source>
-        <translation>activado</translation>
+        <translation type="vanished">activado</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>off</source>
-        <translation>desactivado</translation>
+        <translation type="vanished">desactivado</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+42"/>
         <source>The preset is now set in the Graphics pages. Press OK to save it.</source>
         <translation>El ajuste predefinido se ha aplicado en las páginas de Gráficos. Pulse Aceptar para guardarlo.</translation>
     </message>
@@ -6833,8 +7312,12 @@ Arrastre los puntos para cambiar de posición, o haga doble clic en las celdas d
     </message>
     <message>
         <location line="+8"/>
+        <source>Ask Where To Save Screenshots</source>
+        <translation>Preguntar dónde guardar las capturas</translation>
+    </message>
+    <message>
         <source>Ask Where To Save Screenshots (Windows Only)</source>
-        <translation>Preguntar dónde guardar las capturas de pantalla (solo en Windows)</translation>
+        <translation type="vanished">Preguntar dónde guardar las capturas de pantalla (solo en Windows)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -6857,7 +7340,7 @@ Arrastre los puntos para cambiar de posición, o haga doble clic en las celdas d
         <translation>Resolución:</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_ui.cpp" line="+86"/>
+        <location filename="../../src/yuzu/configuration/configure_ui.cpp" line="+90"/>
         <source>Select Screenshots Path...</source>
         <translation>Selecciona la ruta de las capturas de pantalla:</translation>
     </message>
@@ -8499,9 +8982,13 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Ctrl+,</translation>
     </message>
     <message>
-        <location line="+11"/>
         <source>Enable Overlay Display Applet</source>
-        <translation>Activar applet de visualización superpuesta</translation>
+        <translation type="vanished">Activar applet de visualización superpuesta</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Console Overlay Menu (Hold Home)</source>
+        <translation>Menú superpuesto de la consola (mantener Home)</translation>
     </message>
     <message>
         <location line="+8"/>

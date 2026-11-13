@@ -81,8 +81,21 @@ INSERT(Settings,
 #### Make sure to:
 
 * Keep display naming consistent
-* Put detailed info in the description
+* Put detailed info in the description: what it does in plain words, what it costs, and when to
+  change it. Every shown setting needs one; the settings dialogs show it in their help panel
 * Use `\n` for line breaks in descriptions
+
+Then give it a level and its effects in `src/qt_common/config/setting_help.cpp`:
+
+```cpp
+add(v.your_setting_name, {.level = Advanced, .effects = {Faster, MayCauseGlitches}});
+```
+
+The level says who it is for (Basic, Advanced, Expert, Developer). The effects say what turning
+it on, or raising it, does; leave them out when its values have no order. Add
+`.applies_at_boot = true` when it can change while a game runs but only acts at the next start,
+and `.program_ids` when it acts on one game only. The `setting_help` test fails for a shown
+setting without a description or a help entry.
 
 ---
 

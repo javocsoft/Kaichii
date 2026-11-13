@@ -25,6 +25,7 @@
 #include "core/core.h"
 #include "qt_common/qt_common.h"
 #include "video_core/vulkan_common/hardware_test.h"
+#include "qt_common/config/setting_help.h"
 #include "qt_common/config/shared_translation.h"
 #include "yuzu/configuration/configure_performance.h"
 #include "yuzu/configuration/shared_widget.h"
@@ -278,25 +279,7 @@ QString ConfigurePerformance::SettingName(const Settings::BasicSetting& setting)
 
 QString ConfigurePerformance::SettingValue(const Settings::BasicSetting& setting,
                                            const std::string& value) const {
-    if (setting.IsEnum()) {
-        const auto& enums = builder.ComboboxTranslations();
-        if (const auto it = enums.find(setting.EnumIndex()); it != enums.end()) {
-            bool ok = false;
-            const u32 index = QString::fromStdString(value).toUInt(&ok);
-            for (const auto& [id, text] : it->second) {
-                if (ok && id == index) {
-                    return text;
-                }
-            }
-        }
-    }
-    if (value == "true") {
-        return tr("on");
-    }
-    if (value == "false") {
-        return tr("off");
-    }
-    return QString::fromStdString(value);
+    return ConfigurationShared::FormatSettingValue(setting, value, builder.ComboboxTranslations());
 }
 
 void ConfigurePerformance::ApplySelectedPreset() {

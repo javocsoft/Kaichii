@@ -86,8 +86,7 @@ void PopulateRecords(std::vector<Record>& records, QWindow* window) try {
         Record& record = records.emplace_back(name, present_modes, has_broken_compute);
         record.device_name = properties.properties.deviceName;
         record.vendor_id = properties.properties.vendorID;
-        record.integrated =
-            properties.properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
+        record.integrated = SharesSystemMemory(properties.properties.deviceType);
         const VkPhysicalDeviceMemoryProperties memory =
             physical_device.GetMemoryProperties().memoryProperties;
         for (u32 heap = 0; heap < memory.memoryHeapCount; ++heap) {

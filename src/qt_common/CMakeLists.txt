@@ -14,6 +14,8 @@ add_library(qt_common STATIC
     config/uisettings.h
     config/qt_config.cpp
     config/qt_config.h
+    config/setting_help.cpp
+    config/setting_help.h
     config/shared_translation.cpp
     config/shared_translation.h
 
