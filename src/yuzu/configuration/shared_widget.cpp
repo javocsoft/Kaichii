@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "yuzu/configuration/shared_widget.h"
+#include "yuzu/configuration/setting_help_panel.h"
 
 #include <functional>
 #include <limits>
@@ -772,12 +773,15 @@ Widget::Widget(Settings::BasicSetting* setting_, const TranslationMap& translati
 
     this->setEnabled(enable);
 
-    this->setToolTip(tooltip);
+    // The settings dialogs' help panel shows the description; screen readers get it here.
+    this->setAccessibleDescription(tooltip);
+    this->setProperty(SettingIdProperty, id);
 }
 
 Builder::Builder(QWidget* parent_, bool runtime_lock_)
     : translations{InitializeTranslations(parent_)},
-      combobox_translations{ComboboxEnumeration(parent_)}, parent{parent_},
+      combobox_translations{ComboboxEnumeration(parent_)}, help{InitializeSettingHelp()},
+      parent{parent_},
       runtime_lock{runtime_lock_} {}
 
 Builder::~Builder() = default;
@@ -847,6 +851,14 @@ bool Widget::ShowValue(const std::string& value) {
         return true;
     }
     return false;
+}
+
+const TranslationMap& Builder::Translations() const {
+    return *translations;
+}
+
+const SettingHelpMap& Builder::Help() const {
+    return *help;
 }
 
 const ComboboxTranslationMap& Builder::ComboboxTranslations() const {

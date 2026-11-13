@@ -69,9 +69,16 @@ public:
     // What performance presets need to class the device.
     std::string device_name;
     u32 vendor_id{};
-    bool integrated{};
+    bool integrated{}; ///< Its memory is the system's (SharesSystemMemory)
     u64 device_local_bytes{}; ///< The largest device-local memory heap
 };
+
+/// Whether a device of this type renders from the system's memory: integrated GPUs, and software
+/// renderers such as llvmpipe, whose "video memory" is the whole RAM. Presets class both as the
+/// weakest hardware.
+[[nodiscard]] constexpr bool SharesSystemMemory(VkPhysicalDeviceType type) {
+    return type == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU || type == VK_PHYSICAL_DEVICE_TYPE_CPU;
+}
 
 // TODO(crueter): Port some configure_graphics.cpp stuff
 void PopulateRecords(std::vector<Record>& records, QWindow* window);

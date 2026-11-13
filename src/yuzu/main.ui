@@ -320,7 +320,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Enable Overlay Display Applet</string>
+    <string>Console Overlay Menu (Hold Home)</string>
    </property>
   </action>
   <action name="action_Show_Filter_Bar">

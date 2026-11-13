@@ -26,7 +26,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Changing these options from their default may cause issues. Novitii cavete!</string>
+         <string>Changing these options from their defaults can cause graphical glitches or crashes. Change one only to fix a problem in a game.</string>
         </property>
        </widget>
       </item>

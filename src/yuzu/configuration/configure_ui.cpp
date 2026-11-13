@@ -92,6 +92,10 @@ ConfigureUi::ConfigureUi(Core::System& system_, QWidget* parent)
       ratio{Settings::values.aspect_ratio.GetValue()},
       resolution_setting{Settings::values.resolution_setup.GetValue()}, system{system_} {
     ui->setupUi(this);
+#ifndef _WIN32
+    // Only Windows asks where to save a screenshot (main_window.cpp, OnCaptureScreenshot).
+    ui->enable_screenshot_save_as->setVisible(false);
+#endif
 
     InitializeLanguageComboBox();
 

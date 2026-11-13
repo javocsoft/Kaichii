@@ -163,6 +163,8 @@ add_executable(yuzu
     configuration/input_profiles.h
     configuration/settings_page_scroll.cpp
     configuration/settings_page_scroll.h
+    configuration/setting_help_panel.cpp
+    configuration/setting_help_panel.h
     configuration/shared_widget.cpp
     configuration/shared_widget.h
     debugger/console.cpp

@@ -37,38 +37,79 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
     // A setting can be ignored by giving it a blank name
 
     // Applets
-    INSERT(Settings, cabinet_applet_mode, tr("Amiibo editor"), QString());
-    INSERT(Settings, controller_applet_mode, tr("Controller configuration"), QString());
-    INSERT(Settings, data_erase_applet_mode, tr("Data erase"), QString());
-    INSERT(Settings, error_applet_mode, tr("Error"), QString());
-    INSERT(Settings, net_connect_applet_mode, tr("Net connect"), QString());
-    INSERT(Settings, player_select_applet_mode, tr("Player select"), QString());
-    INSERT(Settings, swkbd_applet_mode, tr("Software keyboard"), QString());
-    INSERT(Settings, mii_edit_applet_mode, tr("Mii Edit"), QString());
-    INSERT(Settings, web_applet_mode, tr("Online web"), QString());
-    INSERT(Settings, shop_applet_mode, tr("Shop"), QString());
-    INSERT(Settings, photo_viewer_applet_mode, tr("Photo viewer"), QString());
-    INSERT(Settings, offline_web_applet_mode, tr("Offline web"), QString());
-    INSERT(Settings, login_share_applet_mode, tr("Login share"), QString());
-    INSERT(Settings, wifi_web_auth_applet_mode, tr("Wifi web auth"), QString());
-    INSERT(Settings, my_page_applet_mode, tr("My page"), QString());
-    INSERT(Settings, enable_overlay, tr("Enable Overlay Applet"),
-           tr("Enables Horizon\'s built-in overlay applet. Press and hold the home button for 1 "
-              "second to show it."));
+    const QString applet_modes =
+        tr("Custom frontend: Lichii answers in the applet's place, with its own window where it "
+           "has one, and needs no firmware. Real applet: the console's own screen, from the "
+           "installed firmware.");
+    INSERT(Settings, cabinet_applet_mode, tr("Amiibo editor"),
+           QString(tr("The screen where a game registers, renames or erases an amiibo.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, controller_applet_mode, tr("Controller configuration"),
+           QString(tr("The screen where a game asks which controllers to use. Disabled skips it, "
+                      "and the game keeps the controllers already connected.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, data_erase_applet_mode, tr("Data erase"),
+           QString(tr("The screen for erasing a game's save data.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, error_applet_mode, tr("Error"),
+           QString(tr("How the error messages a game raises are shown.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, net_connect_applet_mode, tr("Net connect"),
+           QString(tr("The screen a game opens to connect to the internet.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, player_select_applet_mode, tr("Player select"),
+           QString(tr("The screen where a game asks which user profile plays.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, swkbd_applet_mode, tr("Software keyboard"),
+           QString(tr("The on-screen keyboard a game opens to type text.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, mii_edit_applet_mode, tr("Mii Edit"),
+           QString(tr("The Mii editor a game opens.") + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, web_applet_mode, tr("Online web"),
+           QString(tr("The browser a game opens for online pages.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, shop_applet_mode, tr("Shop"),
+           QString(tr("The Nintendo eShop pages a game opens.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, photo_viewer_applet_mode, tr("Photo viewer"),
+           QString(tr("The album a game opens to show its screenshots.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, offline_web_applet_mode, tr("Offline web"),
+           QString(tr("The browser a game opens for its manual and the other pages stored with it.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, login_share_applet_mode, tr("Login share"),
+           QString(tr("The Nintendo Account login a game opens.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, wifi_web_auth_applet_mode, tr("Wifi web auth"),
+           QString(tr("The page for logging in to a network that asks for it.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, my_page_applet_mode, tr("My page"),
+           QString(tr("The user page, with friends and profile, that a game opens.")
+                   + QLatin1Char('\n') + applet_modes));
+    INSERT(Settings, enable_overlay, tr("Console overlay menu (hold Home)"),
+           tr("Enables the console's own overlay menu (Horizon's overlay applet), from the "
+              "installed firmware. Hold the Home button for one second to show it."));
 
     // Audio
-    INSERT(Settings, sink_id, tr("Output Engine:"), QString());
-    INSERT(Settings, audio_output_device_id, tr("Output Device:"), QString());
-    INSERT(Settings, audio_input_device_id, tr("Input Device:"), QString());
-    INSERT(Settings, audio_muted, tr("Mute audio"), QString());
-    INSERT(Settings, volume, tr("Volume:"), QString());
+    INSERT(Settings, sink_id, tr("Output Engine:"),
+           tr("The system Lichii plays sound through. Auto picks one that works here; change it "
+              "only if there is no sound or it crackles. Null plays nothing."));
+    INSERT(Settings, audio_output_device_id, tr("Output Device:"),
+           tr("Where the game's sound plays. Auto follows your system's default output."));
+    INSERT(Settings, audio_input_device_id, tr("Input Device:"),
+           tr("The microphone games hear. Auto uses your system's default input."));
+    INSERT(Settings, audio_muted, tr("Mute audio"),
+           tr("Silences the game."));
+    INSERT(Settings, volume, tr("Volume:"),
+           tr("The game's volume."));
     INSERT(Settings, dump_audio_commands, QString(), QString());
-    INSERT(UISettings, mute_when_in_background, tr("Mute audio when in background"), QString());
+    INSERT(UISettings, mute_when_in_background, tr("Mute audio when in background"),
+           tr("Silences the game while another window has the focus."));
 
     // Core
     INSERT(Settings, use_multi_core, tr("Multicore CPU Emulation"),
-           tr("This option increases CPU emulation thread use from 1 to the maximum of 4.\n"
-              "This is mainly a debug option and shouldn't be disabled."));
+           tr("Runs the console's processor cores on several threads of your processor. Off makes "
+              "games far slower; it is only for finding emulator bugs."));
     INSERT(Settings, memory_layout_mode, tr("Memory Layout"),
            tr("Increases the amount of emulated RAM.\nDoesn't affect performance/stability but may "
               "allow HD texture "
@@ -95,8 +136,12 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
 
     // Cpu
     INSERT(Settings, cpu_accuracy, tr("Accuracy:"),
-           tr("Change the accuracy of the emulated CPU (for debugging only)."));
-    INSERT(Settings, cpu_backend, tr("Backend:"), QString());
+           tr("How faithfully the console's processor is emulated. Auto suits nearly every game, "
+              "and Accurate is slower. Unsafe allows the speed-ups below, which bend the rules. "
+              "Paranoid and Debugging are for finding emulator bugs."));
+    INSERT(Settings, cpu_backend, tr("Backend:"),
+           tr("What runs the game's processor code. Dynarmic translates it and works on every "
+              "processor; native code execution runs it directly, on ARM64 processors only."));
 
     INSERT(Settings, cpu_clock, tr("CPU Clocks"),
            tr("Raises the clock the emulated CPU reports, which removes some FPS limiters.\n"
@@ -104,9 +149,8 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
 
     INSERT(Settings, use_custom_cpu_ticks, QString(), QString());
     INSERT(Settings, cpu_ticks, tr("Custom CPU Ticks"),
-           tr("Set a custom value of CPU ticks. Higher values can increase performance, but may "
-              "cause deadlocks. A range of 77-21000 is recommended."));
-    INSERT(Settings, cpu_backend, tr("Backend:"), QString());
+           tr("A custom count of CPU ticks for the emulated processor. Higher values can raise "
+              "performance but can freeze games. A range of 77-21000 is recommended."));
 
     // Cpu Debug
 
@@ -143,24 +187,27 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
 
     // Renderer
     INSERT(Settings, renderer_backend, tr("API:"),
-           tr("Changes the output graphics API.\nVulkan is recommended."));
+           tr("The graphics API Lichii draws with. Vulkan is recommended."));
     INSERT(Settings, vulkan_device, tr("Device:"),
-           tr("This setting selects the GPU to use (Vulkan only)."));
+           tr("The graphics card Lichii draws with, when the computer has more than one."));
     INSERT(Settings, resolution_setup, tr("Resolution:"),
-           tr("Forces to render at a different resolution.\n"
-              "Higher resolutions require more VRAM and bandwidth.\n"
-              "Options lower than 1X can cause artifacts."));
-    INSERT(Settings, scaling_filter, tr("Window Adapting Filter:"), QString());
+           tr("The size games are drawn at, as a multiple of their size on the console. Higher is "
+              "sharper but needs a faster graphics card and more video memory. Below 1x is faster "
+              "but blurrier and can show artifacts; a window adapting filter such as FSR 1 still "
+              "fills the window."));
+    INSERT(Settings, scaling_filter, tr("Window Adapting Filter:"),
+           tr("How the image is resized to fit the window. FSR 1 and SGSR sharpen as they enlarge, "
+              "which suits resolutions below 1x; FSR 1 Soft sharpens less. Bilinear and Bicubic "
+              "are smooth, Nearest keeps hard pixel edges, and ScaleForce and MMPX suit pixel "
+              "art."));
     INSERT(Settings, game_dlss_network, tr("Use the game's own DLSS"),
            tr("Runs a Switch 2 game's own DLSS (its upscaling network, translated for this GPU) "
               "instead of AMD FSR 3.1 in its place.\nAMD FSR 3.1 still draws while the network is "
               "checked, when it can't run on this GPU, with resolution scaling, and for the rest "
-              "of the session if its output fails Lichii's checks.\nTakes effect when a game "
-              "starts."));
-    INSERT(Settings, fsr_sharpening_slider, tr("RCAS Sharpness:"),
-           tr("Strength of RCAS (AMD's contrast-adaptive sharpening) on the upscaler used in place "
-              "of a game's DLSS (AMD FSR 3.1); 0% turns it off.\nAlso sets the sharpening "
-              "of the AMD FSR 1 and SGSR window adapting filters."));
+              "of the session if its output fails Lichii's checks."));
+    INSERT(Settings, fsr_sharpening_slider, tr("Sharpening:"),
+           tr("How strongly FSR 1, FSR 1 Soft and SGSR sharpen the image as they resize it, and "
+              "AMD FSR 3.1 where it stands in for a game's DLSS. 0% turns sharpening off."));
     INSERT(Settings, nvidia_dlss, tr("Use NVIDIA DLSS in place of a game's DLSS (experimental)"),
            tr("Uses NVIDIA DLSS on GeForce RTX cards in place of a Switch 2 game's own DLSS, "
               "instead of AMD FSR 3.1.\nNeeds NVIDIA's Streamline loader, and NVIDIA DLSS unless "
@@ -168,19 +215,18 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "download button below.\nFire Emblem: Fortune's Weave also needs "
               "EDEN_NX2_DLSS_REPLACEMENT=dlss. Without that override, its spatial workaround "
               "remains active.\nIn The Legend of Zelda: Ocarina of Time it replaces the game's "
-              "upscaler at 1x resolution scale.\nTakes effect when a game starts."));
+              "upscaler at 1x resolution scale."));
     INSERT(Settings, anti_aliasing, tr("Anti-Aliasing Method:"),
-           tr("The anti-aliasing method to use.\nSMAA offers the best quality.\nFXAA "
-              "can produce a more stable picture in lower resolutions."));
+           tr("Smooths jagged edges in the final image. SMAA looks best; FXAA is lighter and "
+              "steadier at low resolutions."));
     INSERT(Settings, oot_anti_aliasing, tr("Ocarina of Time anti-aliasing:"),
-           tr("The Legend of Zelda: Ocarina of Time only.\nGame: the game's own anti-aliasing "
-              "network, which sharpens heavily.\nNo sharpening: the image as the game renders it, "
-              "without the network (faster; pairs well with a higher resolution). Has no effect while "
-              "NVIDIA DLSS is on.\nTakes effect when the game starts."));
+           tr("Game: the game's own anti-aliasing network, which sharpens heavily.\nNo sharpening: "
+              "the image as the game renders it, without the network (faster; pairs well with a "
+              "higher resolution). Has no effect while NVIDIA DLSS is on."));
     INSERT(Settings, post_shader_chain, QString(), QString());
     INSERT(Settings, post_shader_preset, QString(), QString());
     INSERT(Settings, post_shader_enabled, tr("Enable post-processing effects"),
-           tr("Applies post-processing effects to the final image."));
+           tr("Applies the effects chosen under Configure Effects to the final image."));
     INSERT(Settings, fullscreen_mode, tr("Fullscreen Mode:"),
            tr("The method used to render the window in fullscreen.\nBorderless offers the best "
               "compatibility with the on-screen keyboard that some games request for "
@@ -191,8 +237,8 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "16:9, so modifications are required to get other ratios.\nAlso controls the "
               "aspect ratio of captured screenshots."));
     INSERT(Settings, use_disk_shader_cache, tr("Use persistent pipeline cache"),
-           tr("Allows saving shaders to storage for faster loading on following game "
-              "boots.\nDisabling it is only intended for debugging."));
+           tr("Saves the shaders each game builds, so later sessions load them instead of building "
+              "them again while you play. Turn it off only to debug."));
     INSERT(
         Settings, use_asynchronous_gpu_emulation, tr("Use asynchronous GPU emulation"),
         tr("Uses an extra CPU thread for rendering.\nThis option should always remain enabled."));
@@ -201,26 +247,25 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "decoding, or perform no decoding at all (black screen on videos).\n"
               "In most cases, GPU decoding provides the best performance."));
     INSERT(Settings, accelerate_astc, tr("ASTC Decoding Method:"),
-           tr("This option controls how ASTC textures should be decoded.\n"
-              "CPU: Use the CPU for decoding.\n"
-              "GPU: Use the GPU's compute shaders to decode ASTC textures (recommended).\n"
-              "CPU Asynchronously: Use the CPU to decode ASTC textures on demand. Eliminates"
-              "ASTC decoding\nstuttering but may present artifacts."));
+           tr("How the game's ASTC textures are unpacked, since PC graphics cards can't read them "
+              "directly.\nGPU: on the graphics card.\nCPU: on the processor, while the game "
+              "waits.\nCPU Asynchronous: on the processor in the background, which "
+              "removes the stutter but can show a texture blurry or missing for a moment."));
     INSERT(Settings, astc_recompression, tr("ASTC Recompression Method:"),
-           tr("Most GPUs lack support for ASTC textures and must decompress to an"
-              "intermediate format: RGBA8.\n"
-              "BC1/BC3: The intermediate format will be recompressed to BC1 or BC3 format,\n"
-              " saving VRAM but degrading image quality."));
+           tr("Unpacked ASTC textures take four bytes of video memory a pixel. BC3 packs them "
+              "again into a quarter of that with a small loss of quality, BC1 into an eighth with "
+              "a visible one. Uncompressed keeps full quality."));
     INSERT(Settings, frame_pacing_mode, tr("Frame Pacing Mode (Vulkan only)"),
            tr("Controls how the emulator manages frame pacing to reduce stuttering and make the "
               "frame rate smoother and more consistent."));
     INSERT(Settings, vram_usage_mode, tr("VRAM Usage Mode:"),
-           tr("Selects whether the emulator should prefer to conserve memory or make maximum usage "
-              "of available video memory for performance.\nAggressive mode may impact performance "
-              "of other applications such as recording software."));
+           tr("Whether Lichii keeps its use of video memory low or uses as much as the card has, "
+              "for speed. Aggressive can slow other programs that use the graphics card, such as "
+              "recording software."));
     INSERT(Settings, skip_cpu_inner_invalidation, tr("Skip CPU Inner Invalidation"),
-           tr("Skips certain cache invalidations during memory updates, reducing CPU usage and "
-              "improving latency. This may cause soft-crashes."));
+           tr("Skips clearing some of the GPU's cached copies of memory when the game writes to "
+              "it. Uses less processor time, but the GPU can then use stale data: wrong images, or "
+              "a game that freezes."));
     INSERT(Settings, fps_limit, tr("FPS Limit"),
            tr("Caps how often the game presents, so the game itself runs at this rate. 0 leaves "
               "the frame rate to the game and the display."));
@@ -230,18 +275,36 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "Mailbox can have lower latency than FIFO and does not tear but may drop "
               "frames.\nImmediate (no synchronization) presents whatever is available and can "
               "exhibit tearing."));
+    INSERT(Settings, emulate_bgr565, QString(), QString()); // Android only
     INSERT(Settings, bg_red, QString(), QString());
     INSERT(Settings, bg_green, QString(), QString());
     INSERT(Settings, bg_blue, QString(), QString());
 
-    INSERT(Settings, frame_gen, tr("Enable Frame Generation"), QString());
-    INSERT(Settings, frame_gen_type, tr("Frame Generation Type"), QString());
-    INSERT(Settings, frame_gen_multiplier, tr("Frame Generation Multiplier"), QString());
-    INSERT(Settings, frame_gen_target_rate, tr("Target Frame Rate"), QString());
-    INSERT(Settings, frame_gen_flow_scale_auto, tr("Auto Flow Scale"), QString());
-    INSERT(Settings, frame_gen_flow_scale, tr("Flow Scale"), QString());
-    INSERT(Settings, frame_gen_queue_target, tr("Queue Target"), QString());
-    INSERT(Settings, frame_gen_dump_flow, tr("Dump Optical Flow"), QString());
+    INSERT(Settings, frame_gen, tr("Enable Frame Generation"),
+           tr("Draws extra frames between the game's own from the motion between them, so movement "
+              "looks smoother. Costs some of the game's own frame rate and adds input lag; works "
+              "best when the game already reaches about 30 fps. Optimize for This Game (Emulation "
+              "menu) measures whether it pays off for a game."));
+    INSERT(Settings, frame_gen_type, tr("Frame Generation Type"),
+           tr("Optical Flow is built in. LSFG uses Lossless Scaling's frame generation and needs "
+              "Lossless.dll from Lossless Scaling in Lichii's \"lossless\" folder."));
+    INSERT(Settings, frame_gen_multiplier, tr("Frame Generation Multiplier"),
+           tr("How many frames reach the screen for each one the game draws: 2x adds one, 3x two, "
+              "4x three. More is smoother but adds lag and artifacts."));
+    INSERT(Settings, frame_gen_target_rate, tr("Target Frame Rate"),
+           tr("Adds as many frames as it takes to reach this frame rate, up to 4x, instead of a "
+              "fixed multiplier. 0 uses the multiplier."));
+    INSERT(Settings, frame_gen_flow_scale_auto, tr("Auto Flow Scale"),
+           tr("Estimates motion at the resolution the game renders at, relative to the window. Off "
+              "uses the Flow Scale below."));
+    INSERT(Settings, frame_gen_flow_scale, tr("Flow Scale"),
+           tr("The resolution motion is estimated at, as a share of the window's. Lower is faster "
+              "but less precise around moving edges."));
+    INSERT(Settings, frame_gen_queue_target, tr("Queue Target"),
+           tr("How many finished frames wait for the screen. More can make pacing steadier but "
+              "adds lag; 0 keeps lag lowest."));
+    INSERT(Settings, frame_gen_dump_flow, tr("Dump Optical Flow"),
+           tr("Writes the motion frame generation estimates to image files, to debug it."));
 
     // Renderer (Advanced Graphics)
     INSERT(Settings, use_asynchronous_gpu_emulation, QString(), QString());
@@ -263,9 +326,13 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
            tr("Controls the GPU emulation mode.\nMost games render fine with Fast, but Accurate is still "
               "required for some.\nParticles tend to only render correctly with Accurate mode."));
     INSERT(Settings, dma_accuracy, tr("DMA Accuracy:"),
-           tr("Controls the DMA read mode.\nUnsafe is faster, while Safe is more stable and can fix issues in some games.\nDefault follows the GPU Accuracy setting."));
+           tr("Whether the emulated GPU waits for its earlier work before it reads the game's "
+              "commands and data. Safe waits, which can fix corrupted images in some games; Unsafe "
+              "doesn't, and is faster. Default follows GPU Mode."));
     INSERT(Settings, gpu_fence_behavior, tr("GPU Fence Behavior:"),
-           tr("Controls the GPU fence synchronization behavior.\nImmediate is the fastest option, but can introduce some issues.\nBalanced offers better compatibility and may fix issues in some games.\nAccurate further improves compatibility at the cost of some performance.\nDefault follows the GPU Mode setting."));
+           tr("When the game is told its GPU work is done. Immediate tells it at once: fastest, "
+              "but it can cause flickering or wrong images. Balanced, and Accurate even more, wait "
+              "for the graphics card first, which costs some speed. Default follows GPU Mode."));
     INSERT(Settings, native_compute_write_mark, tr("Native compute write mark:"),
            tr("How much of a Switch 2 compute shader's storage buffer is treated as written by "
               "the GPU after each dispatch.\nAuto marks what the shader's stores can reach and "
@@ -274,13 +341,16 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "(flickering effects) and copy far more data back from the GPU.\n64 KiB cap marks at "
               "most 64 KiB, which can miss data a large dispatch really wrote."));
     INSERT(Settings, use_asynchronous_shaders, tr("Enable asynchronous shader compilation"),
-           tr("May reduce shader stutter."));
+           tr("Builds new shaders in the background while the game keeps running, instead of "
+              "pausing it. Removes most of the stutter of new effects, but what they draw can be "
+              "missing for a moment."));
     INSERT(Settings, gpu_clock, tr("GPU Clocks"),
            tr("Makes the game believe GPU work finishes faster than it does, so it stops lowering "
               "resolution and render distance to fit the Switch's clocks."));
     INSERT(Settings, gpu_unswizzle_enabled, tr("GPU Unswizzle"),
-           tr("Accelerates BCn 3D texture decoding using GPU compute.\n"
-              "Disable if experiencing crashes or graphical glitches."));
+           tr("Rearranges compressed (BCn) 3D textures into the graphics card's layout on the card "
+              "itself instead of on the processor. Turn it off if a game crashes or shows broken "
+              "textures."));
     INSERT(Settings, gpu_unswizzle_texture_size, tr("GPU Unswizzle Max Texture Size"),
            tr("Sets the maximum size (MiB) for GPU-based texture unswizzling.\n"
               "While the GPU is faster for medium and large textures, the CPU may be more "
@@ -299,7 +369,7 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "emulated CPU cores off them.\n"
               "Can hurt performance on CPUs with few cores. Skipped on CPUs with fewer than 6 "
               "physical performance cores.\n"
-              "Windows and Linux only. Takes effect when a game starts."));
+              "Windows and Linux only."));
 
     INSERT(Settings, use_vulkan_driver_pipeline_cache, tr("Use Vulkan pipeline cache"),
            tr("Enables GPU vendor-specific pipeline cache.\nThis option can improve shader loading "
@@ -318,7 +388,7 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
            tr("After a game starts, builds in the background the shaders earlier sessions used "
               "but the last few did not, most recent first, up to this much system memory. Areas "
               "you come back to then stutter less the first time. Off builds only the shaders "
-              "of the last few sessions. Takes effect the next time the game starts."));
+              "of the last few sessions."));
     INSERT(Settings, native_pipeline_wait_ms, tr("Pipeline wait per frame (ms):"),
            tr("Used by the Bounded mode: the most time per frame that Switch 2 draws may wait in "
               "total for pipelines that are still building. Once spent, the remaining unbuilt "
@@ -327,26 +397,27 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
            tr("Required by some games.\nThis setting only exists for Intel "
               "proprietary drivers and may crash if enabled.\nCompute pipelines are always enabled "
               "on all other drivers."));
-    INSERT(
-        Settings, use_reactive_flushing, tr("Enable Reactive Flushing"),
-        tr("Uses reactive flushing instead of predictive flushing, allowing more accurate memory "
-           "syncing."));
+    INSERT(Settings, use_reactive_flushing, tr("Enable Reactive Flushing"),
+           tr("Copies the images the GPU draws back to the game's memory only when the game reads "
+              "them, instead of every time. Faster; turn it off only if an image the game reads "
+              "back comes out wrong."));
     INSERT(Settings, use_video_framerate, tr("Sync to framerate of video playback"),
            tr("Run the game at normal speed during video playback, even when the framerate is "
               "unlocked."));
     INSERT(Settings, mkw_30fps, tr("Mario Kart World: 30 FPS mode"),
-           tr("Forces the game to use its native 30 FPS mode at normal game speed. "
-              "Takes effect after restarting the game."));
+           tr("Forces the game to use its native 30 FPS mode at normal game speed."));
     INSERT(Settings, mkw_dynamic_fps, tr("Mario Kart World: dynamic FPS (experimental)"),
            tr("Lets the game adjust between 30 and 60 FPS using whole-frame timing to maintain "
-              "normal game speed. Takes effect after restarting the game and takes precedence over "
-              "the 30 FPS mode."));
+              "normal game speed. Takes precedence over the 30 FPS mode."));
     INSERT(Settings, barrier_feedback_loops, tr("Barrier feedback loops"),
-           tr("Improves rendering of transparency effects in specific games."));
+           tr("Makes the GPU finish writing a depth image before a draw reads it back, which fixes "
+              "some transparency effects at a small cost."));
     INSERT(Settings, enable_buffer_history, tr("Enable buffer history"),
-           tr("Enables access to previous buffer states.\nThis option may improve rendering "
-              "quality and performance consistency in some games."));
-    INSERT(Settings, fix_bloom_effects, tr("Fix bloom effects"), tr("Removes bloom in Burnout."));
+           tr("Records when each frame was queued and shown, for games that ask the system for "
+              "that history. Some of them pace their frames better with it."));
+    INSERT(Settings, fix_bloom_effects, tr("Fix bloom effects"),
+           tr("Removes the bloom glow in Burnout Paradise Remastered, which renders wrongly "
+              "there."));
 
     // Renderer (Extensions)
     INSERT(Settings, dyna_state, tr("Extended Dynamic State"),
@@ -355,7 +426,9 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
               "additional graphical issues."));
 
     INSERT(Settings, vertex_input_dynamic_state, tr("Vertex Input Dynamic State"),
-           tr("Enables vertex input dynamic state feature for better quality and performance."));
+           tr("Lets the graphics card change the layout of vertex data without building a new "
+              "pipeline: fewer pipelines and less stutter. Turn it off if a driver draws models "
+              "wrong."));
 
     INSERT(
         Settings, sample_shading, tr("Sample Shading"),
@@ -369,20 +442,24 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
     INSERT(Settings, rng_seed, tr("RNG Seed"),
            tr("Controls the seed of the random number generator.\nMainly used for speedrunning."));
     INSERT(Settings, rng_seed_enabled, QString(), QString());
-    INSERT(Settings, device_name, tr("Device Name"), tr("The name of the console."));
+    INSERT(Settings, device_name, tr("Device Name"),
+           tr("The console's name, as games and local multiplayer show it."));
     INSERT(Settings, program_args, tr("Homebrew Args"),
            tr("Command-line arguments passed to homebrew at launch (e.g. -noglsl)."));
     INSERT(Settings, custom_rtc, tr("Custom RTC Date:"),
-           tr("This option allows to change the clock of the console.\n"
-              "Can be used to manipulate time in games."));
+           tr("Sets the console's clock to this date and time instead of your computer's. Some "
+              "games use the clock for daily events."));
     INSERT(Settings, custom_rtc_enabled, QString(), QString());
     INSERT(Settings, custom_rtc_offset, QStringLiteral(" "),
-           tr("The number of seconds from the current unix time"));
+           tr("How far the console's clock is from your computer's, in seconds."));
     INSERT(Settings, language_index, tr("Language:"),
-           tr("This option can be overridden when region setting is auto-select"));
+           tr("The language the console reports to games. With Region on Auto-select, the game's "
+              "region can override it."));
     INSERT(Settings, region_index, tr("Region:"), tr("The region of the console."));
     INSERT(Settings, time_zone_index, tr("Time Zone:"), tr("The time zone of the console."));
-    INSERT(Settings, sound_index, tr("Sound Output Mode:"), QString());
+    INSERT(Settings, sound_index, tr("Sound Output Mode:"),
+           tr("The speakers the console tells games it has: mono, stereo or surround. Games mix "
+              "their sound for them."));
     INSERT(Settings, use_docked_mode, tr("Console Mode:"),
            tr("Selects if the console is in Docked or Handheld mode.\nGames will change "
               "their resolution, details and supported controllers and depending on this setting.\n"
@@ -409,17 +486,23 @@ std::unique_ptr<TranslationMap> InitializeTranslations(QObject* parent) {
     INSERT(UISettings, pause_when_in_background, tr("Pause when not in focus"),
            tr("Pauses emulation when focusing on other windows."));
     INSERT(UISettings, confirm_before_stopping, tr("Confirm before stopping emulation"),
-           tr("Overrides prompts asking to confirm stopping the emulation.\nEnabling "
-              "it bypasses such prompts and directly exits the emulation."));
+           tr("Whether Lichii asks before it stops a running game. \"Only if game specifies not to "
+              "stop\" asks only while the game says stopping now could lose data, such as during a "
+              "save."));
     INSERT(UISettings, hide_mouse, tr("Hide mouse on inactivity"),
            tr("Hides the mouse after 2.5s of inactivity."));
     INSERT(UISettings, check_for_updates, tr("Check for updates"),
            tr("Whether or not to check for updates upon startup."));
 
     // Linux
-    INSERT(UISettings, enable_gamemode, tr("Enable Gamemode"), QString());
+    INSERT(UISettings, enable_gamemode, tr("Enable Gamemode"),
+           tr("Asks Feral GameMode, when it is installed, to switch the system to its performance "
+              "settings while a game runs."));
 #ifdef __unix__
-    INSERT(UISettings, gui_force_x11, tr("Force X11 as Graphics Backend"), QString());
+    INSERT(UISettings, gui_force_x11, tr("Force X11 as Graphics Backend"),
+           tr("Runs Lichii's windows through X11 (XWayland) instead of Wayland. On by default "
+              "because under Wayland some desktops cut message boxes short. Takes effect when "
+              "Lichii restarts."));
     INSERT(UISettings, gui_hide_backend_warning, QString(), QString());
 #endif
 

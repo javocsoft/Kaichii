@@ -75,6 +75,7 @@
 #include "yuzu/configuration/configure_per_game.h"
 #include "yuzu/configuration/configure_per_game_addons.h"
 #include "yuzu/configuration/configure_system.h"
+#include "yuzu/configuration/setting_help_panel.h"
 #include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/util/util.h"
 
@@ -407,6 +408,14 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
     ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(input_tab.get(), this), tr("Input Profiles"));
     ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(network_tab.get(), this), tr("Network"));
     ui->tabWidget->addTab(new ConfigurationShared::SettingsPageScroll(applets_tab.get(), this), tr("Applets"));
+
+    auto* const help_panel = new ConfigurationShared::SettingHelpPanel(
+        builder->Translations(), builder->Help(), builder->ComboboxTranslations(),
+        VkDeviceInfo::DetectHostProfile(vk_device_records,
+                                        Settings::values.vulkan_device.GetValue()),
+        this);
+    ui->verticalLayout_3->insertWidget(1, help_panel);
+    help_panel->Watch(ui->tabWidget);
 
     // The game's info panel scrolls too: at high scale it alone is taller than a 1080p screen.
     const int info_index = ui->horizontalLayout->indexOf(ui->groupBox);

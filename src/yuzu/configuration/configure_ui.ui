@@ -162,7 +162,7 @@
         <item>
          <widget class="QCheckBox" name="enable_screenshot_save_as">
           <property name="text">
-           <string>Ask Where To Save Screenshots (Windows Only)</string>
+           <string>Ask Where To Save Screenshots</string>
           </property>
          </widget>
         </item>
