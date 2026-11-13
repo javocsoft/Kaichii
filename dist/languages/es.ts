@@ -1932,7 +1932,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
     <message>
         <location line="+4"/>
         <source>Conservative</source>
-        <translation>Conservativo</translation>
+        <translation>Conservador</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -9130,7 +9130,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+1976"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+1979"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -9140,7 +9140,12 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Kaichii no pudo reservar la memoria del juego. Cierra otras aplicaciones y comprueba que el sistema tiene suficiente memoria disponible y espacio para el archivo de paginación; después vuelve a intentarlo.</translation>
     </message>
     <message>
-        <location line="+1227"/>
+        <location line="+12"/>
+        <source>This is usually caused by outdated GPU drivers. The log has the details: &lt;a href=&apos;%1&apos;&gt;where to find it&lt;/a&gt;.</source>
+        <translation>Normalmente se debe a controladores de GPU desactualizados. El registro tiene los detalles: &lt;a href=&apos;%1&apos;&gt;dónde encontrarlo&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <location line="+1214"/>
         <source>Installable Switch File (*.nca *.nsp *.nsz *.xci *.xcz);;Nintendo Content Archive (*.nca);;Nintendo Submission Package (*.nsp *.nsz);;NX Cartridge Image (*.xci *.xcz)</source>
         <translation>Archivo instalable de Switch (*.nca *.nsp *.nsz *.xci *.xcz);;Archivo de contenido de Nintendo (*.nca);;Paquete de envío de Nintendo (*.nsp *.nsz);;Imagen de cartucho NX (*.xci *.xcz)</translation>
     </message>
@@ -9296,7 +9301,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-1391"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-1390"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -9316,7 +9321,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="-278"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3691"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3652"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -9423,6 +9428,11 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
+        <source>&amp;Compatibility List</source>
+        <translation>Lista de &amp;compatibilidad</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>&amp;Setup Assistant...</source>
         <translation>&amp;Asistente de configuración...</translation>
     </message>
@@ -9501,7 +9511,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     <message>
         <location line="+5"/>
         <source>Install Decryption &amp;Keys</source>
-        <translation>Instalar &amp;llaves de desencriptación</translation>
+        <translation>Instalar &amp;claves de descifrado</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -9584,7 +9594,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4617"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4579"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9714,7 +9724,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+409"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -9753,12 +9763,12 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+172"/>
-        <location line="+30"/>
+        <location line="+29"/>
         <source>Error while loading ROM!</source>
         <translation>¡Error al cargar la ROM!</translation>
     </message>
     <message>
-        <location line="-29"/>
+        <location line="-28"/>
         <source>The ROM format is not supported.</source>
         <translation>El formato de la ROM no está soportado.</translation>
     </message>
@@ -9768,9 +9778,8 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Se produjo un error al inicializar el núcleo de video.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>This is usually caused by outdated GPU drivers. Please see the log for more details. See: &lt;a href=&apos;https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/HowToAccessLogs.md&apos;&gt;How to access log files&lt;/a&gt;.</source>
-        <translation>Normalmente se debe a controladores de GPU desactualizados. Consulta el registro para más detalles. Véase: &lt;a href=&apos;https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/HowToAccessLogs.md&apos;&gt;Cómo acceder a los archivos de registro&lt;/a&gt;.</translation>
+        <translation type="vanished">Normalmente se debe a controladores de GPU desactualizados. Consulta el registro para más detalles. Véase: &lt;a href=&apos;https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/HowToAccessLogs.md&apos;&gt;Cómo acceder a los archivos de registro&lt;/a&gt;.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -9834,25 +9843,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2526"/>
+        <location line="+2488"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2526"/>
-        <location line="+2526"/>
+        <location line="-2488"/>
+        <location line="+2488"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2525"/>
-        <location line="+2527"/>
+        <location line="-2487"/>
+        <location line="+2489"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2514"/>
+        <location line="-2476"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -10016,12 +10025,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2170"/>
+        <location line="+2132"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2137"/>
+        <location line="-2099"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
@@ -10207,17 +10216,15 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>Aceptar</translation>
     </message>
     <message>
-        <location line="+18"/>
         <source>Function Disabled</source>
-        <translation>Función desactivada</translation>
+        <translation type="vanished">Función desactivada</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Compatibility list reporting is currently disabled. Check back later!</source>
-        <translation>Los informes de la lista de compatibilidad están deshabilitados. ¡Vuelva más tarde!</translation>
+        <translation type="vanished">Los informes de la lista de compatibilidad están deshabilitados. ¡Vuelva más tarde!</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+19"/>
         <source>Error opening URL</source>
         <translation>Error abriendo URL</translation>
     </message>
@@ -10227,7 +10234,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>No se pudo abrir URL &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location line="+410"/>
+        <location line="+414"/>
         <source>TAS Recording</source>
         <translation>Grabación TAS</translation>
     </message>
@@ -12420,7 +12427,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QtCommon::Content</name>
     <message>
-        <location filename="../../src/qt_common/util/content.cpp" line="+30"/>
+        <location filename="../../src/qt_common/util/content.cpp" line="+31"/>
         <source>Game Requires Firmware</source>
         <translation>El juego requiere firmware</translation>
     </message>
@@ -12438,13 +12445,13 @@ p, li { white-space: pre-wrap; }
         <location line="+0"/>
         <location line="+163"/>
         <location line="+56"/>
-        <location line="+117"/>
+        <location line="+116"/>
         <location line="+63"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-387"/>
+        <location line="-386"/>
         <source>Firmware Install Failed</source>
         <translation>Instalación de Firmware Fallida.</translation>
     </message>
@@ -12529,12 +12536,16 @@ p, li { white-space: pre-wrap; }
 </translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>UNEXPECTED BAD THINGS MAY HAPPEN IF YOU DON&apos;T READ THIS!&lt;br&gt;Eden has detected the following save directories with no attached profile:&lt;br&gt;%1&lt;br&gt;&lt;br&gt;The following profiles are valid:&lt;br&gt;%2&lt;br&gt;&lt;br&gt;Click &quot;OK&quot; to open your save folder and fix up your profiles.&lt;br&gt;Hint: copy the contents of the largest or last-modified folder elsewhere, delete all orphaned profiles, and move your copied contents to the good profile.&lt;br&gt;&lt;br&gt;Still confused? See the &lt;a href=&apos;https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/Orphaned.md&apos;&gt;help page&lt;/a&gt;.&lt;br&gt;</source>
-        <translation>¡PODRÍAN SUCEDER COSAS MALAS E INESPERADAS SI NO LEE ESTO!&lt;br&gt;Eden ha detectado que los siguientes directorios de guardado no tienen perfil asociado:&lt;br&gt;%1&lt;br&gt;&lt;br&gt;Los siguientes perfiles son válidos:&lt;br&gt;%2&lt;br&gt;&lt;br&gt;Haga clic en &quot;Aceptar&quot; para abrir la carpeta de guardado y arreglar sus perfiles.&lt;br&gt;Consejo: copie el contenido de la carpeta más grande o la última modificada en otro lugar, elimine todos los perfiles huérfanos y mueva el contenido copiado al perfil correcto.&lt;br&gt;&lt;br&gt;¿Aún tiene dudas? Consulte la &lt;a href=&apos;https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/Orphaned.md&apos;&gt;página de ayuda&lt;/a&gt;.&lt;br&gt;</translation>
+        <translation type="vanished">¡PODRÍAN SUCEDER COSAS MALAS E INESPERADAS SI NO LEE ESTO!&lt;br&gt;Eden ha detectado que los siguientes directorios de guardado no tienen perfil asociado:&lt;br&gt;%1&lt;br&gt;&lt;br&gt;Los siguientes perfiles son válidos:&lt;br&gt;%2&lt;br&gt;&lt;br&gt;Haga clic en &quot;Aceptar&quot; para abrir la carpeta de guardado y arreglar sus perfiles.&lt;br&gt;Consejo: copie el contenido de la carpeta más grande o la última modificada en otro lugar, elimine todos los perfiles huérfanos y mueva el contenido copiado al perfil correcto.&lt;br&gt;&lt;br&gt;¿Aún tiene dudas? Consulte la &lt;a href=&apos;https://git.eden-emu.dev/eden-emu/eden/src/branch/master/docs/user/Orphaned.md&apos;&gt;página de ayuda&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+1"/>
+        <source>UNEXPECTED BAD THINGS MAY HAPPEN IF YOU DON&apos;T READ THIS!&lt;br&gt;Kaichii has detected the following save directories with no attached profile:&lt;br&gt;%1&lt;br&gt;&lt;br&gt;The following profiles are valid:&lt;br&gt;%2&lt;br&gt;&lt;br&gt;Click &quot;OK&quot; to open your save folder and fix up your profiles.&lt;br&gt;Hint: copy the contents of the largest or last-modified folder elsewhere, delete all orphaned profiles, and move your copied contents to the good profile.&lt;br&gt;&lt;br&gt;Still confused? See the &lt;a href=&apos;%3&apos;&gt;help page&lt;/a&gt;.&lt;br&gt;</source>
+        <translation>¡PODRÍAN PASAR COSAS MALAS E INESPERADAS SI NO LEES ESTO!&lt;br&gt;Kaichii ha detectado que las siguientes carpetas de partidas no tienen un perfil asociado:&lt;br&gt;%1&lt;br&gt;&lt;br&gt;Los siguientes perfiles son válidos:&lt;br&gt;%2&lt;br&gt;&lt;br&gt;Haz clic en &quot;Aceptar&quot; para abrir tu carpeta de partidas y arreglar tus perfiles.&lt;br&gt;Consejo: copia el contenido de la carpeta más grande o de la última modificada a otro lugar, borra todos los perfiles huérfanos y mueve lo que copiaste al perfil correcto.&lt;br&gt;&lt;br&gt;¿Sigues con dudas? Consulta la &lt;a href=&apos;%3&apos;&gt;página de ayuda&lt;/a&gt;.&lt;br&gt;</translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>Really clear data?</source>
         <translation>¿Realmente deseas borrar los datos?</translation>
     </message>

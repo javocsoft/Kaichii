@@ -30,6 +30,7 @@ add_library(qt_common STATIC
     util/mod.h util/mod.cpp
     util/vk.h util/vk.cpp
     util/translations.h util/translations.cpp
+    util/guide.h util/guide.cpp
 
     abstract/frontend.h abstract/frontend.cpp
     abstract/progress.h abstract/progress.cpp

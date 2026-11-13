@@ -13,6 +13,7 @@ workflow added, renamed or removed must be updated here in the same commit.
 | `sanitizers.yml` | PRs and pushes to `nx2` | AddressSanitizer on `tests` and `dynarmic_tests`, with UBSan logging. Stops at the first memory error. | Yes |
 | `release-binaries.yml` | Manual, or pushes to `nx2-experimental` that change build inputs | Builds every platform and publishes a `build-<run number>` GitHub release. | No |
 | `label-issues.yml` | New issues | Labels issues from their form fields. | No |
+| `pages.yml` | Pushes to `nx2` that change the guide, compatibility reports, daily, manual | Builds the player's guide (`docs/user`, `mkdocs.yml`) with the compatibility list from the reports, and publishes it on GitHub Pages. | No |
 
 Merge blocking is a repository setting. `nx2` in `javocsoft/Kaichii` requires all four checks on an
 up-to-date branch, for admins too, and allows no force pushes. So every change reaches `nx2` through
@@ -113,3 +114,27 @@ To train it again after large changes (functions changed since training lose the
 4. Compare the PGO build with each profile, alternating runs, before replacing the file.
 
 The profile holds counters of the emulator's own functions, no game data.
+
+## The player's guide
+
+`pages.yml` publishes `docs/user` at `https://javocsoft.github.io/Kaichii/`, English at the root and
+Spanish under `es/` (`Page.md` and `Page.es.md`; a page without a Spanish version shows the English
+one). It runs when the guide, `mkdocs.yml` or `tools/site` change on `nx2`, when an issue labelled
+`compatibility` is opened, edited, closed or relabelled, once a day, and on demand.
+
+Before building, `tools/site/compatibility.py` replaces `Compatibility.md` and `Compatibility.es.md`
+with the list of reports read from the issues. Report text comes from anyone who opens an issue: the
+script escapes every value and writes every link itself, and `tools/site/test_compatibility.py`
+checks that. Issues closed as not planned, or labelled `duplicate`, `invalid` or `spam`, are left
+out. The repository's Pages source must be "GitHub Actions".
+
+To build the guide locally:
+
+```sh
+python3 -m venv /tmp/site && /tmp/site/bin/pip install -r tools/site/requirements.txt
+python3 -I tools/site/compatibility.py --repo javocsoft/Kaichii --out docs/user
+/tmp/site/bin/mkdocs serve
+```
+
+Restore the placeholders afterwards with `git checkout docs/user/Compatibility*.md`.
+

@@ -1,1 +1,8 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Questions and help
+    url: https://github.com/javocsoft/Kaichii/discussions
+    about: Ask how to set something up, share tips, or check whether something is a bug before reporting it.
+  - name: Player's guide
+    url: https://javocsoft.github.io/Kaichii/
+    about: Installing Kaichii, first steps, settings for your computer and fixes for common problems.
