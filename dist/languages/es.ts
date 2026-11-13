@@ -9140,7 +9140,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+1982"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+1984"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -9155,7 +9155,16 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Normalmente se debe a controladores de GPU desactualizados. El registro tiene los detalles: &lt;a href=&apos;%1&apos;&gt;dónde encontrarlo&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location line="+1214"/>
+        <location line="+1246"/>
+        <source>This folder doesn&apos;t hold a game extracted into files (a &apos;main&apos; file).
+
+To add a folder with your games to the game list, use File &gt; Add Games Folder.</source>
+        <translation>Esta carpeta no contiene un juego extraído en archivos (un archivo &apos;main&apos;).
+
+Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir carpeta de juegos.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Installable Switch File (*.nca *.nsp *.nsz *.xci *.xcz);;Nintendo Content Archive (*.nca);;Nintendo Submission Package (*.nsp *.nsz);;NX Cartridge Image (*.xci *.xcz)</source>
         <translation>Archivo instalable de Switch (*.nca *.nsp *.nsz *.xci *.xcz);;Archivo de contenido de Nintendo (*.nca);;Paquete de envío de Nintendo (*.nsp *.nsz);;Imagen de cartucho NX (*.xci *.xcz)</translation>
     </message>
@@ -9190,7 +9199,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Abrir carpetas de &amp;Eden</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+29"/>
         <source>&amp;Emulation</source>
         <translation>&amp;Emulación</translation>
     </message>
@@ -9300,18 +9309,17 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>C&amp;argar archivo...</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Load &amp;Folder...</source>
-        <translation>Cargar &amp;carpeta</translation>
+        <translation type="vanished">Cargar &amp;carpeta</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+15"/>
         <source>E&amp;xit</source>
         <translation>S&amp;alir</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-1390"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-1434"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -9330,8 +9338,8 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">&amp;Acerca de Eden</translation>
     </message>
     <message>
-        <location line="-278"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3693"/>
+        <location line="-284"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3737"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -9343,7 +9351,17 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Abrir carpetas de &amp;Kaichii</translation>
     </message>
     <message>
-        <location line="+235"/>
+        <location line="+205"/>
+        <source>Add &amp;Games Folder...</source>
+        <translation>Añadir carpeta de &amp;juegos...</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Open &amp;Extracted Game...</source>
+        <translation>Abrir juego &amp;extraído...</translation>
+    </message>
+    <message>
+        <location line="+31"/>
         <source>&amp;About Kaichii</source>
         <translation>&amp;Acerca de Kaichii</translation>
     </message>
@@ -9604,7 +9622,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4581"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4626"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9734,7 +9752,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+409"/>
+        <location line="+410"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -9853,25 +9871,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2489"/>
+        <location line="+2533"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2489"/>
-        <location line="+2489"/>
+        <location line="-2533"/>
+        <location line="+2533"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2488"/>
-        <location line="+2490"/>
+        <location line="-2532"/>
+        <location line="+2534"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2477"/>
+        <location line="-2521"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -9891,7 +9909,7 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
         <translation>Cerrando el programa...</translation>
     </message>
     <message>
-        <location line="+215"/>
+        <location line="+217"/>
         <source>Save Data</source>
         <translation>Datos de guardado</translation>
     </message>
@@ -10014,12 +10032,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+0"/>
-        <location line="+247"/>
+        <location line="+289"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-237"/>
+        <location line="-279"/>
         <source>RomFS Extraction Succeeded!</source>
         <translation>¡La extracción del RomFS ha sido un éxito!</translation>
     </message>
@@ -10035,12 +10053,31 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2173"/>
+        <location line="+2215"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2140"/>
+        <location line="-2189"/>
+        <location line="+132"/>
+        <source>Add to the game list?</source>
+        <translation>¿Añadir a la lista de juegos?</translation>
+    </message>
+    <message>
+        <location line="-131"/>
+        <source>This game isn&apos;t in your game list: opening a file plays it, but the list only shows the games in your game folders, and its folder isn&apos;t one of them.
+
+%1
+
+Add this folder to the game list?</source>
+        <translation>Este juego no está en tu lista de juegos: abrir un archivo lo juega, pero la lista solo muestra los juegos de tus carpetas de juegos, y su carpeta no es una de ellas.
+
+%1
+
+¿Añadir esta carpeta a la lista de juegos?</translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
@@ -10066,21 +10103,29 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
         <translation>Abrir directorio de la ROM extraída</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+13"/>
+        <source>This folder holds games, not a game extracted into files (a &apos;main&apos; file).
+
+Add it to the game list?</source>
+        <translation>Esta carpeta contiene juegos, no un juego extraído en archivos (un archivo &apos;main&apos;).
+
+¿Añadirla a la lista de juegos?</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Invalid Directory Selected</source>
         <translation>Seleccionado directorio inválido</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The directory you have selected does not contain a &apos;main&apos; file.</source>
-        <translation>El directorio seleccionado no contiene un archivo &apos;main&apos;.</translation>
+        <translation type="vanished">El directorio seleccionado no contiene un archivo &apos;main&apos;.</translation>
     </message>
     <message>
         <source>Installable Switch File (*.nca *.nsp *.xci);;Nintendo Content Archive (*.nca);;Nintendo Submission Package (*.nsp);;NX Cartridge Image (*.xci)</source>
         <translation type="vanished">Archivo de Switch instalable (*.nca *.nsp *.xci);;Archivo de contenido de Nintendo (*.nca);;Paquete de envío de Nintendo (*.nsp);;Imagen de cartucho NX (*.xci)</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+18"/>
         <source>Install Files</source>
         <translation>Instalar archivos</translation>
     </message>

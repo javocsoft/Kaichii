@@ -30,6 +30,18 @@ Haz doble clic en un juego para jugar. Con clic derecho tienes más opciones:
 
 Si aún no hay juegos, la lista ofrece añadir una carpeta de juegos o abrir el asistente.
 
+### Añadir juegos
+
+La lista muestra los juegos de tus **carpetas de juegos**. Añade una con *Archivo > Añadir carpeta de
+juegos*, la fila **+** del final de la lista o el asistente; un juego que copies después a una de
+ellas aparece solo.
+
+- *Archivo > Cargar archivo* juega un solo archivo sin añadirlo a la lista. Al cerrar el juego,
+  Kaichii ofrece añadir su carpeta.
+- *Archivo > Abrir juego extraído* es solo para un juego extraído en archivos (una carpeta con un
+  archivo `main`). Si eliges ahí una carpeta con archivos de juegos, Kaichii ofrece añadirla a la
+  lista.
+
 ## Los ajustes
 
 *Emulación > Configurar* abre los ajustes, agrupados según para qué sirven: Rendimiento, Imagen,

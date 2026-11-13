@@ -29,6 +29,17 @@ Double-click a game to play. Right-click it for more:
 
 With no games yet, the list offers to add a games folder or to open the assistant.
 
+### Adding games
+
+The list shows the games in your **game folders**. Add one with *File > Add Games Folder*, the
+**+** row at the end of the list, or the setup assistant; a game copied into one later appears on
+its own.
+
+- *File > Load File* plays a single file without adding it to the list. When you close the game,
+  Kaichii offers to add its folder.
+- *File > Open Extracted Game* is only for a game extracted into files (a folder with a `main`
+  file). Choose a folder of game files there and Kaichii offers to add it to the list instead.
+
 ## Settings
 
 *Emulation > Configure* opens the settings, grouped by what they are for: Performance, Image,
