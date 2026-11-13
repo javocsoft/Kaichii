@@ -1511,7 +1511,9 @@ void MainWindow::ConnectWidgetEvents() {
             boot_in_progress || close_pending) {
             return;
         }
-        CompatibilityReporting::Dialog dialog(*report_session, this);
+        // Reports go to the repository this build comes from, like its updates.
+        CompatibilityReporting::Dialog dialog(
+            *report_session, QString::fromUtf8(Common::g_build_auto_update_repo), this);
         dialog.exec();
     });
     connect(game_list, &GameList::BootGame, this, &MainWindow::BootGameFromList);

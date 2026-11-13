@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 cmake_minimum_required(VERSION 3.16)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -6,7 +8,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 endif()
 
 set(CMAKE_AUTOMOC ON)
-find_package(Qt6 REQUIRED COMPONENTS Widgets Network Test)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Test)
 add_executable(compatibility_report_tests
     compatibility_report.cpp
     ../../yuzu/compatibility_report.cpp
@@ -20,8 +22,9 @@ target_compile_definitions(compatibility_report_tests PRIVATE
     QT_NO_NARROWING_CONVERSIONS_IN_CONNECT
     QT_NO_PROCESS_COMBINED_ARGUMENT_START
     QT_NO_URL_CAST_FROM_STRING
+    ISSUE_TEMPLATE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../../../.github/ISSUE_TEMPLATE"
 )
 target_include_directories(compatibility_report_tests PRIVATE ../..)
-target_link_libraries(compatibility_report_tests PRIVATE Qt6::Widgets Qt6::Network Qt6::Test)
+target_link_libraries(compatibility_report_tests PRIVATE Qt6::Widgets Qt6::Test)
 add_test(NAME compatibility_report COMMAND compatibility_report_tests)
 set_tests_properties(compatibility_report PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")

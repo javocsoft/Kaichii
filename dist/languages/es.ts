@@ -381,66 +381,54 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
 <context>
     <name>CompatibilityReporting::Dialog</name>
     <message>
-        <location filename="../../src/yuzu/compatibility_report.cpp" line="+98"/>
+        <location filename="../../src/yuzu/compatibility_report.cpp" line="+140"/>
         <source>Submit compatibility report</source>
         <translation>Enviar informe de compatibilidad</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Share your experience with the latest completed session. Nothing is sent until you choose Search or Submit. Logs are not uploaded. No account is required.</source>
-        <translation>Comparte tu experiencia con la última sesión completada. No se envía nada hasta que eliges Buscar o Enviar. No se suben registros. No hace falta cuenta.</translation>
+        <translation type="vanished">Comparte tu experiencia con la última sesión completada. No se envía nada hasta que eliges Buscar o Enviar. No se suben registros. No hace falta cuenta.</translation>
     </message>
     <message>
-        <location line="+9"/>
         <source>Game title to search</source>
-        <translation>Título del juego a buscar</translation>
+        <translation type="vanished">Título del juego a buscar</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Search catalog</source>
-        <translation>Buscar en el catálogo</translation>
+        <translation type="vanished">Buscar en el catálogo</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Search sends only the text above to lichii.zortos.me. The service sees your IP address.</source>
-        <translation>Buscar envía solo el texto de arriba a lichii.zortos.me. El servicio ve tu dirección IP.</translation>
+        <translation type="vanished">Buscar envía solo el texto de arriba a lichii.zortos.me. El servicio ve tu dirección IP.</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Previous</source>
-        <translation>Anterior</translation>
+        <translation type="vanished">Anterior</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Next</source>
-        <translation>Siguiente</translation>
+        <translation type="vanished">Siguiente</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Confirm game</source>
-        <translation>Confirmar juego</translation>
+        <translation type="vanished">Confirmar juego</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+135"/>
-        <location line="+5"/>
         <source>No catalog game confirmed.</source>
-        <translation>No se ha confirmado ningún juego del catálogo.</translation>
+        <translation type="vanished">No se ha confirmado ningún juego del catálogo.</translation>
     </message>
     <message>
-        <location line="-107"/>
+        <location line="+40"/>
         <source>Experience</source>
         <translation>Experiencia</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Public nickname</source>
-        <translation>Apodo público</translation>
+        <translation type="vanished">Apodo público</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>X handle (optional)</source>
-        <translation>Usuario de X (opcional)</translation>
+        <translation type="vanished">Usuario de X (opcional)</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -448,7 +436,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Elige tu valoración</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+8"/>
         <source>Compatibility</source>
         <translation>Compatibilidad</translation>
     </message>
@@ -473,7 +461,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Pasos para reproducirlo (opcional)</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>System and settings</source>
         <translation>Sistema y ajustes</translation>
     </message>
@@ -483,17 +471,57 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Los valores rellenados describen los ajustes al iniciar, no el rendimiento medido. Revisa los cambios que hiciste mientras jugabas. Desconocido significa que no se recogió. No pegues registros, rutas, claves ni datos privados.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+8"/>
         <source>Kaichii build</source>
         <translation>Versión de Kaichii</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-1"/>
         <source>Game version</source>
         <translation>Versión del juego</translation>
     </message>
     <message>
+        <location line="-62"/>
+        <source>Tell how the game ran in your last session. Open on GitHub shows the report on a new issue in Kaichii&apos;s repository, where you review it and publish it with your GitHub account. Kaichii sends nothing by itself, and logs are never included.</source>
+        <translation>Cuenta cómo funcionó el juego en tu última sesión. Abrir en GitHub muestra el informe en una nueva incidencia del repositorio de Kaichii, donde lo revisas y lo publicas con tu cuenta de GitHub. Kaichii no envía nada por su cuenta y nunca incluye los registros.</translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>Perfect: plays as on the console</source>
+        <translation>Perfecto: se juega como en la consola</translation>
+    </message>
+    <message>
         <location line="+1"/>
+        <source>Playable: can be played through, with small problems</source>
+        <translation>Jugable: se puede terminar, con pequeños problemas</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Runs: gets into the game, but problems get in the way</source>
+        <translation>Funciona: llega a jugarse, pero los problemas estorban</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Loads: starts, but doesn&apos;t get into the game</source>
+        <translation>Carga: arranca, pero no llega a jugarse</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unplayable: crashes or doesn&apos;t start</source>
+        <translation>Injugable: se cierra o no arranca</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Game</source>
+        <translation>Juego</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Program ID</source>
+        <translation>ID de programa</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>CPU</source>
         <translation>CPU</translation>
     </message>
@@ -538,144 +566,169 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Mods (opcional)</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Public preview</source>
-        <translation>Vista previa pública</translation>
+        <location line="+5"/>
+        <source>Preview</source>
+        <translation>Vista previa</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>All report fields in the preview will be public. Logs, files, local title IDs and play history are not sent. The server uses your IP address for rate limiting. Review and clear anything you do not want to share.</source>
-        <translation>Todos los campos del informe que aparecen en la vista previa serán públicos. No se envían registros, archivos, IDs de títulos locales ni historial de juego. El servidor usa tu dirección IP para limitar las peticiones. Revisa y borra lo que no quieras compartir.</translation>
+        <source>Everything in the preview will be public on GitHub. Leave out game files, keys, firmware, saves and private details.</source>
+        <translation>Todo lo que aparece en la vista previa será público en GitHub. No incluyas archivos de juegos, claves, firmware, partidas guardadas ni datos privados.</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>I understand my name, optional X handle, report text, hardware and settings will be public.</source>
-        <translation>Entiendo que mi nombre, el usuario de X opcional, el texto del informe, el hardware y los ajustes serán públicos.</translation>
+        <location line="+12"/>
+        <source>Copy report</source>
+        <translation>Copiar informe</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>My report contains no game files, keys, firmware, saves or private account details.</source>
-        <translation>Mi informe no contiene archivos de juegos, claves, firmware, partidas guardadas ni datos privados de cuentas.</translation>
+        <location line="+1"/>
+        <source>Open on GitHub</source>
+        <translation>Abrir en GitHub</translation>
+    </message>
+    <message>
+        <location line="+112"/>
+        <source>Report copied. Paste it into a new compatibility report on GitHub.</source>
+        <translation>Informe copiado. Pégalo en un nuevo informe de compatibilidad en GitHub.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>This build doesn&apos;t name a GitHub repository for reports. Copy the report and open it by hand.</source>
+        <translation>Esta versión no indica un repositorio de GitHub para los informes. Copia el informe y ábrelo a mano.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The browser didn&apos;t open. The report is in your clipboard: open %1 and paste it there.</source>
+        <translation>No se ha abierto el navegador. El informe está en tu portapapeles: abre %1 y pégalo allí.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>GitHub is open in your browser. Review the report there and publish it.</source>
+        <translation>GitHub está abierto en tu navegador. Revisa allí el informe y publícalo.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The report was too long for a link, so it&apos;s in your clipboard: paste it into the report field on GitHub, then publish it.</source>
+        <translation>El informe era demasiado largo para un enlace, así que está en tu portapapeles: pégalo en el campo del informe en GitHub y luego publícalo.</translation>
     </message>
     <message>
         <location line="+13"/>
+        <source>Draft cleared.</source>
+        <translation>Borrador vaciado.</translation>
+    </message>
+    <message>
+        <source>Public preview</source>
+        <translation type="vanished">Vista previa pública</translation>
+    </message>
+    <message>
+        <source>All report fields in the preview will be public. Logs, files, local title IDs and play history are not sent. The server uses your IP address for rate limiting. Review and clear anything you do not want to share.</source>
+        <translation type="vanished">Todos los campos del informe que aparecen en la vista previa serán públicos. No se envían registros, archivos, IDs de títulos locales ni historial de juego. El servidor usa tu dirección IP para limitar las peticiones. Revisa y borra lo que no quieras compartir.</translation>
+    </message>
+    <message>
+        <source>I understand my name, optional X handle, report text, hardware and settings will be public.</source>
+        <translation type="vanished">Entiendo que mi nombre, el usuario de X opcional, el texto del informe, el hardware y los ajustes serán públicos.</translation>
+    </message>
+    <message>
+        <source>My report contains no game files, keys, firmware, saves or private account details.</source>
+        <translation type="vanished">Mi informe no contiene archivos de juegos, claves, firmware, partidas guardadas ni datos privados de cuentas.</translation>
+    </message>
+    <message>
+        <location line="-154"/>
         <source>Clear draft</source>
         <translation>Borrar borrador</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Submit report</source>
-        <translation>Enviar informe</translation>
+        <translation type="vanished">Enviar informe</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Open public report</source>
-        <translation>Abrir el informe público</translation>
+        <translation type="vanished">Abrir el informe público</translation>
     </message>
     <message>
-        <location line="+107"/>
         <source>Draft cleared. Nothing was sent by clearing it.</source>
-        <translation>Borrador borrado. Al borrarlo no se envió nada.</translation>
+        <translation type="vanished">Borrador borrado. Al borrarlo no se envió nada.</translation>
     </message>
     <message>
-        <location line="+21"/>
         <source>Search for and confirm the catalog game first.</source>
-        <translation>Primero busca y confirma el juego del catálogo.</translation>
+        <translation type="vanished">Primero busca y confirma el juego del catálogo.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+93"/>
         <source>Check %1: required fields must be filled, within their length limit, and contain no control characters.</source>
         <translation>Revisa %1: los campos obligatorios deben estar rellenos, sin pasar de su longitud máxima y sin caracteres de control.</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>An X handle must contain 1–15 letters, digits or underscores, with an optional @.</source>
-        <translation>Un usuario de X debe tener de 1 a 15 letras, dígitos o guiones bajos, con una @ opcional.</translation>
+        <translation type="vanished">Un usuario de X debe tener de 1 a 15 letras, dígitos o guiones bajos, con una @ opcional.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-6"/>
         <source>Choose your own compatibility assessment.</source>
         <translation>Elige tu propia valoración de compatibilidad.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>The report is too large.</source>
-        <translation>El informe es demasiado grande.</translation>
+        <translation type="vanished">El informe es demasiado grande.</translation>
     </message>
     <message>
-        <location line="+35"/>
         <source>Check the search text.</source>
-        <translation>Revisa el texto de búsqueda.</translation>
+        <translation type="vanished">Revisa el texto de búsqueda.</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Searching catalog… Cancel closes the dialog and stops this request.</source>
-        <translation>Buscando en el catálogo… Cancelar cierra el diálogo y detiene esta petición.</translation>
+        <translation type="vanished">Buscando en el catálogo… Cancelar cierra el diálogo y detiene esta petición.</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>Confirmed: %1 (catalog ID %2)</source>
-        <translation>Confirmado: %1 (ID del catálogo %2)</translation>
+        <translation type="vanished">Confirmado: %1 (ID del catálogo %2)</translation>
     </message>
     <message>
-        <location line="+20"/>
         <source>Submitting… Closing stops waiting, but cannot retract a report the server already received. There are no automatic retries.</source>
-        <translation>Enviando… Cerrar deja de esperar, pero no puede retirar un informe que el servidor ya recibió. No hay reintentos automáticos.</translation>
+        <translation type="vanished">Enviando… Cerrar deja de esperar, pero no puede retirar un informe que el servidor ya recibió. No hay reintentos automáticos.</translation>
     </message>
     <message>
-        <location line="+72"/>
         <source>Rate limit reached. Wait %1 seconds, then retry explicitly. Nothing will be retried automatically.</source>
-        <translation>Se alcanzó el límite de peticiones. Espera %1 segundos y vuelve a intentarlo tú. No se reintentará nada automáticamente.</translation>
+        <translation type="vanished">Se alcanzó el límite de peticiones. Espera %1 segundos y vuelve a intentarlo tú. No se reintentará nada automáticamente.</translation>
     </message>
     <message>
-        <location line="+17"/>
         <source>The server rejected the report. Review the fields and length limits before submitting again.</source>
-        <translation>El servidor rechazó el informe. Revisa los campos y los límites de longitud antes de volver a enviarlo.</translation>
+        <translation type="vanished">El servidor rechazó el informe. Revisa los campos y los límites de longitud antes de volver a enviarlo.</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>The server rejected these fields: %1. Review them before submitting again.</source>
-        <translation>El servidor rechazó estos campos: %1. Revísalos antes de volver a enviar.</translation>
+        <translation type="vanished">El servidor rechazó estos campos: %1. Revísalos antes de volver a enviar.</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>The server rejected this submission identity. Edit the draft to start a new submission; first check whether your report was already accepted.</source>
-        <translation>El servidor rechazó esta identidad de envío. Edita el borrador para empezar un envío nuevo; antes comprueba si tu informe ya fue aceptado.</translation>
+        <translation type="vanished">El servidor rechazó esta identidad de envío. Edita el borrador para empezar un envío nuevo; antes comprueba si tu informe ya fue aceptado.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>The server rejected the request (HTTP %1). No automatic retry was made.</source>
-        <translation>El servidor rechazó la petición (HTTP %1). No se hizo ningún reintento automático.</translation>
+        <translation type="vanished">El servidor rechazó la petición (HTTP %1). No se hizo ningún reintento automático.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>No valid receipt was received. Delivery may have succeeded. An explicit retry of this unchanged draft uses the same submission identity. Closing loses that identity; do not create a duplicate.</source>
-        <translation>No se recibió un justificante válido. Puede que el envío se haya entregado. Reintentar tú mismo este borrador sin cambios usa la misma identidad de envío. Si cierras, se pierde esa identidad; no crees un duplicado.</translation>
+        <translation type="vanished">No se recibió un justificante válido. Puede que el envío se haya entregado. Reintentar tú mismo este borrador sin cambios usa la misma identidad de envío. Si cierras, se pierde esa identidad; no crees un duplicado.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Catalog search failed. Check your connection and retry explicitly.</source>
-        <translation>La búsqueda en el catálogo falló. Comprueba tu conexión y vuelve a intentarlo.</translation>
+        <translation type="vanished">La búsqueda en el catálogo falló. Comprueba tu conexión y vuelve a intentarlo.</translation>
     </message>
     <message>
-        <location line="+19"/>
         <source>Report submitted. It is public. Thank you.</source>
-        <translation>Informe enviado. Es público. Gracias.</translation>
+        <translation type="vanished">Informe enviado. Es público. Gracias.</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>The server returned an invalid receipt. The report may have been accepted. Only retry this unchanged draft explicitly.</source>
-        <translation>El servidor devolvió un justificante no válido. Puede que el informe se haya aceptado. Reintenta solo este borrador sin cambios.</translation>
+        <translation type="vanished">El servidor devolvió un justificante no válido. Puede que el informe se haya aceptado. Reintenta solo este borrador sin cambios.</translation>
     </message>
     <message>
-        <location line="+25"/>
         <source>Page %1 of %2. Select the exact game and press Confirm game.</source>
-        <translation>Página %1 de %2. Selecciona el juego exacto y pulsa Confirmar juego.</translation>
+        <translation type="vanished">Página %1 de %2. Selecciona el juego exacto y pulsa Confirmar juego.</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>The catalog returned an invalid response. No game was confirmed.</source>
-        <translation>El catálogo devolvió una respuesta no válida. No se confirmó ningún juego.</translation>
+        <translation type="vanished">El catálogo devolvió una respuesta no válida. No se confirmó ningún juego.</translation>
     </message>
 </context>
 <context>
@@ -9077,7 +9130,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+1974"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+1976"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -9531,7 +9584,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4615"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4617"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9661,7 +9714,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+406"/>
+        <location line="+408"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>

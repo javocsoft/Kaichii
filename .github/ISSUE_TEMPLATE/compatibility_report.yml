@@ -1,0 +1,31 @@
+name: Compatibility report
+description: How a game runs in Kaichii
+title: "[Compatibility] "
+labels: ["compatibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Kaichii fills this in for you: after playing a Switch 2 game, stop it, right-click the game and choose **Submit compatibility report**. Review the report below before publishing it: everything here is public.
+
+  - type: textarea
+    id: report
+    attributes:
+      label: Report
+      description: How the game ran, how far you played, and your system and settings.
+      placeholder: |
+        Compatibility: Perfect, Playable, Runs, Loads or Unplayable
+        How far you played, what worked or failed, and steps to reproduce a problem.
+        Kaichii build, game version, CPU, GPU and driver, operating system and settings.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before publishing
+      options:
+        - label: My game is legally dumped from my own console
+          required: true
+        - label: This report contains no game files, keys, firmware, saves or private account details
+          required: true

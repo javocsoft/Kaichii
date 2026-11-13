@@ -97,6 +97,14 @@ Kaichii checks this repository's releases for updates and offers to install them
 Kaichii uses the same data folder (`eden`), so it finds your saves, settings and shader caches as
 they are. A build still named Lichii won't update itself to Kaichii: download Kaichii once by hand.
 
+## Telling how a game runs
+
+After playing a Switch 2 game, stop it, right-click it and choose **Submit compatibility report**.
+Kaichii fills in your system and settings; you add how it went. **Open on GitHub** shows the report
+on a new issue here, where you review it and publish it with your GitHub account. Kaichii sends
+nothing by itself. Published reports are under the
+[compatibility label](https://github.com/javocsoft/Kaichii/issues?q=label%3Acompatibility).
+
 ## Reporting a problem
 
 Open an [issue](https://github.com/javocsoft/Kaichii/issues) and include:
