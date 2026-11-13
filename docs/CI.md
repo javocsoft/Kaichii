@@ -71,6 +71,11 @@ Its builds check for updates in the releases of the repository that built them: 
 Actions. Another repository's builds carry their own build numbers, so offering them would replace
 this fork's build with one that lacks its changes.
 
+A release publishes the platforms that built. One whose build failed, or that GitHub couldn't run
+(macOS runners are often short), is left out and named in the release notes, so it doesn't hold
+back the others; the update checker on that platform skips a release without its file. A run
+cancelled by hand publishes nothing, and the release job fails when no platform built.
+
 Release assets are named `kaichii-<platform>[-pgo].<extension>`, and the update checker looks for
 exactly those names. Builds from before the rename to Kaichii published `lichii-*` assets and look
 for those, so they don't update to Kaichii by themselves; the release notes say so.
