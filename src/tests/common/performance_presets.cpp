@@ -157,3 +157,31 @@ TEST_CASE("Preset differences name each setting that strays from the preset",
     CHECK(differences[1].current == values.accelerate_astc.ToString());
     CHECK(MatchingPerformancePreset(values, laptop) != PerformancePreset::Performance);
 }
+
+TEST_CASE("The hardware test's figures cap the class", "[common][performance_presets]") {
+    CHECK(ComputeTier(1.0) == HardwareTier::Mid);
+    CHECK(ComputeTier(0.4) == HardwareTier::Entry);
+    CHECK(ComputeTier(2.1) == HardwareTier::High);
+    CHECK(ComputeTier(5.0) == HardwareTier::Enthusiast);
+
+    // A 12 GB card with twice the reference's compute: Balanced, not Quality.
+    auto host = Host("NVIDIA GeForce RTX 3060", 12);
+    CHECK(ClassifyHost(host) == HardwareTier::High);
+    host.measured_gpu_ratio = 2.0;
+    CHECK(ClassifyHost(host) == HardwareTier::Mid);
+    CHECK(RecommendedPreset(host) == PerformancePreset::Balanced);
+    // Measured compute never raises the class above what the memory allows.
+    host = Host("NVIDIA GeForce RTX 3050 Laptop GPU", 4, false, 20, 31);
+    host.measured_gpu_ratio = 1.0;
+    CHECK(ClassifyHost(host) == HardwareTier::Entry);
+    host = Host("NVIDIA GeForce RTX 4080", 16);
+    host.measured_gpu_ratio = 9.0;
+    CHECK(ClassifyHost(host) == HardwareTier::Enthusiast);
+
+    // Other programs holding much of the video memory.
+    host = Host("NVIDIA GeForce RTX 4080", 16);
+    host.measured_free_memory_bytes = 9 * GiB;
+    CHECK(ClassifyHost(host) == HardwareTier::Mid);
+    host.measured_free_memory_bytes = 15 * GiB;
+    CHECK(ClassifyHost(host) == HardwareTier::Enthusiast);
+}

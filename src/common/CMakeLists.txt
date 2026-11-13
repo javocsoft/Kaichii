@@ -82,6 +82,7 @@ add_library(
     intrusive_red_black_tree.h
     literals.h
     log_file_rotation.h
+    hardware_test.h
     logging.cpp
     logging.h
     overlay_position.h

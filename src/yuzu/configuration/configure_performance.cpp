@@ -1,8 +1,15 @@
 // SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <algorithm>
+#include <chrono>
+#include <optional>
+#include <string>
+#include <thread>
+
 #include <QButtonGroup>
 #include <QFormLayout>
+#include <QFutureWatcher>
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
@@ -10,8 +17,14 @@
 #include <QScrollArea>
 #include <QSysInfo>
 #include <QVBoxLayout>
+#include <QtConcurrent/QtConcurrentRun>
 
+#include "common/hardware_test.h"
 #include "common/settings.h"
+#include "common/thread.h"
+#include "core/core.h"
+#include "qt_common/qt_common.h"
+#include "video_core/vulkan_common/hardware_test.h"
 #include "qt_common/config/shared_translation.h"
 #include "yuzu/configuration/configure_performance.h"
 #include "yuzu/configuration/shared_widget.h"
@@ -55,10 +68,19 @@ ConfigurePerformance::ConfigurePerformance(
     machine->addRow(tr("Processor:"), new QLabel(tr("%1 threads").arg(host.cpu_threads)));
     machine->addRow(tr("Memory:"), new QLabel(tr("%1 GB").arg(GigabytesText(host.ram_bytes))));
     machine->addRow(tr("System:"), new QLabel(QSysInfo::prettyProductName()));
-    const std::array tier_names{tr("Entry level"), tr("Mid range"), tr("High end"),
-                                tr("Enthusiast")};
-    machine->addRow(tr("Class:"),
-                    new QLabel(tier_names[static_cast<size_t>(Settings::ClassifyHost(host))]));
+    class_label = new QLabel(machine_box);
+    machine->addRow(tr("Class:"), class_label);
+    measured_label = new QLabel(machine_box);
+    measured_label->setWordWrap(true);
+    machine->addRow(tr("Measured:"), measured_label);
+    test_button = new QPushButton(tr("Test this computer"), machine_box);
+    test_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    test_button->setToolTip(
+        tr("Measures the graphics card's speed, the video memory free now and the processor's "
+           "speed, in about ten seconds, and recommends a preset from them. Close any game "
+           "first."));
+    connect(test_button, &QPushButton::clicked, this, &ConfigurePerformance::StartHardwareTest);
+    machine->addRow(QString{}, test_button);
     layout->addWidget(machine_box);
 
     auto* const preset_box = new QGroupBox(tr("Presets"), content);
@@ -71,15 +93,9 @@ ConfigurePerformance::ConfigurePerformance(
         tr("Native resolution. For cards with 10 to 12 GB."),
         tr("One and a half times native resolution. For cards with 16 GB or more."),
     };
-    const Settings::PerformancePreset recommended = Settings::RecommendedPreset(host);
     preset_buttons = new QButtonGroup(this);
     for (size_t i = 0; i < Settings::AllPerformancePresets.size(); ++i) {
-        const auto preset = Settings::AllPerformancePresets[i];
-        QString name = preset_names[i];
-        if (preset == recommended) {
-            name = tr("%1 (recommended for this computer)").arg(name);
-        }
-        auto* const radio = new QRadioButton(name, preset_box);
+        auto* const radio = new QRadioButton(preset_box);
         auto* const description = new QLabel(descriptions[i], preset_box);
         description->setWordWrap(true);
         description->setContentsMargins(24, 0, 0, 6);
@@ -118,7 +134,100 @@ ConfigurePerformance::ConfigurePerformance(
     layout->addWidget(scope);
     layout->addStretch();
 
+    UpdateRecommendation();
+    ShowMeasured();
     SetConfiguration();
+}
+
+void ConfigurePerformance::UpdateRecommendation() {
+    const std::array tier_names{tr("Entry level"), tr("Mid range"), tr("High end"),
+                                tr("Enthusiast")};
+    class_label->setText(tier_names[static_cast<size_t>(Settings::ClassifyHost(host))]);
+    const Settings::PerformancePreset recommended = Settings::RecommendedPreset(host);
+    for (size_t i = 0; i < Settings::AllPerformancePresets.size(); ++i) {
+        preset_radios[i]->setText(Settings::AllPerformancePresets[i] == recommended
+                                      ? tr("%1 (recommended for this computer)")
+                                            .arg(preset_names[i])
+                                      : preset_names[i]);
+    }
+}
+
+void ConfigurePerformance::ShowMeasured() {
+    if (host.measured_gpu_ratio <= 0.0) {
+        measured_label->setText(tr("Not yet: the class comes from the video memory alone."));
+        return;
+    }
+    QString text = tr("Graphics %1 % of the reference computer's speed, %2 GB of video memory "
+                      "free")
+                       .arg(host.measured_gpu_ratio * 100.0, 0, 'f', 0)
+                       .arg(GigabytesText(host.measured_free_memory_bytes));
+    if (const u32 cpu = Settings::values.hardware_test_cpu_permille.GetValue(); cpu != 0) {
+        text += tr(", processor %1 %").arg(cpu / 10.0, 0, 'f', 0);
+    }
+    text += tr(".\nReference: %1, where Ocarina of Time runs at about 30 fps outdoors.")
+                .arg(QString::fromLatin1(Common::HardwareTest::ReferenceMachine));
+    measured_label->setText(text);
+}
+
+void ConfigurePerformance::StartHardwareTest() {
+    if (QtCommon::system && QtCommon::system->IsPoweredOn()) {
+        measured_label->setText(tr("Close the game first: it would slow the test down."));
+        return;
+    }
+    test_button->setEnabled(false);
+    measured_label->setText(tr("Testing… about ten seconds."));
+    struct Outcome {
+        std::optional<Vulkan::GpuTestResult> gpu;
+        std::string error;
+        double cpu_rate = 0.0;
+    };
+    const auto device_index = static_cast<size_t>(Settings::values.vulkan_device.GetValue());
+    auto* const watcher = new QFutureWatcher<Outcome>(this);
+    connect(watcher, &QFutureWatcher<Outcome>::finished, this, [this, watcher] {
+        const Outcome outcome = watcher->result();
+        watcher->deleteLater();
+        test_button->setEnabled(true);
+        if (!outcome.gpu) {
+            measured_label->setText(
+                tr("The test could not run: %1").arg(QString::fromStdString(outcome.error)));
+            return;
+        }
+        const auto permille = [](double ratio) {
+            return static_cast<u32>(std::clamp(ratio * 1000.0, 1.0, 1e6));
+        };
+        Settings::values.hardware_test_gpu.SetValue(outcome.gpu->device_name);
+        Settings::values.hardware_test_gpu_permille.SetValue(
+            permille(outcome.gpu->tflops / Common::HardwareTest::ReferenceGpuTflops));
+        Settings::values.hardware_test_free_memory_mib.SetValue(
+            static_cast<u32>(outcome.gpu->budget_bytes >> 20));
+        Settings::values.hardware_test_cpu_permille.SetValue(
+            permille(outcome.cpu_rate / Common::HardwareTest::ReferenceCpuRate));
+        if (outcome.gpu->device_name == host.gpu_name) {
+            host.measured_gpu_ratio =
+                Settings::values.hardware_test_gpu_permille.GetValue() / 1000.0;
+            host.measured_free_memory_bytes = outcome.gpu->budget_bytes;
+        }
+        ShowMeasured();
+        UpdateRecommendation();
+        UpdateCurrent();
+    });
+    watcher->setFuture(QtConcurrent::run([device_index] {
+        Outcome outcome;
+        try {
+            outcome.gpu = Vulkan::RunGpuTest(device_index);
+        } catch (const std::exception& error) {
+            outcome.error = error.what();
+            return outcome;
+        }
+        // On a thread of its own: the pool thread's affinity stays as it was.
+        std::thread cpu_thread([&outcome] {
+            Common::SetCurrentThreadToPerformanceCores();
+            outcome.cpu_rate =
+                Common::HardwareTest::MeasureCpuRate(std::chrono::milliseconds{1500});
+        });
+        cpu_thread.join();
+        return outcome;
+    }));
 }
 
 ConfigurePerformance::~ConfigurePerformance() = default;

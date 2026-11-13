@@ -25,6 +25,11 @@ struct HostProfile {
     u64 ram_bytes = 0;
     /// Enough physical performance cores to pin the split GPU threads (Common::CanPinGpuThreads)
     bool gpu_thread_pinning = false;
+    /// From the hardware test (Configure > Performance) on this GPU, when the player ran it:
+    /// measured compute throughput as a share of the reference machine's (1.0 = the same), and
+    /// the video memory free for the emulator then. Zero when not measured.
+    double measured_gpu_ratio = 0.0;
+    u64 measured_free_memory_bytes = 0;
 };
 
 enum class HardwareTier : u8 {
@@ -47,8 +52,17 @@ inline constexpr std::array AllPerformancePresets{
 
 /// The hardware's class. Laptop GPUs are capped at High: with the same memory they run well
 /// behind their desktop namesakes. A CPU with fewer than 8 threads or less than 12 GB of RAM caps
-/// it at Mid, since Switch 2 games then wait on the CPU or on paging, not on the GPU.
+/// it at Mid, since Switch 2 games then wait on the CPU or on paging, not on the GPU. With the
+/// hardware test's figures, the class is also capped by the measured compute (ComputeTier), and by
+/// the free video memory when other programs hold much of it.
 [[nodiscard]] HardwareTier ClassifyHost(const HostProfile& host);
+
+/// The class a GPU's measured compute supports, as a share of the reference machine's. Measured in
+/// Ocarina of Time on the reference (an RTX 3050 Laptop): half resolution without the game's
+/// sharpening runs at 30 fps (Performance), native with its anti-aliasing network at 14 fps. So
+/// Quality needs about 2.1 times the reference, Ultra (2.25 times the pixels) about 4.7 times,
+/// and Balanced (0.56 times the pixels of native without the network) about 0.6 times.
+[[nodiscard]] HardwareTier ComputeTier(double gpu_ratio);
 
 [[nodiscard]] PerformancePreset RecommendedPreset(const HostProfile& host);
 

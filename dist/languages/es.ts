@@ -5808,7 +5808,7 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
 <context>
     <name>ConfigurePerformance</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_performance.cpp" line="+45"/>
+        <location filename="../../src/yuzu/configuration/configure_performance.cpp" line="+58"/>
         <source>This computer</source>
         <translation>Este equipo</translation>
     </message>
@@ -5868,7 +5868,22 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Sistema:</translation>
     </message>
     <message>
+        <location line="+5"/>
+        <source>Measured:</source>
+        <translation>Medido:</translation>
+    </message>
+    <message>
         <location line="+1"/>
+        <source>Test this computer</source>
+        <translation>Probar este equipo</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Measures the graphics card&apos;s speed, the video memory free now and the processor&apos;s speed, in about ten seconds, and recommends a preset from them. Close any game first.</source>
+        <translation>Mide la velocidad de la tarjeta gráfica, la memoria de vídeo libre ahora y la velocidad del procesador, en unos diez segundos, y recomienda un preset a partir de ello. Cierra antes cualquier juego.</translation>
+    </message>
+    <message>
+        <location line="+64"/>
         <source>Entry level</source>
         <translation>Gama de entrada</translation>
     </message>
@@ -5888,18 +5903,18 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Entusiasta</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-72"/>
         <source>Class:</source>
         <translation>Clase:</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+14"/>
         <source>Presets</source>
         <translation>Ajustes predefinidos</translation>
     </message>
     <message>
-        <location line="-32"/>
-        <location line="+34"/>
+        <location line="-41"/>
+        <location line="+43"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -5939,12 +5954,12 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Resolución 1,5 veces la nativa. Para tarjetas de 16 GB o más.</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+55"/>
         <source>%1 (recommended for this computer)</source>
         <translation>%1 (recomendado para este equipo)</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="-41"/>
         <source>Every preset uses fast GPU accuracy and asynchronous shaders, sizes texture memory to the card, decodes ASTC textures on the processor when it has 8 threads or more, and gives the GPU threads performance cores of their own when it has enough. Other settings are left as they are.</source>
         <translation>Todos los ajustes predefinidos usan la precisión de GPU rápida y shaders asíncronos, ajustan la memoria de texturas a la tarjeta, descomprimen las texturas ASTC en el procesador si tiene 8 hilos o más y reservan núcleos de alto rendimiento para los hilos de la GPU si hay suficientes. El resto de ajustes no se modifica.</translation>
     </message>
@@ -5964,7 +5979,44 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Los ajustes predefinidos aplicados aquí solo afectan a este juego.</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+26"/>
+        <source>Not yet: the class comes from the video memory alone.</source>
+        <translation>Todavía no: la categoría sale solo de la memoria de vídeo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Graphics %1 % of the reference computer&apos;s speed, %2 GB of video memory free</source>
+        <translation>Gráfica al %1 % de la velocidad del equipo de referencia, %2 GB de memoria de vídeo libres</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>, processor %1 %</source>
+        <translation>, procesador al %1 %</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>.
+Reference: %1, where Ocarina of Time runs at about 30 fps outdoors.</source>
+        <translation>.
+Referencia: %1, donde Ocarina of Time va a unos 30 fps en exteriores.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Close the game first: it would slow the test down.</source>
+        <translation>Cierra antes el juego: ralentizaría la prueba.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Testing… about ten seconds.</source>
+        <translation>Probando… unos diez segundos.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The test could not run: %1</source>
+        <translation>No se ha podido hacer la prueba: %1</translation>
+    </message>
+    <message>
+        <location line="+52"/>
         <source>The saved settings match the %1 preset.</source>
         <translation>Los ajustes guardados coinciden con el ajuste predefinido %1.</translation>
     </message>
@@ -10687,7 +10739,7 @@ p, li { white-space: pre-wrap; }
         <translation>0 fps</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+135"/>
+        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+162"/>
         <location line="+109"/>
         <source>%1 fps</source>
         <translation>%1 fps</translation>
