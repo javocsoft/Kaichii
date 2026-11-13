@@ -280,6 +280,7 @@ add_library(video_core STATIC
     shader_environment.cpp
     shader_environment.h
     evicted_pointer_slots.h
+    pipeline_build_stats.h
     video_memory_status.h
     shader_handle_program.h
     shader_notify.cpp

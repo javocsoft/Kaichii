@@ -33,6 +33,7 @@
 #include "video_core/gpu.h"
 #include "video_core/nx2_debug_control.h"
 #include "video_core/renderer_base.h"
+#include "video_core/pipeline_build_stats.h"
 #include "video_core/video_memory_status.h"
 
 namespace Core::Nx2Debug {
@@ -257,6 +258,8 @@ json Status(ToolState& state, const json& params) {
         {"video_memory_used", VideoCommon::g_video_memory_status.used.load()},
         {"video_memory_budget", VideoCommon::g_video_memory_status.budget.load()},
         {"video_memory_host", VideoCommon::g_video_memory_status.host_used.load()},
+        // Cached graphics pipelines a draw needed before any was built (preload candidates).
+        {"cached_pipelines_built_late", VideoCommon::g_cached_pipelines_built_late.load()},
     };
 }
 

@@ -6,6 +6,7 @@
 #include <exception>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -27,7 +28,18 @@ public:
     using Build = Common::UniqueFunction<std::unique_ptr<Pipeline>>;
 
     PipelinePrebuild(size_t capacity, size_t capture_limit_, bool broken_parallel_compilation)
-        : budget{broken_parallel_compilation ? 0 : capacity}, capture_limit{capture_limit_} {}
+        : budget{std::in_place, broken_parallel_compilation ? 0 : capacity},
+          capture_limit{capture_limit_}, no_parallel{broken_parallel_compilation} {}
+
+    /// Raises how many pipelines may wait built (or to be built) and how many bytes of captured
+    /// environments they may hold. Only before the first Add.
+    void SetLimits(size_t capacity, size_t capture_limit_) {
+        if (!entries.empty() || started) {
+            return;
+        }
+        budget.emplace(no_parallel ? 0 : capacity);
+        capture_limit = capture_limit_;
+    }
 
     ~PipelinePrebuild() {
         Stop();
@@ -38,7 +50,7 @@ public:
             capture_bytes > capture_limit - captured_bytes) {
             return false;
         }
-        auto reservation = budget.TryAcquire(true);
+        auto reservation = budget->TryAcquire(true);
         if (!reservation) {
             return false;
         }
@@ -115,8 +127,9 @@ public:
     }
 
 private:
-    EmissionBudget budget;
-    const size_t capture_limit;
+    std::optional<EmissionBudget> budget;
+    size_t capture_limit;
+    bool no_parallel;
     size_t captured_bytes{};
     bool started{};
     bool stopped{};

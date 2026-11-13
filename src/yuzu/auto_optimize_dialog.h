@@ -53,6 +53,7 @@ private:
     bool trial_switched_on = false;
     u64 generated_at_trial_start = 0;
     u64 spilled_at_start = 0;
+    u64 built_late_at_start = 0;
     Common::AutoOptimize::Measurements measurements;
     std::vector<Common::AutoOptimize::Recommendation> recommendations;
     std::vector<QCheckBox*> choices;

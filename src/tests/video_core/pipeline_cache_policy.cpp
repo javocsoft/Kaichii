@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <array>
+#include <vector>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -96,4 +97,33 @@ TEST_CASE("Pipeline keys keep only the attribute types active stages read",
         CHECK(KeyedAttributeTypes(types, hashes, masks) ==
               KeyedAttributeTypes(other, hashes, masks));
     }
+}
+
+TEST_CASE("Shader preload memory follows the setting", "[video_core][pipeline_cache]") {
+    using Settings::ShaderPreloadMemory;
+    constexpr u64 GiB = u64{1} << 30;
+    STATIC_REQUIRE(ShaderPreloadBytes(ShaderPreloadMemory::Off, 32 * GiB) == 0);
+    STATIC_REQUIRE(ShaderPreloadBytes(ShaderPreloadMemory::Gib2, 8 * GiB) == 2 * GiB);
+    // Auto: 1/16 of the RAM, from 512 MiB to 4 GiB.
+    STATIC_REQUIRE(ShaderPreloadBytes(ShaderPreloadMemory::Auto, 32 * GiB) == 2 * GiB);
+    STATIC_REQUIRE(ShaderPreloadBytes(ShaderPreloadMemory::Auto, 4 * GiB) == GiB / 2);
+    STATIC_REQUIRE(ShaderPreloadBytes(ShaderPreloadMemory::Auto, 128 * GiB) == 4 * GiB);
+    // 2 GiB holds about 2,000 built pipelines.
+    CHECK(ShaderPreloadBytes(ShaderPreloadMemory::Gib2, 0) / PreloadedPipelineBytes == 2045);
+}
+
+TEST_CASE("The shader preload takes the most recently used pipelines first",
+          "[video_core][pipeline_cache]") {
+    // Built at boot: ages 0-15. Older: 10 at age 16, 10 at age 20, 10 at age 100.
+    std::vector<u8> ages(40, 3);
+    ages.insert(ages.end(), 10, 16);
+    ages.insert(ages.end(), 10, 20);
+    ages.insert(ages.end(), 10, 100);
+    CHECK(PreloadAgeLimit(ages, 16, 5) == 17);
+    CHECK(PreloadAgeLimit(ages, 16, 10) == 17);
+    CHECK(PreloadAgeLimit(ages, 16, 11) == 21);
+    CHECK(PreloadAgeLimit(ages, 16, 30) == 101);
+    // Fewer than asked: every older one.
+    CHECK(PreloadAgeLimit(ages, 16, 1000) == 256);
+    CHECK(PreloadAgeLimit({}, 16, 10) == 256);
 }

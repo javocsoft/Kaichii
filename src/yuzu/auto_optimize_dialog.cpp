@@ -19,6 +19,7 @@
 #include "core/nx2_present_intervals.h"
 #include "qt_common/config/qt_config.h"
 #include "video_core/gpu.h"
+#include "video_core/pipeline_build_stats.h"
 #include "video_core/renderer_base.h"
 #include "video_core/video_memory_status.h"
 
@@ -114,6 +115,9 @@ void AutoOptimizeDialog::Start() {
     measurements.lowest_resolution = static_cast<u32>(Settings::ResolutionSetup::Res1_2X);
     measurements.skips_unbuilt_draws =
         Settings::values.native_async_draws.GetValue() != Settings::NativeAsyncDraws::Wait;
+    measurements.preloads_shaders =
+        Settings::values.shader_preload_memory.GetValue() != Settings::ShaderPreloadMemory::Off;
+    built_late_at_start = VideoCommon::g_cached_pipelines_built_late.load();
     spilled_at_start = VideoCommon::g_video_memory_status.host_used.load();
     EnterPhase(Phase::Baseline);
     timer->start();
@@ -153,6 +157,8 @@ void AutoOptimizeDialog::Tick() {
             return;
         }
         measurements.base = TakeSample(BaselineSeconds);
+        measurements.cached_pipelines_built_late =
+            VideoCommon::g_cached_pipelines_built_late.load() - built_late_at_start;
         if (const u64 budget = VideoCommon::g_video_memory_status.budget.load(); budget != 0) {
             measurements.memory =
                 // The lower of two readings: loading peaks for a moment.
@@ -271,6 +277,10 @@ void AutoOptimizeDialog::ShowResults() {
             label = tr("Skip objects while their shaders build: fewer stutters, objects may "
                        "appear a moment late");
             break;
+        case Action::PreloadShaders:
+            label = tr("Preload shaders from earlier sessions in system memory: fewer stutters "
+                       "in areas you come back to (takes effect the next time the game starts)");
+            break;
         }
         auto* const box = new QCheckBox(label, this);
         box->setChecked(true);
@@ -305,6 +315,10 @@ void AutoOptimizeDialog::Apply() {
         case Action::SkipUnbuiltDraws:
             Settings::values.native_async_draws.SetGlobal(false);
             Settings::values.native_async_draws.SetValue(Settings::NativeAsyncDraws::Bounded);
+            break;
+        case Action::PreloadShaders:
+            Settings::values.shader_preload_memory.SetGlobal(false);
+            Settings::values.shader_preload_memory.SetValue(Settings::ShaderPreloadMemory::Auto);
             break;
         }
     }
