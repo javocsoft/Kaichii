@@ -117,6 +117,7 @@
 #include "qt_common/util/mod.h"
 #include "qt_common/util/path.h"
 #include "qt_common/util/desktop_integration.h"
+#include "qt_common/util/game_folders.h"
 #include "qt_common/util/guide.h"
 #include "qt_common/util/translations.h"
 
@@ -1580,6 +1581,7 @@ void MainWindow::ConnectMenuEvents() {
     };
 
     // File
+    connect_menu(ui->action_Add_Game_Folder, &MainWindow::OnGameListAddDirectory);
     connect_menu(ui->action_Load_File, &MainWindow::OnMenuLoadFile);
     connect_menu(ui->action_Load_Folder, &MainWindow::OnMenuLoadFolder);
     connect_menu(ui->action_Install_File_NAND, &MainWindow::OnMenuInstallToNAND);
@@ -2577,6 +2579,8 @@ void MainWindow::OnEmulationStopped() {
         firmware_label->setVisible(true);
     }
 
+    // A game opened from a file outside the game folders: offer its folder once the window is back.
+    QTimer::singleShot(0, this, [this, game = current_game_path] { OfferToListGameFolder(game); });
     current_game_path.clear();
 
     // When closing the game, destroy the GLWindow to clear the context after the game is closed
@@ -3077,6 +3081,38 @@ void MainWindow::OnGameListAddDirectory() {
     AddGameDirectory(dir_path);
 }
 
+void MainWindow::OfferToListGameFolder(const QString& game_path) {
+    namespace Folders = QtCommon::GameFolders;
+    // Not while Kaichii closes: the game stopped because the window did.
+    if (close_pending || game_path.isEmpty() || !Folders::IsListable(game_path)) {
+        return;
+    }
+    const QString folder = QDir::cleanPath(QFileInfo(game_path).absolutePath());
+    // Installed games live in the console's own folders, which the list shows already.
+    const auto inside = [&folder](Common::FS::EdenPath which) {
+        const QString root =
+            QDir::cleanPath(QString::fromStdString(Common::FS::GetEdenPathString(which)));
+        return folder == root || folder.startsWith(root + QLatin1Char('/'));
+    };
+    if (inside(Common::FS::EdenPath::NANDDir) || inside(Common::FS::EdenPath::SDMCDir) ||
+        Folders::Covers(UISettings::values.game_dirs, folder) ||
+        UISettings::values.declined_game_folders.contains(folder)) {
+        return;
+    }
+    const auto answer = QMessageBox::question(
+        this, tr("Add to the game list?"),
+        tr("This game isn't in your game list: opening a file plays it, but the list only shows "
+           "the games in your game folders, and its folder isn't one of them.\n\n%1\n\nAdd this "
+           "folder to the game list?")
+            .arg(QDir::toNativeSeparators(folder)));
+    if (answer == QMessageBox::Yes) {
+        AddGameDirectory(folder);
+    } else {
+        UISettings::values.declined_game_folders.append(folder);
+        OnSaveConfig();
+    }
+}
+
 void MainWindow::AddGameDirectory(const QString& dir_path) {
     UISettings::GameDir game_dir{dir_path.toStdString(), false, true};
     if (!UISettings::values.game_dirs.contains(game_dir)) {
@@ -3194,9 +3230,19 @@ void MainWindow::OnMenuLoadFolder() {
     const QStringList matching_main = dir.entryList({QStringLiteral("main")}, QDir::Files);
     if (matching_main.size() == 1) {
         BootGame(dir.path() + QDir::separator() + matching_main[0], ApplicationAppletParameters());
+    } else if (QtCommon::GameFolders::HoldsGames(dir_path)) {
+        // A folder of game files, chosen here instead of with Add Games Folder.
+        if (QMessageBox::question(this, tr("Add to the game list?"),
+                                  tr("This folder holds games, not a game extracted into files (a "
+                                     "'main' file).\n\nAdd it to the game list?")) ==
+            QMessageBox::Yes) {
+            AddGameDirectory(dir_path);
+        }
     } else {
         QMessageBox::warning(this, tr("Invalid Directory Selected"),
-                             tr("The directory you have selected does not contain a 'main' file."));
+                             tr("This folder doesn't hold a game extracted into files (a 'main' "
+                                "file).\n\nTo add a folder with your games to the game list, use "
+                                "File > Add Games Folder."));
     }
 }
 

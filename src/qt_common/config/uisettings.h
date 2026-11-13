@@ -189,6 +189,8 @@ struct Values {
     bool game_dir_deprecated_deepscan;
     QVector<GameDir> game_dirs;
     QStringList recent_files;
+    // Folders of games opened from outside the game list whose offer to add them was declined.
+    QStringList declined_game_folders;
     Setting<std::string> language{linkage, {}, "language", Category::Paths};
 
     // Optional key that enables the SteamGridDB icon fallback

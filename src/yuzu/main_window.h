@@ -477,6 +477,9 @@ private:
     void SyncDesktopIntegration(bool ask);
     /// Adds a folder to the game list and scans it.
     void AddGameDirectory(const QString& dir_path);
+    /// After a game opened from a file stops: if its folder isn't one of the game folders, offers
+    /// to add it, once per folder.
+    void OfferToListGameFolder(const QString& game_path);
     void UpdateInputDrivers();
     void HideMouseCursor();
     void ShowMouseCursor();

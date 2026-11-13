@@ -263,6 +263,17 @@ void QtConfig::ReadPathValues() {
         QString::fromStdString(ReadStringSetting(std::string("recentFiles")))
             .split(QStringLiteral(", "), Qt::SkipEmptyParts, Qt::CaseSensitive);
 
+    UISettings::values.declined_game_folders.clear();
+    const int declined_size = BeginArray(std::string("declined_game_folders"));
+    for (int i = 0; i < declined_size; ++i) {
+        SetArrayIndex(i);
+        const std::string folder = ReadStringSetting(std::string("path"));
+        if (!folder.empty()) {
+            UISettings::values.declined_game_folders.append(QString::fromStdString(folder));
+        }
+    }
+    EndArray();
+
     const int external_dirs_size = BeginArray(std::string("external_content_dirs"));
     for (int i = 0; i < external_dirs_size; ++i) {
         SetArrayIndex(i);
@@ -492,6 +503,14 @@ void QtConfig::SavePathValues() {
 
     WriteStringSetting(std::string("recentFiles"),
                        UISettings::values.recent_files.join(QStringLiteral(", ")).toStdString());
+
+    BeginArray(std::string("declined_game_folders"));
+    for (int i = 0; i < static_cast<int>(UISettings::values.declined_game_folders.size()); ++i) {
+        SetArrayIndex(i);
+        WriteStringSetting(std::string("path"),
+                           UISettings::values.declined_game_folders[i].toStdString());
+    }
+    EndArray();
 
     BeginArray(std::string("external_content_dirs"));
     for (int i = 0; i < static_cast<int>(Settings::values.external_content_dirs.size()); ++i) {

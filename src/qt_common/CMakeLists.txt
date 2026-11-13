@@ -31,6 +31,7 @@ add_library(qt_common STATIC
     util/vk.h util/vk.cpp
     util/translations.h util/translations.cpp
     util/guide.h util/guide.cpp
+    util/game_folders.h util/game_folders.cpp
     util/desktop_integration.h util/desktop_integration.cpp
 
     abstract/frontend.h abstract/frontend.cpp
