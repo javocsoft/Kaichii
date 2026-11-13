@@ -46,6 +46,7 @@
 #include "ryujinx_dialog.h"
 #include "set_play_time_dialog.h"
 #include "util/util.h"
+#include "yuzu/first_run_assistant.h"
 #include "yuzu/game/game_list.h"
 #include "yuzu/auto_optimize_dialog.h"
 #include "yuzu/nup_dialogs.h"
@@ -507,7 +508,12 @@ MainWindow::MainWindow(bool has_broken_vulkan)
         renderer_status_button->setChecked(false);
     } else {
         VkDeviceInfo::PopulateRecords(vk_device_records, this->window()->windowHandle());
-        QTimer::singleShot(0, this, &MainWindow::OfferPerformancePreset);
+        // A new installation: the assistant, which also offers the preset the message box used to.
+        QTimer::singleShot(0, this, [this] {
+            if (!UISettings::values.performance_preset_offered.GetValue()) {
+                ShowFirstRunAssistant();
+            }
+        });
     }
 
     // On macOS, SDL video would pump AppKit events alongside Qt and disrupt native menus.
@@ -1699,6 +1705,7 @@ void MainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Firmware_From_ZIP, &MainWindow::OnInstallFirmwareFromZIP);
     connect_menu(ui->action_Install_Keys, &MainWindow::OnInstallDecryptionKeys);
     connect_menu(ui->action_About, &MainWindow::OnAbout);
+    connect_menu(ui->action_First_Run_Assistant, &MainWindow::ShowFirstRunAssistant);
     connect_menu(ui->action_Eden_Dependencies, &MainWindow::OnEdenDependencies);
     connect_menu(ui->action_Data_Manager, &MainWindow::OnDataDialog);
 
@@ -3057,7 +3064,10 @@ void MainWindow::OnGameListAddDirectory() {
     if (dir_path.isEmpty()) {
         return;
     }
+    AddGameDirectory(dir_path);
+}
 
+void MainWindow::AddGameDirectory(const QString& dir_path) {
     UISettings::GameDir game_dir{dir_path.toStdString(), false, true};
     if (!UISettings::values.game_dirs.contains(game_dir)) {
         UISettings::values.game_dirs.append(game_dir);
@@ -5200,32 +5210,54 @@ void MainWindow::UpdateStatusButtons() {
     UpdateVolumeUI();
 }
 
-// TODO(crueter): Use this for game list stuff
-void MainWindow::OfferPerformancePreset() {
-    if (UISettings::values.performance_preset_offered.GetValue() || vk_device_records.empty()) {
-        return;
-    }
+void MainWindow::ShowFirstRunAssistant() {
     UISettings::values.performance_preset_offered = true;
-    const Settings::HostProfile host = VkDeviceInfo::DetectHostProfile(
-        vk_device_records, Settings::values.vulkan_device.GetValue());
-    const Settings::PerformancePreset preset = Settings::RecommendedPreset(host);
-    const std::array names{tr("Performance"), tr("Balanced"), tr("Quality"), tr("Ultra")};
-    const auto answer = QMessageBox::question(
-        this, tr("Performance preset"),
-        tr("Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of "
-           "memory.\n\nUse the %5 preset? It sets the resolution and the graphics options that "
-           "matter most for speed on this computer, for every game without its own "
-           "settings.\n\nYou can change it at any time under Configure, Performance.")
-            .arg(QString::fromStdString(host.gpu_name))
-            .arg(static_cast<double>(host.gpu_memory_bytes) / (1ULL << 30), 0, 'f', 1)
-            .arg(host.cpu_threads)
-            .arg(static_cast<double>(host.ram_bytes) / (1ULL << 30), 0, 'f', 0)
-            .arg(names[static_cast<size_t>(preset)]),
-        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-    if (answer == QMessageBox::Yes) {
-        Settings::ApplyPerformancePreset(Settings::values, preset, host, false);
-        LOG_INFO(Config, "Applied the {} performance preset",
-                 Settings::PerformancePresetKey(preset));
+    std::optional<Settings::HostProfile> host;
+    if (!vk_device_records.empty()) {
+        host = VkDeviceInfo::DetectHostProfile(vk_device_records,
+                                               Settings::values.vulkan_device.GetValue());
+    }
+    QStringList controllers;
+    if (input_subsystem) {
+        for (const Common::ParamPackage& device : input_subsystem->GetInputDevices()) {
+            const std::string engine = device.Get("engine", "");
+            const std::string name = device.Get("display", "");
+            if (!name.empty() && engine != "any" && engine != "keyboard" && engine != "mouse" &&
+                engine != "cemuhookudp") {
+                controllers << QString::fromStdString(name);
+            }
+        }
+    }
+    FirstRunAssistant::Hooks hooks{
+        .choose_folder =
+            [this] { return QFileDialog::getExistingDirectory(this, tr("Select Directory")); },
+        .add_game_folder = [this](const QString& folder) { AddGameDirectory(folder); },
+        .game_folders =
+            [] {
+                QStringList folders;
+                for (const UISettings::GameDir& dir : UISettings::values.game_dirs) {
+                    // The console's own storage is listed too, but isn't a folder of games.
+                    if (dir.path != "SDMC" && dir.path != "UserNAND" && dir.path != "SysNAND") {
+                        folders << QString::fromStdString(dir.path);
+                    }
+                }
+                return folders;
+            },
+        .keys_present = [] { return ContentManager::AreKeysPresent(); },
+        .install_keys = [this] { OnInstallDecryptionKeys(); },
+        .configure_controls = [this] { OnConfigure(); },
+    };
+    FirstRunAssistant assistant(this, host, controllers, Settings::IsDockedMode(),
+                                std::move(hooks));
+    if (assistant.exec() == QDialog::Accepted) {
+        if (const auto preset = assistant.ChosenPreset(); preset && host) {
+            Settings::ApplyPerformancePreset(Settings::values, *preset, *host, false);
+            LOG_INFO(Config, "Applied the {} performance preset",
+                     Settings::PerformancePresetKey(*preset));
+        }
+        if (assistant.Docked() != Settings::IsDockedMode()) {
+            OnToggleDockedMode();
+        }
         UpdateStatusButtons();
     }
     config->SaveAllValues();

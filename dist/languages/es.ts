@@ -7945,6 +7945,109 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
     </message>
 </context>
 <context>
+    <name>FirstRunAssistant</name>
+    <message>
+        <location filename="../../src/yuzu/first_run_assistant.cpp" line="+37"/>
+        <source>Welcome to Lichii</source>
+        <translation>Te damos la bienvenida a Lichii</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Your games</source>
+        <translation>Tus juegos</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Lichii lists the games in the folders you add, and looks in them again each time it starts.</source>
+        <translation>Lichii muestra los juegos de las carpetas que añadas, y vuelve a buscarlos cada vez que arranca.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Add a games folder...</source>
+        <translation>Añadir una carpeta de juegos...</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Install decryption keys...</source>
+        <translation>Instalar las claves de descifrado...</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>No folder yet.</source>
+        <translation>Todavía no hay ninguna carpeta.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Decryption keys are installed, so NSP and XCI files can be read too.</source>
+        <translation>Las claves de descifrado están instaladas, así que también se pueden leer archivos NSP y XCI.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Switch 2 games packed as NUP files need nothing else. NSP and XCI files also need the decryption keys of a console you own.</source>
+        <translation>Los juegos de Switch 2 empaquetados como archivos NUP no necesitan nada más. Los archivos NSP y XCI necesitan además las claves de descifrado de una consola tuya.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>This computer</source>
+        <translation>Este equipo</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Lichii couldn&apos;t read the graphics card, so it keeps the current settings.</source>
+        <translation>Lichii no ha podido leer la tarjeta gráfica, así que mantiene los ajustes actuales.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of memory. A preset sets the resolution and the options that matter most for speed.</source>
+        <translation>Lichii ha encontrado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria. Un preset ajusta la resolución y las opciones que más influyen en la velocidad.</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Keep my current settings</source>
+        <translation>Mantener mis ajustes actuales</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>You can change it, or measure this computer, at any time under Configure &gt; Performance.</source>
+        <translation>Puedes cambiarlo, o medir este equipo, cuando quieras en Configurar &gt; Rendimiento.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Console mode and controllers</source>
+        <translation>Modo de la consola y mandos</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Games draw for the mode the console is in.</source>
+        <translation>Los juegos se dibujan según el modo en que está la consola.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Docked, as on a TV: games draw more detail, at a higher resolution.</source>
+        <translation>Sobremesa, como en una TV: los juegos dibujan más detalle, a mayor resolución.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Handheld, as in your hands: lighter, which suits slower computers.</source>
+        <translation>Portátil, como en las manos: más ligero, lo que va mejor en equipos más lentos.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No controller was found. Player 1 is set up for the keyboard.</source>
+        <translation>No se ha encontrado ningún mando. El jugador 1 está configurado para el teclado.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Controllers found: %1. Player 1 is set up for the keyboard; choose a controller for it in Configure controls.</source>
+        <translation>Mandos encontrados: %1. El jugador 1 está configurado para el teclado; elige un mando para él en Configurar controles.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Configure controls...</source>
+        <translation>Configurar controles...</translation>
+    </message>
+</context>
+<context>
     <name>GRenderWindow</name>
     <message>
         <location filename="../../src/yuzu/bootmanager.cpp" line="+852"/>
@@ -8884,30 +8987,27 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+5214"/>
         <source>Performance preset</source>
-        <translation>Ajuste predefinido de rendimiento</translation>
+        <translation type="vanished">Ajuste predefinido de rendimiento</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of memory.
 
 Use the %5 preset? It sets the resolution and the graphics options that matter most for speed on this computer, for every game without its own settings.
 
 You can change it at any time under Configure, Performance.</source>
-        <translation>Lichii ha detectado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria.
+        <translation type="vanished">Lichii ha detectado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria.
 
 ¿Desea usar el ajuste predefinido %5? Configura la resolución y las opciones gráficas que más influyen en la velocidad en este equipo, para todos los juegos sin configuración propia.
 
 Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
-        <location line="-3"/>
         <source>Performance</source>
-        <translation>Rendimiento</translation>
+        <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location line="-3248"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+1971"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -8917,24 +9017,21 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Lichii no pudo reservar la memoria del juego. Cierra otras aplicaciones y comprueba que el sistema tiene suficiente memoria disponible y espacio para el archivo de paginación; después vuelve a intentarlo.</translation>
     </message>
     <message>
-        <location line="+1224"/>
+        <location line="+1227"/>
         <source>Installable Switch File (*.nca *.nsp *.nsz *.xci *.xcz);;Nintendo Content Archive (*.nca);;Nintendo Submission Package (*.nsp *.nsz);;NX Cartridge Image (*.xci *.xcz)</source>
         <translation>Archivo instalable de Switch (*.nca *.nsp *.nsz *.xci *.xcz);;Archivo de contenido de Nintendo (*.nca);;Paquete de envío de Nintendo (*.nsp *.nsz);;Imagen de cartucho NX (*.xci *.xcz)</translation>
     </message>
     <message>
-        <location line="+2023"/>
         <source>Balanced</source>
-        <translation>Equilibrado</translation>
+        <translation type="vanished">Equilibrado</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>Quality</source>
-        <translation>Calidad</translation>
+        <translation type="vanished">Calidad</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>Ultra</source>
-        <translation>Ultra</translation>
+        <translation type="vanished">Ultra</translation>
     </message>
     <message>
         <source>yuzu</source>
@@ -9055,7 +9152,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Ayuda</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>&amp;Install Files to NAND...</source>
         <translation>&amp;Instalar archivos en NAND...</translation>
     </message>
@@ -9076,7 +9173,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-3411"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-1391"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -9095,8 +9192,8 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">&amp;Acerca de Eden</translation>
     </message>
     <message>
-        <location line="-277"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3666"/>
+        <location line="-278"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3691"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Lichii</source>
@@ -9108,7 +9205,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Abrir carpetas de &amp;Lichii</translation>
     </message>
     <message>
-        <location line="+234"/>
+        <location line="+235"/>
         <source>&amp;About Lichii</source>
         <translation>&amp;Acerca de Lichii</translation>
     </message>
@@ -9202,6 +9299,11 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Manual de &amp;usuario</translation>
     </message>
     <message>
+        <location line="+5"/>
+        <source>&amp;Setup Assistant...</source>
+        <translation>&amp;Asistente de configuración...</translation>
+    </message>
+    <message>
         <location line="+8"/>
         <source>&amp;Capture Screenshot</source>
         <translation>&amp;Captura de pantalla</translation>
@@ -9253,7 +9355,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-634"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-656"/>
         <source>&amp;Start</source>
         <translation>&amp;Iniciar</translation>
     </message>
@@ -9359,7 +9461,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4604"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4613"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9415,7 +9517,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>La inicialización de Vulkan falló durante el arranque.</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+28"/>
         <source>Running a game</source>
         <extracomment>TRANSLATORS: This string is shown to the user to explain why yuzu needs to prevent the computer from sleeping</extracomment>
         <translation>Ejecutando un juego</translation>
@@ -9489,7 +9591,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+403"/>
+        <location line="+404"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -9609,25 +9711,25 @@ Se aplican a Mario Kart World hasta que se cierre Lichii. Tus ajustes guardados 
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2523"/>
+        <location line="+2526"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2523"/>
-        <location line="+2523"/>
+        <location line="-2526"/>
+        <location line="+2526"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2522"/>
-        <location line="+2524"/>
+        <location line="-2525"/>
+        <location line="+2527"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2511"/>
+        <location line="-2514"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -9770,12 +9872,12 @@ Se aplican a Mario Kart World hasta que se cierre Lichii. Tus ajustes guardados 
     </message>
     <message>
         <location line="+0"/>
-        <location line="+244"/>
+        <location line="+247"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-234"/>
+        <location line="-237"/>
         <source>RomFS Extraction Succeeded!</source>
         <translation>¡La extracción del RomFS ha sido un éxito!</translation>
     </message>
@@ -9791,11 +9893,12 @@ Se aplican a Mario Kart World hasta que se cierre Lichii. Tus ajustes guardados 
     </message>
     <message>
         <location line="+9"/>
+        <location line="+2170"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="-2137"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
@@ -10450,7 +10553,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>Vuelve a buscar juegos en las carpetas de juegos.</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+121"/>
         <source>Derivation Components Missing</source>
         <translation>Componentes de derivación ausentes</translation>
     </message>
