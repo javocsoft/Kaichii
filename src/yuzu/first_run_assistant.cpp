@@ -73,6 +73,7 @@ QWizardPage* FirstRunAssistant::GamesPage() {
         UpdateGames();
     });
     layout->addWidget(keys_button);
+    layout->addStretch(1);
     UpdateGames();
     return page;
 }
@@ -104,13 +105,16 @@ QWizardPage* FirstRunAssistant::ComputerPage() {
         page->setSubTitle(tr("Lichii couldn't read the graphics card, so it keeps the current "
                              "settings."));
     } else {
+        // The header cuts a long subtitle, so the explanation goes on the page.
         page->setSubTitle(
             tr("Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of "
-               "memory. A preset sets the resolution and the options that matter most for speed.")
+               "memory.")
                 .arg(QString::fromStdString(host->gpu_name))
                 .arg(static_cast<double>(host->gpu_memory_bytes) / (1ULL << 30), 0, 'f', 1)
                 .arg(host->cpu_threads)
                 .arg(static_cast<double>(host->ram_bytes) / (1ULL << 30), 0, 'f', 0));
+        layout->addWidget(WrappedLabel(
+            tr("A preset sets the resolution and the options that matter most for speed."), page));
         const std::array descriptions{
             PerformancePageText("Half resolution with FSR upscaling. For integrated graphics, "
                                 "laptops and cards with 4 GB or less. In Ocarina of Time it also "

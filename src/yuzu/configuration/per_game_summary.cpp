@@ -22,14 +22,6 @@
 
 namespace ConfigurationShared {
 
-namespace {
-
-QString Translate(const char* text) {
-    return QCoreApplication::translate("ConfigurationShared", text);
-}
-
-} // Anonymous namespace
-
 QString DisplayedValue(QWidget* row, const Settings::BasicSetting& setting,
                        const ComboboxTranslationMap& enums) {
     if (row != nullptr) {
@@ -87,14 +79,19 @@ void PerGameSummary::SetPages(std::vector<QWidget*> pages_) {
 }
 
 void PerGameSummary::Refresh() {
-    const auto& tr = Translate;
-    title->setText(tr("What this game changes from the global settings"));
-    empty->setText(tr("Nothing: this game uses the global settings in every tab."));
+    // A named context: lupdate files tr() in a namespaced class under the bare class name, which
+    // isn't the context Qt asks for at run time.
+    title->setText(QCoreApplication::translate("ConfigurationShared",
+                                               "What this game changes from the global settings"));
+    empty->setText(QCoreApplication::translate(
+        "ConfigurationShared", "Nothing: this game uses the global settings in every tab."));
     if (host) {
         const auto match = Settings::MatchingPerformancePreset(Settings::values, *host);
-        preset->setText(match
-                            ? tr("Its saved settings match the %1 preset.").arg(PresetName(*match))
-                            : tr("Its saved settings match no preset."));
+        preset->setText(match ? QCoreApplication::translate("ConfigurationShared",
+                                                            "Its saved settings match the %1 preset.")
+                                    .arg(PresetName(*match))
+                              : QCoreApplication::translate("ConfigurationShared",
+                                                            "Its saved settings match no preset."));
     }
     preset->setVisible(host.has_value());
 
@@ -154,7 +151,8 @@ void PerGameSummary::Refresh() {
         text->setTextFormat(Qt::RichText);
         text->setWordWrap(true);
         text->setText(
-            tr("%1: <b>%2</b> &nbsp;<i>(global: %3)</i>")
+            QCoreApplication::translate("ConfigurationShared",
+                                        "%1: <b>%2</b> &nbsp;<i>(global: %3)</i>")
                 .arg(QStringLiteral("<a href=\"setting\">%1</a>").arg(name.toHtmlEscaped()),
                      DisplayedValue(row, *setting, enums).toHtmlEscaped(),
                      FormatSettingValue(*setting, setting->ToStringGlobal(), enums)
@@ -164,7 +162,8 @@ void PerGameSummary::Refresh() {
                 emit GoToSetting(target);
             }
         });
-        auto* const use_global = new QPushButton(tr("Use global"), line);
+        auto* const use_global =
+            new QPushButton(QCoreApplication::translate("ConfigurationShared", "Use global"), line);
         connect(use_global, &QPushButton::clicked, this, [this, buttons = change.buttons] {
             for (const QPointer<QPushButton>& button : buttons) {
                 if (button && button->isEnabled() && button->isVisibleTo(button->parentWidget())) {

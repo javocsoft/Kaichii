@@ -55,3 +55,32 @@ target_link_libraries(first_run_assistant_tests PRIVATE qt_common frontend_commo
                       SimpleIni::SimpleIni Qt6::Widgets Qt6::Test)
 add_test(NAME first_run_assistant COMMAND first_run_assistant_tests)
 set_tests_properties(first_run_assistant PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+# The Spanish catalog built from es.ts and Qt's own next to it: the screens find their strings
+# under the context they ask for, and Qt's buttons follow the interface language.
+if (ENABLE_QT_TRANSLATION)
+    set(SPANISH_TS ${PROJECT_SOURCE_DIR}/dist/languages/es.ts)
+    set_source_files_properties(${SPANISH_TS} PROPERTIES
+                                OUTPUT_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/translations)
+    qt_add_translation(SPANISH_QM ${SPANISH_TS})
+    include(QtBaseTranslations)
+    copy_qtbase_translations(SPANISH_QM ${CMAKE_CURRENT_BINARY_DIR}/translations ${SPANISH_TS})
+    add_executable(translation_tests
+        translation.cpp
+        ../../yuzu/configuration/per_game_summary.cpp
+        ../../yuzu/configuration/per_game_summary.h
+        ../../yuzu/configuration/settings_organizer.cpp
+        ../../yuzu/configuration/settings_organizer.h
+        ../../yuzu/first_run_assistant.cpp
+        ../../yuzu/first_run_assistant.h
+        ${SPANISH_QM}
+    )
+    target_compile_features(translation_tests PRIVATE cxx_std_20)
+    target_compile_definitions(translation_tests PRIVATE
+                               TRANSLATIONS_DIR="${CMAKE_CURRENT_BINARY_DIR}/translations")
+    target_include_directories(translation_tests PRIVATE ../..)
+    target_link_libraries(translation_tests PRIVATE qt_common frontend_common common
+                          SimpleIni::SimpleIni Qt6::Widgets Qt6::Test)
+    add_test(NAME translation COMMAND translation_tests)
+    set_tests_properties(translation PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+endif()

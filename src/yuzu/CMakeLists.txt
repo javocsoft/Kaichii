@@ -373,6 +373,10 @@ if (ENABLE_QT_TRANSLATION)
     # Compile english plurals TS file to en.qm
     qt_add_translation(LANGUAGES_QM ${PROJECT_SOURCE_DIR}/dist/english_plurals/en.ts)
 
+    # Qt's own strings (standard and wizard buttons, file dialogs) in the same languages
+    include(QtBaseTranslations)
+    copy_qtbase_translations(LANGUAGES_QM ${CMAKE_CURRENT_BINARY_DIR} ${LANGUAGES_TS})
+
     # Build a QRC file from the QM file list
     set(LANGUAGES_QRC ${CMAKE_CURRENT_BINARY_DIR}/languages.qrc)
     file(WRITE ${LANGUAGES_QRC} "<RCC><qresource prefix=\"languages\">\n")

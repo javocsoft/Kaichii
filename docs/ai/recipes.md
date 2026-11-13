@@ -63,6 +63,19 @@ When a game shows a rejected program, the log and `EDEN_NX2_SHADER_DUMP` give yo
 
 Follow [Settings](../Settings.md) and the wording rules in [Development](../Development.md).
 
+## Add interface text
+
+1. Wrap it in `tr()`. In a class inside a namespace (`ConfigurationShared::...`), use
+   `QCoreApplication::translate("<context>", ...)` with a named context instead: lupdate files `tr()`
+   there under the bare class name, which is not the context Qt asks for, so the text never translates.
+2. Update the catalogs with `lupdate` from `dist/languages`
+   (`lupdate ../../src/yuzu ../../src/qt_common -ts es.ts`), and translate the new entries.
+3. `translation_tests` loads the Spanish catalog built from `es.ts`. A screen whose text matters gets
+   a case there that finds it in Spanish.
+
+Qt's own text (standard buttons, wizard buttons, file dialogs) comes from Qt's `qtbase_<language>.qm`,
+which the frontend carries next to its own catalogs.
+
 ## Add a C++ test
 
 See [Testing](testing.md#adding-a-c-test).

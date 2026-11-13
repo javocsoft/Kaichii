@@ -63,6 +63,8 @@ private slots:
     void KeepsTheSettingsWithoutAGraphicsCard();
     void AddsFoldersAndKeysThroughTheWindow();
     void AsksForTheConsoleMode();
+    void KeepsTheGamesPageTogether();
+    void ShowsTheWholeSubtitle();
 };
 
 void FirstRunAssistantTest::RecommendsThePresetForThisComputer() {
@@ -124,6 +126,37 @@ void FirstRunAssistantTest::AsksForTheConsoleMode() {
     }));
     FindByText<QPushButton>(assistant, QStringLiteral("Configure controls"))->click();
     QCOMPARE(window.controls_opened, 1);
+}
+
+void FirstRunAssistantTest::KeepsTheGamesPageTogether() {
+    FakeWindow window;
+    FirstRunAssistant assistant(nullptr, EntryMachine(), {}, false, window.Hooks());
+    assistant.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&assistant));
+    // The free space goes below the controls, not to the keys text between the two buttons,
+    // which then floats in the middle of the page.
+    const auto* const add = FindByText<QPushButton>(assistant, QStringLiteral("Add a games folder"));
+    const auto* const text = FindByText<QLabel>(assistant, QStringLiteral("Switch 2 games packed"));
+    const auto* const keys = FindByText<QPushButton>(assistant, QStringLiteral("Install decryption"));
+    const int between = keys->geometry().top() - add->geometry().bottom();
+    QVERIFY(between < text->heightForWidth(text->width()) + 2 * add->height());
+}
+
+void FirstRunAssistantTest::ShowsTheWholeSubtitle() {
+    FakeWindow window;
+    Settings::HostProfile host = EntryMachine();
+    host.gpu_name = "NVIDIA GeForce RTX 3050 Laptop GPU";
+    FirstRunAssistant assistant(nullptr, host, {}, false, window.Hooks());
+    assistant.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&assistant));
+    assistant.next();
+    QCoreApplication::processEvents();
+    const QString subtitle = assistant.currentPage()->subTitle();
+    QVERIFY(subtitle.contains(QStringLiteral("RTX 3050")));
+    const auto labels = assistant.findChildren<QLabel*>();
+    const auto it = std::ranges::find(labels, subtitle, &QLabel::text);
+    QVERIFY(it != labels.end());
+    QVERIFY((*it)->height() >= (*it)->heightForWidth((*it)->width()));
 }
 
 QTEST_MAIN(FirstRunAssistantTest)

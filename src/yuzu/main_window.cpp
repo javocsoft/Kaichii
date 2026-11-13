@@ -114,6 +114,7 @@
 #include "qt_common/util/meta.h"
 #include "qt_common/util/mod.h"
 #include "qt_common/util/path.h"
+#include "qt_common/util/translations.h"
 
 #include "qt_common/render/emu_thread.h"
 
@@ -5698,17 +5699,14 @@ void MainWindow::UpdateUITheme() {
 }
 
 void MainWindow::LoadTranslation() {
-    bool loaded;
-
-    if (UISettings::values.language.GetValue().empty()) {
-        // If the selected language is empty, use system locale
-        loaded = translator.load(QLocale(), {}, {}, QStringLiteral(":/languages/"));
-    } else {
-        // Otherwise load from the specified file
-        loaded = translator.load(QString::fromStdString(UISettings::values.language.GetValue()),
-                                 QStringLiteral(":/languages/"));
+    // An empty language follows the system's.
+    const bool loaded = QtCommon::Translations::Load(
+        translator, qt_translator, QString::fromStdString(UISettings::values.language.GetValue()),
+        QStringLiteral(":/languages/"));
+    // Installed first, so the interface's catalog is asked before it.
+    if (!qt_translator.isEmpty()) {
+        qApp->installTranslator(&qt_translator);
     }
-
     if (loaded) {
         qApp->installTranslator(&translator);
     } else if (!UISettings::values.language.GetValue().empty()) {
@@ -5721,6 +5719,7 @@ void MainWindow::LoadTranslation() {
 void MainWindow::OnLanguageChanged(const QString& locale) {
     if (UISettings::values.language.GetValue() != std::string("en"))
         qApp->removeTranslator(&translator);
+    qApp->removeTranslator(&qt_translator);
 
     QList<QAction*> actions = game_size_actions->actions();
     for (size_t i = 0; i < default_game_icon_sizes.size(); i++) {
