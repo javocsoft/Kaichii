@@ -1079,7 +1079,7 @@ Desactivarlo solo está destinado para depuración.</translation>
     <message>
         <location line="+4"/>
         <source>Use asynchronous GPU emulation</source>
-        <translation> Usar emulación asíncrona de la GPU</translation>
+        <translation>Usar emulación asíncrona de la GPU</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2027,7 +2027,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <location line="+2"/>
         <location filename="../../src/qt_common/config/shared_translation.cpp" line="+1"/>
         <source>Balanced</source>
-        <translation>Balanceado</translation>
+        <translation>Equilibrado</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2572,7 +2572,7 @@ CPU asíncrona: en el procesador en segundo plano, lo que quita los tirones pero
     <message>
         <location line="+4"/>
         <source>When the game is told its GPU work is done. Immediate tells it at once: fastest, but it can cause flickering or wrong images. Balanced, and Accurate even more, wait for the graphics card first, which costs some speed. Default follows GPU Mode.</source>
-        <translation>Cuándo se le dice al juego que su trabajo de GPU ha terminado. Inmediato se lo dice enseguida: lo más rápido, pero puede causar parpadeos o imágenes erróneas. Balanceado, y Preciso aún más, esperan antes a la tarjeta gráfica, lo que cuesta algo de velocidad. Predeterminado sigue al Modo de la GPU.</translation>
+        <translation>Cuándo se le dice al juego que su trabajo de GPU ha terminado. Inmediato se lo dice enseguida: lo más rápido, pero puede causar parpadeos o imágenes erróneas. Equilibrado, y Preciso aún más, esperan antes a la tarjeta gráfica, lo que cuesta algo de velocidad. Predeterminado sigue al Modo de la GPU.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -3358,17 +3358,17 @@ Solo Windows y Linux.</translation>
     <message>
         <location line="+6"/>
         <source>ExtendedDynamicState 1</source>
-        <translation>ModoDynamicoExtendido 1</translation>
+        <translation>Estado dinámico extendido 1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>ExtendedDynamicState 2</source>
-        <translation>ModoDynamicoExtendido 2</translation>
+        <translation>Estado dinámico extendido 2</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>ExtendedDynamicState 3</source>
-        <translation>ModoDynamicoExtendido 3</translation>
+        <translation>Estado dinámico extendido 3</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -3384,6 +3384,36 @@ Solo Windows y Linux.</translation>
         <location filename="../../src/yuzu/configuration/setting_help_panel.cpp" line="+129"/>
         <source>Point at an option, or move to it with the keyboard, to read here what it does.</source>
         <translation>Señala una opción, o llega a ella con el teclado, para leer aquí lo que hace.</translation>
+    </message>
+    <message>
+        <location filename="../../src/yuzu/configuration/per_game_summary.cpp" line="+84"/>
+        <source>What this game changes from the global settings</source>
+        <translation>Lo que este juego cambia respecto a los ajustes globales</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Nothing: this game uses the global settings in every tab.</source>
+        <translation>Nada: este juego usa los ajustes globales en todas las pestañas.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Its saved settings match the %1 preset.</source>
+        <translation>Sus ajustes guardados coinciden con el preset %1.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Its saved settings match no preset.</source>
+        <translation>Sus ajustes guardados no coinciden con ningún preset.</translation>
+    </message>
+    <message>
+        <location line="+61"/>
+        <source>%1: &lt;b&gt;%2&lt;/b&gt; &amp;nbsp;&lt;i&gt;(global: %3)&lt;/i&gt;</source>
+        <translation>%1: &lt;b&gt;%2&lt;/b&gt; &amp;nbsp;&lt;i&gt;(global: %3)&lt;/i&gt;</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Use global</source>
+        <translation>Usar valor global</translation>
     </message>
 </context>
 <context>
@@ -7972,7 +8002,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation>Instalar las claves de descifrado...</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
         <source>No folder yet.</source>
         <translation>Todavía no hay ninguna carpeta.</translation>
     </message>
@@ -7997,12 +8027,21 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation>Lichii no ha podido leer la tarjeta gráfica, así que mantiene los ajustes actuales.</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of memory. A preset sets the resolution and the options that matter most for speed.</source>
-        <translation>Lichii ha encontrado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria. Un preset ajusta la resolución y las opciones que más influyen en la velocidad.</translation>
+        <location line="+5"/>
+        <source>Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of memory.</source>
+        <translation>Lichii ha encontrado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria.</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+7"/>
+        <source>A preset sets the resolution and the options that matter most for speed.</source>
+        <translation>Un preset ajusta la resolución y las opciones que más influyen en la velocidad.</translation>
+    </message>
+    <message>
+        <source>Lichii found %1 with %2 GB of video memory, a %3-thread processor and %4 GB of memory. A preset sets the resolution and the options that matter most for speed.</source>
+        <translation type="vanished">Lichii ha encontrado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria. Un preset ajusta la resolución y las opciones que más influyen en la velocidad.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
         <source>Keep my current settings</source>
         <translation>Mantener mis ajustes actuales</translation>
     </message>
@@ -9026,7 +9065,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+1973"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+1974"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -11547,34 +11586,28 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PerGameSummary</name>
     <message>
-        <location filename="../../src/yuzu/configuration/per_game_summary.cpp" line="+91"/>
         <source>What this game changes from the global settings</source>
-        <translation>Lo que este juego cambia respecto a los ajustes globales</translation>
+        <translation type="vanished">Lo que este juego cambia respecto a los ajustes globales</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Nothing: this game uses the global settings in every tab.</source>
-        <translation>Nada: este juego usa los ajustes globales en todas las pestañas.</translation>
+        <translation type="vanished">Nada: este juego usa los ajustes globales en todas las pestañas.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Its saved settings match the %1 preset.</source>
-        <translation>Sus ajustes guardados coinciden con el preset %1.</translation>
+        <translation type="vanished">Sus ajustes guardados coinciden con el preset %1.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Its saved settings match no preset.</source>
-        <translation>Sus ajustes guardados no coinciden con ningún preset.</translation>
+        <translation type="vanished">Sus ajustes guardados no coinciden con ningún preset.</translation>
     </message>
     <message>
-        <location line="+60"/>
         <source>%1: &lt;b&gt;%2&lt;/b&gt; &amp;nbsp;&lt;i&gt;(global: %3)&lt;/i&gt;</source>
-        <translation>%1: &lt;b&gt;%2&lt;/b&gt; &amp;nbsp;&lt;i&gt;(global: %3)&lt;/i&gt;</translation>
+        <translation type="vanished">%1: &lt;b&gt;%2&lt;/b&gt; &amp;nbsp;&lt;i&gt;(global: %3)&lt;/i&gt;</translation>
     </message>
     <message>
-        <location line="+10"/>
         <source>Use global</source>
-        <translation>Usar el global</translation>
+        <translation type="vanished">Usar el global</translation>
     </message>
 </context>
 <context>

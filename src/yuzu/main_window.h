@@ -599,6 +599,8 @@ private:
     HotkeyRegistry hotkey_registry;
 
     QTranslator translator;
+    // Qt's own strings: standard buttons, wizard buttons and dialogs.
+    QTranslator qt_translator;
 
     // Install progress dialog
     QProgressDialog* install_progress = nullptr;
