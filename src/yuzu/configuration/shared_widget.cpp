@@ -572,6 +572,7 @@ void Widget::SetupComponent(const QString& label, std::function<void()>& load_fu
 
     if (!Settings::IsConfiguringGlobal() && managed) {
         restore_button = CreateRestoreGlobalButton(setting.UsingGlobal(), this);
+        restore_button->setProperty(RestoresSettingProperty, setting.Id());
 
         touch = [this]() {
             LOG_DEBUG(Frontend, "Enabling custom setting for \"{}\"", setting.GetLabel());

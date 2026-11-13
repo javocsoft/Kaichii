@@ -23,6 +23,7 @@
 #include "common/string_util.h"
 #include "frontend_common/play_time_manager.h"
 #include "qt_common/config/uisettings.h"
+#include "qt_common/game_list/placeholder_icon.h"
 #include "qt_common/qt_common.h"
 
 enum class GameListItemType {
@@ -36,17 +37,6 @@ enum class GameListItemType {
 };
 
 Q_DECLARE_METATYPE(GameListItemType);
-
-/**
- * Gets the default icon (for games without valid title metadata)
- * @param size The desired width and height of the default icon.
- * @return QPixmap default icon
- */
-static QPixmap GetDefaultIcon(u32 size) {
-    QPixmap icon(size, size);
-    icon.fill(Qt::transparent);
-    return icon;
-}
 
 static QPixmap ThemeIcon(const char* name) {
     const int size = UISettings::values.folder_icon_size.GetValue();
@@ -116,7 +106,9 @@ public:
 
         QPixmap picture;
         if (!picture.loadFromData(picture_data.data(), static_cast<u32>(picture_data.size()))) {
-            picture = GetDefaultIcon(size);
+            // A game without an icon (a NUP without one): its initials rather than a blank.
+            picture = QPixmap::fromImage(
+                QtCommon::PlaceholderIcon(game_name, static_cast<int>(size)));
         }
         picture = picture.scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 

@@ -1813,7 +1813,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>CPU</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/config/setting_help.cpp" line="+414"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="+433"/>
         <location filename="../../src/qt_common/config/shared_translation.cpp" line="+1"/>
         <source>GPU</source>
         <translation>GPU</translation>
@@ -1949,7 +1949,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Inmediato</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/config/setting_help.cpp" line="-368"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="-386"/>
         <source>▲ faster</source>
         <translation>▲ más rápido</translation>
     </message>
@@ -2019,7 +2019,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Opción de desarrollo: para depurar Lichii</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+166"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -2040,7 +2040,7 @@ Enabling it bypasses such prompts and directly exits the emulation.</source>
         <translation>Ultra</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+63"/>
         <source>on</source>
         <translation>activado</translation>
     </message>
@@ -4563,7 +4563,7 @@ Would you like to delete the old save data?</source>
         <translation>%</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+78"/>
         <source>Configure Effects...</source>
         <translation>Configurar efectos...</translation>
     </message>
@@ -4574,6 +4574,7 @@ Would you like to delete the old save data?</source>
     </message>
     <message>
         <location line="+1"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="-151"/>
         <source>VSync Off</source>
         <translation>VSync Desactivado</translation>
     </message>
@@ -4589,6 +4590,7 @@ Would you like to delete the old save data?</source>
     </message>
     <message>
         <location line="+1"/>
+        <location filename="../../src/qt_common/config/setting_help.cpp" line="+5"/>
         <source>VSync On</source>
         <translation>VSync Activado</translation>
     </message>
@@ -6090,7 +6092,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
 <context>
     <name>ConfigurePerGame</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+413"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+420"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -6111,9 +6113,9 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+68"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+79"/>
         <location line="+10"/>
-        <location line="+267"/>
+        <location line="+302"/>
         <location line="+5"/>
         <source>Detect Icon</source>
         <translation>Detectar icono</translation>
@@ -6179,7 +6181,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Algunos ajustes solo están disponibles cuando no se estén ejecutando los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-349"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-395"/>
         <source>Add-Ons</source>
         <translation>Complementos</translation>
     </message>
@@ -6216,7 +6218,12 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation type="vanished">Extensiones Gráficas</translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-13"/>
+        <source>Summary</source>
+        <translation>Resumen</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
@@ -6241,12 +6248,12 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Emulación de GPU</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+49"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+148"/>
         <source>Show advanced options</source>
         <translation>Mostrar opciones avanzadas</translation>
     </message>
@@ -8151,12 +8158,17 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation>Configurar juego</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>Optimize for This Game...</source>
+        <translation>Optimizar para este juego...</translation>
+    </message>
+    <message>
         <location line="+2"/>
         <source>Submit compatibility report…</source>
         <translation>Enviar informe de compatibilidad…</translation>
     </message>
     <message>
-        <location line="+108"/>
+        <location line="+110"/>
         <source>Scan Subfolders</source>
         <translation>Escanear subdirectorios</translation>
     </message>
@@ -8189,7 +8201,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameListItemCompat</name>
     <message>
-        <location filename="../../src/qt_common/game_list/game_list_p.h" line="+194"/>
+        <location filename="../../src/qt_common/game_list/game_list_p.h" line="+186"/>
         <source>Ingame</source>
         <translation>En juego</translation>
     </message>
@@ -8442,11 +8454,12 @@ Mensaje de depuración:</translation>
         <location line="+1"/>
         <location line="+1"/>
         <location line="+1"/>
+        <location line="+1"/>
         <source>Main Window</source>
         <translation>Ventana principal</translation>
     </message>
     <message>
-        <location line="-30"/>
+        <location line="-31"/>
         <source>Audio Volume Down</source>
         <translation>Bajar volumen del audio</translation>
     </message>
@@ -8607,6 +8620,11 @@ Mensaje de depuración:</translation>
         <location line="+1"/>
         <source>Toggle Performance Overlay</source>
         <translation>Alternar superposición de rendimiento</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Optimize for This Game</source>
+        <translation>Optimizar para este juego</translation>
     </message>
     <message>
         <location filename="../../src/yuzu/configuration/configure_hotkeys.cpp" line="-399"/>
@@ -8866,7 +8884,7 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+5165"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+5214"/>
         <source>Performance preset</source>
         <translation>Ajuste predefinido de rendimiento</translation>
     </message>
@@ -8889,7 +8907,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Rendimiento</translation>
     </message>
     <message>
-        <location line="-3203"/>
+        <location line="-3248"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -8899,12 +8917,12 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Lichii no pudo reservar la memoria del juego. Cierra otras aplicaciones y comprueba que el sistema tiene suficiente memoria disponible y espacio para el archivo de paginación; después vuelve a intentarlo.</translation>
     </message>
     <message>
-        <location line="+1201"/>
+        <location line="+1224"/>
         <source>Installable Switch File (*.nca *.nsp *.nsz *.xci *.xcz);;Nintendo Content Archive (*.nca);;Nintendo Submission Package (*.nsp *.nsz);;NX Cartridge Image (*.xci *.xcz)</source>
         <translation>Archivo instalable de Switch (*.nca *.nsp *.nsz *.xci *.xcz);;Archivo de contenido de Nintendo (*.nca);;Paquete de envío de Nintendo (*.nsp *.nsz);;Imagen de cartucho NX (*.xci *.xcz)</translation>
     </message>
     <message>
-        <location line="+2001"/>
+        <location line="+2023"/>
         <source>Balanced</source>
         <translation>Equilibrado</translation>
     </message>
@@ -9058,7 +9076,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-3366"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-3411"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -9078,7 +9096,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="-277"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3621"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3666"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Lichii</source>
@@ -9235,7 +9253,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-612"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-634"/>
         <source>&amp;Start</source>
         <translation>&amp;Iniciar</translation>
     </message>
@@ -9341,7 +9359,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4579"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4604"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9471,7 +9489,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+401"/>
+        <location line="+403"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -9591,25 +9609,40 @@ Se aplican a Mario Kart World hasta que se cierre Lichii. Tus ajustes guardados 
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2500"/>
+        <location line="+2523"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2500"/>
-        <location line="+2500"/>
+        <location line="-2523"/>
+        <location line="+2523"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2499"/>
-        <location line="+2501"/>
+        <location line="-2522"/>
+        <location line="+2524"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2408"/>
+        <location line="-2511"/>
+        <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
+        <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Optimize for This Game</source>
+        <translation>Optimizar para este juego</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Stop the game that is running first.</source>
+        <translation>Detén primero el juego que está en marcha.</translation>
+    </message>
+    <message>
+        <location line="+72"/>
         <source>Closing software...</source>
         <translation>Cerrando el programa...</translation>
     </message>
@@ -10377,7 +10410,47 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>VOLUMEN: %1%</translation>
     </message>
     <message>
-        <location line="+103"/>
+        <location line="+7"/>
+        <source>Graphics API. Click to switch to the next one, right-click to choose one.</source>
+        <translation>API gráfica. Haz clic para pasar a la siguiente, clic derecho para elegir una.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>GPU mode: Fast, or Accurate for games that need it. Click to switch, right-click to choose.</source>
+        <translation>Modo de la GPU: Rápido, o Preciso para los juegos que lo necesitan. Haz clic para cambiarlo, clic derecho para elegir.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Console mode: docked (on a TV) or handheld. Games change their resolution with it. Click to switch, right-click to choose.</source>
+        <translation>Modo de la consola: sobremesa (en una TV) o portátil. Los juegos cambian su resolución según el modo. Haz clic para cambiarlo, clic derecho para elegir.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Window adapting filter: how the image is resized to fit the window. Click for the next one, right-click to choose.</source>
+        <translation>Filtro adaptable de ventana: cómo se ajusta la imagen al tamaño de la ventana. Haz clic para pasar al siguiente, clic derecho para elegir.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Anti-aliasing method. Click for the next one, right-click to choose.</source>
+        <translation>Método de suavizado de bordes. Haz clic para pasar al siguiente, clic derecho para elegir.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Post-processing effects. Click to turn them on or off, right-click to pick a preset or configure them.</source>
+        <translation>Efectos de posprocesado. Haz clic para activarlos o desactivarlos, clic derecho para elegir un preset o configurarlos.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Volume. Click for its slider, right-click to mute or reset it.</source>
+        <translation>Volumen. Haz clic para mostrar su control, clic derecho para silenciarlo o restablecerlo.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Look for games in the game folders again.</source>
+        <translation>Vuelve a buscar juegos en las carpetas de juegos.</translation>
+    </message>
+    <message>
+        <location line="+99"/>
         <source>Derivation Components Missing</source>
         <translation>Componentes de derivación ausentes</translation>
     </message>
@@ -11350,6 +11423,39 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>PerGameSummary</name>
+    <message>
+        <location filename="../../src/yuzu/configuration/per_game_summary.cpp" line="+91"/>
+        <source>What this game changes from the global settings</source>
+        <translation>Lo que este juego cambia respecto a los ajustes globales</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Nothing: this game uses the global settings in every tab.</source>
+        <translation>Nada: este juego usa los ajustes globales en todas las pestañas.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Its saved settings match the %1 preset.</source>
+        <translation>Sus ajustes guardados coinciden con el preset %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Its saved settings match no preset.</source>
+        <translation>Sus ajustes guardados no coinciden con ningún preset.</translation>
+    </message>
+    <message>
+        <location line="+60"/>
+        <source>%1: &lt;b&gt;%2&lt;/b&gt; &amp;nbsp;&lt;i&gt;(global: %3)&lt;/i&gt;</source>
+        <translation>%1: &lt;b&gt;%2&lt;/b&gt; &amp;nbsp;&lt;i&gt;(global: %3)&lt;/i&gt;</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Use global</source>
+        <translation>Usar el global</translation>
+    </message>
+</context>
+<context>
     <name>PerformanceOverlay</name>
     <message>
         <location filename="../../src/yuzu/render/performance_overlay.ui" line="+14"/>
@@ -11928,7 +12034,7 @@ p, li { white-space: pre-wrap; }
         <translation>%1 esta jugando %2</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/game_list/game_list_p.h" line="-107"/>
+        <location filename="../../src/qt_common/game_list/game_list_p.h" line="-109"/>
         <source>Play Time: %1</source>
         <translation>Tiempo de juego: %1</translation>
     </message>
@@ -11948,7 +12054,7 @@ p, li { white-space: pre-wrap; }
         <translation>Versión: 1.0.0</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+207"/>
         <source>Installed SD Titles</source>
         <translation>Títulos instalados en la SD</translation>
     </message>

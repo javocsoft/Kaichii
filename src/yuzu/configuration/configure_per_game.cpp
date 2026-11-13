@@ -40,6 +40,7 @@
 #include <QNetworkRequest>
 #include <QPushButton>
 #include <QRegularExpression>
+#include <QScrollArea>
 #include <QStandardPaths>
 #include <QString>
 #include <QTimer>
@@ -77,6 +78,7 @@
 #include "yuzu/configuration/configure_per_game.h"
 #include "yuzu/configuration/configure_per_game_addons.h"
 #include "yuzu/configuration/configure_system.h"
+#include "yuzu/configuration/per_game_summary.h"
 #include "yuzu/configuration/setting_help_panel.h"
 #include "yuzu/configuration/settings_organizer.h"
 #include "yuzu/configuration/settings_page_scroll.h"
@@ -409,7 +411,12 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
         graphics_sources, graphics_tab->GraphicsCardGroup(), graphics_tab->BackgroundRow());
     using ConfigurationShared::GoalPage;
     using enum ConfigurationShared::SettingLevel;
+    const auto host = VkDeviceInfo::DetectHostProfile(vk_device_records,
+                                                      Settings::values.vulkan_device.GetValue());
+    summary = new ConfigurationShared::PerGameSummary(builder->Translations(),
+                                                      builder->ComboboxTranslations(), host, this);
     const std::vector<std::tuple<QWidget*, const char*, ConfigurationShared::SettingLevel>> pages{
+        {summary, QT_TR_NOOP("Summary"), Basic},
         {performance_tab.get(), QT_TR_NOOP("Performance"), Basic},
         {addons_tab.get(), QT_TR_NOOP("Add-Ons"), Basic},
         {goal_pages[static_cast<size_t>(GoalPage::Image)], QT_TR_NOOP("Image"), Basic},
@@ -424,10 +431,23 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
          Advanced},
         {cpu_tab.get(), QT_TR_NOOP("CPU"), Advanced},
     };
+    std::vector<QWidget*> summed_pages;
     for (const auto& [page, name, level] : pages) {
         organizer->Gate(page);
         page_tabs.push_back({new ConfigurationShared::SettingsPageScroll(page, this), name, level});
+        if (page != summary) {
+            summed_pages.push_back(page);
+        }
     }
+    summary->SetPages(std::move(summed_pages));
+    connect(summary, &ConfigurationShared::PerGameSummary::GoToSetting, this,
+            &ConfigurePerGame::GoToSetting);
+    // Read again whenever it is shown: changes in the other tabs count before they are applied.
+    connect(ui->tabWidget, &QTabWidget::currentChanged, this, [this] {
+        if (ui->tabWidget->currentWidget() == page_tabs.front().scroll) {
+            summary->Refresh();
+        }
+    });
 
     show_advanced_box = new QCheckBox(this);
     developer_mode_box = new QCheckBox(this);
@@ -441,11 +461,9 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
     SetLevels(UISettings::values.settings_show_advanced.GetValue(),
               UISettings::values.settings_developer_mode.GetValue());
 
-    auto* const help_panel = new ConfigurationShared::SettingHelpPanel(
+    help_panel = new ConfigurationShared::SettingHelpPanel(
         builder->Translations(), builder->Help(), builder->ComboboxTranslations(),
-        VkDeviceInfo::DetectHostProfile(vk_device_records,
-                                        Settings::values.vulkan_device.GetValue()),
-        this);
+        host, this);
     ui->verticalLayout_3->insertWidget(1, help_panel);
     help_panel->Watch(ui->tabWidget);
 
@@ -566,6 +584,41 @@ void ConfigurePerGame::RetranslateUI() {
                 ui->tabWidget->setTabText(index, tr(tab.name));
             }
         }
+    }
+}
+
+void ConfigurePerGame::GoToSetting(QWidget* row) {
+    using ConfigurationShared::SettingLevel;
+    for (const PageTab& tab : page_tabs) {
+        if (!tab.scroll->isAncestorOf(row)) {
+            continue;
+        }
+        const SettingLevel needed =
+            std::max(tab.level, organizer->LevelOf(row).value_or(SettingLevel::Basic));
+        if (!organizer->Shows(needed)) {
+            SetLevels(true, needed == SettingLevel::Developer || developer_mode_box->isChecked());
+        }
+        ui->tabWidget->setCurrentWidget(tab.scroll);
+        // After the tab's layout has run, so the scroll position is right.
+        QTimer::singleShot(0, this, [this, target = QPointer<QWidget>(row),
+                                     scroll = qobject_cast<QScrollArea*>(tab.scroll)] {
+            if (!target) {
+                return;
+            }
+            if (scroll != nullptr) {
+                scroll->ensureWidgetVisible(target);
+            }
+            QWidget* focus = target;
+            for (QWidget* const child : target->findChildren<QWidget*>()) {
+                if (child->focusPolicy() != Qt::NoFocus && child->isVisibleTo(target)) {
+                    focus = child;
+                    break;
+                }
+            }
+            focus->setFocus(Qt::OtherFocusReason);
+            help_panel->Explain(target);
+        });
+        return;
     }
 }
 

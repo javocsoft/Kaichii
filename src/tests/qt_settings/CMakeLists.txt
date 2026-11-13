@@ -20,6 +20,8 @@ add_executable(setting_help_tests
     setting_help.cpp
     ../../yuzu/configuration/setting_help_panel.cpp
     ../../yuzu/configuration/setting_help_panel.h
+    ../../yuzu/configuration/per_game_summary.cpp
+    ../../yuzu/configuration/per_game_summary.h
     ../../yuzu/configuration/settings_organizer.cpp
     ../../yuzu/configuration/settings_organizer.h
 )
@@ -29,3 +31,11 @@ target_link_libraries(setting_help_tests PRIVATE qt_common frontend_common commo
                       Qt6::Widgets Qt6::Test)
 add_test(NAME setting_help COMMAND setting_help_tests)
 set_tests_properties(setting_help PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+# Game list icons for games without one.
+add_executable(game_list_icon_tests game_list_icon.cpp)
+target_compile_features(game_list_icon_tests PRIVATE cxx_std_20)
+target_include_directories(game_list_icon_tests PRIVATE ../..)
+target_link_libraries(game_list_icon_tests PRIVATE Qt6::Widgets Qt6::Test)
+add_test(NAME game_list_icon COMMAND game_list_icon_tests)
+set_tests_properties(game_list_icon PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")

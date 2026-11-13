@@ -8,6 +8,8 @@
 #undef VMA_IMPLEMENTATION
 #endif
 
+#include <utility>
+
 #include <QSysInfo>
 #include <boost/algorithm/string/split.hpp>
 #include "common/fs/path_util.h"
@@ -1358,6 +1360,7 @@ void MainWindow::InitializeHotkeys() {
     LinkActionShortcut(ui->action_Leave_Room, QStringLiteral("Leave Room"));
     LinkActionShortcut(ui->action_Configure, QStringLiteral("Configure"));
     LinkActionShortcut(ui->action_Configure_Current_Game, QStringLiteral("Configure Current Game"));
+    LinkActionShortcut(ui->action_Optimize_Current_Game, QStringLiteral("Optimize for This Game"));
 
     static const QString main_window = QStringLiteral("Main Window");
     const auto connect_shortcut = [&]<typename Fn>(const QString& action_name, const Fn& function) {
@@ -1505,6 +1508,7 @@ void MainWindow::ConnectWidgetEvents() {
         dialog.exec();
     });
     connect(game_list, &GameList::BootGame, this, &MainWindow::BootGameFromList);
+    connect(game_list, &GameList::OptimizeGameRequested, this, &MainWindow::OnOptimizeGameFromList);
     connect(game_list, &GameList::GameChosen, this, &MainWindow::OnGameListLoadFile);
     connect(game_list, &GameList::OpenDirectory, this, &MainWindow::OnGameListOpenDirectory);
     connect(game_list, &GameList::OpenFolderRequested, this, &MainWindow::OnGameListOpenFolder);
@@ -2346,6 +2350,14 @@ void MainWindow::BootGame(const QString& filename, Service::AM::FrontendAppletPa
     loading_screen->show();
 
     emulation_running = true;
+    if (!optimize_hint_path.isEmpty() && std::exchange(optimize_hint_path, QString{}) == filename) {
+        statusBar()->showMessage(
+            tr("To optimize this game, play to a demanding place, then press %1 (Emulation > "
+               "Optimize for This Game).")
+                .arg(ui->action_Optimize_Current_Game->shortcut().toString(
+                    QKeySequence::NativeText)),
+            120000);
+    }
     if (ui->action_Fullscreen->isChecked()) {
         ShowFullscreen();
 #if !defined(__linux__) || defined(__ANDROID__)
@@ -2363,6 +2375,21 @@ void MainWindow::BootGame(const QString& filename, Service::AM::FrontendAppletPa
 
 void MainWindow::BootGameFromList(const QString& filename, StartGameType with_config) {
     BootGame(filename, ApplicationAppletParameters(), with_config);
+}
+
+void MainWindow::OnOptimizeGameFromList(const QString& game_path) {
+    if (emulation_running) {
+        if (game_path == current_game_path) {
+            OnOptimizeCurrentGame();
+        } else {
+            QMessageBox::information(this, tr("Optimize for This Game"),
+                                     tr("Stop the game that is running first."));
+        }
+        return;
+    }
+    // It measures the game where it is played, not at its title: start it, and say how.
+    optimize_hint_path = game_path;
+    BootGame(game_path, ApplicationAppletParameters(), StartGameType::Normal);
 }
 
 bool MainWindow::OnShutdownBegin() {
@@ -5140,6 +5167,28 @@ void MainWindow::UpdateVolumeUI() {
 }
 
 void MainWindow::UpdateStatusButtons() {
+    // What each button shows and does, in the current language.
+    renderer_status_button->setToolTip(
+        tr("Graphics API. Click to switch to the next one, right-click to choose one."));
+    gpu_accuracy_button->setToolTip(
+        tr("GPU mode: Fast, or Accurate for games that need it. Click to switch, right-click to "
+           "choose."));
+    dock_status_button->setToolTip(
+        tr("Console mode: docked (on a TV) or handheld. Games change their resolution with it. "
+           "Click to switch, right-click to choose."));
+    filter_status_button->setToolTip(
+        tr("Window adapting filter: how the image is resized to fit the window. Click for the "
+           "next one, right-click to choose."));
+    aa_status_button->setToolTip(
+        tr("Anti-aliasing method. Click for the next one, right-click to choose."));
+#ifdef HAS_RESHADE
+    post_shader_status_button->setToolTip(
+        tr("Post-processing effects. Click to turn them on or off, right-click to pick a preset "
+           "or configure them."));
+#endif
+    volume_button->setToolTip(
+        tr("Volume. Click for its slider, right-click to mute or reset it."));
+    refresh_button->setToolTip(tr("Look for games in the game folders again."));
     renderer_status_button->setChecked(Settings::values.renderer_backend.GetValue() ==
                                        Settings::RendererBackend::Vulkan);
     UpdateAPIText();

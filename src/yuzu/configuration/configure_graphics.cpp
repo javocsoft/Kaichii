@@ -291,6 +291,8 @@ void ConfigureGraphics::Setup(const ConfigurationShared::Builder& builder) {
                 QPushButton* restore_button =
                     ConfigurationShared::Widget::CreateRestoreGlobalButton(
                         Settings::values.vsync_mode.UsingGlobal(), widget);
+                restore_button->setProperty(ConfigurationShared::RestoresSettingProperty,
+                                            Settings::values.vsync_mode.Id());
                 restore_button->setEnabled(true);
                 widget->layout()->addWidget(restore_button);
 

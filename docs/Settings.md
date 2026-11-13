@@ -101,6 +101,10 @@ place in `GraphicsSections()` (same file): the section of the Image, Smoothness 
 emulation page it goes in. The `setting_help` test fails for a shown setting without a
 description, a help entry or, for graphics, a section.
 
+A page that makes its own per-game "use the global value" button, instead of the one the settings
+widget makes, sets `ConfigurationShared::RestoresSettingProperty` on it to the setting's id, and
+shows it only while the game changes that setting: the game's Summary tab lists those.
+
 ---
 
 ### Step 3 - Kotlin (Android)
