@@ -33,6 +33,7 @@
 #include <ranges>
 #include "common/scratch_buffer.h"
 #include "common/slot_vector.h"
+#include "video_core/texture_cache/game_upscale.h"
 #include "video_core/texture_cache/rescale_trace.h"
 #include "video_core/texture_cache/pending_download.h"
 #include "common/thread_worker.h"
@@ -537,6 +538,10 @@ private:
     bool ScaleUp(Image& image, RescaleTrace::Cause cause);
     /// `blocker`, when known, is the image whose description keeps `image` from the scale.
     bool ScaleDown(Image& image, RescaleTrace::Cause cause, const ImageBase* blocker = nullptr);
+    /// Below 1x: notes a compute dispatch that upscales a render target, and the size it writes.
+    void NoteGameUpscale(std::span<const ImageViewInOut> views);
+    /// Below 1x: whether `image` stays native because the game upscales to a larger image.
+    [[nodiscard]] bool HeldNativeForGameUpscale(const ImageBase& image) const;
     /// What keeps `image` from following the resolution scale: its own description, or that of an
     /// image sharing its memory. Empty when nothing in them does.
     [[nodiscard]] std::string RescaleBlocker(const ImageBase& image);
@@ -687,6 +692,10 @@ private:
 
     u64 modification_tick = 0;
     u64 frame_tick = 0;
+    /// The last frame a compute dispatch upscaled a render target, and the size it wrote.
+    std::optional<u64> game_upscale_tick;
+    u32 game_upscale_width = 0;
+    u32 game_upscale_height = 0;
 
     // Declared before the decode worker, whose jobs fill it, so it outlives them.
     TranscodeCache transcode_cache;
