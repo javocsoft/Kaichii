@@ -230,6 +230,8 @@ class BufferCache : public VideoCommon::ChannelSetupCaches<BufferCacheChannelInf
 
     struct OverlapResult {
         boost::container::small_vector<BufferId, 16> ids;
+        /// Large buffers that only touch the range: deleted, not joined
+        boost::container::small_vector<BufferId, 2> cut;
         DAddr begin;
         DAddr end;
         bool has_stream_leap = false;
@@ -362,7 +364,8 @@ public:
     /// Takes CPU writes about to be applied one by one out of the GPU-written ranges first, so
     /// applying one doesn't download the GPU's copy over another (WriteMemory keeps the GPU data
     /// on the pages it writes).
-    void ClaimCpuWrites(std::span<const std::pair<DAddr, u64>> ranges);
+    template <typename Ranges>
+    void ClaimCpuWrites(const Ranges& ranges);
 
     /// Return true when there are uncommitted buffers to be downloaded
     [[nodiscard]] bool HasUncommittedFlushes() const noexcept;
@@ -809,6 +812,8 @@ private:
     std::vector<MultiRangeSegment> graphics_segments;
     std::vector<MultiRangeSegment> compute_segments;
     u64 frame_tick = 0;
+    /// Buffers created since the last TickFrame; ResolveOverlaps does not cut these
+    std::vector<BufferId> frame_created_buffers;
     /// EDEN_NX2_TABLE_POINTER_TRACE: last table entry and size bound per table pointer slot.
     std::unordered_map<u64, std::pair<GPUVAddr, u32>> traced_table_pointers;
     u64 total_used_memory = 0;

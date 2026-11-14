@@ -254,17 +254,18 @@ void TextureCache<P>::RunGarbageCollector(bool out_of_memory) {
             ticks_to_destroy = escalation.ticks_to_destroy;
         }
     };
-    const auto Cleanup = [&](ImageId image_id) {
-        if (num_iterations == 0) {
-            return true;
-        }
+    // Whether this pass may delete `image_id`. Collect leaves the others out and Cleanup checks
+    // before it counts an image, so images it can't delete don't use up the pass: ten old ASTC
+    // images at the end of the LRU list stopped every normal pass with nothing deleted (Zortos
+    // #1731). `dead` and `must_download` are set for an image it may delete.
+    const auto CanEvict = [&](ImageId image_id, bool* dead_out = nullptr,
+                              bool* must_download_out = nullptr) {
         if (std::ranges::any_of(pending, [image_id](const EvictedDownload& entry) {
                 return entry.image_id == image_id;
             })) {
             return false;
         }
-        --num_iterations;
-        auto& image = slot_images[image_id];
+        const auto& image = slot_images[image_id];
         if (True(image.flags & ImageFlagBits::IsDecoding)) {
             return false;
         }
@@ -274,12 +275,31 @@ void TextureCache<P>::RunGarbageCollector(bool out_of_memory) {
         const bool dead = HasDeadGpuData(image);
         const bool must_download =
             !dead && IsDownloadable(image) && False(image.flags & ImageFlagBits::BadOverlap);
-        if (dead) {
-            ++gc_dead_deletes;
-        }
         if ((!aggressive_mode && !evict_old_costly && True(image.flags & ImageFlagBits::CostlyLoad)) ||
             (!high_priority_mode && must_download)) {
             return false;
+        }
+        if (dead_out != nullptr) {
+            *dead_out = dead;
+        }
+        if (must_download_out != nullptr) {
+            *must_download_out = must_download;
+        }
+        return true;
+    };
+    const auto Cleanup = [&](ImageId image_id) {
+        if (num_iterations == 0) {
+            return true;
+        }
+        bool dead = false;
+        bool must_download = false;
+        if (!CanEvict(image_id, &dead, &must_download)) {
+            return false;
+        }
+        --num_iterations;
+        auto& image = slot_images[image_id];
+        if (dead) {
+            ++gc_dead_deletes;
         }
         if (must_download && !Tegra::Nx2SparseWriteReady(image.gpu_addr, image.guest_size_bytes)) {
             // Its guest memory is being given a backing (see Nx2SparseWriteReady): evicted on a
@@ -295,6 +315,18 @@ void TextureCache<P>::RunGarbageCollector(bool out_of_memory) {
             if (!pending.empty() && pending_bytes + image.unswizzled_size_bytes > MaxBatchBytes) {
                 return false;
             }
+        }
+        // The block fill Collect sorts by is recounted every 60 frames: take the image out of it
+        // now, so the next passes this frame and the frames until the recount see the block as
+        // it will be (Zortos #1731).
+        if constexpr (requires(const Image& img) { img.MemoryBlock(); }) {
+            const auto block = image.MemoryBlock();
+            if (const auto it = block_image_bytes.find(block.block);
+                block.block != 0 && it != block_image_bytes.end()) {
+                it->second -= (std::min)(it->second, block.size);
+            }
+        }
+        if (must_download) {
             // Deferred: OpenGL hands a non-deferred download buffer to the next request at once.
             auto map = runtime.DownloadStagingBuffer(image.unswizzled_size_bytes, true);
             auto copies = FullDownloadCopies(image.info);
@@ -325,14 +357,12 @@ void TextureCache<P>::RunGarbageCollector(bool out_of_memory) {
     // used). Among the oldest candidates (8 per image this pass may delete), those in the
     // emptiest blocks go first, so blocks drain and go back to the driver; placement already
     // prefers the fullest blocks (best fit). Images with memory of their own sit in the middle.
-    const auto Collect = [&] {
+    const auto Collect = [&](u64 age) {
         if constexpr (requires(const Image& image) { image.MemoryBlock(); }) {
             std::vector<ImageId> candidates;
             const size_t limit = num_iterations * 8;
-            lru_cache.ForEachItemBelow(frame_tick - ticks_to_destroy, [&](ImageId image_id) {
-                if (std::ranges::any_of(pending, [image_id](const EvictedDownload& entry) {
-                        return entry.image_id == image_id;
-                    })) {
+            lru_cache.ForEachItemBelow(frame_tick - age, [&](ImageId image_id) {
+                if (!CanEvict(image_id)) {
                     return false;
                 }
                 candidates.push_back(image_id);
@@ -372,7 +402,7 @@ void TextureCache<P>::RunGarbageCollector(bool out_of_memory) {
                 }
             }
         } else {
-            lru_cache.ForEachItemBelow(frame_tick - ticks_to_destroy, Cleanup);
+            lru_cache.ForEachItemBelow(frame_tick - age, Cleanup);
         }
     };
     Configure(false);
@@ -381,14 +411,15 @@ void TextureCache<P>::RunGarbageCollector(bool out_of_memory) {
         return value != nullptr ? std::strtoull(value, nullptr, 10) : 1800ULL;
     }();
     if (high_priority_mode && old_age != 0 && frame_tick > old_age) {
+        // Through Collect, so old costly images in the emptiest blocks go first too (Zortos #1731).
         evict_old_costly = true;
-        lru_cache.ForEachItemBelow(frame_tick - old_age, Cleanup);
+        Collect(old_age);
         evict_old_costly = false;
     }
-    Collect();
+    Collect(ticks_to_destroy);
     if (out_of_memory || used_memory() >= critical_memory) {
         Configure(true);
-        Collect();
+        Collect(ticks_to_destroy);
     }
     FlushPending();
 }
