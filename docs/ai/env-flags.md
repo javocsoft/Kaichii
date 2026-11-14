@@ -94,6 +94,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_GUEST_PROFILE` | diag | `=1`: per game thread, the time outside SVCs (running or waiting for a core) and in each SVC, by what it waited on (the IPC service, the event, the lock or condition variable address). Logs the busiest threads every 10 s, and each frame slower than `EDEN_NX2_SLOW_FRAME_MS` (60 ms by default) with what the threads did during it. |
 | `EDEN_NX2_SVC_TRACE` | diag | `=1`: every SVC with arguments and results. `=<first>:<last>`: only those presents. |
 | `EDEN_NX2_IPC_TRACE` | diag | Every dispatched service command and its result word. |
+| `EDEN_NX2_VIBRATION_TRACE` | diag | `=1`: logs each vibration value a game sends through hid command 214 when it differs from the last one for that controller (`Service.HID`), what the controller layer did with it (`Input`: dropped within 15 ms of the last one, or passed on), and each rumble given to SDL after the motor mapping (`Input`). After 4,000 lines of each, one in a hundred. |
 | `EDEN_NX2_IPC_SUMMARY` | diag | Every 5 s, how often each command ran and with which result. Finds a game polling something that never becomes ready. |
 | `EDEN_NX2_MEM_TRACE` | diag | The title's memory layout and size queries. |
 | `EDEN_HYBRID_CORES` | A/B | Windows only. `=0` stops keeping time-critical threads on the performance cores of hybrid CPUs, which is done only with 8 or more performance logical processors. |

@@ -14,6 +14,7 @@
 #include "hid_core/frontend/emulated_controller.h"
 #include "hid_core/frontend/input_converter.h"
 #include "hid_core/hid_util.h"
+#include "hid_core/vibration_trace.h"
 
 namespace Core::HID {
 constexpr s32 HID_TRIGGER_MAX = 0x7fff;
@@ -1341,6 +1342,7 @@ bool EmulatedController::SetVibration(DeviceIndex device_index, const VibrationV
         // Filter out non-zero vibrations that are within 15ms of each other.
         if ((vibration.low_amplitude != 0.0f || vibration.high_amplitude != 0.0f) &&
             duration_cast<milliseconds>(now - last_vibration_timepoint[index]) < milliseconds(15)) {
+            TraceVibration(index, vibration, "dropped: within 15 ms of the last one");
             return false;
         }
 
@@ -1365,7 +1367,27 @@ bool EmulatedController::SetVibration(DeviceIndex device_index, const VibrationV
     // Send vibrations to Android's input overlay
     output_devices[4]->SetVibration(status);
 
-    return output_devices[index]->SetVibration(status) == Common::Input::DriverResult::Success;
+    const bool sent =
+        output_devices[index]->SetVibration(status) == Common::Input::DriverResult::Success;
+    TraceVibration(index, vibration,
+                   sent ? "passed to the controller" : "the controller driver failed");
+    return sent;
+}
+
+void EmulatedController::TraceVibration(std::size_t device_index, const VibrationValue& vibration,
+                                        std::string_view outcome) const {
+    if (!VibrationTrace::Enabled()) {
+        return;
+    }
+    static std::atomic<u64> lines{0};
+    if (!VibrationTrace::Keep(lines.fetch_add(1, std::memory_order_relaxed) + 1)) {
+        return;
+    }
+    LOG_INFO(Input,
+             "Vibration trace: player {} device {}: low {:.3f} at {:.1f} Hz, high {:.3f} at {:.1f} "
+             "Hz, {}",
+             static_cast<u32>(npad_id_type), device_index, vibration.low_amplitude,
+             vibration.low_frequency, vibration.high_amplitude, vibration.high_frequency, outcome);
 }
 
 VibrationValue EmulatedController::GetActualVibrationValue(DeviceIndex device_index) const {

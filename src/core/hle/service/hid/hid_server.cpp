@@ -6,6 +6,9 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
+#include <map>
+#include <mutex>
 #include <utility>
 
 #include "common/common_types.h"
@@ -24,6 +27,7 @@
 #include "hid_core/hid_util.h"
 #include "hid_core/resource_manager.h"
 #include "hid_core/resources/hid_firmware_settings.h"
+#include "hid_core/vibration_trace.h"
 
 #include "hid_core/resources/controller_base.h"
 #include "hid_core/resources/debug_pad/debug_pad.h"
@@ -1114,6 +1118,37 @@ Result IHidServer::IsVibrationDeviceMounted(
     R_SUCCEED();
 }
 
+namespace {
+
+/// EDEN_NX2_VIBRATION_TRACE: logs a value 214 received when it differs from the last one for the
+/// same handle, so a game sending the same value every frame logs it once.
+void TraceNx2Vibration(u64 mode, const Core::HID::VibrationDeviceHandle& handle,
+                       const Core::HID::VibrationValue& value, Result result) {
+    static std::mutex mutex;
+    static std::map<u32, std::array<u32, 4>> last_values;
+    static u64 lines = 0;
+    const std::array<u32, 4> bits{
+        std::bit_cast<u32>(value.low_amplitude), std::bit_cast<u32>(value.low_frequency),
+        std::bit_cast<u32>(value.high_amplitude), std::bit_cast<u32>(value.high_frequency)};
+    std::scoped_lock lock{mutex};
+    const auto [it, inserted] = last_values.try_emplace(std::bit_cast<u32>(handle), bits);
+    if (!inserted && it->second == bits && result.IsSuccess()) {
+        return;
+    }
+    it->second = bits;
+    if (!Core::HID::VibrationTrace::Keep(++lines)) {
+        return;
+    }
+    LOG_INFO(Service_HID,
+             "Vibration trace: 214 mode {} npad_type {} npad_id {} device {}: low {:.3f} at {:.1f} "
+             "Hz, high {:.3f} at {:.1f} Hz, result {:#x}",
+             mode, static_cast<u32>(handle.npad_type), static_cast<u32>(handle.npad_id),
+             static_cast<u32>(handle.device_index), value.low_amplitude, value.low_frequency,
+             value.high_amplitude, value.high_frequency, result.raw);
+}
+
+} // Anonymous namespace
+
 Result IHidServer::SendNx2VibrationValues(
     u64 unknown, AppletResourceUserId aruid,
     InArray<Core::HID::VibrationDeviceHandle, BufferAttr_HipcPointer> vibration_handles,
@@ -1127,6 +1162,9 @@ Result IHidServer::SendNx2VibrationValues(
     for (std::size_t i = 0; i < count; i++) {
         const auto result = GetResourceManager()->SendVibrationValue(
             aruid.pid, vibration_handles[i], vibration_values[i]);
+        if (Core::HID::VibrationTrace::Enabled()) {
+            TraceNx2Vibration(unknown, vibration_handles[i], vibration_values[i], result);
+        }
         if (result.IsError()) {
             LOG_DEBUG(Service_HID, "failed to send vibration {}, result={:#x}", i, result.raw);
         }
