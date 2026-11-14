@@ -857,7 +857,7 @@ void TextureCache<P>::FillImageViews(std::span<ImageViewInOut> views, bool compu
                         continue;
                     }
                     auto& image = slot_images[image_view.image_id];
-                    has_blacklisted |= ScaleDown(image, RescaleTrace::Cause::SampledByPixel);
+                    has_blacklisted |= ScaleDown(image, RescaleTrace::Cause::WrittenByShader);
                     image.scale_rating = 0;
                 }
             }

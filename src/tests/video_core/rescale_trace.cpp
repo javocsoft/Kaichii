@@ -42,7 +42,7 @@ TEST_CASE("Rescale trace names what keeps an image from the scale", "[video_core
 
 TEST_CASE("Rescale trace names every cause", "[video_core][rescale]") {
     for (const Cause cause :
-         {Cause::RenderTargets, Cause::SampledByPixel, Cause::Blit, Cause::BlitResolve,
+         {Cause::RenderTargets, Cause::WrittenByShader, Cause::Blit, Cause::BlitResolve,
           Cause::Upscaler, Cause::JoinedImage, Cause::NewImage, Cause::AliasedImages}) {
         CHECK(Name(cause) != "?");
         CHECK(!Name(cause).empty());

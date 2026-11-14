@@ -14,22 +14,22 @@ namespace VideoCommon::RescaleTrace {
 
 /// What made the texture cache scale an image up or down.
 enum class Cause : u8 {
-    RenderTargets,  ///< Bound as a render target with others.
-    SampledByPixel, ///< Read by pixel position (texel fetch, image load), which can't be scaled.
-    Blit,           ///< A copy between a scaled and an unscaled image.
-    BlitResolve,    ///< A multisample resolve, which needs both images at one size.
-    Upscaler,       ///< The stand-in for a game's own upscaling network.
-    JoinedImage,    ///< Joined into a larger image.
-    NewImage,       ///< Created over images that were or weren't scaled.
-    AliasedImages,  ///< Kept in step with images sharing its memory.
+    RenderTargets,   ///< Bound as a render target with others.
+    WrittenByShader, ///< Written by a shader as a storage image, which can't be scaled.
+    Blit,            ///< A copy between a scaled and an unscaled image.
+    BlitResolve,     ///< A multisample resolve, which needs both images at one size.
+    Upscaler,        ///< The stand-in for a game's own upscaling network.
+    JoinedImage,     ///< Joined into a larger image.
+    NewImage,        ///< Created over images that were or weren't scaled.
+    AliasedImages,   ///< Kept in step with images sharing its memory.
 };
 
 [[nodiscard]] constexpr std::string_view Name(Cause cause) {
     switch (cause) {
     case Cause::RenderTargets:
         return "render targets";
-    case Cause::SampledByPixel:
-        return "read by pixel";
+    case Cause::WrittenByShader:
+        return "written by a shader";
     case Cause::Blit:
         return "blit";
     case Cause::BlitResolve:
