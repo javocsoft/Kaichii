@@ -2942,8 +2942,8 @@ bool TextureCache<P>::ScaleDown(Image& image, RescaleTrace::Cause cause,
 
 template <class P>
 std::string TextureCache<P>::RescaleBlocker(const ImageBase& image) {
-    const auto& resolution = Settings::values.resolution_info;
-    const auto facts = [&resolution](const ImageBase& subject) {
+    const auto facts = [](const ImageBase& subject) {
+        const auto& resolution = Settings::values.resolution_info;
         const auto& info = subject.info;
         bool keeps_mip_levels = true;
         if (resolution.downscale) {
