@@ -18,6 +18,15 @@ revisar que no lleve datos personales.
 - **Cualquier sistema:** actualiza el controlador gráfico. Kaichii dibuja con Vulkan, y un
   controlador antiguo es el motivo más habitual de que un juego no arranque o se vea en negro.
 
+## Un juego no carga: «bad header» o faltan las claves
+
+Los juegos `.nsp`, `.nsz`, `.xci` y `.xcz` están cifrados, y Kaichii necesita las claves de
+descifrado de tu consola (`prod.keys`) para leerlos. Sin ellas no puede leer el juego, y Kaichii
+avisa de que faltan las claves y ofrece instalarlas. Un error como «The NCA file has a bad header»
+con las claves ya instaladas suele indicar un archivo dañado o incompleto. Consulta [Tus
+juegos](Games.es.md) para saber qué necesita cada tipo de archivo. Los juegos `.nup` no necesitan
+claves.
+
 ## El juego va lento
 
 - Usa el ajuste predefinido que recomienda Kaichii, o *Probar este equipo*, en *Configurar >

@@ -2005,14 +2005,34 @@ bool MainWindow::LoadROM(const QString& filename, Service::AM::FrontendAppletPar
                 const std::string error_code = fmt::format("({:04X}-{:04X})", loader_id, error_id);
                 LOG_CRITICAL(Frontend, "Failed to load ROM! {}", error_code);
 
+                const auto status = static_cast<Loader::ResultStatus>(error_id);
+
+                // Without keys an encrypted game fails with a "bad header" that sends players
+                // to redump a good file: say what is missing and offer to install it.
+                if (!ContentManager::AreKeysPresent() && Loader::MissingKeysCanCause(status)) {
+                    const auto answer = QMessageBox::warning(
+                        this, tr("Decryption keys are missing"),
+                        tr("This game is encrypted, and Kaichii needs your console's decryption "
+                           "keys (a prod.keys file) to read it. The game file itself may be "
+                           "fine.<br><br>Keys come from your own console; <a href='%1'>the "
+                           "guide</a> explains how to install them. Install them now?")
+                            .arg(QtCommon::Guide::Page(QStringLiteral("Games/")).toString()),
+                        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+                    if (answer == QMessageBox::Yes) {
+                        OnInstallDecryptionKeys();
+                    }
+                    break;
+                }
+
                 const auto title =
                     tr("Error while loading ROM! %1", "%1 signifies a numeric error code.")
                         .arg(QString::fromStdString(error_code));
                 const auto description =
-                    tr("%1<br>Please redump your files or ask on Discord/Stoat for help.",
+                    tr("%1<br>The file may be damaged or incomplete: dump it again from your "
+                       "console. <a href='%2'>The guide</a> has more help.",
                        "%1 signifies an error string.")
-                        .arg(QString::fromStdString(
-                            GetResultStatusString(static_cast<Loader::ResultStatus>(error_id))));
+                        .arg(QString::fromStdString(GetResultStatusString(status)),
+                             QtCommon::Guide::Page(QStringLiteral("Troubleshooting/")).toString());
 
                 QMessageBox::critical(this, title, description);
             } else {
