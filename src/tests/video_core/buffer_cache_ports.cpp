@@ -1103,9 +1103,13 @@ TEST_CASE("Claimed CPU writes keep their bytes when an earlier one downloads the
     std::memset(f.bytes + 0x10100, 0xaa, 0x10);
     std::memset(f.bytes + 0x10800, 0xbb, 0x10);
     const std::array<std::pair<DAddr, u64>, 2> ranges{{{0x20100, 0x10}, {0x20800, 0x10}}};
-    // A thread of its own, so marking it the GPU thread doesn't carry over to other tests.
+    // A thread of its own, so marking it the GPU thread doesn't carry over to other tests. The
+    // mark also counts the GPU threads that run (HasGpuThread), so it is undone on the way out.
     std::thread{[&] {
         VideoCommon::GpuSplit::MarkGpuThread();
+        SCOPE_EXIT {
+            VideoCommon::GpuSplit::UnmarkGpuThread();
+        };
         f.cache->ClaimCpuWrites(ranges);
         for (const auto& [address, size] : ranges) {
             f.cache->WriteMemory(address, size);
