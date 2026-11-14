@@ -7,7 +7,11 @@
 #include <QStringList>
 #include <QVector>
 
-#include "qt_common/config/uisettings.h"
+// Declared, not included: uisettings.h puts names like Category in the global namespace,
+// which clash with the Objective-C runtime's next to qt_common.cpp on macOS.
+namespace UISettings {
+struct GameDir;
+}
 
 /// The folders the game list shows games from, and the files it shows.
 namespace QtCommon::GameFolders {
