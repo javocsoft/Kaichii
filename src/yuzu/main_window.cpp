@@ -2027,12 +2027,23 @@ bool MainWindow::LoadROM(const QString& filename, Service::AM::FrontendAppletPar
                 const auto title =
                     tr("Error while loading ROM! %1", "%1 signifies a numeric error code.")
                         .arg(QString::fromStdString(error_code));
+                // Keys are installed but not the one this game needs (a title key, or keys older
+                // than the game): the log names it.
+                const bool missing_keys = Loader::IsMissingKeyStatus(status);
                 const auto description =
-                    tr("%1<br>The file may be damaged or incomplete: dump it again from your "
-                       "console. <a href='%2'>The guide</a> has more help.",
-                       "%1 signifies an error string.")
+                    (missing_keys
+                         ? tr("%1<br>Dump current keys from your own console and install them "
+                              "with Tools > Install Decryption Keys, then start the game again. "
+                              "The log names the missing key; <a href='%2'>the guide</a> explains "
+                              "what each kind of file needs.",
+                              "%1 signifies an error string.")
+                         : tr("%1<br>The file may be damaged or incomplete: dump it again from "
+                              "your console. <a href='%2'>The guide</a> has more help.",
+                              "%1 signifies an error string."))
                         .arg(QString::fromStdString(GetResultStatusString(status)),
-                             QtCommon::Guide::Page(QStringLiteral("Troubleshooting/")).toString());
+                             QtCommon::Guide::Page(missing_keys ? QStringLiteral("Games/")
+                                                                : QStringLiteral("Troubleshooting/"))
+                                 .toString());
 
                 QMessageBox::critical(this, title, description);
             } else {
@@ -5395,7 +5406,9 @@ void MainWindow::OnCheckFirmwareDecryption(bool prompt) {
         // At startup only log it: loose ExeFS/RomFS dumps (all Switch 2 games so far) need no
         // keys, and a modal question blocked every unattended launch. Tools > Install Decryption
         // Keys still installs them.
-        LOG_WARNING(Frontend, "Decryption keys are missing: NCA, NSP and XCI games need them");
+        LOG_WARNING(Frontend, "Decryption keys are missing from {}: NCA, NSP and XCI games need them",
+                    Common::FS::PathToUTF8String(
+                        Common::FS::GetEdenPath(Common::FS::EdenPath::KeysDir)));
     } else if (!ContentManager::AreKeysPresent()) {
         const auto res = QtCommon::Frontend::Warning(
             tr("Derivation Components Missing"),

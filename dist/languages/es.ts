@@ -8567,7 +8567,19 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameListWorker</name>
     <message>
-        <location filename="../../src/qt_common/game_list/worker.cpp" line="+486"/>
+        <location filename="../../src/qt_common/game_list/worker.cpp" line="+459"/>
+        <source>%1
+Dump current keys from your own console and install them with Tools &gt; Install Decryption Keys.</source>
+        <translation>%1
+Vuelca las claves actuales de tu propia consola e instálalas con Herramientas &gt; Instalar claves de descifrado.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Decryption keys missing</source>
+        <translation>Faltan las claves de descifrado</translation>
+    </message>
+    <message>
+        <location line="+52"/>
         <source>Not scanned</source>
         <translation>Sin analizar</translation>
     </message>
@@ -9175,13 +9187,19 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>Este juego está cifrado, y Kaichii necesita las claves de descifrado de tu consola (un archivo prod.keys) para leerlo. Puede que el archivo del juego esté bien.&lt;br&gt;&lt;br&gt;Las claves salen de tu propia consola; &lt;a href=&apos;%1&apos;&gt;la guía&lt;/a&gt; explica cómo instalarlas. ¿Instalarlas ahora?</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+20"/>
+        <source>%1&lt;br&gt;Dump current keys from your own console and install them with Tools &gt; Install Decryption Keys, then start the game again. The log names the missing key; &lt;a href=&apos;%2&apos;&gt;the guide&lt;/a&gt; explains what each kind of file needs.</source>
+        <comment>%1 signifies an error string.</comment>
+        <translation>%1&lt;br&gt;Vuelca las claves actuales de tu propia consola, instálalas con Herramientas &gt; Instalar claves de descifrado y vuelve a iniciar el juego. El registro indica qué clave falta; &lt;a href=&apos;%2&apos;&gt;la guía&lt;/a&gt; explica qué necesita cada tipo de archivo.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>%1&lt;br&gt;The file may be damaged or incomplete: dump it again from your console. &lt;a href=&apos;%2&apos;&gt;The guide&lt;/a&gt; has more help.</source>
         <comment>%1 signifies an error string.</comment>
         <translation>%1&lt;br&gt;Puede que el archivo esté dañado o incompleto: vuelve a volcarlo desde tu consola. &lt;a href=&apos;%2&apos;&gt;La guía&lt;/a&gt; tiene más ayuda.</translation>
     </message>
     <message>
-        <location line="+1232"/>
+        <location line="+1234"/>
         <source>This folder doesn&apos;t hold a game extracted into files (a &apos;main&apos; file).
 
 To add a folder with your games to the game list, use File &gt; Add Games Folder.</source>
@@ -9345,7 +9363,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-1454"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-1465"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -9365,7 +9383,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="-284"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3757"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3770"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -9542,7 +9560,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-696"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-698"/>
         <source>&amp;Start</source>
         <translation>&amp;Iniciar</translation>
     </message>
@@ -9648,7 +9666,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4646"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4657"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9817,12 +9835,12 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+172"/>
-        <location line="+49"/>
+        <location line="+60"/>
         <source>Error while loading ROM!</source>
         <translation>¡Error al cargar la ROM!</translation>
     </message>
     <message>
-        <location line="-48"/>
+        <location line="-59"/>
         <source>The ROM format is not supported.</source>
         <translation>El formato de la ROM no está soportado.</translation>
     </message>
@@ -9847,7 +9865,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">%1&lt;br&gt;Por favor vuelva a volcar sus archivos, o pida ayuda en Discord/Stoat.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+24"/>
         <source>An unknown error occurred. Please see the log for more details.</source>
         <translation>Ha ocurrido un error desconocido. Por favor mire el registro para más detalles.</translation>
     </message>
@@ -10777,7 +10795,7 @@ Add Kaichii to the applications menu? You can change this later in Configure &gt
 ¿Añadir Kaichii al menú de aplicaciones? Puedes cambiarlo más tarde en Configurar &gt; Interfaz.</translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+138"/>
         <source>Derivation Components Missing</source>
         <translation>Componentes de derivación ausentes</translation>
     </message>
@@ -12400,7 +12418,7 @@ p, li { white-space: pre-wrap; }
         <translation>Favoritos</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/game_list/worker.cpp" line="-263"/>
+        <location filename="../../src/qt_common/game_list/worker.cpp" line="-297"/>
         <source>%1 (update)</source>
         <translation>%1 (actualización)</translation>
     </message>
