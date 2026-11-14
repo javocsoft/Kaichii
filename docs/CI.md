@@ -95,6 +95,21 @@ from a pinned LLVM (`tools/windows/install-llvm.ps1`) with ThinLTO against the M
 the PGO one adds `lichii-windows.profdata`, an MSVC-ABI profile trained on Ocarina of Time. Zortos's
 Windows clang-cl job in `build-check.yml` is not taken here: Windows does not build on pull requests.
 
+### Release notes
+
+A release's notes start with "Changes since build N", from `tools/ci/release_changes.py`: the commit
+it was built from, the previous published `build-<n>` release, and everything merged on the branch
+since then (pull requests by title and number, commits pushed straight to it). The download tables
+follow, one row per file and what it is for.
+
+Written notes go in `.github/release-notes.md`, between that header and the list. Write them in a
+pull request before running the release, in the style of Lichii's releases: sections such as "Big
+fixes", "New features", "Performance", one per game, and "Crashes and stability", each entry saying
+what a player saw, what caused it, what was measured or played, and the pull request. The workflow
+includes the file only when it changed since the previous release, so stale notes never repeat;
+without new notes the release still lists every change. `tools/ci/test_release_changes.py` covers
+the script.
+
 ## Linux PGO profile
 
 `lichii-linux.profdata` is `eglantine.profdata` (trained upstream on Mario Kart World) merged with
