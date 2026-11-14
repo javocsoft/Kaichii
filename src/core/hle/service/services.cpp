@@ -99,7 +99,7 @@ Services::Services(std::shared_ptr<SM::ServiceManager>& sm, Core::System& system
     })
         kernel.RunOnHostCoreProcess(std::string(e.first), [&system, f = e.second] { f(system); }).detach();
     vi_worker = kernel.RunOnHostCoreProcess("vi", [&, token] { VI::LoopProcess(system, token); });
-    // Avoid cold clones of lambdas -- succintly
+    // Avoid cold clones of lambdas -- succinctly
     for (auto const& e : std::vector<std::pair<std::string_view, void (*)(Core::System&)>>{
         {"sm",         &SM::LoopProcess},
         {"account",    &Account::LoopProcess},
