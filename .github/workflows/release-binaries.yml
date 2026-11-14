@@ -575,6 +575,14 @@ jobs:
     permissions:
       contents: write
     steps:
+      # The full history and tags, in source/ so it stays apart from the packaged files: the notes
+      # list everything merged since the previous release (tools/ci/release_changes.py).
+      - name: Check out the history
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          path: source
+
       - name: Download binaries
         uses: actions/download-artifact@v7
         with:
@@ -682,8 +690,21 @@ jobs:
             printf '%s\n\n' "$3"
           }
 
+          # The newest published build-<n> release before this one: what this release's changes are
+          # counted from. Pre-releases count (every build is one); drafts don't.
+          previous=$(gh release list --repo "${GITHUB_REPOSITORY}" --limit 50 \
+            --json tagName,isDraft \
+            --jq "[.[] | select(.isDraft | not) | .tagName | select(startswith(\"build-\")) | select(. != \"${tag}\")] | .[0] // \"\"")
+          python3 source/tools/ci/release_changes.py --repo-dir source --previous "$previous" \
+            --sha "${GITHUB_SHA}" --ref "${GITHUB_REF_NAME}" > changes.md
+
           {
-            printf 'Automatic build of `%s` at %s.\n\n' "${GITHUB_REF_NAME}" "${GITHUB_SHA}"
+            if [[ -s changes.md ]]; then
+              cat changes.md
+              printf -- '---\n\n'
+            else
+              printf 'Automatic build of `%s` at %s.\n\n' "${GITHUB_REF_NAME}" "${GITHUB_SHA}"
+            fi
             section Linux "Linux packages come as an AppImage (self-contained, needs glibc 2.39 or newer: Ubuntu 24.04, Fedora 40, Debian 13, Arch) and a tar.gz (uses your system libraries, so Qt 6 and the usual libraries must be installed)." "$linux_table"
             section Windows "Windows packages are in-place zip files: extract and run \`kaichii.exe\`, or \`eden-cli.exe\` from a terminal." "$windows_table"
             section macOS "" "$macos_table"
