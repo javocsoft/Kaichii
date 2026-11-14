@@ -14,6 +14,7 @@
 #include "hid_core/frontend/emulated_controller.h"
 #include "hid_core/frontend/input_converter.h"
 #include "hid_core/hid_util.h"
+#include "hid_core/vibration_trace.h"
 
 namespace Core::HID {
 constexpr s32 HID_TRIGGER_MAX = 0x7fff;
@@ -1281,7 +1282,7 @@ bool EmulatedController::SetVibration(bool should_vibrate) {
         vibration_value.high_amplitude = 1.0f;
         vibration_value.low_amplitude = 1.0f;
     }
-    return SetVibration(DeviceIndex::Left, vibration_value);
+    return SetVibration(DeviceIndex::Left, vibration_value, Common::Input::VibrationSide::Both);
 }
 
 bool EmulatedController::SetVibration(u32 slot, Core::HID::VibrationGcErmCommand erm_command) {
@@ -1290,10 +1291,17 @@ bool EmulatedController::SetVibration(u32 slot, Core::HID::VibrationGcErmCommand
         vibration_value.high_amplitude = 1.0f;
         vibration_value.low_amplitude = 1.0f;
     }
-    return SetVibration(DeviceIndex::Left, vibration_value);
+    return SetVibration(DeviceIndex::Left, vibration_value, Common::Input::VibrationSide::Both);
 }
 
 bool EmulatedController::SetVibration(DeviceIndex device_index, const VibrationValue& vibration) {
+    return SetVibration(device_index, vibration,
+                        device_index == DeviceIndex::Left ? Common::Input::VibrationSide::Left
+                                                          : Common::Input::VibrationSide::Right);
+}
+
+bool EmulatedController::SetVibration(DeviceIndex device_index, const VibrationValue& vibration,
+                                      Common::Input::VibrationSide side) {
     if (!is_initialized) {
         return false;
     }
@@ -1334,6 +1342,7 @@ bool EmulatedController::SetVibration(DeviceIndex device_index, const VibrationV
         // Filter out non-zero vibrations that are within 15ms of each other.
         if ((vibration.low_amplitude != 0.0f || vibration.high_amplitude != 0.0f) &&
             duration_cast<milliseconds>(now - last_vibration_timepoint[index]) < milliseconds(15)) {
+            TraceVibration(index, vibration, "dropped: within 15 ms of the last one");
             return false;
         }
 
@@ -1352,12 +1361,33 @@ bool EmulatedController::SetVibration(DeviceIndex device_index, const VibrationV
         .high_amplitude = (std::min)(vibration.high_amplitude * strength, 1.0f),
         .high_frequency = vibration.high_frequency,
         .type = type,
+        .side = side,
     };
 
     // Send vibrations to Android's input overlay
     output_devices[4]->SetVibration(status);
 
-    return output_devices[index]->SetVibration(status) == Common::Input::DriverResult::Success;
+    const bool sent =
+        output_devices[index]->SetVibration(status) == Common::Input::DriverResult::Success;
+    TraceVibration(index, vibration,
+                   sent ? "passed to the controller" : "the controller driver failed");
+    return sent;
+}
+
+void EmulatedController::TraceVibration(std::size_t device_index, const VibrationValue& vibration,
+                                        std::string_view outcome) const {
+    if (!VibrationTrace::Enabled()) {
+        return;
+    }
+    static std::atomic<u64> lines{0};
+    if (!VibrationTrace::Keep(lines.fetch_add(1, std::memory_order_relaxed) + 1)) {
+        return;
+    }
+    LOG_INFO(Input,
+             "Vibration trace: player {} device {}: low {:.3f} at {:.1f} Hz, high {:.3f} at {:.1f} "
+             "Hz, {}",
+             static_cast<u32>(npad_id_type), device_index, vibration.low_amplitude,
+             vibration.low_frequency, vibration.high_amplitude, vibration.high_frequency, outcome);
 }
 
 VibrationValue EmulatedController::GetActualVibrationValue(DeviceIndex device_index) const {

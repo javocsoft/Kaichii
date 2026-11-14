@@ -510,6 +510,16 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxSilenceFaintRumble">
+        <property name="toolTip">
+         <string>On controllers with two rumble motors (Xbox, PlayStation and others), mutes the very faint vibration some games keep up all the time, which those motors turn into a constant buzz. Stronger vibrations are not changed.</string>
+        </property>
+        <property name="text">
+         <string>Silence faint background vibration</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

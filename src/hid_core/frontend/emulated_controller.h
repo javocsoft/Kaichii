@@ -12,6 +12,7 @@
 #include <mutex>
 #include <optional>
 #include <shared_mutex>
+#include <string_view>
 #include <vector>
 #include <atomic>
 
@@ -500,11 +501,19 @@ private:
     /// creates input devices from params
     void LoadDevices();
 
+    /// EDEN_NX2_VIBRATION_TRACE: logs what SetVibration did with a new value.
+    void TraceVibration(std::size_t device_index, const VibrationValue& vibration,
+                        std::string_view outcome) const;
+
     /// Set the params for TAS devices
     void LoadTASParams();
 
     /// Set the params for virtual pad devices
     void LoadVirtualGamepadParams();
+
+    /// Sends a vibration to the output device for the given side of the controller
+    bool SetVibration(DeviceIndex device_index, const VibrationValue& vibration,
+                      Common::Input::VibrationSide side);
 
     /**
      * @param use_temporary_value If true tmp_npad_type will be used

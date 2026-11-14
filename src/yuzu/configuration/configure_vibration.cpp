@@ -40,9 +40,11 @@ ConfigureVibration::ConfigureVibration(QWidget* parent, Core::HID::HIDCore& hid_
 
     ui->checkBoxAccurateVibration->setChecked(
         Settings::values.enable_accurate_vibrations.GetValue());
+    ui->checkBoxSilenceFaintRumble->setChecked(Settings::values.silence_faint_rumble.GetValue());
 
     if (!Settings::IsConfiguringGlobal()) {
         ui->checkBoxAccurateVibration->setDisabled(true);
+        ui->checkBoxSilenceFaintRumble->setDisabled(true);
     }
 
     RetranslateUI();
@@ -67,6 +69,7 @@ void ConfigureVibration::ApplyConfiguration() {
 
     Settings::values.enable_accurate_vibrations.SetValue(
         ui->checkBoxAccurateVibration->isChecked());
+    Settings::values.silence_faint_rumble.SetValue(ui->checkBoxSilenceFaintRumble->isChecked());
 }
 
 void ConfigureVibration::changeEvent(QEvent* event) {
