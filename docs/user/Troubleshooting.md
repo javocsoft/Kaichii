@@ -17,6 +17,14 @@ names the build. Attach it when you report a problem, after checking it for pers
 - **Any system:** update the graphics driver. Kaichii draws with Vulkan, and old drivers are the most
   common reason a game doesn't start or shows a black screen.
 
+## A game doesn't load: "bad header" or missing keys
+
+`.nsp`, `.nsz`, `.xci` and `.xcz` games are encrypted, and Kaichii needs your console's decryption
+keys (`prod.keys`) to read them. Without them the game can't be read at all, and Kaichii says the
+keys are missing and offers to install them. An error such as "The NCA file has a bad header" with
+the keys installed usually means a damaged or incomplete file. See [Your games](Games.md) for what
+each kind of file needs. `.nup` games need no keys.
+
 ## The game runs slowly
 
 - Use the preset Kaichii recommends, or *Test this computer*, in *Configure > Performance*.

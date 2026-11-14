@@ -16,6 +16,7 @@ add_executable(tests
     core/control_metadata.cpp
     core/executable_headers.cpp
     core/ips_layer.cpp
+    core/loader_errors.cpp
     core/kernel_executable.cpp
     core/network_packet.cpp
     core/network_room.cpp

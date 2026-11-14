@@ -163,6 +163,27 @@ enum class ResultStatus : u16 {
 };
 
 std::string GetResultStatusString(ResultStatus status);
+
+/// Whether missing decryption keys can explain `status`: without them an NCA or XCI header can't
+/// be decrypted and reads as bad, and the key errors name a key that isn't there. An NSP, NSZ, XCI
+/// or XCZ game needs the keys; a NUP or a loose ExeFS dump doesn't.
+[[nodiscard]] constexpr bool MissingKeysCanCause(ResultStatus status) {
+    switch (status) {
+    case ResultStatus::ErrorBadNCAHeader:
+    case ResultStatus::ErrorBadXCIHeader:
+    case ResultStatus::ErrorMissingProductionKeyFile:
+    case ResultStatus::ErrorMissingHeaderKey:
+    case ResultStatus::ErrorIncorrectHeaderKey:
+    case ResultStatus::ErrorMissingTitlekey:
+    case ResultStatus::ErrorMissingTitlekek:
+    case ResultStatus::ErrorMissingKeyAreaKey:
+    case ResultStatus::ErrorIncorrectKeyAreaKey:
+    case ResultStatus::ErrorIncorrectTitlekeyOrTitlekek:
+        return true;
+    default:
+        return false;
+    }
+}
 std::ostream& operator<<(std::ostream& os, ResultStatus status);
 
 /// Interface for loading an application
