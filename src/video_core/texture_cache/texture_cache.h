@@ -862,11 +862,82 @@ void TextureCache<P>::FillImageViews(std::span<ImageViewInOut> views, bool compu
                 }
             }
         }
-        if (compute && blacklist && UpscaleSource::Enabled() &&
-            Settings::values.resolution_info.downscale) {
-            has_blacklisted |= KeepUpscaleSourcesNative(views);
+        if (compute && blacklist && Settings::values.resolution_info.downscale) {
+            if (UpscaleSource::Enabled()) {
+                has_blacklisted |= KeepUpscaleSourcesNative(views);
+            }
+            if (UpscaleSource::DrsNativeEnabled()) {
+                NoteComputeUpscale(views);
+            }
         }
     } while (has_deleted_images || (blacklist && has_blacklisted));
+}
+
+template <class P>
+void TextureCache<P>::NoteComputeUpscale(std::span<const ImageViewInOut> views) {
+    u32 written_width = 0;
+    u32 written_height = 0;
+    for (const ImageViewInOut& view : views) {
+        if (!view.blacklist || view.id == NULL_IMAGE_VIEW_ID) {
+            continue;
+        }
+        const ImageViewBase& image_view = slot_image_views[view.id];
+        if (image_view.image_id == NULL_IMAGE_ID) {
+            continue;
+        }
+        const ImageInfo& info = slot_images[image_view.image_id].info;
+        written_width = (std::max)(written_width, info.size.width);
+        written_height = (std::max)(written_height, info.size.height);
+    }
+    if (written_width == 0) {
+        return;
+    }
+    for (const ImageViewInOut& view : views) {
+        if (view.blacklist || view.id == NULL_IMAGE_VIEW_ID) {
+            continue;
+        }
+        const ImageViewBase& image_view = slot_image_views[view.id];
+        if (image_view.image_id == NULL_IMAGE_ID) {
+            continue;
+        }
+        const Image& image = slot_images[image_view.image_id];
+        const UpscaleSource::Source source{
+            .rescaled = True(image.flags & ImageFlagBits::Rescaled),
+            .colour = GetFormatType(image.info.format) == SurfaceType::ColorTexture,
+            .is_2d = image.info.type == ImageType::e2D,
+            .width = image.info.size.width,
+            .height = image.info.size.height,
+            .rescaleable = image.info.rescaleable,
+        };
+        if (!source.rescaleable || !UpscaleSource::IsUpscale(source, written_width, written_height)) {
+            continue;
+        }
+        const bool was_held = game_upscale_tick.has_value() &&
+                              frame_tick <= *game_upscale_tick + UpscaleSource::DrsHoldFrames;
+        if (!was_held || game_upscale_width != written_width ||
+            game_upscale_height != written_height) {
+            LOG_INFO(HW_GPU,
+                     "DRS native: a compute shader upscales {}x{} to {}x{}; images smaller than "
+                     "{}x{} stay native",
+                     source.width, source.height, written_width, written_height, written_width,
+                     written_height);
+        }
+        game_upscale_tick = frame_tick;
+        game_upscale_width = written_width;
+        game_upscale_height = written_height;
+        return;
+    }
+}
+
+template <class P>
+bool TextureCache<P>::HeldNativeForGameUpscale(const ImageBase& image) const {
+    if (!UpscaleSource::DrsNativeEnabled() || !game_upscale_tick.has_value() ||
+        frame_tick > *game_upscale_tick + UpscaleSource::DrsHoldFrames) {
+        return false;
+    }
+    return image.info.type == ImageType::e2D &&
+           UpscaleSource::BelowUpscaleOutput(image.info.size.width, image.info.size.height,
+                                             game_upscale_width, game_upscale_height);
 }
 
 template <class P>
@@ -2672,6 +2743,9 @@ bool TextureCache<P>::ImageCanRescale(ImageBase& image) {
     if (Settings::values.resolution_info.downscale && !image.info.downscaleable) {
         return false;
     }
+    if (Settings::values.resolution_info.downscale && HeldNativeForGameUpscale(image)) {
+        return false;
+    }
     if (Settings::values.resolution_info.downscale) {
         const auto& info = image.info;
         const auto& resolution = Settings::values.resolution_info;
@@ -3016,6 +3090,10 @@ std::string TextureCache<P>::RescaleBlocker(const ImageBase& image) {
     };
     if (const auto own = RescaleTrace::Blocker(facts(image)); !own.empty()) {
         return std::string{own};
+    }
+    if (Settings::values.resolution_info.downscale && HeldNativeForGameUpscale(image)) {
+        return fmt::format("held native while the game upscales to {}x{} (EDEN_NX2_DRS_NATIVE)",
+                           game_upscale_width, game_upscale_height);
     }
     for (const auto& alias : image.aliased_images) {
         const ImageBase& other = slot_images[alias.id];

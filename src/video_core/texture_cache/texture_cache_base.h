@@ -541,6 +541,12 @@ private:
     /// EDEN_NX2_UPSCALE_SOURCE_NATIVE: scales down the colour images a compute dispatch reads to
     /// write a larger image. Returns whether any changed.
     bool KeepUpscaleSourcesNative(std::span<const ImageViewInOut> views);
+    /// EDEN_NX2_DRS_NATIVE: notes a compute dispatch that upscales a render target, and the size
+    /// it upscales to.
+    void NoteComputeUpscale(std::span<const ImageViewInOut> views);
+    /// EDEN_NX2_DRS_NATIVE: whether `image` stays native because the game upscales its dynamic
+    /// resolution scene to a larger image.
+    [[nodiscard]] bool HeldNativeForGameUpscale(const ImageBase& image) const;
     /// What keeps `image` from following the resolution scale: its own description, or that of an
     /// image sharing its memory. Empty when nothing in them does.
     [[nodiscard]] std::string RescaleBlocker(const ImageBase& image);
@@ -691,6 +697,11 @@ private:
 
     u64 modification_tick = 0;
     u64 frame_tick = 0;
+    /// EDEN_NX2_DRS_NATIVE: the last frame a compute dispatch upscaled a render target, and the
+    /// size it wrote.
+    std::optional<u64> game_upscale_tick;
+    u32 game_upscale_width = 0;
+    u32 game_upscale_height = 0;
 
     // Declared before the decode worker, whose jobs fill it, so it outlives them.
     TranscodeCache transcode_cache;

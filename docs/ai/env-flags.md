@@ -161,6 +161,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 |---|---|---|
 | `EDEN_NX2_READ_TRAPS` | A/B | `=0`: no per-page read traps. |
 | `EDEN_NX2_UPSCALE_SOURCE_NATIVE` | A/B | Experiment, not for nx2. `=1`: below 1x, a compute shader that writes a larger image than a scaled colour image it reads (a game upscaling its dynamic resolution scene, as Donkey Kong Bananza does) gets that image back at its native size. Without it the upscale's taps land on half-size texels and the frame comes out in blocks. |
+| `EDEN_NX2_DRS_NATIVE` | A/B | Experiment, not for nx2. `=1`: below 1x, while a compute shader upscales a render target to a larger image (a game's dynamic resolution, as in Donkey Kong Bananza), every 2D image smaller than that output in both directions stays at its native size, for 120 frames after the last such upscale. The resolution scale then doesn't stack on the game's own. Logs `DRS native:` (`HW.GPU`, Info) when it starts or the output size changes. |
 | `EDEN_NX2_NO_REACTIVE` | A/B | `=1`: drops those traps on Switch 2 programs. A CPU read of GPU-written memory can then see stale data. |
 | `EDEN_NX2_BUFFER_DOWNLOADS` | A/B | `=0`/`=1` forces asynchronous buffer downloads. |
 | `EDEN_NX2_EXACT_PREFLUSH` | A/B | `=0`: queue whole writes rather than only the marked pages. |

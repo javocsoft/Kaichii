@@ -76,3 +76,27 @@ TEST_CASE("A compute upscale's scaled colour source goes back to native", "[vide
     array.is_2d = false;
     CHECK_FALSE(KeepNative(array, 1920, 1080));
 }
+
+TEST_CASE("A game upscale keeps the images below its output native", "[video_core][rescale]") {
+    using VideoCommon::UpscaleSource::BelowUpscaleOutput;
+    using VideoCommon::UpscaleSource::IsUpscale;
+    using VideoCommon::UpscaleSource::Source;
+
+    // A render target upscaled to the frame counts whether or not it is scaled now.
+    const Source scene{.rescaled = false,
+                       .colour = true,
+                       .is_2d = true,
+                       .width = 1280,
+                       .height = 720,
+                       .rescaleable = true};
+    CHECK(IsUpscale(scene, 1920, 1080));
+    CHECK_FALSE(IsUpscale(scene, 1280, 720));
+
+    // Donkey Kong Bananza's dynamic resolution targets and half-size passes stay native; the
+    // full-size frame, the 2880x1620 output and square shadow maps taller than it keep the scale.
+    CHECK(BelowUpscaleOutput(1397, 786, 1920, 1080));
+    CHECK(BelowUpscaleOutput(960, 540, 1920, 1080));
+    CHECK_FALSE(BelowUpscaleOutput(1920, 1080, 1920, 1080));
+    CHECK_FALSE(BelowUpscaleOutput(2880, 1620, 1920, 1080));
+    CHECK_FALSE(BelowUpscaleOutput(1376, 1368, 1920, 1080));
+}
