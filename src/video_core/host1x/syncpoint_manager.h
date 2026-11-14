@@ -9,6 +9,9 @@
 #include <functional>
 #include <list>
 #include <mutex>
+#include <optional>
+#include <thread>
+#include <vector>
 
 #include "common/common_types.h"
 
@@ -55,6 +58,21 @@ public:
 
     void IncrementGuest(u32 syncpoint_id);
 
+    /// Called with a syncpoint's new guest value on every guest increment, before the value is
+    /// published and the actions it meets run (empty to stop). Switch 2 clients read syncpoint
+    /// values from a page the gsv service fills, and an action may wake a client that reads it
+    /// right away.
+    using GuestMirror = std::function<void(u32 syncpoint_id, u32 value)>;
+    void SetGuestMirror(GuestMirror mirror);
+
+    /// Runs func with guest increments held off, so a copy of the guest values it makes can't
+    /// overwrite a newer value the mirror wrote.
+    template <typename Func>
+    void WithGuestValuesStable(Func&& func) {
+        std::scoped_lock lk(guard);
+        func();
+    }
+
     void IncrementHost(u32 syncpoint_id);
 
     void WaitGuest(u32 syncpoint_id, u32 expected_value);
@@ -71,7 +89,8 @@ public:
 
 private:
     void Increment(std::atomic<u32>& syncpoint, std::condition_variable& wait_cv,
-                   std::list<RegisteredAction>& action_storage);
+                   std::list<RegisteredAction>& action_storage,
+                   std::optional<u32> mirrored_id = std::nullopt);
 
     ActionHandle RegisterAction(std::atomic<u32>& syncpoint,
                                 std::list<RegisteredAction>& action_storage, u32 expected_value,
@@ -81,6 +100,13 @@ private:
 
     void Wait(std::atomic<u32>& syncpoint, std::condition_variable& wait_cv, u32 expected_value);
 
+    /// Due actions an Increment took out of storage and runs after releasing `guard`.
+    struct DueActions {
+        std::list<RegisteredAction> pending; ///< Not started yet; a cancel removes them.
+        ActionHandle running{};              ///< The one being called now, 0 between calls.
+        std::thread::id thread{std::this_thread::get_id()};
+    };
+
     std::array<std::atomic<u32>, NUM_MAX_SYNCPOINTS> syncpoints_guest{};
     std::array<std::atomic<u32>, NUM_MAX_SYNCPOINTS> syncpoints_host{};
 
@@ -89,8 +115,11 @@ private:
 
     std::mutex guard;
     u64 last_action_id{};
+    GuestMirror guest_mirror;             ///< Guarded by `guard`.
+    std::vector<DueActions*> due_actions; ///< Guarded by `guard`.
     std::condition_variable wait_guest_cv;
     std::condition_variable wait_host_cv;
+    std::condition_variable action_done_cv;
 };
 
 } // namespace Host1x
