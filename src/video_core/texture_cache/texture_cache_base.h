@@ -33,6 +33,7 @@
 #include <ranges>
 #include "common/scratch_buffer.h"
 #include "common/slot_vector.h"
+#include "video_core/texture_cache/rescale_trace.h"
 #include "video_core/texture_cache/pending_download.h"
 #include "common/thread_worker.h"
 #include "video_core/compatible_formats.h"
@@ -533,8 +534,15 @@ private:
 
     bool ImageCanRescale(ImageBase& image);
     void InvalidateScale(Image& image);
-    bool ScaleUp(Image& image);
-    bool ScaleDown(Image& image);
+    bool ScaleUp(Image& image, RescaleTrace::Cause cause);
+    /// `blocker`, when known, is the image whose description keeps `image` from the scale.
+    bool ScaleDown(Image& image, RescaleTrace::Cause cause, const ImageBase* blocker = nullptr);
+    /// What keeps `image` from following the resolution scale: its own description, or that of an
+    /// image sharing its memory. Empty when nothing in them does.
+    [[nodiscard]] std::string RescaleBlocker(const ImageBase& image);
+    /// EDEN_NX2_RESCALE_TRACE: logs that `image` was scaled up or down, and why.
+    void TraceRescale(const Image& image, bool up, RescaleTrace::Cause cause,
+                      const ImageBase* blocker);
     u64 GetScaledImageSizeBytes(const ImageBase& image);
 
     /// The device memory an image counts for in total_used_memory between two driver readings:

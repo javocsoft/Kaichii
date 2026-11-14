@@ -857,7 +857,7 @@ void TextureCache<P>::FillImageViews(std::span<ImageViewInOut> views, bool compu
                         continue;
                     }
                     auto& image = slot_images[image_view.image_id];
-                    has_blacklisted |= ScaleDown(image);
+                    has_blacklisted |= ScaleDown(image, RescaleTrace::Cause::SampledByPixel);
                     image.scale_rating = 0;
                 }
             }
@@ -1047,13 +1047,19 @@ bool TextureCache<P>::RescaleRenderTargets() {
         scale_rating = 0;
         bool any_rescaled = false;
         bool can_rescale = true;
+        const ImageBase* rescale_blocker = nullptr;
         const auto check_rescale = [&](ImageViewId view_id, ImageId& id_save) {
             if (view_id != NULL_IMAGE_VIEW_ID && view_id != ImageViewId{}) {
                 const auto& view = slot_image_views[view_id];
                 const auto image_id = view.image_id;
                 id_save = image_id;
                 auto& image = slot_images[image_id];
-                can_rescale &= ImageCanRescale(image);
+                if (!ImageCanRescale(image)) {
+                    can_rescale = false;
+                    if (rescale_blocker == nullptr) {
+                        rescale_blocker = &image;
+                    }
+                }
                 any_rescaled |= True(image.flags & ImageFlagBits::Rescaled) ||
                                 GetFormatType(image.info.format) != SurfaceType::ColorTexture;
                 scale_rating = std::max<u32>(scale_rating, image.scale_tick <= frame_tick
@@ -1082,7 +1088,7 @@ bool TextureCache<P>::RescaleRenderTargets() {
             const auto scale_up = [this](ImageId image_id) {
                 if (image_id != CORRUPT_ID) {
                     Image& image = slot_images[image_id];
-                    ScaleUp(image);
+                    ScaleUp(image, RescaleTrace::Cause::RenderTargets);
                 }
             };
             if (rescaled) {
@@ -1094,10 +1100,10 @@ bool TextureCache<P>::RescaleRenderTargets() {
             }
         } else {
             rescaled = false;
-            const auto scale_down = [this](ImageId image_id) {
+            const auto scale_down = [this, rescale_blocker](ImageId image_id) {
                 if (image_id != CORRUPT_ID) {
                     Image& image = slot_images[image_id];
-                    ScaleDown(image);
+                    ScaleDown(image, RescaleTrace::Cause::RenderTargets, rescale_blocker);
                 }
             };
             for (size_t index = 0; index < NUM_RT; ++index) {
@@ -1476,7 +1482,7 @@ bool TextureCache<P>::BlitImage(const Tegra::Engines::Fermi2D::Surface& dst,
     const bool is_resolve = src_image.info.num_samples != 1 && dst_image.info.num_samples == 1;
     if (is_src_rescaled != is_dst_rescaled) {
         if (ImageCanRescale(src_image)) {
-            ScaleUp(src_image);
+            ScaleUp(src_image, RescaleTrace::Cause::Blit);
             is_src_rescaled = True(src_image.flags & ImageFlagBits::Rescaled);
             if (is_resolve) {
                 dst_image.info.rescaleable = true;
@@ -1487,14 +1493,14 @@ bool TextureCache<P>::BlitImage(const Tegra::Engines::Fermi2D::Surface& dst,
             }
         }
         if (ImageCanRescale(dst_image)) {
-            ScaleUp(dst_image);
+            ScaleUp(dst_image, RescaleTrace::Cause::Blit);
             is_dst_rescaled = True(dst_image.flags & ImageFlagBits::Rescaled);
         }
     }
     if (is_resolve && (is_src_rescaled != is_dst_rescaled)) {
         // A resolve requires both images to be the same dimensions. Resize down if needed.
-        ScaleDown(src_image);
-        ScaleDown(dst_image);
+        ScaleDown(src_image, RescaleTrace::Cause::BlitResolve);
+        ScaleDown(dst_image, RescaleTrace::Cause::BlitResolve);
         is_src_rescaled = True(src_image.flags & ImageFlagBits::Rescaled);
         is_dst_rescaled = True(dst_image.flags & ImageFlagBits::Rescaled);
     }
@@ -1674,7 +1680,7 @@ bool TextureCache<P>::TemporalUpscale(const Tegra::Engines::Fermi2D::Surface& ds
             (depth_id && rescaled(depth_id))) {
             for (const ImageId id : {src_id, motion_id, dst_id, depth_id}) {
                 if (id && !rescaled(id) && ImageCanRescale(slot_images[id])) {
-                    ScaleUp(slot_images[id]);
+                    ScaleUp(slot_images[id], RescaleTrace::Cause::Upscaler);
                 }
             }
         }
@@ -2904,7 +2910,7 @@ void TextureCache<P>::TickAsyncUnswizzle() {
 }
 
 template <class P>
-bool TextureCache<P>::ScaleUp(Image& image) {
+bool TextureCache<P>::ScaleUp(Image& image, RescaleTrace::Cause cause) {
     const bool has_copy = image.HasScaled();
     const bool rescaled = image.ScaleUp();
     if (!has_copy && image.HasScaled()) {
@@ -2914,17 +2920,82 @@ bool TextureCache<P>::ScaleUp(Image& image) {
         return false;
     }
     InvalidateScale(image);
+    if (RescaleTrace::Enabled()) {
+        TraceRescale(image, true, cause, nullptr);
+    }
     return true;
 }
 
 template <class P>
-bool TextureCache<P>::ScaleDown(Image& image) {
+bool TextureCache<P>::ScaleDown(Image& image, RescaleTrace::Cause cause,
+                                const ImageBase* blocker) {
     const bool rescaled = image.ScaleDown();
     if (!rescaled) {
         return false;
     }
     InvalidateScale(image);
+    if (RescaleTrace::Enabled()) {
+        TraceRescale(image, false, cause, blocker);
+    }
     return true;
+}
+
+template <class P>
+std::string TextureCache<P>::RescaleBlocker(const ImageBase& image) {
+    const auto& resolution = Settings::values.resolution_info;
+    const auto facts = [&resolution](const ImageBase& subject) {
+        const auto& info = subject.info;
+        bool keeps_mip_levels = true;
+        if (resolution.downscale) {
+            const u32 levels = HostMipLevelCount(info.size.width, info.size.height,
+                                                 info.size.depth,
+                                                 static_cast<u32>(info.resources.levels));
+            const u32 width = resolution.ScaleUp(info.size.width);
+            const u32 height = info.type == ImageType::e2D ? resolution.ScaleUp(info.size.height)
+                                                           : info.size.height;
+            keeps_mip_levels = HostMipLevelCount(width, height, info.size.depth, levels) >= levels;
+        }
+        return RescaleTrace::Facts{.rescaleable = info.rescaleable,
+                                   .downscaleable = info.downscaleable,
+                                   .downscaling = resolution.downscale,
+                                   .keeps_mip_levels = keeps_mip_levels};
+    };
+    if (const auto own = RescaleTrace::Blocker(facts(image)); !own.empty()) {
+        return std::string{own};
+    }
+    for (const auto& alias : image.aliased_images) {
+        const ImageBase& other = slot_images[alias.id];
+        if (const auto theirs = RescaleTrace::Blocker(facts(other)); !theirs.empty()) {
+            return fmt::format("aliased image {:#x} {}x{}: {}", other.gpu_addr,
+                               other.info.size.width, other.info.size.height, theirs);
+        }
+    }
+    return {};
+}
+
+template <class P>
+void TextureCache<P>::TraceRescale(const Image& image, bool up, RescaleTrace::Cause cause,
+                                   const ImageBase* blocker) {
+    // Every change at first; then one in a thousand, in case images flip back and forth.
+    static u64 events = 0;
+    if (++events > 4000 && events % 1000 != 0) {
+        return;
+    }
+    std::string why;
+    if (!up) {
+        const ImageBase& subject = blocker != nullptr ? *blocker : image;
+        const std::string reason = RescaleBlocker(subject);
+        if (&subject != &image) {
+            why = fmt::format("; held back by {:#x} {}x{}: {}", subject.gpu_addr,
+                              subject.info.size.width, subject.info.size.height,
+                              reason.empty() ? std::string{"nothing in its description"} : reason);
+        } else if (!reason.empty()) {
+            why = "; " + reason;
+        }
+    }
+    LOG_INFO(HW_GPU, "Rescale {} {:#x} {}x{} format {} ({}){} [event {}]", up ? "up" : "down",
+             image.gpu_addr, image.info.size.width, image.info.size.height,
+             static_cast<u32>(image.info.format), RescaleTrace::Name(cause), why, events);
 }
 
 template <class P>
@@ -3051,12 +3122,16 @@ ImageId TextureCache<P>::JoinImages(const ImageInfo& info, GPUVAddr gpu_addr, DA
 
     bool can_rescale = info.rescaleable;
     bool any_rescaled = false;
+    const ImageBase* join_blocker = nullptr;
     for (const auto& copy : join_copies_to_do) {
         if (!can_rescale) {
             break;
         }
         Image& sibling = slot_images[copy.id];
-        can_rescale &= ImageCanRescale(sibling);
+        if (!ImageCanRescale(sibling)) {
+            can_rescale = false;
+            join_blocker = &sibling;
+        }
         any_rescaled |= True(sibling.flags & ImageFlagBits::Rescaled);
     }
 
@@ -3065,12 +3140,12 @@ ImageId TextureCache<P>::JoinImages(const ImageInfo& info, GPUVAddr gpu_addr, DA
     if (can_rescale) {
         for (const auto& copy : join_copies_to_do) {
             Image& sibling = slot_images[copy.id];
-            ScaleUp(sibling);
+            ScaleUp(sibling, RescaleTrace::Cause::JoinedImage);
         }
     } else {
         for (const auto& copy : join_copies_to_do) {
             Image& sibling = slot_images[copy.id];
-            ScaleDown(sibling);
+            ScaleDown(sibling, RescaleTrace::Cause::JoinedImage, join_blocker);
         }
     }
 
@@ -3318,9 +3393,9 @@ ImageId TextureCache<P>::JoinImages(const ImageInfo& info, GPUVAddr gpu_addr, DA
     }
 
     if (can_rescale) {
-        ScaleUp(new_image);
+        ScaleUp(new_image, RescaleTrace::Cause::NewImage);
     } else {
-        ScaleDown(new_image);
+        ScaleDown(new_image, RescaleTrace::Cause::NewImage, join_blocker);
     }
 
     for (size_t index = 0; index < join_copies_to_do.size(); ++index) {
@@ -4196,9 +4271,9 @@ void TextureCache<P>::SynchronizeAliases(ImageId image_id) {
     const bool can_rescale = ImageCanRescale(image);
     if (any_rescaled) {
         if (can_rescale) {
-            ScaleUp(image);
+            ScaleUp(image, RescaleTrace::Cause::AliasedImages);
         } else {
-            ScaleDown(image);
+            ScaleDown(image, RescaleTrace::Cause::AliasedImages);
         }
     }
     image.modification_tick = most_recent_tick;
@@ -4218,11 +4293,11 @@ void TextureCache<P>::SynchronizeAliases(ImageId image_id) {
         }
         Image& aliased_image = slot_images[aliased->id];
         if (!can_rescale) {
-            ScaleDown(aliased_image);
+            ScaleDown(aliased_image, RescaleTrace::Cause::AliasedImages, &image);
             CopyImage(image_id, aliased->id, aliased->copies);
             continue;
         }
-        ScaleUp(aliased_image);
+        ScaleUp(aliased_image, RescaleTrace::Cause::AliasedImages);
         CopyImage(image_id, aliased->id, aliased->copies);
     }
 }
