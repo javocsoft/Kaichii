@@ -353,6 +353,8 @@ add_library(core STATIC
     hle/kernel/k_worker_task_manager.h
     hle/kernel/kernel.cpp
     hle/kernel/kernel.h
+    hle/kernel/kernel_thread_locals.cpp
+    hle/kernel/kernel_thread_locals.h
     hle/kernel/memory_types.h
     hle/kernel/message_buffer.h
     hle/kernel/physical_core.cpp

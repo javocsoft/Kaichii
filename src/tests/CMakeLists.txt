@@ -190,6 +190,7 @@ add_executable(tests
     core/internal_network/socket_proxy.cpp
     core/guest_profile.cpp
     core/kernel_locks.cpp
+    core/kernel_thread_locals.cpp
     core/priority_queue.cpp
     core/internal_network/network.cpp
     video_core/memory_tracker.cpp
