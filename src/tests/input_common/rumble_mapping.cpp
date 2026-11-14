@@ -30,32 +30,38 @@ f32 Curve(f32 amplitude, f32 factor) {
 TEST_CASE("Rumble by band keeps the band to motor mapping", "[input_common]") {
     using Catch::Approx;
 
-    const auto strengths = InputCommon::MapRumbleByBand(Bands(0.5f, 160.0f, 0.4f, 900.0f), 1.0f);
+    const auto strengths = InputCommon::MapRumbleByBand(Bands(0.5f, 160.0f, 0.4f, 900.0f), 1.0f, false);
     REQUIRE(strengths.low == Approx(0.5f * 0.95f));
     REQUIRE(strengths.high == Approx(0.4f * 0.3f));
 }
 
-TEST_CASE("Faint background rumble stays silent on a two motor pad", "[input_common]") {
+TEST_CASE("Faint background rumble can be silenced on a two motor pad", "[input_common]") {
     using Catch::Approx;
     using InputCommon::FaintRumbleEnd;
     using InputCommon::FaintRumbleStart;
     using InputCommon::ShapeRumbleAmplitude;
 
-    // Donkey Kong Bananza's background rumble near lava: the old curve made 0.005 about 8%.
-    REQUIRE(Curve(0.005f, 0.35f) > 0.07f);
-    REQUIRE(ShapeRumbleAmplitude(0.005f, 0.35f) == 0.0f);
-    REQUIRE(ShapeRumbleAmplitude(FaintRumbleStart, 0.35f) == 0.0f);
-    REQUIRE(ShapeRumbleAmplitude(0.0f, 0.5f) == 0.0f);
+    // Off, the default: the curve as it always was. Donkey Kong Bananza's background rumble near
+    // lava, 0.005, comes out at about 8%.
+    REQUIRE(ShapeRumbleAmplitude(0.005f, 0.35f, false) == Approx(Curve(0.005f, 0.35f)));
+    REQUIRE(ShapeRumbleAmplitude(0.005f, 0.35f, false) > 0.07f);
+    REQUIRE(ShapeRumbleAmplitude(0.025f, 0.5f, false) == Approx(Curve(0.025f, 0.5f)));
 
-    // It fades in, and from FaintRumbleEnd up the curve is as before.
+    // On: silent up to FaintRumbleStart.
+    REQUIRE(ShapeRumbleAmplitude(0.005f, 0.35f, true) == 0.0f);
+    REQUIRE(ShapeRumbleAmplitude(FaintRumbleStart, 0.35f, true) == 0.0f);
+    REQUIRE(ShapeRumbleAmplitude(0.0f, 0.5f, true) == 0.0f);
+
+    // Then it fades in, and from FaintRumbleEnd up the curve is as before.
     const f32 middle = (FaintRumbleStart + FaintRumbleEnd) / 2;
-    REQUIRE(ShapeRumbleAmplitude(middle, 0.35f) == Approx(Curve(middle, 0.35f) * 0.5f));
-    REQUIRE(ShapeRumbleAmplitude(FaintRumbleEnd, 0.35f) == Approx(Curve(FaintRumbleEnd, 0.35f)));
-    REQUIRE(ShapeRumbleAmplitude(0.3f, 0.35f) == Approx(Curve(0.3f, 0.35f)));
-    REQUIRE(ShapeRumbleAmplitude(1.0f, 0.5f) == Approx(1.0f));
+    REQUIRE(ShapeRumbleAmplitude(middle, 0.35f, true) == Approx(Curve(middle, 0.35f) * 0.5f));
+    REQUIRE(ShapeRumbleAmplitude(FaintRumbleEnd, 0.35f, true) ==
+            Approx(Curve(FaintRumbleEnd, 0.35f)));
+    REQUIRE(ShapeRumbleAmplitude(0.3f, 0.35f, true) == Approx(Curve(0.3f, 0.35f)));
+    REQUIRE(ShapeRumbleAmplitude(1.0f, 0.5f, true) == Approx(1.0f));
 
     // An HD rumble pad gets the amplitude as it is, faint or not.
-    REQUIRE(ShapeRumbleAmplitude(0.005f, 1.0f) == Approx(0.005f));
+    REQUIRE(ShapeRumbleAmplitude(0.005f, 1.0f, true) == Approx(0.005f));
 }
 
 TEST_CASE("A pad with both sides plays the stronger side on each motor", "[input_common]") {

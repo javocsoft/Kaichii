@@ -19,9 +19,9 @@ f32 FrequencyScale(f32 frequency, f32 start, f32 width) {
 
 } // Anonymous namespace
 
-f32 ShapeRumbleAmplitude(f32 amplitude, f32 curve_factor) {
+f32 ShapeRumbleAmplitude(f32 amplitude, f32 curve_factor, bool silence_faint) {
     const f32 curved = (amplitude + std::pow(amplitude, curve_factor)) * 0.5f;
-    if (curve_factor >= 1.0f) {
+    if (!silence_faint || curve_factor >= 1.0f) {
         return curved;
     }
     const f32 fade = std::clamp((amplitude - FaintRumbleStart) / (FaintRumbleEnd - FaintRumbleStart),
@@ -29,11 +29,12 @@ f32 ShapeRumbleAmplitude(f32 amplitude, f32 curve_factor) {
     return curved * fade;
 }
 
-MotorStrengths MapRumbleByBand(const Common::Input::VibrationStatus& vibration, f32 curve_factor) {
+MotorStrengths MapRumbleByBand(const Common::Input::VibrationStatus& vibration, f32 curve_factor,
+                               bool silence_faint) {
     return {
-        .low = ShapeRumbleAmplitude(vibration.low_amplitude, curve_factor) *
+        .low = ShapeRumbleAmplitude(vibration.low_amplitude, curve_factor, silence_faint) *
                FrequencyScale(vibration.low_frequency, 140.0f, 400.0f),
-        .high = ShapeRumbleAmplitude(vibration.high_amplitude, curve_factor) *
+        .high = ShapeRumbleAmplitude(vibration.high_amplitude, curve_factor, silence_faint) *
                 FrequencyScale(vibration.high_frequency, 200.0f, 700.0f),
     };
 }

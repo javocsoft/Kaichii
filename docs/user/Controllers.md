@@ -4,6 +4,12 @@ Most of the controls should work out of the box. If not, use a joystick calibrat
 
 - https://github.com/dkosmari/calibrate-joystick
 
+## A controller that buzzes all the time
+
+Switch controllers have HD rumble, which plays even a very faint vibration as faintly as the game asks. Xbox, PlayStation and most other controllers have two rumble motors instead, and the emulator strengthens small vibrations so those motors turn at all. Some games keep up a faint vibration all the time, for example Donkey Kong Bananza near lava, and on those controllers it becomes a constant buzz.
+
+To mute it, turn on **Controls → Vibration → Silence faint background vibration**. Only the faintest vibration is muted; stronger vibrations, such as hits and landings, are not changed. It is off by default, so games keep all their vibration unless you turn it on.
+
 ## Using external controllers on the Steamdeck
 
 In desktop mode ignore your Pro controller/XBOX controller external controller and use **Steam Virtual Gamepad 0 as Player 1**. If you have multiple external controllers set **Player 2 to Steam Virtual Gamepad 1**. Steam app must not be closed on desktop mode.

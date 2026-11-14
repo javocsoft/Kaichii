@@ -16,11 +16,11 @@ struct MotorStrengths {
 };
 
 // Shapes an HD rumble amplitude for a motor. curve_factor below 1 lifts small amplitudes so a
-// motor's weight starts to turn; 1 leaves the amplitude as it is (HD rumble). With a lifting curve,
-// amplitudes up to FaintRumbleEnd fade in from nothing: games keep up a faint background rumble
-// (Donkey Kong Bananza, near lava, mostly under 0.02) that HD rumble barely makes felt, and the
-// lift would turn it into a constant buzz on a two motor pad.
-f32 ShapeRumbleAmplitude(f32 amplitude, f32 curve_factor);
+// motor's weight starts to turn; 1 leaves the amplitude as it is (HD rumble). With silence_faint
+// and a lifting curve, amplitudes up to FaintRumbleEnd fade in from nothing: games keep up a faint
+// background rumble (Donkey Kong Bananza, near lava, mostly under 0.02) that HD rumble barely makes
+// felt, and the lift turns it into a constant buzz on a two motor pad.
+f32 ShapeRumbleAmplitude(f32 amplitude, f32 curve_factor, bool silence_faint);
 
 // Amplitudes at or below this are silent with a lifting curve.
 inline constexpr f32 FaintRumbleStart = 0.015f;
@@ -29,7 +29,8 @@ inline constexpr f32 FaintRumbleEnd = 0.035f;
 
 // Each band drives its own motor, weakened as its frequency rises so some of the frequency can
 // still be felt.
-MotorStrengths MapRumbleByBand(const Common::Input::VibrationStatus& vibration, f32 curve_factor);
+MotorStrengths MapRumbleByBand(const Common::Input::VibrationStatus& vibration, f32 curve_factor,
+                               bool silence_faint);
 
 // The stronger of two sides' strengths on each motor, for a pad that gets both sides of the
 // emulated controller.

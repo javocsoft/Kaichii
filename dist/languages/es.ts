@@ -7680,6 +7680,16 @@ Arrastre los puntos para cambiar de posición, o haga doble clic en las celdas d
         <source>Enable Accurate Vibration</source>
         <translation>Activar vibración precisa</translation>
     </message>
+    <message>
+        <location line="+7"/>
+        <source>On controllers with two rumble motors (Xbox, PlayStation and others), mutes the very faint vibration some games keep up all the time, which those motors turn into a constant buzz. Stronger vibrations are not changed.</source>
+        <translation>En mandos con dos motores de vibración (Xbox, PlayStation y otros), silencia la vibración muy suave que algunos juegos mantienen todo el rato y que esos motores convierten en un zumbido constante. Las vibraciones más fuertes no cambian.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Silence faint background vibration</source>
+        <translation>Silenciar la vibración de fondo suave</translation>
+    </message>
 </context>
 <context>
     <name>ConfigureWeb</name>

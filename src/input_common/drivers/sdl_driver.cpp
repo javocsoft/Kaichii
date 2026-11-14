@@ -226,9 +226,10 @@ public:
         if (vibration.side != Common::Input::VibrationSide::Left) {
             side_vibrations[1] = vibration;
         }
-        const MotorStrengths strengths =
-            StrongerPerMotor(MapRumbleByBand(side_vibrations[0], curve_factor),
-                             MapRumbleByBand(side_vibrations[1], curve_factor));
+        const bool silence_faint = Settings::values.silence_faint_rumble.GetValue();
+        const MotorStrengths strengths = StrongerPerMotor(
+            MapRumbleByBand(side_vibrations[0], curve_factor, silence_faint),
+            MapRumbleByBand(side_vibrations[1], curve_factor, silence_faint));
         const auto low_amplitude = static_cast<u16>(strengths.low * 0xFFFF);
         const auto high_amplitude = static_cast<u16>(strengths.high * 0xFFFF);
 
