@@ -79,6 +79,8 @@ TEST_CASE("Page table assigned over releases the mapping it had", "[common][page
 
 TEST_CASE("Page table keeps its mapping through a move", "[common][page_table]") {
     auto first = MakeTable();
+    // Windows only reserves the table's memory: a page is written after ReserveRange commits it.
+    first.ReserveRange(0, FirstLevelSize);
     first[3] = 5;
 
     Table second{std::move(first)};
