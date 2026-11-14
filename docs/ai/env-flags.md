@@ -65,6 +65,7 @@ it. A/B switches named for what they turn off take `=0`, as the row shows.
 | `EDEN_NX2_PENDING_WRITE_TRACE` | diag | Reports shaders reading buffer bytes that guest CPU writes have not reached yet. |
 | `EDEN_NX2_TABLE_POINTER_TRACE` | diag | Logs table-pointer slot changes and whether guest and host copies can differ. |
 | `EDEN_NX2_DOWNLOAD_TRACE` | diag | What the buffer cache copies back at fences, and the pages whose CPU reads had to flush, every 10 s. |
+| `EDEN_NX2_RESCALE_TRACE` | diag | `=1`: with a resolution scale other than 1x, logs (`HW.GPU`, Info) every image the texture cache scales up or down, what caused it, and when it scales one down, the image and the reason that keep it from the scale (`not downscaleable` is 512 or fewer rows tall). Only changes are logged; after 4,000, one in a thousand. |
 | `EDEN_NX2_READBLOCK_TRACE` | diag | `=1`: logs every unmapped device memory read with its caller, not only the first 16. |
 | `EDEN_NX2_QUERY_TRACE` | diag | Query cache activity. |
 | `EDEN_NX2_QUERY_DMA_TRACE` | diag | MME DMA reads of reports whose host result is not in guest memory yet. |
