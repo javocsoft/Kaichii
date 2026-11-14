@@ -114,6 +114,7 @@ void BufferCache<P>::TickFrame() {
         return;
     }
     runtime.TickFrame(slot_buffers);
+    frame_created_buffers.clear();
     native_indirect_uniforms_this_frame.clear();
     if (frame_tick % 600 == 0 && !uploaded_buffer_ranges.empty()) {
         for (const auto& [address, size] : uploaded_buffer_ranges) {
@@ -1108,7 +1109,8 @@ void BufferCache<P>::PopAsyncFlushes() {
 }
 
 template <class P>
-void BufferCache<P>::ClaimCpuWrites(std::span<const std::pair<DAddr, u64>> ranges) {
+template <typename Ranges>
+void BufferCache<P>::ClaimCpuWrites(const Ranges& ranges) {
     for (const auto& [device_addr, size] : ranges) {
         if (IsRegionGpuModified(device_addr, size)) {
             ClearDownload(device_addr, size);
@@ -2457,8 +2459,23 @@ typename BufferCache<P>::OverlapResult BufferCache<P>::ResolveOverlaps(DAddr dev
                                                                        u32 wanted_size) {
     static constexpr int STREAM_LEAP_THRESHOLD = 16;
     boost::container::small_vector<BufferId, 16> overlap_ids;
+    boost::container::small_vector<BufferId, 2> cut_ids;
     DAddr begin = device_addr;
     DAddr end = device_addr + wanted_size;
+    const DAddr wanted_begin = begin;
+    const DAddr wanted_end = end;
+    // A buffer this large that shares no more than a page with the wanted range is not joined.
+    // Yoshi and the Mysterious Book reads 4 MiB texel buffers from blocks laid end to end in its
+    // heap, a few new ones a second at rising addresses: each shared a page with the buffer
+    // before it, so one buffer took them all over and was copied whole for every block, past
+    // 2 GiB (and past what a u32 size holds). Such a buffer is deleted instead, after what the
+    // GPU wrote of it is downloaded, as when the collector evicts one; what the game still reads
+    // of it is uploaded again from its memory.
+    // A buffer made this frame is always joined. The callers resolve their ranges again after a
+    // buffer is deleted, and two large ranges of one draw or copy that share a page would
+    // otherwise delete each other's buffer in turn without end. This way a frame cuts only buffers
+    // older than itself, and once those are gone it joins as before.
+    static constexpr u64 CHAIN_LIMIT = 128_MiB;
     int stream_score = 0;
     bool has_stream_leap = false;
     auto expand_begin = [&](DAddr add_value) {
@@ -2482,6 +2499,7 @@ typename BufferCache<P>::OverlapResult BufferCache<P>::ResolveOverlaps(DAddr dev
     if (begin == 0) {
         return OverlapResult{
             .ids = std::move(overlap_ids),
+            .cut = std::move(cut_ids),
             .begin = begin,
             .end = end,
             .has_stream_leap = has_stream_leap,
@@ -2497,9 +2515,20 @@ typename BufferCache<P>::OverlapResult BufferCache<P>::ResolveOverlaps(DAddr dev
         if (overlap.IsPicked()) {
             continue;
         }
+        const DAddr overlap_device_addr = overlap.CpuAddr();
+        if (overlap.SizeBytes() >= CHAIN_LIMIT &&
+            std::ranges::find(frame_created_buffers, overlap_id) == frame_created_buffers.end()) {
+            const DAddr shared_begin = (std::max)(overlap_device_addr, wanted_begin);
+            const DAddr shared_end =
+                (std::min)(overlap_device_addr + overlap.SizeBytes(), wanted_end);
+            if (shared_end <= shared_begin + CACHING_PAGESIZE) {
+                overlap.Pick();
+                cut_ids.push_back(overlap_id);
+                continue;
+            }
+        }
         overlap_ids.push_back(overlap_id);
         overlap.Pick();
-        const DAddr overlap_device_addr = overlap.CpuAddr();
         const bool expands_left = overlap_device_addr < begin;
         if (expands_left) {
             begin = overlap_device_addr;
@@ -2524,6 +2553,7 @@ typename BufferCache<P>::OverlapResult BufferCache<P>::ResolveOverlaps(DAddr dev
     }
     return OverlapResult{
         .ids = std::move(overlap_ids),
+        .cut = std::move(cut_ids),
         .begin = begin,
         .end = end,
         .has_stream_leap = has_stream_leap,
@@ -2561,9 +2591,14 @@ BufferId BufferCache<P>::CreateBuffer(DAddr device_addr, u32 wanted_size,
     device_addr = Common::AlignDown(device_addr, CACHING_PAGESIZE);
     wanted_size = static_cast<u32>(device_addr_end - device_addr);
     const OverlapResult overlap = ResolveOverlaps(device_addr, wanted_size);
+    for (const BufferId cut_id : overlap.cut) {
+        DownloadBufferMemory(slot_buffers[cut_id]);
+        DeleteBuffer(cut_id);
+    }
     const u32 size = static_cast<u32>(overlap.end - overlap.begin);
     const BufferId new_buffer_id =
         slot_buffers.insert(runtime, overlap.begin, size, sparse_compatible);
+    frame_created_buffers.push_back(new_buffer_id);
     auto& new_buffer = slot_buffers[new_buffer_id];
     const size_t size_bytes = new_buffer.SizeBytes();
     runtime.ClearBuffer(new_buffer, 0, size_bytes, 0);
@@ -2941,35 +2976,56 @@ void BufferCache<P>::DeleteBuffer(BufferId buffer_id, bool do_not_mark) {
     read_trapped_ranges.Subtract(slot_buffers[buffer_id].CpuAddr(),
                                  slot_buffers[buffer_id].SizeBytes());
     cpu_read_ranges.Subtract(slot_buffers[buffer_id].CpuAddr(), slot_buffers[buffer_id].SizeBytes());
-    bool dirty_index{false};
-    boost::container::small_vector<u64, NUM_VERTEX_BUFFERS> dirty_vertex_buffers;
     const auto scalar_replace = [buffer_id](Binding& binding) {
         if (binding.buffer_id == buffer_id) {
             binding.buffer_id = BufferId{};
         }
     };
-    const auto replace = [scalar_replace](std::span<Binding> bindings) {
+    const auto replace = [scalar_replace](auto& bindings) {
         std::ranges::for_each(bindings, scalar_replace);
     };
-
-    if (channel_state->index_buffer.buffer_id == buffer_id) {
-        channel_state->index_buffer.buffer_id = BufferId{};
-        dirty_index = true;
-    }
-
-    for (u32 index = 0; index < channel_state->vertex_buffers.size(); index++) {
-        auto& binding = channel_state->vertex_buffers[index];
-        if (binding.buffer_id == buffer_id) {
+    // Every channel keeps its own bindings, and a resolved uniform buffer id survives across its
+    // draws. A channel left out would address whatever buffer reuses the slot next at the old
+    // offset (Ocarina of Time draws from several channels: a frame of garbage constants).
+    const auto scrub = [&](BufferCacheChannelInfo& channel) {
+        auto& flags = channel.maxwell3d.dirty.flags;
+        if (channel.index_buffer.buffer_id == buffer_id) {
+            channel.index_buffer.buffer_id = BufferId{};
+            flags[Dirty::IndexBuffer] = true;
+        }
+        for (u32 index = 0; index < channel.vertex_buffers.size(); index++) {
+            auto& binding = channel.vertex_buffers[index];
+            if (binding.buffer_id != buffer_id) {
+                continue;
+            }
             binding.buffer_id = BufferId{};
-            UpdateVertexBufferSlot(index, binding);
-            dirty_vertex_buffers.push_back(index);
+            if (&channel == channel_state) {
+                UpdateVertexBufferSlot(index, binding);
+            }
+            flags[Dirty::VertexBuffers] = true;
+            flags[Dirty::VertexBuffer0 + index] = true;
+        }
+        std::ranges::for_each(channel.uniform_buffers, replace);
+        std::ranges::for_each(channel.storage_buffers, replace);
+        std::ranges::for_each(channel.texture_buffers, replace);
+        replace(channel.transform_feedback_buffers);
+        scalar_replace(channel.count_buffer_binding);
+        scalar_replace(channel.indirect_buffer_binding);
+        replace(channel.compute_uniform_buffers);
+        replace(channel.compute_storage_buffers);
+        replace(channel.compute_texture_buffers);
+        if constexpr (HAS_PERSISTENT_UNIFORM_BUFFER_BINDINGS) {
+            channel.dirty_uniform_buffers.fill(~u32{0});
+            channel.uniform_buffer_binding_sizes.fill({});
+        }
+        channel.has_deleted_buffers = true;
+    };
+    scrub(*channel_state);
+    for (const size_t channel_id : active_channel_ids) {
+        if (&channel_storage[channel_id] != channel_state) {
+            scrub(channel_storage[channel_id]);
         }
     }
-    std::ranges::for_each(channel_state->uniform_buffers, replace);
-    std::ranges::for_each(channel_state->storage_buffers, replace);
-    replace(channel_state->transform_feedback_buffers);
-    replace(channel_state->compute_uniform_buffers);
-    replace(channel_state->compute_storage_buffers);
 
     // Adapted from the pre-refresh branch: merged buffers invalidate segment references too.
     InvalidateMultiRangeSegments(std::span{graphics_segments}, buffer_id);
@@ -2989,24 +3045,6 @@ void BufferCache<P>::DeleteBuffer(BufferId buffer_id, bool do_not_mark) {
         delayed_destruction_ring.Push(std::move(slot_buffers[buffer_id]));
 
     slot_buffers.erase(buffer_id);
-
-    if constexpr (HAS_PERSISTENT_UNIFORM_BUFFER_BINDINGS) {
-        channel_state->dirty_uniform_buffers.fill(~u32{0});
-        channel_state->uniform_buffer_binding_sizes.fill({});
-    }
-
-    auto& flags = maxwell3d->dirty.flags;
-    if (dirty_index) {
-        flags[Dirty::IndexBuffer] = true;
-    }
-
-    if (dirty_vertex_buffers.size() > 0) {
-        flags[Dirty::VertexBuffers] = true;
-        for (auto index : dirty_vertex_buffers) {
-            flags[Dirty::VertexBuffer0 + index] = true;
-        }
-    }
-    channel_state->has_deleted_buffers = true;
 }
 
 template <class P>

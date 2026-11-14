@@ -41,6 +41,7 @@ add_executable(tests
     core/general_channel.cpp
     core/nx2_debug_server.cpp
     core/nx2_present_pacer.cpp
+    core/key_derivation.cpp
     common/dkb_cpu_trace.cpp
     common/dkb_frame_trace.cpp
     audio_core/nx2_sysmix.cpp
@@ -71,6 +72,7 @@ add_executable(tests
     video_core/storage_write_extent.cpp
     video_core/storage_buffer_control_flow.cpp
     core/nup_validation.cpp
+    core/ncz_io_guards.cpp
     input_common/calibration_lifetime.cpp
     input_common/motion_stall_watch.cpp
     video_core/ampere_logged_numeric.cpp
@@ -177,6 +179,7 @@ add_executable(tests
     common/unique_function.cpp
     common/zstd_compression.cpp
     core/core_timing.cpp
+    core/filesystem_rename.cpp
     core/thread_startup_policy.cpp
     core/nup_writer.cpp
     core/nup_metadata.cpp

@@ -555,6 +555,11 @@ struct System::Impl {
         // Reset per-game flags
         Settings::values.use_squashed_iterated_blend = false;
 
+        // Once powered off, services stop writing replies, so a guest thread whose IPC call
+        // completes would read its own request back and abort (2010-0212, a Userspace PANIC on
+        // every stop). Keep guest threads from running again first; the wait for running ones
+        // comes after the GPU has released any that it holds in host code.
+        kernel.RequestSuspendEmulation();
         is_powered_on = false;
         exit_locked = false;
         exit_requested = false;
@@ -565,7 +570,13 @@ struct System::Impl {
         core_timing.SyncPause(false);
         Network::CancelPendingSocketOperations();
         kernel.SuspendEmulation(true);
+        if (service_manager) {
+            // Services on host threads that still wait for one on the guest cores give up (after
+            // a close during the boot shader load, the guest cores never started).
+            service_manager->Close();
+        }
         kernel.CloseServices();
+        applet_manager.DropPendingProcess();
         kernel.ShutdownCores();
         services.reset();
         service_manager.reset();
