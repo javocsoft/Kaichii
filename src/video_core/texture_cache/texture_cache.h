@@ -862,7 +862,76 @@ void TextureCache<P>::FillImageViews(std::span<ImageViewInOut> views, bool compu
                 }
             }
         }
+        if (compute && blacklist && Settings::values.resolution_info.downscale) {
+            NoteGameUpscale(views);
+        }
     } while (has_deleted_images || (blacklist && has_blacklisted));
+}
+
+template <class P>
+void TextureCache<P>::NoteGameUpscale(std::span<const ImageViewInOut> views) {
+    const auto image_of = [this](const ImageViewInOut& view) -> const Image* {
+        if (view.id == NULL_IMAGE_VIEW_ID) {
+            return nullptr;
+        }
+        const ImageViewBase& image_view = slot_image_views[view.id];
+        if (image_view.image_id == NULL_IMAGE_ID) {
+            return nullptr;
+        }
+        return &slot_images[image_view.image_id];
+    };
+    u32 written_width = 0;
+    u32 written_height = 0;
+    for (const ImageViewInOut& view : views) {
+        if (!view.blacklist) {
+            continue;
+        }
+        if (const Image* const image = image_of(view)) {
+            written_width = (std::max)(written_width, image->info.size.width);
+            written_height = (std::max)(written_height, image->info.size.height);
+        }
+    }
+    if (written_width == 0) {
+        return;
+    }
+    for (const ImageViewInOut& view : views) {
+        const Image* const image = view.blacklist ? nullptr : image_of(view);
+        if (image == nullptr) {
+            continue;
+        }
+        const GameUpscale::Source source{
+            .rescaleable = image->info.rescaleable,
+            .colour = GetFormatType(image->info.format) == SurfaceType::ColorTexture,
+            .is_2d = image->info.type == ImageType::e2D,
+            .width = image->info.size.width,
+            .height = image->info.size.height,
+        };
+        if (!GameUpscale::IsUpscale(source, written_width, written_height)) {
+            continue;
+        }
+        const bool was_holding = game_upscale_tick.has_value() &&
+                                 GameUpscale::Holding(*game_upscale_tick, frame_tick);
+        if (!was_holding || game_upscale_width != written_width ||
+            game_upscale_height != written_height) {
+            LOG_INFO(HW_GPU,
+                     "The game upscales {}x{} to {}x{} with a compute shader; below 1x, images "
+                     "smaller than {}x{} stay at native size",
+                     source.width, source.height, written_width, written_height, written_width,
+                     written_height);
+        }
+        game_upscale_tick = frame_tick;
+        game_upscale_width = written_width;
+        game_upscale_height = written_height;
+        return;
+    }
+}
+
+template <class P>
+bool TextureCache<P>::HeldNativeForGameUpscale(const ImageBase& image) const {
+    return game_upscale_tick.has_value() && GameUpscale::Holding(*game_upscale_tick, frame_tick) &&
+           image.info.type == ImageType::e2D &&
+           GameUpscale::HeldNative(image.info.size.width, image.info.size.height,
+                                   game_upscale_width, game_upscale_height);
 }
 
 template <class P>
@@ -2618,6 +2687,9 @@ bool TextureCache<P>::ImageCanRescale(ImageBase& image) {
     if (Settings::values.resolution_info.downscale && !image.info.downscaleable) {
         return false;
     }
+    if (Settings::values.resolution_info.downscale && HeldNativeForGameUpscale(image)) {
+        return false;
+    }
     if (Settings::values.resolution_info.downscale) {
         const auto& info = image.info;
         const auto& resolution = Settings::values.resolution_info;
@@ -2962,6 +3034,10 @@ std::string TextureCache<P>::RescaleBlocker(const ImageBase& image) {
     };
     if (const auto own = RescaleTrace::Blocker(facts(image)); !own.empty()) {
         return std::string{own};
+    }
+    if (Settings::values.resolution_info.downscale && HeldNativeForGameUpscale(image)) {
+        return fmt::format("held native while the game upscales to {}x{}", game_upscale_width,
+                           game_upscale_height);
     }
     for (const auto& alias : image.aliased_images) {
         const ImageBase& other = slot_images[alias.id];
