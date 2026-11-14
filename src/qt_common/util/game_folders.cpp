@@ -6,6 +6,8 @@
 #include <QDir>
 #include <QFileInfo>
 
+#include "qt_common/config/uisettings.h"
+
 namespace QtCommon::GameFolders {
 
 namespace {

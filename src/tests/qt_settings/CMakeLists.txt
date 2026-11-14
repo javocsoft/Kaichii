@@ -35,7 +35,7 @@ add_test(NAME setting_help COMMAND setting_help_tests)
 set_tests_properties(setting_help PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
 # The game list: icons for games without one, and when it counts as empty.
-add_executable(game_list_tests game_list.cpp)
+add_executable(game_list_tests game_list.cpp game_folders_header.cpp)
 target_compile_features(game_list_tests PRIVATE cxx_std_20)
 target_include_directories(game_list_tests PRIVATE ../..)
 target_link_libraries(game_list_tests PRIVATE qt_common frontend_common common
