@@ -862,7 +862,61 @@ void TextureCache<P>::FillImageViews(std::span<ImageViewInOut> views, bool compu
                 }
             }
         }
+        if (compute && blacklist && UpscaleSource::Enabled() &&
+            Settings::values.resolution_info.downscale) {
+            has_blacklisted |= KeepUpscaleSourcesNative(views);
+        }
     } while (has_deleted_images || (blacklist && has_blacklisted));
+}
+
+template <class P>
+bool TextureCache<P>::KeepUpscaleSourcesNative(std::span<const ImageViewInOut> views) {
+    const auto image_of = [this](const ImageViewInOut& view) -> Image* {
+        if (view.id == NULL_IMAGE_VIEW_ID) {
+            return nullptr;
+        }
+        const ImageViewBase& image_view = slot_image_views[view.id];
+        if (image_view.image_id == NULL_IMAGE_ID) {
+            return nullptr;
+        }
+        return &slot_images[image_view.image_id];
+    };
+    u32 written_width = 0;
+    u32 written_height = 0;
+    for (const ImageViewInOut& view : views) {
+        if (!view.blacklist) {
+            continue;
+        }
+        if (const Image* const image = image_of(view)) {
+            written_width = (std::max)(written_width, image->info.size.width);
+            written_height = (std::max)(written_height, image->info.size.height);
+        }
+    }
+    if (written_width == 0) {
+        return false;
+    }
+    bool changed = false;
+    for (const ImageViewInOut& view : views) {
+        if (view.blacklist) {
+            continue;
+        }
+        Image* const image = image_of(view);
+        if (image == nullptr) {
+            continue;
+        }
+        const UpscaleSource::Source source{
+            .rescaled = True(image->flags & ImageFlagBits::Rescaled),
+            .colour = GetFormatType(image->info.format) == SurfaceType::ColorTexture,
+            .is_2d = image->info.type == ImageType::e2D,
+            .width = image->info.size.width,
+            .height = image->info.size.height,
+        };
+        if (UpscaleSource::KeepNative(source, written_width, written_height)) {
+            changed |= ScaleDown(*image, RescaleTrace::Cause::UpscaleSource);
+            image->scale_rating = 0;
+        }
+    }
+    return changed;
 }
 
 template <class P>

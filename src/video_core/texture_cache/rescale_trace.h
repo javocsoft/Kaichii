@@ -22,6 +22,7 @@ enum class Cause : u8 {
     JoinedImage,     ///< Joined into a larger image.
     NewImage,        ///< Created over images that were or weren't scaled.
     AliasedImages,   ///< Kept in step with images sharing its memory.
+    UpscaleSource,   ///< Read by a compute shader that writes a larger image from it.
 };
 
 [[nodiscard]] constexpr std::string_view Name(Cause cause) {
@@ -42,6 +43,8 @@ enum class Cause : u8 {
         return "new image";
     case Cause::AliasedImages:
         return "aliased images";
+    case Cause::UpscaleSource:
+        return "compute upscale source";
     }
     return "?";
 }

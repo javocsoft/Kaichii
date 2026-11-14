@@ -5,6 +5,8 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
+#include <cstdlib>
 #include <numbers>
 #include "common/logging.h"
 #include "common/math_util.h"
@@ -236,16 +238,42 @@ public:
         }
         f32 high_amplitude = vibration.high_amplitude * high_frequency_scale;
 
+        bool played = false;
         if (sdl_controller) {
-            return SDL_RumbleGamepad(sdl_controller.get(), static_cast<u16>(low_amplitude),
-                                     static_cast<u16>(high_amplitude), rumble_max_duration_ms);
+            played = SDL_RumbleGamepad(sdl_controller.get(), static_cast<u16>(low_amplitude),
+                                       static_cast<u16>(high_amplitude), rumble_max_duration_ms);
         } else if (sdl_joystick) {
-            return SDL_RumbleJoystick(sdl_joystick.get(), static_cast<u16>(low_amplitude),
-                                      static_cast<u16>(high_amplitude),
-                                      rumble_max_duration_ms);
+            played = SDL_RumbleJoystick(sdl_joystick.get(), static_cast<u16>(low_amplitude),
+                                        static_cast<u16>(high_amplitude),
+                                        rumble_max_duration_ms);
         }
+        TraceRumble(static_cast<u16>(low_amplitude), static_cast<u16>(high_amplitude),
+                    rumble_max_duration_ms, played);
+        return played;
+    }
 
-        return false;
+    /// EDEN_NX2_VIBRATION_TRACE: logs each rumble given to SDL, on a change or a failure.
+    void TraceRumble(u16 low, u16 high, u32 duration_ms, bool played) {
+        static const bool enabled = std::getenv("EDEN_NX2_VIBRATION_TRACE") != nullptr;
+        if (!enabled) {
+            return;
+        }
+        const u32 rumble = (static_cast<u32>(high) << 16) | low;
+        if (traced_rumble.exchange(rumble, std::memory_order_relaxed) == rumble && played) {
+            return;
+        }
+        static std::atomic<u64> lines{0};
+        const u64 line = lines.fetch_add(1, std::memory_order_relaxed) + 1;
+        if (line > 4000 && line % 100 != 0) {
+            return;
+        }
+        if (played) {
+            LOG_INFO(Input, "Vibration trace: SDL rumble on port {}: low {} high {} for {} ms",
+                     port, low, high, duration_ms);
+        } else {
+            LOG_INFO(Input, "Vibration trace: SDL rumble on port {}: low {} high {} failed: {}",
+                     port, low, high, SDL_GetError());
+        }
     }
 
     bool HasHDRumble() const {
@@ -419,6 +447,8 @@ public:
 private:
     Common::UUID guid;
     int port;
+    /// The last rumble the vibration trace logged, high << 16 | low.
+    std::atomic<u32> traced_rumble{0};
     std::unique_ptr<SDL_Joystick, decltype(&SDL_CloseJoystick)> sdl_joystick;
     std::unique_ptr<SDL_Gamepad, decltype(&SDL_CloseGamepad)> sdl_controller;
     mutable std::mutex mutex;

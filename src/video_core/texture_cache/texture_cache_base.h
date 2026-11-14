@@ -34,6 +34,7 @@
 #include "common/scratch_buffer.h"
 #include "common/slot_vector.h"
 #include "video_core/texture_cache/rescale_trace.h"
+#include "video_core/texture_cache/upscale_source.h"
 #include "video_core/texture_cache/pending_download.h"
 #include "common/thread_worker.h"
 #include "video_core/compatible_formats.h"
@@ -537,6 +538,9 @@ private:
     bool ScaleUp(Image& image, RescaleTrace::Cause cause);
     /// `blocker`, when known, is the image whose description keeps `image` from the scale.
     bool ScaleDown(Image& image, RescaleTrace::Cause cause, const ImageBase* blocker = nullptr);
+    /// EDEN_NX2_UPSCALE_SOURCE_NATIVE: scales down the colour images a compute dispatch reads to
+    /// write a larger image. Returns whether any changed.
+    bool KeepUpscaleSourcesNative(std::span<const ImageViewInOut> views);
     /// What keeps `image` from following the resolution scale: its own description, or that of an
     /// image sharing its memory. Empty when nothing in them does.
     [[nodiscard]] std::string RescaleBlocker(const ImageBase& image);

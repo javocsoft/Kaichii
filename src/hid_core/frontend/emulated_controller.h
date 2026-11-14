@@ -12,6 +12,7 @@
 #include <mutex>
 #include <optional>
 #include <shared_mutex>
+#include <string_view>
 #include <vector>
 #include <atomic>
 
@@ -499,6 +500,10 @@ public:
 private:
     /// creates input devices from params
     void LoadDevices();
+
+    /// EDEN_NX2_VIBRATION_TRACE: logs what SetVibration did with a new value.
+    void TraceVibration(std::size_t device_index, const VibrationValue& vibration,
+                        std::string_view outcome) const;
 
     /// Set the params for TAS devices
     void LoadTASParams();
