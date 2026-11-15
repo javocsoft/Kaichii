@@ -174,6 +174,8 @@ class MainWindow : public QMainWindow {
 public:
     void filterBarSetChecked(bool state);
     void UpdateUITheme();
+    /// Gives the menus their icons in the current theme's tone (util/menu_icon.h).
+    void UpdateMenuIcons();
     explicit MainWindow(bool has_broken_vulkan);
     ~MainWindow() override;
 

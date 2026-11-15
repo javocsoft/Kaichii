@@ -1,0 +1,59 @@
+<!--
+SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Line icons for the menus, from zortos293/Lichii#1365. src/yuzu/util/menu_icon.cpp colours them for
+the theme.
+-->
+
+<RCC>
+  <qresource prefix="menu_icons">
+    <file>apps.svg</file>
+    <file>archive.svg</file>
+    <file>bug.svg</file>
+    <file>check.svg</file>
+    <file>clock.svg</file>
+    <file>cloud.svg</file>
+    <file>code.svg</file>
+    <file>copy.svg</file>
+    <file>cpu.svg</file>
+    <file>dot.svg</file>
+    <file>download.svg</file>
+    <file>edit.svg</file>
+    <file>file.svg</file>
+    <file>folder.svg</file>
+    <file>gamepad.svg</file>
+    <file>globe.svg</file>
+    <file>grid.svg</file>
+    <file>hdd.svg</file>
+    <file>help.svg</file>
+    <file>image.svg</file>
+    <file>info.svg</file>
+    <file>key.svg</file>
+    <file>keyboard.svg</file>
+    <file>layers.svg</file>
+    <file>link.svg</file>
+    <file>list.svg</file>
+    <file>maximize.svg</file>
+    <file>monitor.svg</file>
+    <file>pause.svg</file>
+    <file>play.svg</file>
+    <file>plus.svg</file>
+    <file>puzzle.svg</file>
+    <file>record.svg</file>
+    <file>refresh.svg</file>
+    <file>restart.svg</file>
+    <file>sd.svg</file>
+    <file>share.svg</file>
+    <file>sliders.svg</file>
+    <file>sparkles.svg</file>
+    <file>star.svg</file>
+    <file>stop.svg</file>
+    <file>system.svg</file>
+    <file>trash.svg</file>
+    <file>user.svg</file>
+    <file>users.svg</file>
+    <file>wand.svg</file>
+    <file>x.svg</file>
+  </qresource>
+</RCC>
