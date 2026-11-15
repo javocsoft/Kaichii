@@ -114,6 +114,7 @@
      <addaction name="action_Tree_View"/>
      <addaction name="action_Grid_View"/>
      <addaction name="action_Carousel_View"/>
+     <addaction name="action_Cover_View"/>
     </widget>
     <widget class="QMenu" name="menuGame_Icon_Size">
      <property name="title">
@@ -645,6 +646,17 @@
    </property>
    <property name="text">
     <string>&amp;Carousel View</string>
+   </property>
+  </action>
+  <action name="action_Cover_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>C&amp;over View</string>
+   </property>
+   <property name="toolTip">
+    <string>Only the games' covers, larger, as on a shelf</string>
    </property>
   </action>
  </widget>

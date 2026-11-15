@@ -38,6 +38,7 @@ enum class AmLaunchType;
 enum class StartGameType;
 
 class GameCarousel;
+class GameCovers;
 
 class QAbstractItemView;
 namespace Core {
@@ -159,6 +160,7 @@ private:
     GameTree* tree_view = nullptr;
     GameGrid* grid_view = nullptr;
     GameCarousel* carousel_view = nullptr;
+    GameCovers* cover_view = nullptr;
     GameListModel* item_model = nullptr;
     Settings::GameListMode game_list_mode;
 

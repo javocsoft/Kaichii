@@ -270,6 +270,7 @@ add_executable(yuzu
     updater/update_dialog.h updater/update_dialog.cpp updater/update_dialog.ui
     game/common.h
     game/carousel.h game/carousel.cpp
+    game/game_covers.h game/game_covers.cpp game/cover_layout.h
 )
 
 set_target_properties(yuzu PROPERTIES OUTPUT_NAME "kaichii")

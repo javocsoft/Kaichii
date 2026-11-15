@@ -428,6 +428,7 @@ private slots:
     void SetGridView();
     void SetTreeView();
     void SetCarouselView();
+    void SetCoverView();
 
     void CheckIconSize();
     void ToggleShowGameName();
