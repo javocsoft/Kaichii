@@ -14,6 +14,8 @@
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QScrollArea>
+#include <QSignalBlocker>
+#include <QStandardItemModel>
 #include <QTabWidget>
 #include <QUrlQuery>
 #include <QVBoxLayout>
@@ -37,9 +39,20 @@ const QMap<QString, int> Limits{
     {QStringLiteral("reproduction"), 3000},
     {QStringLiteral("updates"), 500},
     {QStringLiteral("mods"), 500},
+    {QStringLiteral("fps"), 20},
 };
 const QStringList OptionalFields{QStringLiteral("ram"), QStringLiteral("reproduction"),
-                                 QStringLiteral("updates"), QStringLiteral("mods")};
+                                 QStringLiteral("updates"), QStringLiteral("mods"),
+                                 QStringLiteral("fps")};
+
+/// The smoothness written when the game never got into play (Loads, Unplayable).
+const QString NotApplicable = QStringLiteral("Not applicable");
+
+/// Whether a compatibility rating means the game got into play, so its smoothness can be told.
+bool InGame(const QString& rating) {
+    return rating == QStringLiteral("Perfect") || rating == QStringLiteral("Playable") ||
+           rating == QStringLiteral("Runs");
+}
 
 /// GitHub answers links much longer than this with an error page.
 constexpr qsizetype LinkLimit = 7000;
@@ -181,14 +194,35 @@ Dialog::Dialog(const Session& session, const QString& repository_, QWidget* pare
     outcome = new QComboBox(this);
     outcome->setObjectName(QStringLiteral("outcome"));
     outcome->addItem(tr("Choose your assessment"), QString{});
-    outcome->addItem(tr("Perfect: plays as on the console"), QStringLiteral("Perfect"));
-    outcome->addItem(tr("Playable: can be played through, with small problems"),
+    // Whether the game works: its graphics, sound and progress. How smoothly it runs on this
+    // computer is the next choice.
+    outcome->addItem(tr("Perfect: works as on the console, no errors"), QStringLiteral("Perfect"));
+    outcome->addItem(tr("Playable: can be played through; small errors that don't get in the way"),
                      QStringLiteral("Playable"));
-    outcome->addItem(tr("Runs: gets into the game, but problems get in the way"),
+    outcome->addItem(tr("Runs: gets into the game, but errors or crashes get in the way"),
                      QStringLiteral("Runs"));
     outcome->addItem(tr("Loads: starts, but doesn't get into the game"), QStringLiteral("Loads"));
     outcome->addItem(tr("Unplayable: crashes or doesn't start"), QStringLiteral("Unplayable"));
     experience->addRow(tr("Compatibility"), outcome);
+    smoothness = new QComboBox(this);
+    smoothness->setObjectName(QStringLiteral("smoothness"));
+    smoothness->addItem(tr("Choose how smoothly it ran"), QString{});
+    smoothness->addItem(tr("Perfect: steady at the game's frame rate, no stutters"),
+                        QStringLiteral("Perfect"));
+    smoothness->addItem(tr("Smooth: steady, with a rare stutter"), QStringLiteral("Smooth"));
+    smoothness->addItem(tr("Occasional stutters: runs well, but stutters in some places"),
+                        QStringLiteral("Stutters"));
+    smoothness->addItem(tr("Choppy: frequent drops or stutters you notice while playing"),
+                        QStringLiteral("Choppy"));
+    smoothness->addItem(tr("Very poor: slow most of the time, hard to play"),
+                        QStringLiteral("Poor"));
+    smoothness->addItem(tr("Not applicable: the game didn't get into play"), NotApplicable);
+    smoothness->setToolTip(tr("How smoothly the game ran on this computer, with the settings it "
+                              "started with. The performance overlay (View menu) shows the frame "
+                              "rate."));
+    experience->addRow(tr("Smoothness"), smoothness);
+    line(experience, QStringLiteral("fps"), tr("Usual frame rate (optional)"));
+    fields[QStringLiteral("fps")]->setPlaceholderText(tr("For example 30, or 25-30"));
     line(experience, QStringLiteral("summary"), tr("Summary"));
     paragraph(experience, QStringLiteral("progress"), tr("How far did you play?"));
     paragraph(experience, QStringLiteral("details"), tr("What worked or failed?"));
@@ -257,9 +291,10 @@ Dialog::Dialog(const Session& session, const QString& repository_, QWidget* pare
     for (auto* field : paragraphs) {
         connect(field, &QPlainTextEdit::textChanged, this, &Dialog::Refresh);
     }
-    connect(outcome, &QComboBox::currentIndexChanged, this, &Dialog::Refresh);
+    connect(outcome, &QComboBox::currentIndexChanged, this, &Dialog::UpdateSmoothness);
+    connect(smoothness, &QComboBox::currentIndexChanged, this, &Dialog::Refresh);
     connect(graphics_api, &QComboBox::currentIndexChanged, this, &Dialog::Refresh);
-    Refresh();
+    UpdateSmoothness();
 }
 
 Dialog::~Dialog() = default;
@@ -289,8 +324,12 @@ QString Dialog::Title() const {
 
 QString Dialog::Markdown() const {
     // In English whatever the interface language, so every report reads and parses alike.
-    QString text = QStringLiteral("**Compatibility:** %1\n\n%2\n\n")
-                       .arg(outcome->currentData().toString(), Text(QStringLiteral("summary")));
+    QString text = QStringLiteral("**Compatibility:** %1\n\n**Smoothness:** %2\n\n")
+                       .arg(outcome->currentData().toString(), smoothness->currentData().toString());
+    if (const QString fps = Text(QStringLiteral("fps")); !fps.isEmpty()) {
+        text += QStringLiteral("**Frame rate:** %1 fps\n\n").arg(fps);
+    }
+    text += Text(QStringLiteral("summary")) + QStringLiteral("\n\n");
     const auto section = [&](const QString& heading, const QString& key) {
         const QString value = Text(key);
         if (!value.isEmpty()) {
@@ -325,6 +364,9 @@ QString Dialog::ValidationError() const {
     if (outcome->currentData().toString().isEmpty()) {
         return tr("Choose your own compatibility assessment.");
     }
+    if (smoothness->currentData().toString().isEmpty()) {
+        return tr("Choose how smoothly the game ran.");
+    }
     for (auto it = Limits.cbegin(); it != Limits.cend(); ++it) {
         const QString value = Text(it.key());
         if ((!OptionalFields.contains(it.key()) && value.isEmpty()) || value.size() > it.value() ||
@@ -346,6 +388,28 @@ void Dialog::Refresh() {
     if (preview->toPlainText() != content) {
         preview->setPlainText(content);
     }
+}
+
+void Dialog::UpdateSmoothness() {
+    // Before a rating is chosen the question stays open.
+    const QString rating = outcome->currentData().toString();
+    const bool in_game = rating.isEmpty() || InGame(rating);
+    const int not_applicable = smoothness->findData(NotApplicable);
+    {
+        // One Refresh for the whole change, not one per step.
+        const QSignalBlocker blocker{smoothness};
+        if (!in_game) {
+            smoothness->setCurrentIndex(not_applicable);
+        } else if (smoothness->currentIndex() == not_applicable) {
+            smoothness->setCurrentIndex(0);
+        }
+        smoothness->setEnabled(in_game);
+        // Not applicable is only for a game that didn't get into play.
+        if (auto* model = qobject_cast<QStandardItemModel*>(smoothness->model())) {
+            model->item(not_applicable)->setEnabled(!in_game);
+        }
+    }
+    Refresh();
 }
 
 void Dialog::Copy() {
@@ -389,6 +453,7 @@ void Dialog::Clear() {
         field->clear();
     }
     outcome->setCurrentIndex(0);
+    smoothness->setCurrentIndex(0);
     graphics_api->setCurrentIndex(0);
     status->setText(tr("Draft cleared."));
 }

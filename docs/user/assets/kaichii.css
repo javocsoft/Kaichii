@@ -59,6 +59,36 @@
   text-decoration: underline;
 }
 
+/* Smoothness: outlined, so it doesn't read as a second compatibility rating. */
+.kaichii-smooth {
+  display: inline-block;
+  margin-top: 0.2rem;
+  padding: 0 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kaichii-smooth--perfect { color: #1b7f3b; }
+.kaichii-smooth--smooth { color: #2f8f2f; }
+.kaichii-smooth--stutters { color: #a66d00; }
+.kaichii-smooth--choppy { color: #b5480c; }
+.kaichii-smooth--poor { color: #b3261e; }
+
+[data-md-color-scheme="slate"] .kaichii-smooth--perfect { color: #4cc973; }
+[data-md-color-scheme="slate"] .kaichii-smooth--smooth { color: #7ad36f; }
+[data-md-color-scheme="slate"] .kaichii-smooth--stutters { color: #f0b429; }
+[data-md-color-scheme="slate"] .kaichii-smooth--choppy { color: #ff8a4c; }
+[data-md-color-scheme="slate"] .kaichii-smooth--poor { color: #ff6b61; }
+
+.kaichii-fps {
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .kaichii-count,
 .kaichii-section-count,
 .kaichii-none {

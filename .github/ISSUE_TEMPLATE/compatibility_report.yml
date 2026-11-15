@@ -15,6 +15,7 @@ body:
       description: How the game ran, how far you played, and your system and settings.
       placeholder: |
         Compatibility: Perfect, Playable, Runs, Loads or Unplayable
+        Smoothness: Perfect, Smooth, Stutters, Choppy or Poor, and the usual frame rate
         How far you played, what worked or failed, and steps to reproduce a problem.
         Kaichii build, game version, CPU, GPU and driver, operating system and settings.
     validations:

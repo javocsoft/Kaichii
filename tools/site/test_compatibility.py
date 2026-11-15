@@ -85,6 +85,27 @@ class ParseReport(unittest.TestCase):
         self.assertEqual(family(""), "")
         self.assertEqual(family("FreeBSD 14.1"), "")
 
+    def test_reads_the_smoothness_and_frame_rate(self):
+        body = ("**Compatibility:** Playable\n\n**Smoothness:** Stutters\n\n"
+                "**Frame rate:** 25-30 fps\n\nSummary")
+        report = compatibility.parse_report("[Compatibility] Zelda: Playable", body)
+        self.assertEqual((report["smoothness"], report["fps"]), ("Stutters", "25-30"))
+
+    def test_older_and_unplayed_reports_have_no_smoothness(self):
+        report = compatibility.parse_report("[Compatibility] x", DIALOG_BODY)
+        self.assertEqual((report["smoothness"], report["fps"]), ("", ""))
+        report = compatibility.parse_report(
+            "[Compatibility] x", "**Compatibility:** Loads\n\n**Smoothness:** Not applicable\n")
+        self.assertEqual(report["smoothness"], "")
+
+    def test_a_frame_rate_that_is_not_one_is_dropped(self):
+        for value, expected in (("30", "30"), ("~45", "~45"), ("59.9", "59.9"),
+                                ("25 – 30", "25 – 30"), ("fast", ""), ("<b>30</b>", ""),
+                                ("30, 40, 50", ""), ("12345", "")):
+            report = compatibility.parse_report("[Compatibility] x",
+                                                f"**Frame rate:** {value} fps\n")
+            self.assertEqual(report["fps"], expected, value)
+
     def test_falls_back_to_the_title(self):
         report = compatibility.parse_report("[Compatibility] Mario Kart World (1.2.0): Runs",
                                             "It runs, written by hand.")
@@ -183,6 +204,30 @@ class Render(unittest.TestCase):
         self.assertNotIn("## macOS", page)
         self.assertIn("## Unknown system", page)
         self.assertIn("/issues/13\"", page[page.index("## Unknown system"):])
+
+    def test_shows_the_smoothness_next_to_the_compatibility(self):
+        body = ("**Compatibility:** Playable\n\n**Smoothness:** Choppy\n\n**Frame rate:** 30 fps\n\n"
+                "| Program ID | 0400486024DEC000 |\n| Operating system | Windows 11 Version 24H2 |\n")
+        issues = [issue(20, "[Compatibility] Zelda", body),
+                  issue(21, "[Compatibility] Old: Perfect", "| Operating system | Arch Linux |")]
+        page = compatibility.render(REPO, issues, "en")
+        summary = page[page.index("## By operating system"):page.index("## Windows")]
+        self.assertIn('<br><span class="kaichii-smooth kaichii-smooth--choppy">Choppy</span> '
+                      '<span class="kaichii-fps">30 fps</span>', summary)
+        windows = page[page.index("## Windows"):page.index("## Linux")]
+        self.assertIn("<th>Smoothness</th>", windows)
+        self.assertIn('kaichii-smooth--choppy">Choppy<', windows)
+        # A report from before the smoothness question shows a dash, not an empty cell.
+        linux = page[page.index("## Linux"):]
+        self.assertIn('<td><span class="kaichii-none">—</span></td>', linux)
+        self.assertIn("**Smoothness**", page)
+
+    def test_spanish_names_the_smoothness_in_spanish(self):
+        body = "**Compatibility:** Perfect\n\n**Smoothness:** Stutters\n"
+        page = compatibility.render(REPO, [issue(1, "[Compatibility] Zelda", body)], "es")
+        self.assertIn(">Tirones puntuales<", page)
+        self.assertIn("<th>Fluidez</th>", page)
+        self.assertIn("**fluidez**", page)
 
     def test_spanish_names_the_systems_in_spanish(self):
         page = compatibility.render(REPO, [issue(1, "[Compatibility] Zelda: Runs")], "es")

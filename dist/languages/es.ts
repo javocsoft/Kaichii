@@ -487,18 +487,18 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
     </message>
     <message>
         <location line="+40"/>
-        <source>Perfect: plays as on the console</source>
-        <translation>Perfecto: se juega como en la consola</translation>
+        <source>Perfect: works as on the console, no errors</source>
+        <translation>Perfecto: funciona como en la consola, sin errores</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Playable: can be played through, with small problems</source>
-        <translation>Jugable: se puede terminar, con pequeños problemas</translation>
+        <source>Playable: can be played through; small errors that don&apos;t get in the way</source>
+        <translation>Jugable: se puede terminar; pequeños errores que no estorban</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Runs: gets into the game, but problems get in the way</source>
-        <translation>Funciona: llega a jugarse, pero los problemas estorban</translation>
+        <source>Runs: gets into the game, but errors or crashes get in the way</source>
+        <translation>Funciona: llega a jugarse, pero los errores o cierres estorban</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -729,6 +729,66 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
     <message>
         <source>The catalog returned an invalid response. No game was confirmed.</source>
         <translation type="vanished">El catálogo devolvió una respuesta no válida. No se confirmó ningún juego.</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Choose how smoothly it ran</source>
+        <translation>Elige cómo de fluido ha ido</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Perfect: steady at the game&apos;s frame rate, no stutters</source>
+        <translation>Perfecta: estable a la velocidad del juego, sin tirones</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Smooth: steady, with a rare stutter</source>
+        <translation>Fluida: estable, con algún tirón muy de vez en cuando</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Occasional stutters: runs well, but stutters in some places</source>
+        <translation>Tirones puntuales: va bien, pero da tirones en algunas zonas o momentos</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Choppy: frequent drops or stutters you notice while playing</source>
+        <translation>Poco fluida: bajadas o tirones frecuentes que se notan al jugar</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Very poor: slow most of the time, hard to play</source>
+        <translation>Muy mala: va lenta casi todo el tiempo, cuesta jugar</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Not applicable: the game didn&apos;t get into play</source>
+        <translation>No aplica: el juego no llegó a jugarse</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>How smoothly the game ran on this computer, with the settings it started with. The performance overlay (View menu) shows the frame rate.</source>
+        <translation>Cómo de fluido fue el juego en este equipo, con los ajustes con los que arrancó. El panel de rendimiento (menú Ver) muestra los FPS.</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Smoothness</source>
+        <translation>Fluidez</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Usual frame rate (optional)</source>
+        <translation>FPS habituales (opcional)</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>For example 30, or 25-30</source>
+        <translation>Por ejemplo 30, o 25-30</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Choose how smoothly the game ran.</source>
+        <translation>Elige cómo de fluido ha ido el juego.</translation>
     </message>
 </context>
 <context>
