@@ -84,6 +84,9 @@ public:
     static constexpr int FullPathRole = SortRole + 2;
     static constexpr int ProgramIdRole = SortRole + 3;
     static constexpr int FileTypeRole = SortRole + 4;
+    /// The game's icon as stored in the game (QByteArray), for the cover view, which draws it
+    /// larger than the scaled DecorationRole; empty for a game without one.
+    static constexpr int CoverRole = SortRole + 5;
 
     GameListItemPath() = default;
     GameListItemPath(const QString& game_path, const std::vector<u8>& picture_data,
@@ -119,7 +122,11 @@ public:
         const u32 size = UISettings::values.game_icon_size.GetValue();
 
         QPixmap picture;
-        if (!picture.loadFromData(picture_data.data(), static_cast<u32>(picture_data.size()))) {
+        if (picture.loadFromData(picture_data.data(), static_cast<u32>(picture_data.size()))) {
+            setData(QByteArray(reinterpret_cast<const char*>(picture_data.data()),
+                               static_cast<qsizetype>(picture_data.size())),
+                    CoverRole);
+        } else {
             // A game without an icon (a NUP without one): its initials rather than a blank.
             picture = QPixmap::fromImage(
                 QtCommon::PlaceholderIcon(game_name, static_cast<int>(size)));
@@ -172,6 +179,7 @@ public:
             }
             case Settings::GameListMode::GridView:
             case Settings::GameListMode::CarouselView:
+            case Settings::GameListMode::CoverView:
                 return row1;
             default:
                 break;

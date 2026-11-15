@@ -9752,6 +9752,16 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Vista de &amp;carrusel</translation>
     </message>
     <message>
+        <location line="+8"/>
+        <source>C&amp;over View</source>
+        <translation>Vista en c&amp;arátulas</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Only the games&apos; covers, larger, as on a shelf</source>
+        <translation>Solo las carátulas de los juegos, más grandes, como en una estantería</translation>
+    </message>
+    <message>
         <location filename="../../src/yuzu/main_window.cpp" line="+1"/>
         <source>Small (32x32)</source>
         <translation>Pequeño (32x32)</translation>

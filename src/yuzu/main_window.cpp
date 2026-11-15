@@ -1623,6 +1623,7 @@ void MainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Grid_View, &MainWindow::SetGridView);
     connect_menu(ui->action_Tree_View, &MainWindow::SetTreeView);
     connect_menu(ui->action_Carousel_View, &MainWindow::SetCarouselView);
+    connect_menu(ui->action_Cover_View, &MainWindow::SetCoverView);
 
     game_size_actions = new QActionGroup(this);
     game_size_actions->setExclusive(true);
@@ -3819,9 +3820,13 @@ void MainWindow::SetGameListMode(Settings::GameListMode mode) {
     ui->action_Grid_View->setChecked(mode == Settings::GameListMode::GridView);
     ui->action_Tree_View->setChecked(mode == Settings::GameListMode::TreeView);
     ui->action_Carousel_View->setChecked(mode == Settings::GameListMode::CarouselView);
+    ui->action_Cover_View->setChecked(mode == Settings::GameListMode::CoverView);
 
     UISettings::values.game_list_mode = mode;
-    ui->action_Show_Game_Name->setEnabled(mode != Settings::GameListMode::TreeView);
+    // The cover view shows no names and sizes its covers to the window.
+    const bool covers = mode == Settings::GameListMode::CoverView;
+    ui->action_Show_Game_Name->setEnabled(mode != Settings::GameListMode::TreeView && !covers);
+    ui->menuGame_Icon_Size->setEnabled(!covers);
 
     CheckIconSize();
     game_list->ResetViewMode();
@@ -3837,6 +3842,10 @@ void MainWindow::SetTreeView() {
 
 void MainWindow::SetCarouselView() {
     SetGameListMode(Settings::GameListMode::CarouselView);
+}
+
+void MainWindow::SetCoverView() {
+    SetGameListMode(Settings::GameListMode::CoverView);
 }
 
 void MainWindow::CheckIconSize() {
