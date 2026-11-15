@@ -7,11 +7,14 @@
 #pragma once
 
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <condition_variable>
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <mutex>
+#include <optional>
 #include <thread>
 #include <utility>
 #include <queue>
@@ -80,7 +83,17 @@ public:
     /// safe to touch worker resources.
     void WaitWorker();
 
-    void MarkFrameEnd(u64 frame);
+    enum class FrameMark : u8 { None, Start, End, Both };
+    /// GPU thread, once per present: the frame-end mark this present gets. EDEN_DKB_FRAME_TRACE
+    /// marks every present; otherwise only the two presents after RequestGpuBusySample.
+    [[nodiscard]] FrameMark NextFrameMark();
+    void MarkFrameEnd(u64 frame, FrameMark mark);
+    /// Any thread: asks for one host GPU timestamp sample of the frame after the next present.
+    void RequestGpuBusySample() {
+        gpu_busy_marks.store(2, std::memory_order_relaxed);
+    }
+    /// Host GPU busy time of the last sampled frame, nullopt when none was taken in 3 s.
+    [[nodiscard]] std::optional<double> GpuBusyMs() const;
     /// EDEN_NX2_GPU_PROFILE: a read of GPU-written buffer memory from `location`, and how long
     /// its download took (mostly waiting for the GPU).
     static void ProfileHostRead(std::source_location location, u64 ns);
@@ -517,6 +530,17 @@ private:
     bool trace_gpu_sampling{};
     bool trace_gpu_pending{};
     bool trace_gpu_failed{};
+    FrameMark trace_frame_mark{};
+    /// The pending sample covers exactly one frame, so its busy time can be shown.
+    bool trace_gpu_publish{};
+
+    std::atomic<u32> gpu_busy_marks{};
+    struct GpuBusySample {
+        double ms;
+        std::chrono::steady_clock::time_point taken;
+    };
+    mutable std::mutex gpu_busy_mutex;
+    std::optional<GpuBusySample> gpu_busy;
 
     VideoCommon::QueryCacheBase<QueryCacheParams>* query_cache = nullptr;
 

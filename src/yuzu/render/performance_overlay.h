@@ -5,82 +5,69 @@
 
 #include <chrono>
 #include <deque>
-#include "common/common_types.h"
+#include <optional>
+#include <vector>
 #include <QWidget>
+
+#include "common/common_types.h"
+#include "common/dkb_cpu_trace.h"
+#include "common/frame_pacing.h"
+#include "core/perf_stats.h"
 
 namespace VideoCore {
 class ShaderNotify;
 }
-namespace Core {
-struct PerfStatsResults;
-}
-namespace Ui {
-class PerformanceOverlay;
-}
 
-class QLineSeries;
-class QChart;
-class QChartView;
-class QValueAxis;
 class MainWindow;
 
+/// Frame stats over the game: big fps, frame time, CPU and GPU %, a 5 s frame-time graph and,
+/// for Switch 2 games, the 1% low and stutters of their real presents. The layout is Lichii's
+/// redesign (zortos293/Lichii#1345); it stays a child of the game window here.
 class PerformanceOverlay : public QWidget {
     Q_OBJECT
 
 public:
     explicit PerformanceOverlay(MainWindow* parent = nullptr);
-    ~PerformanceOverlay();
 
 protected:
     void paintEvent(QPaintEvent* event) override;
+    void showEvent(QShowEvent* event) override;
+    void hideEvent(QHideEvent* event) override;
 
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-    void showEvent(QShowEvent* event) override;
     void closeEvent(QCloseEvent* event) override;
 
 private:
     void resetPosition(const QPoint& pos);
     void updateStats(const Core::PerfStatsResults& results, const VideoCore::ShaderNotify& shaders);
-    /// Shows a Switch 2 game's per-frame pacing (frame times, 1% low, stutters). False when there
-    /// are no recent presents to show: the overlay then shows its averages.
-    bool ShowFramePacing();
-    /// Widens the overlay when its text no longer fits.
-    void FitWidth();
+    /// The frames shown on screen per second that frame generation adds, 0 without it.
+    double GeneratedFps();
+    void paintGraph(QPainter& painter, const QRectF& area);
 
     MainWindow* m_mainWindow = nullptr;
+
+    QPoint m_offset{25, 75};
+    QPoint m_drag_start_pos;
+
+    std::optional<double> m_fps;
+    /// The last 5 s of 500 ms fps readings, for min/median/max
+    std::deque<float> m_fpsSamples;
+    std::optional<double> m_frameMs;
+    std::optional<double> m_cpuPercent;
+    std::optional<double> m_gpuPercent;
+    std::optional<Common::DkbCpuTrace::Snapshot> m_cpuSnapshot;
+    /// The graph's frame times, oldest first.
+    std::vector<float> m_frames;
+    /// A Switch 2 game's pacing from its real presents; nullopt for other games.
+    std::optional<Common::FramePacing> m_pacing;
+    QString m_tags;
+
     /// The renderer's generated-frame counter at its last reading, for the rate between readings.
     u64 m_generatedFrames = 0;
     std::chrono::steady_clock::time_point m_generatedTime{};
     double m_generatedFps = 0.0;
-    Ui::PerformanceOverlay* ui;
-
-    // colors
-    QColor m_background{72, 72, 72};
-
-    QPoint m_offset{25, 75};
-
-    // frametime
-    const size_t NUM_FRAMETIME_SAMPLES = 300;
-    std::deque<double> m_frametimeSamples;
-
-    // fps
-    const size_t NUM_FPS_SAMPLES = 120;
-    qreal m_xPos = 0;
-    std::deque<double> m_fpsSamples;
-    std::deque<QPointF> m_fpsPoints;
-
-    // drag
-    QPoint m_drag_start_pos;
-
-    // fps chart
-    QLineSeries* m_fpsSeries = nullptr;
-    QLineSeries* m_targetSeries = nullptr;
-    QChart* m_fpsChart = nullptr;
-    QChartView* m_fpsChartView = nullptr;
-    QValueAxis* m_fpsX = nullptr;
-    QValueAxis* m_fpsY = nullptr;
 
 signals:
     void closed();

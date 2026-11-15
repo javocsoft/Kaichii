@@ -11892,6 +11892,21 @@ p, li { white-space: pre-wrap; }
         <source>p99: %1</source>
         <translation>p99: %1</translation>
     </message>
+    <message>
+        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+0"/>
+        <source>FG +%1</source>
+        <translation>+%1 gen.</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>1% low</source>
+        <translation>1% bajo</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>stutters</source>
+        <translation>tirones</translation>
+    </message>
 </context>
 <context>
     <name>PlayerControlPreview</name>
