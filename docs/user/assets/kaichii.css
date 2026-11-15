@@ -45,3 +45,23 @@
 .kaichii-compatibility td {
   vertical-align: top;
 }
+
+/* By operating system: a game per row, a system per column. */
+.kaichii-by-system th:not(:first-child),
+.kaichii-by-system td:not(:first-child) {
+  width: 20%;
+  white-space: nowrap;
+}
+
+.kaichii-rating-link:hover .kaichii-rating,
+.kaichii-rating-link:focus .kaichii-rating {
+  filter: brightness(1.15);
+  text-decoration: underline;
+}
+
+.kaichii-count,
+.kaichii-section-count,
+.kaichii-none {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.75rem;
+}

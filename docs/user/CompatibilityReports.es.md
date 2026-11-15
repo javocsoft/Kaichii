@@ -2,7 +2,8 @@
 
 Un informe de compatibilidad cuenta a otros jugadores, y a quienes desarrollan Kaichii, cómo funciona
 un juego en tu equipo. Los informes son incidencias públicas en el repositorio de Kaichii, y la
-[lista de compatibilidad](Compatibility.es.md) los reúne.
+[lista de compatibilidad](Compatibility.es.md) los reúne por sistema operativo, para comparar cómo
+funciona un juego en Windows, Linux y macOS.
 
 ## Cómo
 

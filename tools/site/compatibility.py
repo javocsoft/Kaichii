@@ -27,29 +27,47 @@ RATINGS = ("Perfect", "Playable", "Runs", "Loads", "Unplayable")
 # Issues closed with these, or carrying these labels, are not reports to list.
 SKIPPED_LABELS = {"duplicate", "invalid", "spam"}
 CELL_LIMIT = 80
+# Kaichii writes Qt's QSysInfo::prettyProductName(): "Windows 11 Version 24H2", "macOS Sequoia
+# (15.1)", or on Linux the distribution's own name ("Pop!_OS 24.04 LTS", "Arch Linux").
+FAMILIES = ("Windows", "Linux", "macOS")
+MACOS_NAMES = ("macos", "mac os", "os x", "darwin")
+LINUX_NAMES = ("linux", "ubuntu", "pop!_os", "debian", "fedora", "arch", "manjaro", "endeavouros",
+               "cachyos", "mint", "opensuse", "suse", "steamos", "bazzite", "nobara", "zorin",
+               "elementary", "nixos", "gentoo", "void", "garuda", "chimeraos", "solus", "rocky",
+               "almalinux", "centos", "red hat", "deepin", "kali", "slackware", "alpine",
+               "kubuntu", "xubuntu", "lubuntu", "neon", "tumbleweed", "aurora", "bluefin",
+               "pikaos")
 REPOSITORY = re.compile(r"^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$")
 
 TEXT = {
     "en": {
         "title": "Compatibility list",
-        "intro": "How games run in Kaichii, as players report them. Each row is one report, newest "
-                 "first for each game. Results depend on the computer: check the graphics card "
-                 "and the build.",
+        "intro": "How games run in Kaichii, as players report them. Results depend on the "
+                 "computer and its operating system: the same game can run better on Linux than "
+                 "on Windows on the same PC, so the reports are grouped by system.",
         "send": "Played a game? [Send a report](CompatibilityReports.md).",
         "count": "{n} reports",
         "none": "No reports yet: yours can be the first.",
         "unavailable": "The reports couldn't be loaded when this page was built.",
         "browse": "Browse them on GitHub",
-        "columns": ("Game", "Rating", "Game version", "Kaichii build", "Graphics card", "Date",
-                    "Report"),
+        "columns": ("Game", "Rating", "Game version", "Kaichii build", "Operating system",
+                    "Graphics card", "Date", "Report"),
         "ratings": {r: r for r in RATINGS},
         "unknown": "Unknown",
+        "by_system": "By operating system",
+        "by_system_intro": "The newest report for each game on each system, and how many there "
+                           "are. Select a rating to open that report.",
+        "game": "Game",
+        "no_report": "No report",
+        "families": {"Windows": "Windows", "Linux": "Linux", "macOS": "macOS",
+                     "": "Unknown system"},
     },
     "es": {
         "title": "Lista de compatibilidad",
-        "intro": "Cómo funcionan los juegos en Kaichii, según los informes de los jugadores. Cada "
-                 "fila es un informe, los más recientes primero en cada juego. El resultado "
-                 "depende del equipo: fíjate en la tarjeta gráfica y la versión.",
+        "intro": "Cómo funcionan los juegos en Kaichii, según los informes de los jugadores. El "
+                 "resultado depende del equipo y de su sistema operativo: un mismo juego puede ir "
+                 "mejor en Linux que en Windows en el mismo PC, así que los informes se agrupan "
+                 "por sistema.",
         "send": "¿Has jugado a algo? [Envía un informe](CompatibilityReports.es.md).",
         "count": "{n} informes",
         "none": ("Todavía no hay informes: el tuyo puede ser "  # codespell:ignore ser
@@ -57,10 +75,17 @@ TEXT = {
         "unavailable": "No se pudieron cargar los informes al construir esta página.",
         "browse": "Consúltalos en GitHub",
         "columns": ("Juego", "Valoración", "Versión del juego", "Versión de Kaichii",
-                    "Tarjeta gráfica", "Fecha", "Informe"),
+                    "Sistema operativo", "Tarjeta gráfica", "Fecha", "Informe"),
         "ratings": {"Perfect": "Perfecto", "Playable": "Jugable", "Runs": "Funciona",
                     "Loads": "Carga", "Unplayable": "Injugable"},
         "unknown": "Desconocido",
+        "by_system": "Por sistema operativo",
+        "by_system_intro": "El informe más reciente de cada juego en cada sistema, y cuántos hay. "
+                           "Pulsa una valoración para abrir ese informe.",
+        "game": "Juego",
+        "no_report": "Sin informes",
+        "families": {"Windows": "Windows", "Linux": "Linux", "macOS": "macOS",
+                     "": "Sistema desconocido"},
     },
 }
 
@@ -74,6 +99,18 @@ def clean(value: str) -> str:
     return value if len(value) <= CELL_LIMIT else value[:CELL_LIMIT - 1] + "…"
 
 
+def os_family(name: str) -> str:
+    """Windows, Linux or macOS for an operating system's name, or "" when it can't tell."""
+    lowered = name.casefold()
+    if "windows" in lowered:
+        return "Windows"
+    if any(word in lowered for word in MACOS_NAMES):
+        return "macOS"
+    if any(word in lowered for word in LINUX_NAMES):
+        return "Linux"
+    return ""
+
+
 def table_cells(line: str) -> list:
     """The cells of a Markdown table row, splitting only on unescaped pipes."""
     inner = line.strip()
@@ -85,11 +122,13 @@ def table_cells(line: str) -> list:
 def parse_report(title: str, body: str) -> dict:
     """What a report says: its rating, game and system. Hand-written reports give what they can."""
     body = body or ""
-    report = {"rating": "", "game": "", "version": "", "build": "", "gpu": ""}
+    report = {"rating": "", "game": "", "version": "", "build": "", "gpu": "", "os": "",
+              "program": ""}
     match = re.search(r"\*\*Compatibility:\*\*\s*(" + "|".join(RATINGS) + r")\b", body)
     if match:
         report["rating"] = match.group(1)
-    rows = {"Game": "game", "Game version": "version", "Kaichii build": "build", "GPU": "gpu"}
+    rows = {"Game": "game", "Game version": "version", "Kaichii build": "build", "GPU": "gpu",
+            "Operating system": "os", "Program ID": "program"}
     for line in body.splitlines():
         cells = table_cells(line)
         if len(cells) == 2 and cells[0] in rows and not report[rows[cells[0]]]:
@@ -101,6 +140,10 @@ def parse_report(title: str, body: str) -> dict:
         report["game"] = report["game"] or clean(title_match.group(1) or "")
         report["version"] = report["version"] or clean(title_match.group(2) or "")
         report["rating"] = report["rating"] or (title_match.group(3) or "")
+    if not re.fullmatch(r"[0-9A-Fa-f]{16}", report["program"]):
+        report["program"] = ""
+    report["program"] = report["program"].upper()
+    report["family"] = os_family(report["os"])
     return report
 
 
@@ -153,36 +196,80 @@ def render(repo: str, issues, language: str) -> str:
     if not rows:
         lines += [text["none"], ""]
         return "\n".join(lines)
-    # By game, newest first within each (both sorts are stable).
+    # Newest first, then by game (both sorts are stable).
     rows.sort(key=lambda row: row[2], reverse=True)
     rows.sort(key=lambda row: row[0]["game"].casefold())
+
+    escape = html.escape
+    unknown = escape(text["unknown"])
+
+    def badge(rating, number=None):
+        name = escape(text["ratings"][rating]) if rating else unknown
+        kind = (rating or "unknown").lower()
+        span = f'<span class="kaichii-rating kaichii-rating--{kind}">{name}</span>'
+        if number is None:
+            return span
+        return (f'<a class="kaichii-rating-link" '
+                f'href="https://github.com/{repo}/issues/{number}">{span}</a>')
 
     counts = {rating: 0 for rating in RATINGS}
     for report, _, _ in rows:
         if report["rating"] in counts:
             counts[report["rating"]] += 1
-    escape = html.escape
     lines.append('<div class="kaichii-ratings">')
     lines.append(f'<span>{escape(text["count"].format(n=len(rows)))}</span>')
     for rating in RATINGS:
         if counts[rating]:
             lines.append(f'<span class="kaichii-rating kaichii-rating--{rating.lower()}">'
                          f'{escape(text["ratings"][rating])}: {counts[rating]}</span>')
-    lines += ["</div>", "", '<table class="kaichii-compatibility">', "<thead><tr>"]
-    lines += [f"<th>{escape(column)}</th>" for column in text["columns"]]
+    lines += ["</div>", ""]
+
+    # One row per game: reports with a program ID are one game whatever their titles say.
+    games = {}
+    for report, number, _ in rows:
+        key = report["program"] or report["game"].casefold()
+        game = games.setdefault(key, {"name": report["game"], "newest": {}, "count": {}})
+        family = report["family"]
+        if family:
+            game["count"][family] = game["count"].get(family, 0) + 1
+            # Rows are newest first within a game, so the first one seen is the newest.
+            game["newest"].setdefault(family, (report["rating"], number))
+    lines += [f"## {escape(text['by_system'])}", "", escape(text["by_system_intro"]), "",
+              '<table class="kaichii-compatibility kaichii-by-system">', "<thead><tr>",
+              f"<th>{escape(text['game'])}</th>"]
+    lines += [f"<th>{escape(text['families'][family])}</th>" for family in FAMILIES]
     lines += ["</tr></thead>", "<tbody>"]
-    unknown = escape(text["unknown"])
-    for report, number, date in rows:
-        rating = report["rating"]
-        badge = (f'<span class="kaichii-rating kaichii-rating--{rating.lower()}">'
-                 f'{escape(text["ratings"][rating])}</span>' if rating
-                 else f'<span class="kaichii-rating kaichii-rating--unknown">{unknown}</span>')
-        cells = [escape(report["game"]) or unknown, badge,
-                 escape(report["version"]) or unknown, escape(report["build"]) or unknown,
-                 escape(report["gpu"]) or unknown, escape(date),
-                 f'<a href="https://github.com/{repo}/issues/{number}">#{number}</a>']
+    for game in sorted(games.values(), key=lambda g: g["name"].casefold()):
+        cells = [escape(game["name"]) or unknown]
+        for family in FAMILIES:
+            if family in game["newest"]:
+                rating, number = game["newest"][family]
+                cells.append(f'{badge(rating, number)} <span class="kaichii-count">'
+                             f'({game["count"][family]})</span>')
+            else:
+                cells.append(f'<span class="kaichii-none">{escape(text["no_report"])}</span>')
         lines.append("<tr>" + "".join(f"<td>{cell}</td>" for cell in cells) + "</tr>")
     lines += ["</tbody>", "</table>", ""]
+
+    # Then every report, one section per system.
+    for family in (*FAMILIES, ""):
+        section = [row for row in rows if row[0]["family"] == family]
+        if not section:
+            continue
+        lines += [f"## {escape(text['families'][family])}", "",
+                  f'<p class="kaichii-section-count">'
+                  f'{escape(text["count"].format(n=len(section)))}</p>',
+                  "", '<table class="kaichii-compatibility">', "<thead><tr>"]
+        lines += [f"<th>{escape(column)}</th>" for column in text["columns"]]
+        lines += ["</tr></thead>", "<tbody>"]
+        for report, number, date in section:
+            cells = [escape(report["game"]) or unknown, badge(report["rating"]),
+                     escape(report["version"]) or unknown, escape(report["build"]) or unknown,
+                     escape(report["os"]) or unknown, escape(report["gpu"]) or unknown,
+                     escape(date),
+                     f'<a href="https://github.com/{repo}/issues/{number}">#{number}</a>']
+            lines.append("<tr>" + "".join(f"<td>{cell}</td>" for cell in cells) + "</tr>")
+        lines += ["</tbody>", "</table>", ""]
     return "\n".join(lines)
 
 
