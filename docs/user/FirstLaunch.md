@@ -51,6 +51,9 @@ Smoothness and shaders, Audio, Controls, System and Interface.
   *Developer mode* the options for debugging.
 - **The search box** finds any setting by its name or description.
 
+A game can change its own volume or mute state while it runs. Those commands can affect the current
+sound, but they do not overwrite your volume and mute choices in *Configure > Audio*.
+
 ## The status bar
 
 The buttons at the bottom of the main window show the graphics API, the GPU accuracy, the console

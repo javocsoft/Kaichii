@@ -18,6 +18,7 @@
 #include "common/literals.h"
 #include "video_core/renderer_vulkan/vk_scheduler.h"
 #include "video_core/renderer_vulkan/vk_staging_buffer_pool.h"
+#include "video_core/renderer_vulkan/stream_buffer_wrap.h"
 #include "video_core/vulkan_common/vulkan_device.h"
 #include "video_core/vulkan_common/vulkan_wrapper.h"
 
@@ -175,20 +176,21 @@ StagingBufferRef StagingBufferPool::GetStreamBuffer(size_t size) {
     std::fill(sync_ticks.begin() + Region(used_iterator), sync_ticks.begin() + Region(iterator),
               current_tick);
     used_iterator = iterator;
-    free_iterator = (std::max)(free_iterator, iterator + size);
 
     if (iterator + size >= stream_buffer_size) {
         std::fill(sync_ticks.begin() + Region(used_iterator), sync_ticks.begin() + NUM_SYNCS,
                   current_tick);
-        used_iterator = 0;
-        iterator = 0;
-        free_iterator = size;
-
-        if (AreRegionsActive(0, Region(size) + 1)) {
-            // Avoid waiting for the previous usages to be free
-            return GetStagingBuffer(size, MemoryUsage::Upload);
-        }
     }
+    const bool first_regions_active = iterator + size >= stream_buffer_size &&
+                                      AreRegionsActive(0, Region(size) + 1);
+    const auto position = AdvanceStreamBuffer(
+        {used_iterator, iterator, free_iterator}, size, stream_buffer_size, first_regions_active);
+    if (!position) {
+        return GetStagingBuffer(size, MemoryUsage::Upload);
+    }
+    used_iterator = position->used;
+    iterator = position->next;
+    free_iterator = position->free;
     const size_t offset = iterator;
     iterator = Common::AlignUp(iterator + size, MAX_ALIGNMENT);
     return StagingBufferRef{

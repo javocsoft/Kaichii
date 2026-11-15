@@ -21,6 +21,7 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 
 | Subject | Notes |
 |---|---|
+| Lichii fixes reviewed on 2026-11-15 | [Ports, tests and exclusions](lichii-ports-2026-11-15.md) |
 | Boot blockers, first Switch 2 bring-up | `docs/nx2/notes.md` |
 | Every game aborts about a second in on Windows (`Break 0xE401`, stuck on the loading screen) | 2026-11-14, b36, i7-12700H, RTX 3050 Laptop: Mario Wonder and Ocarina of Time aborted on Windows only, the same files ran on Linux, and Lichii build-177 ran them on the same machine. `EDEN_NX2_SVC_TRACE` showed a thread parked on the `ret` after `svc #0x34` dispatched `svc 0x21` and `0x26` it never made. Cause: since e0ae6b08b9 the current thread and host thread ID were `constinit thread_local`s that clang-cl inlined under ThinLTO; `Svc::Call` kept the TLS address it read on entry and, after a blocking SVC resumed the fiber on another core, loaded the results into the core it left (disassembly of a local b36 build: `movzbl (%rbx)` on TLS + 0x1e40, `t_host_thread_id`). `src/core/CMakeLists.txt` builds `kernel.cpp` with `-fno-lto` for this, but not for clang-cl or LTO set through `CMAKE_CXX_FLAGS`. Fixed by `src/core/hle/kernel/kernel_thread_locals.cpp`, whose accessors never inline; the user played both games on the fixed build. Unrelated, same session: Ocarina closing at its first movie was FPS Monitor's implicit Vulkan layer (`fpsmonvk64.dll`, registered as `VK_LAYER_RENDERDOC_Capture`) faulting; uninstalling it fixed that. |
 | GPU thread split | `docs/nx2/gpu-thread-split.md` |

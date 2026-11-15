@@ -172,17 +172,7 @@ void MultiRangeBufferCache::RetireEntry(Scheduler& scheduler, Entry& entry) {
     if (!entry.sparse_handle && !entry.gathered) {
         return;
     }
-    if (retired.size() == retired.capacity()) {
-        DrainRetired(scheduler);
-    }
-    if (retired.size() == retired.capacity()) {
-        u64 oldest = retired.front().tick;
-        for (const Retired& item : retired) {
-            if (item.tick < oldest) {
-                oldest = item.tick;
-            }
-        }
-        scheduler.Wait(oldest);
+    if (retired.size() >= MAX_RETIRED) {
         DrainRetired(scheduler);
     }
     retired.push_back(Retired{

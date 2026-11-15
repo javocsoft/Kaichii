@@ -64,6 +64,7 @@ else()
         drivers/joycon.cpp
         drivers/joycon.h
         drivers/motion_stall_watch.h
+        drivers/motion_sample_clock.h
         drivers/sdl_driver.cpp
         drivers/sdl_driver.h
         helpers/joycon_driver.cpp

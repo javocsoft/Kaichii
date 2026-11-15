@@ -47,6 +47,10 @@ mientras mide.
   *Conservador*.
 - Deja **Modo descodificación ASTC** en *CPU* o *CPU asíncrona*, salvo que el procesador sea lento.
 
+Si eliges descodificar ASTC en la GPU integrada, Kaichii procesa las matrices de texturas grandes
+en bloques más pequeños para limitar la memoria gráfica temporal. Lo hace automáticamente; no
+garantiza una mejora de velocidad ni cambia la recomendación de usar la CPU indicada arriba.
+
 ## Tirones por shaders
 
 La primera vez que aparece un efecto, sus shaders tienen que construirse para tu tarjeta gráfica, y

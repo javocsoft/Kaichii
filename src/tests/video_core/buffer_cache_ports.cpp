@@ -29,6 +29,7 @@
 #include "video_core/buffer_cache/memory_tracker_base.h"
 #include "video_core/control/channel_state.h"
 #include "video_core/gpu.h"
+#include "video_core/nx2.h"
 #include "video_core/renderer_null/null_rasterizer.h"
 
 namespace {
@@ -283,6 +284,11 @@ struct BufferCacheTestAccess {
     }
     static void UseMemory(Cache& cache, Tegra::MemoryManager& memory) {
         cache.gpu_memory = &memory;
+    }
+    static void UseChannel(Cache& cache, BufferCacheChannelInfo& channel) {
+        cache.channel_state = &channel;
+        cache.gpu_memory = &channel.gpu_memory;
+        cache.maxwell3d = &channel.maxwell3d;
     }
     static void GpuWrite(Cache& cache, BufferId id, DAddr address, u32 size) {
         cache.MarkWrittenBuffer(id, address, size);
@@ -585,6 +591,45 @@ TEST_CASE("Command page batch publishes only completed matching write generation
     REQUIRE(f.cache->Nx2ReadListCopy(0x21000, out, false) == Read::NeedsSync);
     Access::DrawWrite(*f.cache, 0x21000);
     REQUIRE(f.cache->Nx2ReadListCopy(0x21000, out, true) == Read::Unknown);
+}
+
+TEST_CASE("DMA writes refresh a command list page even when the source has no GPU writes",
+          "[buffer_ports][dma]") {
+    Fixture f;
+    const bool previous_ampere = Tegra::g_nx2_ampere.exchange(true);
+    Tegra::Nx2ClearGpuWrittenPages();
+    SCOPE_EXIT {
+        Tegra::Nx2ClearGpuWrittenPages();
+        Tegra::g_nx2_ampere.store(previous_ampere);
+    };
+    Tegra::Control::ChannelState state{0};
+    state.memory_manager = &*f.memory;
+    state.payload.emplace(f.system, *f.memory, state);
+    VideoCommon::BufferCacheChannelInfo channel{state};
+    Access::UseChannel(*f.cache, channel);
+    Access::Add(*f.cache, 0x14000, 0x1000);
+    Access::Add(*f.cache, 0x18000, 0x1000);
+    Tegra::Nx2MarkCommandListPage(0x18000);
+    std::memset(f.bytes + 0x4000, 7, 0x20);
+    f.cache->WriteMemory(0x14000, 0x20);
+
+    u8 expected{};
+    SECTION("copy") {
+        f.cache->Nx2CollectListCopies(true);
+        REQUIRE(f.cache->DMACopy(0x104000, 0x108000, 0x20));
+        expected = 7;
+    }
+    SECTION("clear") {
+        f.cache->Nx2CollectListCopies(true);
+        REQUIRE(f.cache->DMAClear(0x108000, 8, 0x09090909));
+        expected = 9;
+    }
+    REQUIRE(f.cache->Nx2CopyListPages(f.runtime.CurrentTick()));
+    f.cache->Nx2CollectListCopies(false);
+    f.runtime.Finish();
+    std::array<u8, 4> copied{};
+    CHECK(f.cache->Nx2ReadListCopy(0x18000, copied, true) == Cache::Nx2ListRead::Copied);
+    CHECK(copied[0] == expected);
 }
 
 TEST_CASE("Command page readers remain ordered during batch completion", "[buffer_ports]") {

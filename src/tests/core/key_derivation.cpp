@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Copyright 2026 Lichii Emulator Project
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -65,6 +66,30 @@ TEST_CASE("Keys of a generation the key file lacks are derived from its sources"
     CHECK(keys.GetKey(S128KeyType::Titlekek, 0x1F) == Decrypt(master, Fill(7)));
 
     std::filesystem::remove_all(directory);
+}
+
+TEST_CASE("Short key lines cannot replace a previously loaded key", "[core][crypto]") {
+    auto& keys = KeyManager::Instance();
+    const auto directory = std::filesystem::temp_directory_path() /
+                           ("kaichii-short-key-" + std::to_string(
+                               std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(directory);
+    {
+        std::ofstream file{directory / "prod.keys"};
+        file << "header_key = " << std::string(64, '1') << '\n';
+        file << "header_key = 00\n";
+    }
+    const auto previous = Common::FS::GetEdenPath(Common::FS::EdenPath::KeysDir);
+    Common::FS::SetEdenPath(Common::FS::EdenPath::KeysDir, directory);
+    keys.ReloadKeys();
+    Key256 expected{};
+    expected.fill(0x11);
+    CHECK(keys.GetKey(S256KeyType::Header) == expected);
+    Common::FS::SetEdenPath(Common::FS::EdenPath::KeysDir, previous);
+    keys.ReloadKeys();
+    std::filesystem::remove_all(directory);
+
+    CHECK(Common::HexStringToArray<16>("00") == Key128{});
 }
 
 } // namespace

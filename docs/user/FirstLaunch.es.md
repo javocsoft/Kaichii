@@ -53,6 +53,10 @@ Fluidez y shaders, Audio, Controles, Sistema e Interfaz.
   resto, y *Modo desarrollador* las opciones de depuración.
 - **El buscador** encuentra cualquier ajuste por su nombre o su descripción.
 
+Un juego puede cambiar su volumen o silenciarse mientras funciona. Esas órdenes pueden afectar al
+sonido en ese momento, pero no sobrescriben tus preferencias de volumen y silencio en *Configurar >
+Audio*.
+
 ## La barra de estado
 
 Los botones de la parte de abajo de la ventana principal muestran la API gráfica, la precisión de la

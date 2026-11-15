@@ -204,6 +204,7 @@ add_library(video_core STATIC
     renderer_vulkan/vk_cooperative_hmma_test.cpp
     renderer_vulkan/vk_cooperative_hmma_test.h
     renderer_vulkan/vk_descriptor_buffer.cpp
+    renderer_vulkan/descriptor_frame_policy.h
     renderer_vulkan/vk_descriptor_buffer.h
     renderer_vulkan/vk_descriptor_pool.cpp
     renderer_vulkan/vk_descriptor_pool.h
@@ -238,6 +239,9 @@ add_library(video_core STATIC
     renderer_vulkan/vk_shader_util.cpp
     renderer_vulkan/vk_shader_util.h
     renderer_vulkan/vk_staging_buffer_pool.cpp
+    renderer_vulkan/stream_buffer_wrap.h
+    renderer_vulkan/transcode_staging_lifetime.h
+    renderer_vulkan/transcode_batch_policy.h
     renderer_vulkan/vk_staging_buffer_pool.h
     renderer_vulkan/vk_state_tracker.cpp
     renderer_vulkan/vk_state_tracker.h

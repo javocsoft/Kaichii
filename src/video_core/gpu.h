@@ -220,6 +220,8 @@ public:
 
     [[nodiscard]] u64 GetTicks() const;
 
+    void NotifyApplicationChanged(u64 program_id);
+
     [[nodiscard]] bool IsAsync() const;
 
     /// Whether a channel is suspended on a semaphore acquire (callable from any thread).

@@ -7,6 +7,7 @@
 add_executable(tests
     common/addon_config.cpp
     common/auto_optimize.cpp
+    common/ca_store.cpp
     common/frame_pacing.cpp
     common/game_cover_layout.cpp
     common/hardware_test.cpp
@@ -49,6 +50,7 @@ add_executable(tests
     audio_core/nx2_sysmix.cpp
     audio_core/nx2_input_service.cpp
     audio_core/audio_in.cpp
+    audio_core/audio_controller_volume.cpp
     audio_core/sysmix_sink.cpp
     audio_core/mix_sample.cpp
     audio_core/sysmix_test_context.h
@@ -56,12 +58,15 @@ add_executable(tests
     video_core/ampere_yoshi_title.cpp
     video_core/ampere_yoshi_compute.cpp
     video_core/texture_rect_descriptor.cpp
+    video_core/render_target_view_id.cpp
     audio_core/batch_decoder.cpp
     audio_core/adpcm_decode.cpp
     audio_core/microphone.cpp
     audio_core/hardware_audio_codec.cpp
     core/gpu_dirty_memory.cpp
     core/memory_acquire.cpp
+    core/memory_span.cpp
+    core/cmif_out_buffer.cpp
     core/builtin_patches.cpp
     core/system_test_context.h
     video_core/ampere_branch_modifiers.cpp
@@ -77,6 +82,7 @@ add_executable(tests
     core/ncz_io_guards.cpp
     input_common/calibration_lifetime.cpp
     input_common/motion_stall_watch.cpp
+    input_common/motion_sample_clock.cpp
     video_core/ampere_logged_numeric.cpp
     video_core/ampere_logged_textures.cpp
     video_core/native_texture_header_index.cpp
@@ -87,9 +93,14 @@ add_executable(tests
     video_core/fmz_saturate.cpp
     video_core/range_cover.cpp
     video_core/transcode_cache.cpp
+    video_core/transcode_staging_lifetime.cpp
+    video_core/transcode_batch_policy.cpp
     video_core/maxwell_numeric.cpp
     video_core/maxwell_permute_lod.cpp
     video_core/submission_policy.cpp
+    video_core/stream_buffer_wrap.cpp
+    video_core/descriptor_frame_policy.cpp
+    video_core/unsigned_bitfield_extract.cpp
     video_core/native_pending_policy.cpp
     video_core/framebuffer_clear_layers.cpp
     video_core/framebuffer_limits.cpp
