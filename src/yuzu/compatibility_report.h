@@ -83,6 +83,8 @@ private:
     void Copy();
     void Clear();
     void Refresh();
+    /// Smoothness is asked only for a game that gets into play.
+    void UpdateSmoothness();
     [[nodiscard]] QString ValidationError() const;
     [[nodiscard]] QString Text(const QString& key) const;
 
@@ -92,6 +94,7 @@ private:
     QMap<QString, QLineEdit*> fields;
     QMap<QString, QPlainTextEdit*> paragraphs;
     QComboBox* outcome;
+    QComboBox* smoothness;
     QComboBox* graphics_api;
     QPushButton* open;
     QPushButton* copy;

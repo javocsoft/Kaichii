@@ -42,6 +42,9 @@ private slots:
     void dialogTranslationContext();
     void machinePrefillsRemainEditable();
     void enabledAddonPrefills();
+    void asksHowSmoothlyAPlayedGameRan();
+    void smoothnessIsNotAskedWhenTheGameDidNotGetIntoPlay();
+    void writesTheFrameRateWhenGiven();
 };
 
 namespace {
@@ -84,6 +87,7 @@ Session DialogTest::Seed() {
 
 void DialogTest::Fill(Dialog& dialog) {
     dialog.outcome->setCurrentIndex(dialog.outcome->findData(QStringLiteral("Playable")));
+    dialog.smoothness->setCurrentIndex(dialog.smoothness->findData(QStringLiteral("Smooth")));
     dialog.fields[QStringLiteral("summary")]->setText(QStringLiteral("Synthetic summary"));
     dialog.paragraphs[QStringLiteral("progress")]->setPlainText(QStringLiteral("First area"));
     dialog.paragraphs[QStringLiteral("details")]->setPlainText(QStringLiteral("Menus worked."));
@@ -127,7 +131,10 @@ void DialogTest::opensAPrefilledIssueOnTheBuildsRepository() {
              QStringLiteral("[Compatibility] Synthetic Switch 2 game (1.0.0): Playable"));
     const QString report = Report(url);
     QCOMPARE(report, dialog.Markdown());
-    QVERIFY(report.startsWith(QStringLiteral("**Compatibility:** Playable\n\nSynthetic summary")));
+    QVERIFY(report.startsWith(QStringLiteral(
+        "**Compatibility:** Playable\n\n**Smoothness:** Smooth\n\nSynthetic summary")));
+    // No frame rate was given: no line for it.
+    QVERIFY(!report.contains(QStringLiteral("**Frame rate:**")));
     QVERIFY(report.contains(QStringLiteral("| Program ID | 0400486024DEC000 |")));
     QVERIFY(
         report.contains(QStringLiteral("| Kaichii build | Kaichii build-91 (c5bc78e1b99a) |")));
@@ -233,6 +240,8 @@ void DialogTest::clearEmptiesTheDraft() {
     Fill(dialog);
     dialog.clear->click();
     QCOMPARE(dialog.outcome->currentIndex(), 0);
+    QCOMPARE(dialog.smoothness->currentIndex(), 0);
+    QVERIFY(dialog.smoothness->isEnabled());
     QVERIFY(dialog.fields[QStringLiteral("summary")]->text().isEmpty());
     QVERIFY(dialog.fields[QStringLiteral("cpu")]->text().isEmpty());
     QVERIFY(dialog.paragraphs[QStringLiteral("details")]->toPlainText().isEmpty());
@@ -307,6 +316,50 @@ void DialogTest::enabledAddonPrefills() {
     QCOMPARE(dialog.paragraphs[QStringLiteral("mods")]->toPlainText(), session.mods);
     QCOMPARE(dialog.paragraphs[QStringLiteral("updates")]->toPlainText(), session.updates);
     QVERIFY(dialog.Markdown().contains(QStringLiteral("| Mods | ") + session.mods));
+}
+
+void DialogTest::asksHowSmoothlyAPlayedGameRan() {
+    Dialog dialog(Seed(), Repository, nullptr, NoBrowser);
+    Fill(dialog);
+    QVERIFY(dialog.open->isEnabled());
+    // A game that got into play needs a smoothness, and "not applicable" isn't one.
+    dialog.smoothness->setCurrentIndex(0);
+    QVERIFY(!dialog.open->isEnabled());
+    QVERIFY(!dialog.open->toolTip().isEmpty());
+    for (const auto* level : {"Perfect", "Smooth", "Stutters", "Choppy", "Poor"}) {
+        const int index = dialog.smoothness->findData(QString::fromLatin1(level));
+        QVERIFY2(index > 0, level);
+        dialog.smoothness->setCurrentIndex(index);
+        QVERIFY2(dialog.open->isEnabled(), level);
+        QVERIFY(dialog.Markdown().contains(
+            QStringLiteral("**Smoothness:** %1\n").arg(QString::fromLatin1(level))));
+    }
+}
+
+void DialogTest::smoothnessIsNotAskedWhenTheGameDidNotGetIntoPlay() {
+    Dialog dialog(Seed(), Repository, nullptr, NoBrowser);
+    Fill(dialog);
+    for (const auto* rating : {"Loads", "Unplayable"}) {
+        dialog.outcome->setCurrentIndex(dialog.outcome->findData(QString::fromLatin1(rating)));
+        QVERIFY2(!dialog.smoothness->isEnabled(), rating);
+        QCOMPARE(dialog.smoothness->currentData().toString(), QStringLiteral("Not applicable"));
+        QVERIFY2(dialog.open->isEnabled(), rating);
+        QVERIFY(dialog.Markdown().contains(QStringLiteral("**Smoothness:** Not applicable\n")));
+    }
+    // Back to a rating in play: the question is open again, not answered with "not applicable".
+    dialog.outcome->setCurrentIndex(dialog.outcome->findData(QStringLiteral("Runs")));
+    QVERIFY(dialog.smoothness->isEnabled());
+    QCOMPARE(dialog.smoothness->currentIndex(), 0);
+    QVERIFY(!dialog.open->isEnabled());
+}
+
+void DialogTest::writesTheFrameRateWhenGiven() {
+    Dialog dialog(Seed(), Repository, nullptr, NoBrowser);
+    Fill(dialog);
+    dialog.fields[QStringLiteral("fps")]->setText(QStringLiteral("25-30"));
+    QVERIFY(dialog.open->isEnabled());
+    QVERIFY(dialog.Markdown().contains(
+        QStringLiteral("**Smoothness:** Smooth\n\n**Frame rate:** 25-30 fps\n\nSynthetic")));
 }
 
 } // namespace CompatibilityReporting

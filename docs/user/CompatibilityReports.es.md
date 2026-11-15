@@ -9,15 +9,29 @@ funciona un juego en Windows, Linux y macOS.
 
 1. Juega un rato a un juego de Switch 2 y luego detenlo.
 2. Haz clic derecho en el juego de la lista y elige **Enviar informe de compatibilidad**.
-3. En **Experiencia**, elige cómo ha funcionado:
+3. En **Experiencia**, elige si el juego funciona:
 
-   | Valoración | Significa |
+   | Compatibilidad | Significa |
    |---|---|
-   | Perfecto | Se juega como en la consola |
-   | Jugable | Se puede terminar, con pequeños problemas |
-   | Funciona | Llega a jugarse, pero los problemas estorban |
+   | Perfecto | Funciona como en la consola, sin errores |
+   | Jugable | Se puede terminar; pequeños errores que no estorban |
+   | Funciona | Llega a jugarse, pero los errores o cierres estorban |
    | Carga | Arranca, pero no llega a jugarse |
    | Injugable | Se cierra o no arranca |
+
+   Después, cómo de fluido ha ido en tu equipo, con los ajustes con los que arrancó:
+
+   | Fluidez | Significa |
+   |---|---|
+   | Perfecta | Estable a la velocidad del juego, sin tirones |
+   | Fluida | Estable, con algún tirón muy de vez en cuando |
+   | Tirones puntuales | Va bien, pero da tirones en algunas zonas o momentos |
+   | Poco fluida | Bajadas o tirones frecuentes que se notan al jugar |
+   | Muy mala | Va lenta casi todo el tiempo, cuesta jugar |
+
+   Un juego que solo carga o no arranca no tiene fluidez que valorar, así que la opción se
+   desactiva. Si los conoces, añade los FPS habituales: los muestra el panel de rendimiento (menú
+   **Ver**).
 
    Después escribe un resumen, hasta dónde has jugado y qué ha funcionado o fallado.
 4. **Sistema y ajustes** ya viene relleno: el juego y su versión, la versión de Kaichii, tu
