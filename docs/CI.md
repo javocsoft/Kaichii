@@ -143,7 +143,9 @@ one). It runs when the guide, its MkDocs configuration or `tools/site` change on
 `compatibility` is opened, edited, closed or relabelled, once a day, and on demand.
 
 Before building, `tools/site/compatibility.py` replaces `Compatibility.md` and `Compatibility.es.md`
-with the list of reports read from the issues. Report text comes from anyone who opens an issue: the
+with the list of reports read from the issues: a table that compares each game's newest report on
+Windows, Linux and macOS (games are matched by program ID), then every report in a section for its
+operating system, which the report's `Operating system` row names. Report text comes from anyone who opens an issue: the
 script escapes every value and writes every link itself, and `tools/site/test_compatibility.py`
 checks that. Issues closed as not planned, or labelled `duplicate`, `invalid` or `spam`, are left
 out. The repository's Pages source must be "GitHub Actions".

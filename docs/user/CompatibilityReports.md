@@ -2,7 +2,8 @@
 
 A compatibility report tells other players, and Kaichii's developers, how a game runs on your
 computer. Reports are public issues in Kaichii's repository, and the
-[compatibility list](Compatibility.md) gathers them.
+[compatibility list](Compatibility.md) gathers them by operating system, so you can see how a game
+runs on Windows, Linux and macOS side by side.
 
 ## How
 
