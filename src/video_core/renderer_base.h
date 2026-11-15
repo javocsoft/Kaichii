@@ -9,6 +9,7 @@
 #include <atomic>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "common/common_funcs.h"
@@ -76,6 +77,14 @@ public:
     /// Whether frame generation can run and how many frames it has generated so far
     [[nodiscard]] virtual FrameGenStatus GetFrameGenStatus() const {
         return {};
+    }
+
+    /// Asks for one host GPU time sample of an upcoming frame
+    virtual void RequestGpuBusySample() {}
+
+    /// Host GPU busy time of the last sampled frame, nullopt when it isn't measured
+    [[nodiscard]] virtual std::optional<double> GetGpuBusyMs() const {
+        return std::nullopt;
     }
 
     [[nodiscard]] const RendererDeviceInfo& GetDeviceInfo() const {
