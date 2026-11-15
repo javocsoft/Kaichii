@@ -148,3 +148,14 @@ TEST_CASE("Maxwell retains its tick units and clock scaling", "[video_core][gpu_
         }
     }
 }
+
+TEST_CASE("Mario Kart World retains GPU tick timestamps on Switch 2", "[video_core][gpu_timestamp]") {
+    CHECK(Tegra::UsesLegacyAmpereTimestamps(Settings::MarioKartWorldProgramId));
+    CHECK_FALSE(Tegra::UsesLegacyAmpereTimestamps(0));
+    CHECK_FALSE(Tegra::UsesLegacyAmpereTimestamps(0x0400486024DEC000ULL));
+    constexpr u64 now = 293'036'000'000'000;
+    const auto timing = At(now);
+    CHECK(Tegra::ReadGpuTimestamp(timing, false, Settings::GpuClock::Boost,
+                                  Tegra::AmpereAnchor::At(now, Settings::GpuClock::Boost)) ==
+          timing.gpu_ticks / 256);
+}

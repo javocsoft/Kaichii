@@ -3,7 +3,11 @@
 
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <optional>
 #include <boost/algorithm/string/replace.hpp>
 
@@ -12,14 +16,51 @@
 #include "net.h"
 
 #include "common/logging.h"
+#include "common/fs/path_util.h"
+#include "common/net/ca_store.h"
 
 #include "common/httplib.h"
 
-#ifdef YUZU_BUNDLED_OPENSSL
-#include <openssl/cert.h>
-#endif
-
 namespace Common::Net {
+
+#ifdef YUZU_BUNDLED_OPENSSL
+std::string BundledCaFile() {
+    namespace fs = std::filesystem;
+    try {
+        const std::string_view contents{kCert, sizeof(kCert) - 1};
+        const fs::path dir = Common::FS::GetEdenPath(Common::FS::EdenPath::CacheDir);
+        const fs::path path = dir / "ca-bundle.pem";
+        const auto matches = [&contents](const fs::path& file) {
+            std::ifstream input{file, std::ios::binary};
+            const std::string data{std::istreambuf_iterator<char>{input}, {}};
+            return input && data == contents;
+        };
+        if (matches(path)) {
+            return Common::FS::PathToUTF8String(path);
+        }
+        std::error_code error;
+        fs::create_directories(dir, error);
+        const fs::path temp = fs::path{path}.concat(
+            fmt::format(".{}", std::chrono::steady_clock::now().time_since_epoch().count()));
+        {
+            std::ofstream output{temp, std::ios::binary | std::ios::trunc};
+            output.write(contents.data(), static_cast<std::streamsize>(contents.size()));
+            if (!output) {
+                fs::remove(temp, error);
+                return {};
+            }
+        }
+        fs::rename(temp, path, error);
+        if (error) {
+            fs::remove(temp, error);
+        }
+        return matches(path) ? Common::FS::PathToUTF8String(path) : std::string{};
+    } catch (const std::exception& e) {
+        LOG_WARNING(Common, "Could not write the built-in CA bundle: {}", e.what());
+        return {};
+    }
+}
+#endif
 
 LinuxPackage CurrentLinuxPackage() {
 #ifdef __linux__
@@ -211,9 +252,7 @@ RequestResult Fetch(const std::string& url, const std::string& path) {
         client->set_read_timeout(timeout_seconds);
         client->set_write_timeout(timeout_seconds);
 
-#ifdef YUZU_BUNDLED_OPENSSL
-        client->load_ca_cert_store(kCert, sizeof(kCert));
-#endif
+        ConfigureCaStore(*client);
 
         if (client == nullptr) {
             LOG_ERROR(Common, "Invalid URL {}{}", url, path);

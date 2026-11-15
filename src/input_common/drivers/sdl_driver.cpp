@@ -15,6 +15,7 @@
 #include "common/settings.h"
 #include "common/thread.h"
 #include "common/vector_math.h"
+#include "input_common/drivers/motion_sample_clock.h"
 #include "input_common/drivers/motion_stall_watch.h"
 #include "input_common/drivers/sdl_driver.h"
 #include "input_common/helpers/rumble_mapping.h"
@@ -156,18 +157,14 @@ public:
         const u64 sensor_timestamp = event.sensor_timestamp != 0 ? event.sensor_timestamp
                                                                  : event.timestamp;
 
-        if (last_motion_update == 0) {
-            last_motion_update = sensor_timestamp;
-            return false;
-        }
-        if (sensor_timestamp < last_motion_update) {
+        const auto elapsed = motion_clock.Advance(sensor_timestamp);
+        if (!elapsed) {
             return false;
         }
 
         // SDL3 reports sensor timestamps in nanoseconds, while the input stack expects
         // delta timestamps in microseconds.
-        const u64 time_difference = (sensor_timestamp - last_motion_update) / 1000;
-        last_motion_update = sensor_timestamp;
+        const u64 time_difference = *elapsed;
         switch (event.sensor) {
         case SDL_SENSOR_ACCEL: {
             motion.accel_x = -event.data[0] / gravity_constant;
@@ -343,6 +340,12 @@ public:
     }
 
     void SetSDLJoystick(SDL_Joystick* joystick, SDL_Gamepad* controller) {
+        {
+            std::scoped_lock lock{mutex};
+            motion_clock.Reset();
+            motion_error_count = 0;
+            motion_restart_threshold = InitialMotionRestartThreshold;
+        }
         sdl_joystick.reset(joystick);
         sdl_controller.reset(controller);
         motion_stall.Enabled(MotionStallWatch::Clock::now());
@@ -449,7 +452,7 @@ private:
     /// The last rumble the vibration trace logged, high << 16 | low.
     std::atomic<u32> traced_rumble{0};
 
-    u64 last_motion_update{};
+    MotionSampleClock motion_clock;
     static constexpr std::size_t InitialMotionRestartThreshold = 200;
     static constexpr std::size_t MaxMotionRestartThreshold = 200 * 64;
     std::size_t motion_error_count{};

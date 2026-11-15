@@ -346,6 +346,14 @@ void ReadInArgument(bool is_domain, CallArguments& args, const u8* raw_data, HLE
             auto& buffer = temp[OutBufferIndex];
             if (ctx.CanWriteBuffer(OutBufferIndex)) {
                 buffer.resize_destructive(ctx.GetWriteBufferSize(OutBufferIndex));
+                bool buffer_b = (ArgType::Attr & BufferAttr_HipcMapAlias) != 0;
+                if constexpr (ArgType::Attr & BufferAttr_HipcAutoSelect) {
+                    const auto& descriptors = ctx.BufferDescriptorB();
+                    buffer_b = descriptors.size() > OutBufferIndex &&
+                               descriptors[OutBufferIndex].Size() != 0;
+                }
+                ctx.ReadWriteBufferContents(std::span<u8>{buffer.data(), buffer.size()}, buffer_b,
+                                            OutBufferIndex);
             } else {
                 buffer.resize_destructive(0);
             }

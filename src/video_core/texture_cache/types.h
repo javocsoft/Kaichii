@@ -28,6 +28,7 @@ using FramebufferId = Common::SlotId;
 constexpr ImageId NULL_IMAGE_ID{0};
 /// Image view ID for null descriptors
 constexpr ImageViewId NULL_IMAGE_VIEW_ID{0};
+[[nodiscard]] constexpr ImageViewId MissingRenderTargetView() { return ImageViewId{}; }
 /// Sampler ID for bugged sampler ids
 constexpr SamplerId NULL_SAMPLER_ID{0};
 

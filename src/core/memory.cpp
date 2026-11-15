@@ -326,26 +326,9 @@ struct Memory::Impl {
         });
     }
 
-    [[nodiscard]] inline const u8* GetSpan(const VAddr addr, const std::size_t size) const noexcept {
-        const auto first = current_page_table->entries[addr >> YUZU_PAGEBITS].Block();
-        const auto last = current_page_table->entries[(addr + size) >> YUZU_PAGEBITS].Block();
-        if (Common::PageTable::PageEntryData::CanFastSpan(first, last)) {
-            return GetPointerSilent(addr);
-        }
-        if (first != Common::PageTable::PageEntryData::INVALID_BLOCK_ID &&
-            last != Common::PageTable::PageEntryData::INVALID_BLOCK_ID) {
-            return nullptr;
-        }
-        return GetContiguousSpan(addr, size);
-    }
-    [[nodiscard]] inline u8* GetSpan(const VAddr addr, const std::size_t size) noexcept {
-        const auto first = current_page_table->entries[addr >> YUZU_PAGEBITS].Block();
-        const auto last = current_page_table->entries[(addr + size) >> YUZU_PAGEBITS].Block();
-        if (Common::PageTable::PageEntryData::CanFastSpan(first, last)) {
-            return GetPointerSilent(addr);
-        }
-        if (first != Common::PageTable::PageEntryData::INVALID_BLOCK_ID &&
-            last != Common::PageTable::PageEntryData::INVALID_BLOCK_ID) {
+    [[nodiscard]] u8* GetSpan(const VAddr addr, const std::size_t size) const noexcept {
+        if (!AddressSpaceContains(*current_page_table, addr, size) ||
+            addr >= (u64{1} << current_page_table->GetAddressSpaceBits())) {
             return nullptr;
         }
         return GetContiguousSpan(addr, size);

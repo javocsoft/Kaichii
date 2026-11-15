@@ -41,6 +41,10 @@ as outdoors with the camera still, and don't pause or open menus while it measur
   *Resolution* (*Configure > Image*) or set **VRAM Usage Mode** to *Conservative*.
 - Keep **ASTC Decoding Method** on *CPU* or *CPU Asynchronous* unless the processor is slow.
 
+If you choose GPU ASTC decoding on integrated graphics, Kaichii processes large texture arrays in
+smaller batches to limit temporary GPU memory. This happens automatically; it does not guarantee a
+speed increase or change the CPU recommendation above.
+
 ## Shader stutter
 
 The first time an effect appears, its shaders have to be built for your graphics card, and the game

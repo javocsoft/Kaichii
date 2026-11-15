@@ -16,6 +16,7 @@
 #include "shader_recompiler/frontend/ir/modifiers.h"
 #include "shader_recompiler/frontend/ir/value.h"
 #include "shader_recompiler/ir_opt/passes.h"
+#include "shader_recompiler/ir_opt/unsigned_bitfield_extract.h"
 #include "shader_recompiler/ir_opt/predicate_mask.h"
 
 namespace Shader::Optimization {
@@ -1134,7 +1135,7 @@ void ConstantPropagation(Environment& env, IR::Block& block, IR::Inst& inst) {
                 throw LogicError("Undefined result in {}({}, {}, {})", IR::Opcode::BitFieldUExtract,
                                  base, shift, count);
             }
-            return (base >> shift) & ((1U << count) - 1);
+            return ExtractUnsignedBitfield(base, shift, count);
         });
         return;
     case IR::Opcode::BitFieldSExtract:

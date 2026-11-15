@@ -177,6 +177,7 @@ add_library(shader_recompiler STATIC
     ir_opt/collect_shader_info_pass.cpp
     ir_opt/conditional_barrier_pass.cpp
     ir_opt/constant_propagation_pass.cpp
+    ir_opt/unsigned_bitfield_extract.h
     ir_opt/dead_code_elimination_pass.cpp
     ir_opt/dual_vertex_pass.cpp
     ir_opt/geometry_compaction_pass.cpp
