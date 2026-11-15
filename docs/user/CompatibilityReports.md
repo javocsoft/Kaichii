@@ -9,15 +9,28 @@ runs on Windows, Linux and macOS side by side.
 
 1. Play a Switch 2 game for a while, then stop it.
 2. Right-click the game in the list and choose **Submit compatibility report**.
-3. In **Experience**, choose how it ran:
+3. In **Experience**, choose whether the game works:
 
-   | Assessment | Means |
+   | Compatibility | Means |
    |---|---|
-   | Perfect | Plays as on the console |
-   | Playable | Can be played through, with small problems |
-   | Runs | Gets into the game, but problems get in the way |
+   | Perfect | Works as on the console, no errors |
+   | Playable | Can be played through; small errors that don't get in the way |
+   | Runs | Gets into the game, but errors or crashes get in the way |
    | Loads | Starts, but doesn't get into the game |
    | Unplayable | Crashes or doesn't start |
+
+   Then how smoothly it ran on your computer, with the settings it started with:
+
+   | Smoothness | Means |
+   |---|---|
+   | Perfect | Steady at the game's frame rate, no stutters |
+   | Smooth | Steady, with a rare stutter |
+   | Occasional stutters | Runs well, but stutters in some places |
+   | Choppy | Frequent drops or stutters you notice while playing |
+   | Very poor | Slow most of the time, hard to play |
+
+   A game that only loads or doesn't start has no smoothness to give, so the choice is turned off.
+   If you know it, add the usual frame rate: the performance overlay (**View** menu) shows it.
 
    Then write a summary, how far you played and what worked or failed.
 4. **System and settings** is already filled in: the game and its version, the Kaichii build, your

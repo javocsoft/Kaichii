@@ -14,8 +14,10 @@ text on the clipboard.
 
 ## What the report holds
 
-The **Experience** tab is the player's: their assessment (Perfect, Playable, Runs, Loads or
-Unplayable), a summary, how far they played, what worked or failed, and optional steps to reproduce.
+The **Experience** tab is the player's: their compatibility assessment (Perfect, Playable, Runs,
+Loads or Unplayable: whether the game works), its smoothness on their computer (Perfect, Smooth,
+Stutters, Choppy or Poor; `Not applicable`, and the choice disabled, when the rating is Loads or
+Unplayable), an optional usual frame rate, a summary, how far they played, what worked or failed, and optional steps to reproduce.
 The **System and settings** tab is prefilled and editable: the game and its version, the program ID,
 the Kaichii build, CPU, GPU and driver, graphics API, operating system, RAM, launch settings, and the
 updates and mods enabled at launch. Missing values read Unknown. Prefills are not performance
