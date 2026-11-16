@@ -21,10 +21,12 @@
 #include "common/alignment.h"
 #include "common/assert.h"
 #include "common/div_ceil.h"
+#include "common/memory_detect.h"
 #include "common/paged_scalar.h"
 #include "common/scope_exit.h"
 #include "common/settings.h"
 #include "core/device_memory.h"
+#include "core/device_memory_hint_range.h"
 #include "core/device_memory_manager.h"
 #include "core/memory.h"
 #include "video_core/nx2_perf.h"
@@ -213,6 +215,13 @@ DeviceMemoryManager<Traits>::~DeviceMemoryManager() = default;
 
 template <typename Traits>
 void DeviceMemoryManager<Traits>::HintCold(DAddr address, size_t size) {
+    if (!Common::IsHostLowOnMemory()) {
+        return;
+    }
+    size = ClipColdHintSize(address, size, DAddr{1} << AS_BITS);
+    if (size == 0) {
+        return;
+    }
     struct Run {
         u64 physical_offset;
         VAddr virtual_address; ///< 0: no CPU mapping known

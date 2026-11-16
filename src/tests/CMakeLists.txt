@@ -177,10 +177,12 @@ add_executable(tests
     common/game_presets.cpp
     common/performance_presets.cpp
     common/host_memory.cpp
+    common/memory_detect.cpp
     common/multi_level_page_table.cpp
     common/host_memory_failure.cpp
     common/host_memory_test_access.h
     core/host_memory_failure.cpp
+    core/device_memory_hint_range.cpp
     common/page_table.cpp
     common/param_package.cpp
     common/range_map.cpp

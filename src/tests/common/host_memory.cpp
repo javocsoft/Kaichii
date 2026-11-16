@@ -59,6 +59,25 @@ TEST_CASE("HostMemory: Simple map", "[common]") {
     REQUIRE(data[0] == 50);
 }
 
+TEST_CASE("HostMemory: cold hint preserves guest and backing data", "[common][cold_hint]") {
+    if (!MapsSingleGuestPages()) {
+        SKIP("Host pages larger than 4 KiB only map whole host pages");
+    }
+    HostMemory mem(MOVE_BACKING_SIZE, MOVE_VIRTUAL_SIZE);
+    REQUIRE(mem.BackingBasePointer() != nullptr);
+    mem.Map(0x10000, 0x20000, 0x1000, PERMS, HEAP);
+
+    volatile u8* const guest = mem.VirtualBasePointer() + 0x10000;
+    guest[0] = 0x5a;
+    guest[0xfff] = 0xa5;
+    mem.HintCold(0x20000, 0x1000, 0x10000);
+
+    CHECK(guest[0] == 0x5a);
+    CHECK(guest[0xfff] == 0xa5);
+    CHECK(mem.BackingBasePointer()[0x20000] == 0x5a);
+    CHECK(mem.BackingBasePointer()[0x20fff] == 0xa5);
+}
+
 TEST_CASE("HostMemory: Aligned contiguous map", "[common]") {
     HostMemory mem(BACKING_SIZE, VIRTUAL_SIZE);
     REQUIRE(mem.BackingBasePointer() != nullptr);
