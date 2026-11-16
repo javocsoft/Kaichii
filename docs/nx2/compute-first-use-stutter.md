@@ -180,14 +180,21 @@ porch scene. The 25-second `frame_times` window after the automated load measure
 33.12 presented frames/s, 44.0 ms p99 and a 63.3 ms maximum. The earlier baseline
 window measured 28.83 presented frames/s, 54.2 ms p99 and a 269.3 ms maximum.
 The windows include a changing load transition, so these figures are only a smoke
-comparison, not a controlled estimate of the gain. With ample RAM, the fixed run
-had no `DeviceMemory:ColdHint` worker; the always-present `nx2:ColdHint` thread
-still existed but returned before its backing pass. Texture transcode workers
+comparison, not a controlled estimate of the gain. Texture transcode workers
 remained busy during loading, and a separate 164.7 ms slow present occurred later
 in the fixed run. The change does not claim to remove every hitch.
 
-The low-RAM branch was exercised by synthetic threshold and range tests, not by
-playing under host memory pressure. Windows and macOS were not built or run in
-this local validation. Their platform-specific hint implementations remain as
-before; Lichii #1581 supplies a Windows game A/B, while this Kaichii port still
-needs its own platform smoke tests before release.
+A temporary binary forced `IsHostLowOnMemory()` to return true while actual host
+RAM was still ample. It reached the same porch; the sampling trace caught the
+`DeviceMemory:ColdHint` worker, truncated by Linux to `DeviceMemory:Co`, during
+a 122.3 ms present. Its 25-second window measured 28.45 presented frames/s and
+a 55.0 ms p99. This exercises the low-memory branch and its `MADV_COLD` calls,
+but does not simulate real pressure or measure its performance. The force was
+removed, and the normal binary was rebuilt with all C++ tests passing. An earlier
+thread-name check for the full `ColdHint` suffix could not establish whether the
+worker existed in the ample-RAM run because Linux truncated that name.
+
+Windows and macOS were not built or run in this local validation. Their
+platform-specific hint implementations remain as before; Lichii #1581 supplies a
+Windows game A/B, while this Kaichii port still needs its own platform smoke tests
+before release.
