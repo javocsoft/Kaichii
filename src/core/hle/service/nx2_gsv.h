@@ -29,6 +29,7 @@
 #include "common/div_ceil.h"
 #include "common/dkb_frame_trace.h"
 #include "common/game_presets.h"
+#include "common/memory_detect.h"
 #include "common/nx2_movie_clock.h"
 #include "common/settings.h"
 #include "common/thread.h"
@@ -1528,6 +1529,9 @@ private:
     // is read again only when the texture cache builds an image over it, so the OS may compress or
     // page it out before anything else. Last member: stops before the regions are destroyed.
     void HintColdBacking() {
+        if (!Common::IsHostLowOnMemory()) {
+            return;
+        }
         struct Range {
             u64 physical_offset;
             u64 virtual_address;
