@@ -16,9 +16,10 @@ The fast gate and the Linux Clang and GCC C++ suites passed. The VP9 test was ru
 with the reported exception before the fix. An isolated Donkey Kong Bananza launch with FSR3 2x and
 Target 60 reached the running generation state and produced over 1,600 generated frames without shader
 rejections. This confirms that the path runs, not that frame rate or pacing improved against a baseline.
-Windows' test cannot run in the Linux container; a Windows build and run remain necessary to verify it.
-The texture cache ownership fix requires a multi-channel game case to confirm the reported assertion
-is gone.
+Both Windows binary variants built in a [non-publishing workflow](https://github.com/javocsoft/Kaichii/actions/runs/44129996771).
+The Windows-only sparse-vector test was not run, so the page-fault behaviour still needs a Windows test.
+The macOS job was cancelled before a runner was assigned and provides no build result. The texture
+cache ownership fix requires a multi-channel game case to confirm the reported assertion is gone.
 
 Reviewed and left for a later, game-tested round: [#2012](https://github.com/zortos293/Lichii/pull/2012)
 changes native mesh pipeline lookup and was not run in a game by its author;

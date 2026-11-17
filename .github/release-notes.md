@@ -9,6 +9,11 @@ understands, then says what they saw, what caused it, what was measured or playe
 pull request number. Say plainly what was not confirmed. HTML comments like this one are dropped.
 -->
 ### Performance
-- **Revisiting Switch 2 textures can cause fewer memory stalls.** Kaichii now keeps uploaded game-memory pages in RAM while the PC has enough free memory. When RAM is low, it still gives the OS a cold-page hint; Linux uses a gentler hint instead of requesting immediate pageout. This avoids paging out data that the game may soon need again. Synthetic policy and range tests pass. A user played Ocarina of Time on Linux and reported noticeably smoother gameplay, but no controlled FPS gain has been measured (#82).
+- **Frame pacing targets game frames when frame generation is on.** Target 30/60/90/120 now count each game's frame once and space its generated presents within that interval. Generation also leaves a free presentation frame for the next game frame, avoiding a wait when the queue fills. Unit tests cover target rates and queue capacity. Donkey Kong Bananza ran with FSR3 2x and Target 60 and produced generated frames, but no before-and-after pacing or FPS gain was measured (#83).
 
-The Linux Qt build opened the user's existing game library and launched Ocarina of Time. Windows and macOS game runs have not been verified for this change.
+### Crashes and stability
+- **Texture cleanup uses the image's own GPU address space.** Unregistering an image after a channel switch no longer looks in the newly bound channel's page table. A synthetic two-address-space test passes; the reported multi-channel game case has not been replayed (#83).
+- **VP9 header encoding no longer reads past its stream while propagating a carry.** The regression test reproduced the old stream exception and passes with the fix. The affected video scene has not been replayed (#83).
+- **Windows sparse-vector pages stay writable after another thread commits them.** This avoids a protection change that could race with a GPU cache update. Both Windows binary variants compile; the Windows-only regression test and a game run have not been performed (#83).
+
+The Linux build ran Donkey Kong Bananza with FSR3 frame generation. No Switch 1 game was run. Windows game runs have not been verified, and GitHub did not assign a macOS runner for the test build.
