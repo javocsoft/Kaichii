@@ -34,6 +34,10 @@ This Game*, or Ctrl+Shift+O). Kaichii measures the game as it runs, tries frame 
 few seconds, and proposes changes; nothing changes until you accept. Stand somewhere demanding, such
 as outdoors with the camera still, and don't pause or open menus while it measures.
 
+With frame generation enabled, Kaichii skips extra generated images when the display cannot show
+them without holding the next game frame. A manual Frame Pacing target counts game frames, even when
+each produces generated images. The display's refresh rate still limits how many images you see.
+
 ## On a card with 4 GB
 
 - Start from the **Performance** preset.

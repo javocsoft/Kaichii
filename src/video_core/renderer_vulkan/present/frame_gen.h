@@ -27,7 +27,7 @@ public:
 
     void Process(const Device& device, Frame* frame, VkFormat format, VkExtent2D guest_extent);
 
-    [[nodiscard]] size_t WantedGenerations(size_t capacity);
+    [[nodiscard]] size_t WantedGenerations(size_t capacity, size_t free_frames);
 
     [[nodiscard]] size_t GeneratedFrameCount() const;
 

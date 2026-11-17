@@ -214,7 +214,11 @@ add_executable(tests
     video_core/nx2_perf_draw_binds.cpp
     video_core/nx2_perf_texture_writes.cpp
     video_core/h264_packet.cpp
+    video_core/vp9_range_encoder.cpp
     video_core/nx2_gpu_mapping.cpp
+    video_core/image_page_tables.cpp
+    video_core/frame_pacer.cpp
+    video_core/frame_gen_generations.cpp
     video_core/vertex_repack.cpp
     video_core/ampere_lowering.cpp
     video_core/ampere_geometry.cpp

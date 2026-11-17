@@ -53,3 +53,20 @@ TEST_CASE("SparseLargeVector keeps zeroed pages writable for in-flight stores", 
     entries.ZeroRegion(EntriesPerHostPage, EntriesPerHostPage * 2);
     REQUIRE(entries[index].Type() == Common::PageType::Unmapped);
 }
+
+#ifdef _WIN32
+TEST_CASE("SparseLargeVector fault handler preserves another thread's writable page",
+          "[common][sparse_large_vector]") {
+    Common::SparseLargeVector<Entry> entries(EntriesPerHostPage * 2);
+    const std::size_t index = EntriesPerHostPage + 3;
+
+    entries.CommitRegion(index, index + 1);
+    entries.GetUnchecked(index).Store(false, Common::PageType::Memory, 1, 0x1000);
+
+    const auto page = reinterpret_cast<uintptr_t>(entries.data() + index) & Common::HostPageMask;
+    REQUIRE(Common::CommitVectorPage(page));
+
+    entries.GetUnchecked(index).Store(false, Common::PageType::RasterizerCachedMemory, 1, 0x1000);
+    REQUIRE(entries[index].Type() == Common::PageType::RasterizerCachedMemory);
+}
+#endif
