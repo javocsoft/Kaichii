@@ -32,6 +32,7 @@
 #include "video_core/engines/maxwell_3d.h"
 #include "video_core/host1x/gpu_device_memory_manager.h"
 #include "video_core/renderer_vulkan/fixed_pipeline_state.h"
+#include "video_core/renderer_vulkan/mesh_pipeline_input_aliases.h"
 #include "video_core/renderer_vulkan/vk_buffer_cache.h"
 #include "video_core/renderer_vulkan/vk_compute_pipeline.h"
 #include "video_core/renderer_vulkan/vk_graphics_pipeline.h"
@@ -222,6 +223,9 @@ private:
     GraphicsPipelineCacheKey graphics_key{};
     u64 vertex_attribute_types{}; ///< graphics_key's attribute types before the program's mask
     GraphicsPipeline* current_pipeline{};
+    MeshPipelineInputAliases<GraphicsPipelineCacheKey> mesh_input_aliases;
+    bool mesh_input_aliases_seeded{};
+    bool mesh_input_borrowed{};
 
     /// Over the pipeline memory budget, destroys the least recently used graphics pipelines unused
     /// for a while, once the GPU is done with them.
