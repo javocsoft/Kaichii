@@ -38,6 +38,7 @@
 #include "video_core/texture_cache/host_mip_limits.h"
 #include "video_core/texture_cache/image_view_base.h"
 #include "video_core/texture_cache/samples_helper.h"
+#include "video_core/texture_cache/image_page_tables.h"
 #include "video_core/texture_cache/texture_cache_base.h"
 #include "video_core/texture_cache/util.h"
 #include "video_core/textures/decoders.h"
@@ -4072,6 +4073,12 @@ void TextureCache<P>::UnregisterImage(ImageId image_id) {
     image.flags &= ~ImageFlagBits::Registered;
     image.flags &= ~ImageFlagBits::BadOverlap;
     lru_cache.Free(image.lru_index);
+    const auto tables = RegisteredImagePageTables(
+        image, gpu_page_table_storage,
+        [this](size_t address_space) { return getStorageID(address_space); });
+    ASSERT(tables);
+    auto* const gpu_page_table = tables->first;
+    auto* const sparse_page_table = tables->second;
     bool reported_missing_page = false;
     const auto& clear_page_table =
         [this, image_id, &image, &reported_missing_page](u64 page, ::Common::unordered_map<u64, std::vector<ImageId>, Common::IdentityHash<u64>>& selected_page_table) {
@@ -4092,8 +4099,8 @@ void TextureCache<P>::UnregisterImage(ImageId image_id) {
             }
             image_ids.erase(vector_it);
         };
-    ForEachGPUPage(image.gpu_addr, image.guest_size_bytes, [this, &clear_page_table](u64 page) {
-        clear_page_table(page, (*channel_state->gpu_page_table));
+    ForEachGPUPage(image.gpu_addr, image.guest_size_bytes, [&clear_page_table, gpu_page_table](u64 page) {
+        clear_page_table(page, *gpu_page_table);
     });
     if (False(image.flags & ImageFlagBits::Sparse)) {
         const auto map_id = image.map_view_id;
@@ -4115,8 +4122,8 @@ void TextureCache<P>::UnregisterImage(ImageId image_id) {
         slot_map_views.erase(map_id);
         return;
     }
-    ForEachGPUPage(image.gpu_addr, image.guest_size_bytes, [this, &clear_page_table](u64 page) {
-        clear_page_table(page, (*channel_state->sparse_page_table));
+    ForEachGPUPage(image.gpu_addr, image.guest_size_bytes, [&clear_page_table, sparse_page_table](u64 page) {
+        clear_page_table(page, *sparse_page_table);
     });
     auto it = sparse_views.find(image_id);
     ASSERT(it != sparse_views.end());

@@ -39,6 +39,11 @@ generación de fotogramas durante unos segundos y propone cambios; no cambia nad
 Ponte en un sitio exigente, como un exterior con la cámara quieta, y no pauses ni abras menús
 mientras mide.
 
+Con la generación de fotogramas activada, Kaichii omite imágenes generadas de más si la pantalla no
+puede mostrarlas sin retrasar el siguiente fotograma del juego. Un objetivo manual de ritmo de
+fotogramas cuenta los fotogramas del juego, aunque cada uno produzca imágenes generadas. La tasa de
+refresco de la pantalla sigue limitando cuántas imágenes puedes ver.
+
 ## Con una tarjeta de 4 GB
 
 - Empieza con el ajuste **Rendimiento**.

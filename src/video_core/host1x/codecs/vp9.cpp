@@ -900,15 +900,14 @@ void VpxRangeEncoder::Write(bool bit, s32 probability) {
         const s32 offset = shift - count;
 
         if (((low_value << (offset - 1)) >> 31) != 0) {
-            const s32 current_pos = static_cast<s32>(base_stream.GetPosition());
-            base_stream.Seek(-1, Common::SeekOrigin::FromCurrentPos);
-            while (PeekByte() == 0xff) {
-                base_stream.WriteByte(0);
-
-                base_stream.Seek(-2, Common::SeekOrigin::FromCurrentPos);
+            auto& bytes = base_stream.GetBuffer();
+            size_t index = bytes.size();
+            while (index > 0 && bytes[index - 1] == 0xff) {
+                bytes[--index] = 0;
             }
-            base_stream.WriteByte(static_cast<u8>((PeekByte() + 1)));
-            base_stream.Seek(current_pos, Common::SeekOrigin::SetOrigin);
+            if (index > 0) {
+                ++bytes[index - 1];
+            }
         }
         base_stream.WriteByte(static_cast<u8>((low_value >> (24 - offset))));
 
@@ -926,13 +925,6 @@ void VpxRangeEncoder::End() {
     for (std::size_t index = 0; index < 32; ++index) {
         Write(false);
     }
-}
-
-u8 VpxRangeEncoder::PeekByte() {
-    const u8 value = base_stream.ReadByte();
-    base_stream.Seek(-1, Common::SeekOrigin::FromCurrentPos);
-
-    return value;
 }
 
 VpxBitStreamWriter::VpxBitStreamWriter() = default;

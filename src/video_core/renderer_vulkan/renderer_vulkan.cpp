@@ -243,14 +243,18 @@ void RendererVulkan::Composite(std::span<const Tegra::FramebufferConfig> framebu
                                swapchain.GetImageViewFormat());
 
 #ifdef HAS_LSFG
-    void(frame_gen.WantedGenerations(present_manager.MaxExtraFrames()));
+    void(frame_gen.WantedGenerations(present_manager.MaxExtraFrames(),
+                                     present_manager.FreeFrames()));
 
     frame_gen.Process(device, frame, present_manager.SwapchainImageFormat(),
                       GuestExtent(framebuffers));
 
     const size_t generated_frames = frame_gen.GeneratedFrameCount();
+    const u32 game_frame_presents = static_cast<u32>(generated_frames) + 1;
+    frame->game_frame_presents = game_frame_presents;
     for (size_t generation = 0; generation < generated_frames; ++generation) {
         Frame* generated = present_manager.GetRenderFrame();
+        generated->game_frame_presents = game_frame_presents;
         blit_swapchain.PrepareFrame(device, generated, render_window.GetFramebufferLayout());
         frame_gen.GenerateInto(device, generated, generation);
         scheduler.Flush(*generated->render_ready);

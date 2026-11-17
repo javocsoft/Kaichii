@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <chrono>
 #include <optional>
 
@@ -14,6 +15,10 @@ struct FrameGenPlan {
     size_t generations{};
     bool warm{};
 };
+
+[[nodiscard]] inline size_t GenerationsWithoutWaiting(size_t planned, size_t free_frames) {
+    return std::min(planned, free_frames > 0 ? free_frames - 1 : 0);
+}
 
 class FrameGenPacer {
 public:

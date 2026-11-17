@@ -38,6 +38,7 @@ struct Frame {
     vk::Semaphore render_ready;
     vk::Fence present_done;
     bool storage_capable{};
+    u32 game_frame_presents{1};
 };
 
 class PresentManager {
@@ -68,6 +69,8 @@ public:
 
     /// How many additional frames can be queued without stalling the render thread
     [[nodiscard]] size_t MaxExtraFrames() const;
+
+    [[nodiscard]] size_t FreeFrames();
 
     [[nodiscard]] std::size_t SwapchainImageCount() const { return swapchain_image_count; }
     [[nodiscard]] VkFormat SwapchainImageFormat() const { return swapchain_image_format; }
