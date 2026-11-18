@@ -55,6 +55,7 @@
 #include "video_core/renderer_vulkan/vk_pipeline_cache.h"
 #include "video_core/renderer_vulkan/vk_scheduler.h"
 #include "video_core/renderer_vulkan/vk_shader_util.h"
+#include "video_core/renderer_vulkan/vk_state_tracker.h"
 #include "video_core/renderer_vulkan/vk_update_descriptor.h"
 #include "video_core/shader_cache.h"
 #include "video_core/shader_environment.h"
@@ -822,6 +823,12 @@ GraphicsPipeline* PipelineCache::CurrentGraphicsPipeline() {
         current_pipeline = nullptr;
         return nullptr;
     }
+    const bool mesh_draw =
+        maxwell3d->GetNativeMacroEngine().native_turing && maxwell3d->regs.IsMeshEnabled();
+    if (mesh_input_borrowed && !mesh_draw) {
+        mesh_input_borrowed = false;
+        maxwell3d->dirty.flags[Dirty::VertexInput] = true;
+    }
     if (dynamic_features.has_dynamic_vertex_input) {
         graphics_key.state.attribute_types = vertex_attribute_types;
     }
@@ -840,6 +847,18 @@ GraphicsPipeline* PipelineCache::CurrentGraphicsPipeline() {
         }
         graphics_key.state.attribute_types = VideoCommon::KeyedAttributeTypes(
             vertex_attribute_types, graphics_key.unique_hashes, attribute_masks);
+    }
+    if (mesh_draw && (!dynamic_features.has_dynamic_vertex_input ||
+                      graphics_key.state.xfb_enabled)) {
+        if (!mesh_input_aliases_seeded) {
+            mesh_input_aliases_seeded = true;
+            for (const auto& [key, pipeline] : graphics_cache) {
+                if (pipeline && pipeline->IsMeshPipeline()) {
+                    mesh_input_aliases.Remember(key);
+                }
+            }
+        }
+        mesh_input_borrowed |= mesh_input_aliases.Canonicalize(graphics_key);
     }
 
     if (current_pipeline) {

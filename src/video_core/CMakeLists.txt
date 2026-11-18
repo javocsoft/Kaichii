@@ -171,6 +171,7 @@ add_library(video_core STATIC
     renderer_vulkan/framebuffer_limits.h
     renderer_vulkan/fragment_color_mask.h
     renderer_vulkan/mesh_fallback_limits.h
+    renderer_vulkan/mesh_pipeline_input_aliases.h
     renderer_vulkan/render_pass_continuation.h
     renderer_vulkan/samples_query_policy.h
     renderer_vulkan/maxwell_to_vk.cpp
