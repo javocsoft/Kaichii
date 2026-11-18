@@ -153,6 +153,7 @@ add_executable(tests
     video_core/ampere_ported_textures.cpp
     video_core/ampere_tennis_i2f.cpp
     video_core/ampere_tennis_tessellation.cpp
+    video_core/ampere_stage_buffer_output.cpp
     video_core/pipeline_cache_files.cpp
     video_core/evicted_pointer_slots.cpp
     video_core/submit_serial.cpp
