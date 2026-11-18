@@ -137,7 +137,7 @@ Profile MakeProfile() {
 // With lane_id the mesh program writes its lane as the vertex's first attribute word.
 std::vector<u32> EmitProgram(Stage stage, bool as_compute, bool with_task,
                              Profile profile = MakeProfile(), bool lane_id = false,
-                             bool culled = false) {
+                             bool culled = false, bool output_read = false) {
     ObjectPool<IR::Inst> pool;
     IR::Block block{pool};
     IR::Program program;
@@ -158,10 +158,16 @@ std::vector<u32> EmitProgram(Stage stage, bool as_compute, bool with_task,
         const IR::U32 index{lane_id ? ir.LaneId() : ir.IsbeRead(ir.Imm32(0))};
         program.info.uses_subgroup_invocation_id = lane_id;
         ir.IsbeWriteAttribute(ir.Imm32(0), index);
+        if (output_read) {
+            ir.IsbeWriteAttribute(ir.Imm32(4), ir.IsbeReadOutput(ir.Imm32(0)));
+        }
         ir.IsbeWriteMapU8(ir.Imm32(4), ir.Imm32(0));
         ir.IsbeWriteMapU32(ir.Imm32(3), ir.Imm32(1));
     } else if (!culled) {
         ir.IsbeWriteAttribute(ir.Imm32(4), ir.Imm32(1)); // one mesh workgroup
+        if (output_read) {
+            ir.IsbeWriteAttribute(ir.Imm32(8), ir.IsbeReadOutput(ir.Imm32(4)));
+        }
     }
     ir.Epilogue();
 
@@ -199,6 +205,21 @@ TEST_CASE("Mesh fallback leaves native task and mesh programs as mesh shaders",
     Dump(task, "native-task");
     REQUIRE(Model(task) == spv::ExecutionModel::TaskEXT);
     REQUIRE(UsesStorageClass(task, spv::StorageClass::TaskPayloadWorkgroupEXT));
+}
+
+TEST_CASE("Output stage buffer reads emit in native and compute task and mesh programs",
+          "[video_core][spirv][mesh_fallback]") {
+    for (const Stage stage : {Stage::Task, Stage::Mesh}) {
+        for (const bool as_compute : {false, true}) {
+            const auto code = EmitProgram(stage, as_compute, stage == Stage::Mesh,
+                                          MakeProfile(), false, false, true);
+            Dump(code, std::string{"output-read-"} +
+                           (stage == Stage::Task ? "task-" : "mesh-") +
+                           (as_compute ? "compute" : "native"));
+            REQUIRE(code.size() > 5);
+            REQUIRE(code[0] == 0x07230203);
+        }
+    }
 }
 
 TEST_CASE("Native task programs zero the mesh workgroup count before the guest runs",
