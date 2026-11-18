@@ -9,11 +9,9 @@ understands, then says what they saw, what caused it, what was measured or playe
 pull request number. Say plainly what was not confirmed. HTML comments like this one are dropped.
 -->
 ### Performance
-- **Frame pacing targets game frames when frame generation is on.** Target 30/60/90/120 now count each game's frame once and space its generated presents within that interval. Generation also leaves a free presentation frame for the next game frame, avoiding a wait when the queue fills. Unit tests cover target rates and queue capacity. Donkey Kong Bananza ran with FSR3 2x and Target 60 and produced generated frames, but no before-and-after pacing or FPS gain was measured (#83).
+- **Fewer duplicate mesh pipeline builds with static vertex input.** A mesh draw could inherit vertex attributes left by an earlier draw and compile another Vulkan pipeline for the same shaders. An isolated Ocarina of Time save built 31 mesh pipeline keys instead of 72 for the same 26 shader sets with static vertex input. With the usual dynamic input setting, both builds produced 31 keys. This measures pipeline builds in one scene, not an FPS gain (#85).
 
-### Crashes and stability
-- **Texture cleanup uses the image's own GPU address space.** Unregistering an image after a channel switch no longer looks in the newly bound channel's page table. A synthetic two-address-space test passes; the reported multi-channel game case has not been replayed (#83).
-- **VP9 header encoding no longer reads past its stream while propagating a carry.** The regression test reproduced the old stream exception and passes with the fix. The affected video scene has not been replayed (#83).
-- **Windows sparse-vector pages stay writable after another thread commits them.** This avoids a protection change that could race with a GPU cache update. Both Windows binary variants compile; the Windows-only regression test and a game run have not been performed (#83).
+### Switch Sports Resort
+- **The Power Cruising shader can read an output attribute it wrote.** Kaichii previously rejected the reported `ISBERD.ATTR.32.O` instruction. It now supports that exact 32-bit, unskewed read in task and mesh programs while continuing to reject unmodelled modes. Synthetic translation tests and four SPIR-V validation cases pass. The affected game was not available for a visual check, so the water is not yet confirmed fixed (#86).
 
-The Linux build ran Donkey Kong Bananza with FSR3 frame generation. No Switch 1 game was run. Windows game runs have not been verified, and GitHub did not assign a macOS runner for the test build.
+An isolated Linux build containing both changes loaded an Ocarina of Time save and rendered Link's house. A non-publishing workflow built Linux, Windows and macOS binaries successfully; Windows and macOS games were not run. No Switch 1 game was run.
