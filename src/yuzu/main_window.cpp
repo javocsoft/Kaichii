@@ -50,6 +50,8 @@
 #include "yuzu/game/game_list.h"
 #include "yuzu/auto_optimize_dialog.h"
 #include "yuzu/ai_optimize_dialog.h"
+#include "yuzu/ai_log_dialog.h"
+#include "yuzu/ai_report_draft_dialog.h"
 #include "yuzu/nup_dialogs.h"
 
 #include "applets/qt_amiibo_settings.h"
@@ -1522,11 +1524,21 @@ void MainWindow::ConnectWidgetEvents() {
         }
         // Reports go to the repository this build comes from, like its updates.
         CompatibilityReporting::Dialog dialog(
-            *report_session, QString::fromUtf8(Common::g_build_auto_update_repo), this);
+            *report_session, QString::fromUtf8(Common::g_build_auto_update_repo), this, {},
+            [](const CompatibilityReporting::Session& session,
+               QWidget* parent) -> std::optional<CompatibilityReporting::Draft> {
+                AiReportDraftDialog writer(session, parent);
+                if (writer.exec() != QDialog::Accepted) {
+                    return std::nullopt;
+                }
+                return writer.Result();
+            });
         dialog.exec();
     });
     connect(game_list, &GameList::BootGame, this, &MainWindow::BootGameFromList);
     connect(game_list, &GameList::OptimizeGameRequested, this, &MainWindow::OnOptimizeGameFromList);
+    connect(game_list, &GameList::SelectedGameChanged, this, &MainWindow::UpdateGameActions);
+    connect(ui->menu_Emulation, &QMenu::aboutToShow, this, &MainWindow::UpdateGameActions);
     connect(game_list, &GameList::AiOptimizeGameRequested, this,
             &MainWindow::OnAiOptimizeGameFromList);
     connect(game_list, &GameList::GameChosen, this, &MainWindow::OnGameListLoadFile);
@@ -1598,6 +1610,7 @@ void MainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Stop, &MainWindow::OnStopGame);
     connect_menu(ui->action_Open_Mods_Page, &MainWindow::OnOpenModsPage);
     connect_menu(ui->action_Open_UserHandbook, &MainWindow::OnOpenUserHandbook);
+    connect_menu(ui->action_Explain_Problem, &MainWindow::OnExplainProblem);
     connect_menu(ui->action_Compatibility_List, &MainWindow::OnOpenCompatibilityList);
     connect_menu(ui->action_Restart, &MainWindow::OnRestartGame);
     connect_menu(ui->action_Configure, &MainWindow::OnConfigure);
@@ -1797,9 +1810,6 @@ void MainWindow::UpdateMenuState() {
     const std::array running_actions{
         ui->action_Stop,
         ui->action_Restart,
-        ui->action_Configure_Current_Game,
-        ui->action_Optimize_Current_Game,
-        ui->action_AI_Optimize_Current_Game,
         ui->action_Load_Amiibo,
         ui->action_Pause,
     };
@@ -1813,6 +1823,7 @@ void MainWindow::UpdateMenuState() {
     for (QAction* action : running_actions) {
         action->setEnabled(emulation_running);
     }
+    UpdateGameActions();
 
     ui->action_Firmware_From_Folder->setEnabled(!emulation_running);
     ui->action_Firmware_From_ZIP->setEnabled(!emulation_running);
@@ -3678,6 +3689,11 @@ void MainWindow::OnOpenModsPage() {
     OpenURL(QUrl(QStringLiteral("https://github.com/eden-emulator/yuzu-mod-archive")));
 }
 
+void MainWindow::OnExplainProblem() {
+    AiLogDialog dialog(this);
+    dialog.exec();
+}
+
 void MainWindow::OnOpenUserHandbook() {
     OpenURL(QtCommon::Guide::Page());
 }
@@ -4221,12 +4237,33 @@ void MainWindow::OnToggleGraphicsAPI() {
     UpdateAPIText();
 }
 
+void MainWindow::UpdateGameActions() {
+    // The running game, or else the one selected in the list, as its right-click menu offers.
+    const bool game = emulation_running || (!QtCommon::system->IsPoweredOn() && !boot_in_progress &&
+                                            game_list->SelectedGame().has_value());
+    ui->action_Configure_Current_Game->setEnabled(game);
+    ui->action_Optimize_Current_Game->setEnabled(game);
+    ui->action_AI_Optimize_Current_Game->setEnabled(game);
+}
+
 void MainWindow::OnConfigurePerGame() {
+    if (!emulation_running) {
+        if (const auto selected = game_list->SelectedGame()) {
+            OnGameListOpenPerGameProperties(selected->path.toStdString());
+        }
+        return;
+    }
     const u64 title_id = QtCommon::system->GetApplicationProcessProgramID();
     OpenPerGameConfiguration(title_id, current_game_path.toStdString());
 }
 
 void MainWindow::OnOptimizeCurrentGame() {
+    if (!emulation_running) {
+        if (const auto selected = game_list->SelectedGame()) {
+            OnOptimizeGameFromList(selected->path);
+        }
+        return;
+    }
     const u64 title_id = QtCommon::system->GetApplicationProcessProgramID();
     const auto file_path = std::filesystem::path{
         Common::U16StringFromBuffer(current_game_path.utf16(), current_game_path.size())};
@@ -4241,6 +4278,12 @@ void MainWindow::OnOptimizeCurrentGame() {
 }
 
 void MainWindow::OnAiOptimizeCurrentGame() {
+    if (!emulation_running) {
+        if (const auto selected = game_list->SelectedGame()) {
+            OnAiOptimizeGameFromList(selected->path, selected->program_id);
+        }
+        return;
+    }
     OnAiOptimizeGameFromList(current_game_path,
                              QtCommon::system->GetApplicationProcessProgramID());
 }
@@ -5865,7 +5908,7 @@ void MainWindow::UpdateUITheme() {
 void MainWindow::UpdateMenuIcons() {
     // From Lichii's list (zortos293/Lichii#1365), plus Kaichii's own entries. Checkable actions
     // get none: in some styles an icon replaces the check mark, which would hide their state.
-    const std::array<std::pair<QAction*, const char*>, 58> icons{{
+    const std::array<std::pair<QAction*, const char*>, 59> icons{{
         {ui->action_Install_File_NAND, "download"},
         {ui->action_Add_Game_Folder, "plus"},
         {ui->action_Load_File, "file"},
@@ -5919,6 +5962,7 @@ void MainWindow::UpdateMenuIcons() {
         {ui->action_Launch_Controller, "gamepad"},
         {ui->action_Launch_PhotoViewer, "image"},
         {ui->action_Open_UserHandbook, "help"},
+        {ui->action_Explain_Problem, "sparkles"},
         {ui->action_Compatibility_List, "list"},
         {ui->action_Open_Mods_Page, "puzzle"},
         {ui->action_First_Run_Assistant, "wand"},

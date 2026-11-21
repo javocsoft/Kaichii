@@ -33,8 +33,8 @@ To describe a problem in your own words and receive a proposal you can review an
 [AI settings assistant](AIOptimization.md). It also works with the game closed and requires your own
 API key.
 
-Right-click a game and choose **Optimize for This Game** (while playing: *Emulation > Optimize for
-This Game*, or Ctrl+Shift+O). Kaichii measures the game as it runs, tries frame generation for a
+Right-click a game and choose **Optimize for This Game** (or select it, or play it, and use *Emulation >
+Optimize for This Game* or Ctrl+Shift+O). Kaichii measures the game as it runs, tries frame generation for a
 few seconds, and proposes changes; nothing changes until you accept. Stand somewhere demanding, such
 as outdoors with the camera still, and don't pause or open menus while it measures.
 

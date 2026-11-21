@@ -3,9 +3,14 @@
 ## El registro
 
 Kaichii anota lo que pasa en un registro. *Archivo > Abrir carpetas de Kaichii > Carpeta de
-registros* abre su carpeta: `eden_log.txt` es la sesión actual o la última, y `eden_log.txt.old` la
-anterior. Su primera línea indica la versión. Adjúntalo cuando informes de un problema, después de
+registros* abre su carpeta: `eden_log.txt` es la sesión actual o la última, y `eden_log.txt.old.txt`
+la anterior. Su primera línea indica la versión. Adjúntalo cuando informes de un problema, después de
 revisar que no lleve datos personales.
+
+*Ayuda > Explicar el último problema* lee el registro por ti: señala las causas habituales (claves,
+firmware, un archivo de juego dañado, el controlador gráfico, la memoria de vídeo) sin enviar nada, y
+puede pedir a una IA que explique el resto. Consulta
+[Explicar el último problema](AIOptimization.es.md#explicar-el-ultimo-problema).
 
 ## Kaichii no arranca
 

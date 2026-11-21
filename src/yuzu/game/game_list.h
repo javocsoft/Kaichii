@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include <QLabel>
 #include <QLineEdit>
 #include <QList>
@@ -76,6 +78,13 @@ public:
     void SetFilterVisible(bool visibility);
     bool IsEmpty() const;
 
+    struct Selection {
+        u64 program_id;
+        QString path;
+    };
+    /// The game selected in the list, if a game (not a folder) is.
+    [[nodiscard]] std::optional<Selection> SelectedGame() const;
+
     void PopulateAsync(QVector<UISettings::GameDir>& game_dirs);
     void SetScanEnabled(bool enabled);
     void SetReportableProgramId(u64 program_id);
@@ -98,6 +107,7 @@ public slots:
     void OnPopulate();
 
 signals:
+    void SelectedGameChanged();
     void ReportCompatibilityRequested(u64 program_id);
     void BootGame(const QString& game_path, StartGameType type);
     void OptimizeGameRequested(const QString& game_path);

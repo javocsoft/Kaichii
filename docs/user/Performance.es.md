@@ -37,8 +37,8 @@ Para describir un problema con tus palabras y recibir una propuesta que puedes r
 consulta el [asistente de ajustes con IA](AIOptimization.es.md). También funciona con el juego cerrado
 y requiere una clave de API propia.
 
-Haz clic derecho en un juego y elige **Optimizar para este juego** (mientras juegas: *Emulación >
-Optimizar para este juego*, o Ctrl+Mayús+O). Kaichii mide el juego mientras funciona, prueba la
+Haz clic derecho en un juego y elige **Optimizar para este juego** (o selecciónalo, o juégalo, y usa *Emulación >
+Optimizar para este juego* o Ctrl+Mayús+O). Kaichii mide el juego mientras funciona, prueba la
 generación de fotogramas durante unos segundos y propone cambios; no cambia nada hasta que aceptas.
 Ponte en un sitio exigente, como un exterior con la cámara quieta, y no pauses ni abras menús
 mientras mide.

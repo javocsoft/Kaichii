@@ -32,7 +32,10 @@ runs on Windows, Linux and macOS side by side.
    A game that only loads or doesn't start has no smoothness to give, so the choice is turned off.
    If you know it, add the usual frame rate: the performance overlay (**View** menu) shows it.
 
-   Then write a summary, how far you played and what worked or failed.
+   Then write a summary, how far you played and what worked or failed. Or click **Write it with
+   AI…** and tell it in your own words, in any language: the
+   [AI assistant](AIOptimization.md#write-a-compatibility-report) writes those fields in English
+   for you to review. It needs your own OpenAI or Anthropic API key.
 4. **System and settings** is already filled in: the game and its version, the Kaichii build, your
    processor, graphics card and driver, the operating system and the settings the game started with.
    Correct anything that changed while you played.
