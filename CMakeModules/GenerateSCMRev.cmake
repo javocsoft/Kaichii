@@ -14,6 +14,23 @@ endfunction()
 
 get_timestamp(BUILD_DATE)
 
+# Kaichii's version, vX.Y.Z: X.Y from dist/kaichii-version.txt, raised by hand for milestones, and Z
+# the release's build number. A build that wasn't released has no Z and counts as a dev build.
+set(KAICHII_VERSION_FILE "${PROJECT_SOURCE_DIR}/dist/kaichii-version.txt")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${KAICHII_VERSION_FILE}")
+file(READ "${KAICHII_VERSION_FILE}" KAICHII_VERSION_BASE)
+string(STRIP "${KAICHII_VERSION_BASE}" KAICHII_VERSION_BASE)
+if (NOT KAICHII_VERSION_BASE MATCHES "^[0-9]+\\.[0-9]+$")
+    message(FATAL_ERROR "${KAICHII_VERSION_FILE} must hold MAJOR.MINOR, such as 1.0")
+endif()
+if (LICHII_BUILD_TAG MATCHES "^build-([0-9]+)$")
+    set(KAICHII_BUILD_NUMBER "${CMAKE_MATCH_1}")
+    set(KAICHII_VERSION "${KAICHII_VERSION_BASE}.${KAICHII_BUILD_NUMBER}")
+else()
+    set(KAICHII_BUILD_NUMBER "")
+    set(KAICHII_VERSION "${KAICHII_VERSION_BASE}")
+endif()
+
 if (LICHII_BUILD_TAG MATCHES "^build-[0-9]+$")
     set(BUILD_VERSION "${LICHII_BUILD_TAG}")
     set(IS_DEV_BUILD false)

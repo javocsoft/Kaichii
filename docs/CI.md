@@ -87,7 +87,10 @@ for those, so they don't update to Kaichii by themselves; the release notes say 
 | Windows x86-64 | `windows-2022` | Standard and PGO |
 | macOS arm64 | `macos-15` | Standard |
 
-Each publish creates the tag `build-<run number>`. Releases configure with `BUILD_TESTING=OFF`, so a
+Each publish creates the tag `build-<run number>` and names the release by Kaichii's version,
+`Kaichii vX.Y.<run number> (<commit>)`, as the binaries' title bar and About show it. `X.Y` comes from
+`dist/kaichii-version.txt`: raise it by hand, in the release notes' pull request, for a milestone.
+Local builds have no build number and call themselves `vX.Y (dev)`. Releases configure with `BUILD_TESTING=OFF`, so a
 release proves nothing about the tests. Linux PGO needs a Clang at least as new as the one that wrote
 its profile; `PGO_LLVM_VERSION` in the workflow records it. The x86-64 PGO build uses
 `lichii-linux.profdata` and the aarch64 one `eglantine.profdata` (see "Linux PGO profile" below). Both Windows builds use clang-cl

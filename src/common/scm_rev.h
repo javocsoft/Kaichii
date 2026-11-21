@@ -22,6 +22,10 @@ extern const char g_title_bar_format_idle[];
 extern const char g_title_bar_format_running[];
 extern const char g_shader_cache_version[];
 extern const char g_compiler_id[];
+/// Kaichii's version for people: "1.0.49" for a release, "1.0" for a build that wasn't released.
+extern const char g_version[];
+/// The release's build number ("49"), empty for a build that wasn't released.
+extern const char g_build_number[];
 
 extern const bool g_is_dev_build;
 extern const bool g_is_nightly_build;
