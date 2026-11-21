@@ -86,6 +86,8 @@ public:
     [[nodiscard]] std::optional<Selection> SelectedGame() const;
 
     void PopulateAsync(QVector<UISettings::GameDir>& game_dirs);
+    /// Puts the flat views' games in the order chosen in View > Sort Games By.
+    void ApplyGameSort();
     /// Shows Switch 2 and Switch games apart in the cover views.
     void SetCoverSections(bool sections);
     void SetScanEnabled(bool enabled);

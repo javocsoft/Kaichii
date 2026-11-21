@@ -246,6 +246,11 @@ struct Values {
     /// The cover views show Switch 2 and Switch games in two sections.
     Setting<bool> cover_view_sections{linkage, false, "cover_view_sections",
                                       Category::UiGameList};
+    /// How the flat views (grid, carousel and covers) order the games, and in which direction.
+    Setting<Settings::GameListSort> game_list_sort{linkage, Settings::GameListSort::Name,
+                                                   "game_list_sort", Category::UiGameList};
+    Setting<bool> game_list_sort_descending{linkage, false, "game_list_sort_descending",
+                                            Category::UiGameList};
 
     std::atomic_bool is_game_list_reload_pending{false};
     Setting<bool> cache_game_list{linkage, true, "cache_game_list", Category::UiGameList};

@@ -204,6 +204,13 @@ void GameList::OnPopulate() {
     }
 }
 
+void GameList::ApplyGameSort() {
+    // The tree sorts by its own columns; the flat views share the model and take the order here.
+    if (!m_isTreeMode) {
+        QtCommon::SortGames(*item_model, QtCommon::CurrentGameSort());
+    }
+}
+
 void GameList::SetCoverSections(bool sections) {
     cover_view->SetSections(sections);
     full_cover_view->SetSections(sections);

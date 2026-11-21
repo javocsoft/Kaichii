@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
+#include <QTimeZone>
 #include <QTemporaryDir>
 #include <QtTest>
 
@@ -34,6 +35,10 @@ private slots:
     void GamesSortByNameAsPeopleReadIt();
     void NewGamesTakeTheirPlaceByName();
     void ATreeColumnOrderLeavesTheFlatViewsByName();
+    void GamesSortByEachKeyBothWays();
+    void NewGamesJoinTheChosenOrder();
+    void EachOrderStartsInItsNaturalDirection();
+    void AGameFileKnowsWhenItArrived();
     void Switch2TitlesAreToldByTheirId();
     void ShelfKeepsTheListsOrder();
     void SectionsPutSwitch2GamesFirst();
@@ -207,15 +212,98 @@ void GameListTest::NewGamesTakeTheirPlaceByName() {
     QStandardItemModel model;
     for (const char* title : {"Tunic", "Donkey Kong Bananza", "astral chain", "Zelda", "Mario 10",
                               "Mario 2"}) {
-        const QString name = QString::fromLatin1(title);
-        model.insertRow(QtCommon::SortedGameRow(*model.invisibleRootItem(), name,
-                                                QStringLiteral("/games/%1.nsp").arg(name)),
-                        Game(name));
+        QStandardItem* const game = Game(QString::fromLatin1(title));
+        model.insertRow(QtCommon::SortedGameRow(*model.invisibleRootItem(), *game, {}), game);
     }
     QCOMPARE(Titles(model), (QStringList{QStringLiteral("astral chain"),
                                          QStringLiteral("Donkey Kong Bananza"),
                                          QStringLiteral("Mario 2"), QStringLiteral("Mario 10"),
                                          QStringLiteral("Tunic"), QStringLiteral("Zelda")}));
+}
+
+namespace {
+
+/// Tunic, played most and added last; Axiom Verge, played a little, added first; A Short Hike and
+/// Bayonetta, never played, added on the same day.
+QStandardItemModel* Library(QObject* parent) {
+    auto* const model = new QStandardItemModel(parent);
+    const QDateTime day = QDateTime(QDate(2026, 11, 1), QTime(12, 0), QTimeZone::UTC);
+    const auto add = [model](const char* title, qulonglong played, const QDateTime& added) {
+        QStandardItem* const game = Game(QString::fromLatin1(title));
+        game->setData(played, GameListItemPath::PlayTimeRole);
+        game->setData(added, GameListItemPath::AddedRole);
+        model->appendRow(game);
+    };
+    add("Tunic", 36000, day.addDays(20));
+    add("Axiom Verge", 600, day);
+    add("Bayonetta", 0, day.addDays(5));
+    add("A Short Hike", 0, day.addDays(5));
+    return model;
+}
+
+QStringList Sorted(QStandardItemModel& model, Settings::GameListSort key, bool descending) {
+    QtCommon::SortGames(model, {key, descending});
+    return Titles(model);
+}
+
+} // Anonymous namespace
+
+void GameListTest::GamesSortByEachKeyBothWays() {
+    using Settings::GameListSort;
+    QObject owner;
+    QStandardItemModel& model = *Library(&owner);
+    QCOMPARE(Sorted(model, GameListSort::Name, false),
+             (QStringList{QStringLiteral("A Short Hike"), QStringLiteral("Axiom Verge"),
+                          QStringLiteral("Bayonetta"), QStringLiteral("Tunic")}));
+    QCOMPARE(Sorted(model, GameListSort::Name, true),
+             (QStringList{QStringLiteral("Tunic"), QStringLiteral("Bayonetta"),
+                          QStringLiteral("Axiom Verge"), QStringLiteral("A Short Hike")}));
+    // Newest first; the two added the same day follow by name.
+    QCOMPARE(Sorted(model, GameListSort::DateAdded, true),
+             (QStringList{QStringLiteral("Tunic"), QStringLiteral("A Short Hike"),
+                          QStringLiteral("Bayonetta"), QStringLiteral("Axiom Verge")}));
+    QCOMPARE(Sorted(model, GameListSort::DateAdded, false),
+             (QStringList{QStringLiteral("Axiom Verge"), QStringLiteral("A Short Hike"),
+                          QStringLiteral("Bayonetta"), QStringLiteral("Tunic")}));
+    // Most played first; the never played follow by name, in either direction.
+    QCOMPARE(Sorted(model, GameListSort::PlayTime, true),
+             (QStringList{QStringLiteral("Tunic"), QStringLiteral("Axiom Verge"),
+                          QStringLiteral("A Short Hike"), QStringLiteral("Bayonetta")}));
+    QCOMPARE(Sorted(model, GameListSort::PlayTime, false),
+             (QStringList{QStringLiteral("A Short Hike"), QStringLiteral("Bayonetta"),
+                          QStringLiteral("Axiom Verge"), QStringLiteral("Tunic")}));
+}
+
+void GameListTest::NewGamesJoinTheChosenOrder() {
+    using Settings::GameListSort;
+    QObject owner;
+    QStandardItemModel& model = *Library(&owner);
+    const QtCommon::GameSort most_played{GameListSort::PlayTime, true};
+    QtCommon::SortGames(model, most_played);
+    QStandardItem* const game = Game(QStringLiteral("Celeste"));
+    game->setData(qulonglong(3600), GameListItemPath::PlayTimeRole);
+    model.insertRow(QtCommon::SortedGameRow(*model.invisibleRootItem(), *game, most_played), game);
+    // An hour played: after Tunic's ten, before Axiom Verge's ten minutes.
+    QCOMPARE(Titles(model).at(1), QStringLiteral("Celeste"));
+}
+
+void GameListTest::EachOrderStartsInItsNaturalDirection() {
+    using Settings::GameListSort;
+    QVERIFY(!QtCommon::DescendingByDefault(GameListSort::Name));
+    QVERIFY(QtCommon::DescendingByDefault(GameListSort::DateAdded));
+    QVERIFY(QtCommon::DescendingByDefault(GameListSort::PlayTime));
+}
+
+void GameListTest::AGameFileKnowsWhenItArrived() {
+    QTemporaryDir dir;
+    const QString path = dir.filePath(QStringLiteral("game.nsp"));
+    QFile file(path);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.close();
+    const QDateTime added = QtCommon::GameFileAdded(path);
+    QVERIFY(added.isValid());
+    QVERIFY(std::abs(added.secsTo(QDateTime::currentDateTime())) < 60);
+    QVERIFY(!QtCommon::GameFileAdded(dir.filePath(QStringLiteral("missing.nsp"))).isValid());
 }
 
 void GameListTest::ATreeColumnOrderLeavesTheFlatViewsByName() {

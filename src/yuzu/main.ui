@@ -119,6 +119,17 @@
      <addaction name="action_Cover_View"/>
      <addaction name="action_Full_Cover_View"/>
     </widget>
+    <widget class="QMenu" name="menu_Sort_Games">
+     <property name="title">
+      <string>S&amp;ort Games By</string>
+     </property>
+     <addaction name="action_Sort_By_Name"/>
+     <addaction name="action_Sort_By_Date_Added"/>
+     <addaction name="action_Sort_By_Play_Time"/>
+     <addaction name="separator"/>
+     <addaction name="action_Sort_Ascending"/>
+     <addaction name="action_Sort_Descending"/>
+    </widget>
     <widget class="QMenu" name="menuGame_Icon_Size">
      <property name="title">
       <string>Game &amp;Icon Size</string>
@@ -162,6 +173,7 @@
     <addaction name="menuGame_Icon_Size"/>
     <addaction name="action_Show_Game_Name"/>
     <addaction name="action_Separate_Switch_2_Games"/>
+    <addaction name="menu_Sort_Games"/>
    </widget>
    <widget class="QMenu" name="menu_Multiplayer">
     <property name="enabled">
@@ -649,6 +661,61 @@
   <action name="actionNone">
    <property name="text">
     <string>None</string>
+   </property>
+  </action>
+  <action name="action_Sort_By_Name">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Name</string>
+   </property>
+   <property name="toolTip">
+    <string>The game&apos;s title, as you read it</string>
+   </property>
+  </action>
+  <action name="action_Sort_By_Date_Added">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Date &amp;Added</string>
+   </property>
+   <property name="toolTip">
+    <string>When the game file arrived on this computer</string>
+   </property>
+  </action>
+  <action name="action_Sort_By_Play_Time">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Play Time</string>
+   </property>
+   <property name="toolTip">
+    <string>How long you have played each game</string>
+   </property>
+  </action>
+  <action name="action_Sort_Ascending">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>A&amp;scending</string>
+   </property>
+   <property name="toolTip">
+    <string>A to Z, oldest first, least played first</string>
+   </property>
+  </action>
+  <action name="action_Sort_Descending">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Descending</string>
+   </property>
+   <property name="toolTip">
+    <string>Z to A, newest first, most played first</string>
    </property>
   </action>
   <action name="action_Separate_Switch_2_Games">

@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <algorithm>
+
 #include <QFileInfo>
 #include <QStandardItem>
 #include <QStandardItemModel>
 
+#include "qt_common/config/uisettings.h"
 #include "qt_common/game_list/game_list_p.h"
 #include "qt_common/game_list/game_order.h"
 
@@ -87,18 +90,61 @@ bool GameSortsBefore(const QString& title_a, const QString& path_a, const QStrin
     return path_a < path_b;
 }
 
-int SortedGameRow(const QStandardItem& parent, const QString& title, const QString& path) {
-    // The first row that sorts after the new game.
+GameSort CurrentGameSort() {
+    return {UISettings::values.game_list_sort.GetValue(),
+            UISettings::values.game_list_sort_descending.GetValue()};
+}
+
+bool GameSortsBefore(const QStandardItem& a, const QStandardItem& b, GameSort sort) {
+    const auto by_name = [&a, &b] {
+        return GameSortsBefore(a.data(GameListItemPath::TitleRole).toString(),
+                               a.data(GameListItemPath::FullPathRole).toString(),
+                               b.data(GameListItemPath::TitleRole).toString(),
+                               b.data(GameListItemPath::FullPathRole).toString());
+    };
+    // Compares the key, a before b in ascending order: -1, 0 or 1.
+    int by_key = 0;
+    switch (sort.key) {
+    case Settings::GameListSort::Name:
+        if (by_name()) {
+            by_key = -1;
+        } else if (GameSortsBefore(b.data(GameListItemPath::TitleRole).toString(),
+                                   b.data(GameListItemPath::FullPathRole).toString(),
+                                   a.data(GameListItemPath::TitleRole).toString(),
+                                   a.data(GameListItemPath::FullPathRole).toString())) {
+            by_key = 1;
+        }
+        break;
+    case Settings::GameListSort::DateAdded: {
+        // A game whose date isn't known counts as the oldest.
+        const QDateTime added_a = a.data(GameListItemPath::AddedRole).toDateTime();
+        const QDateTime added_b = b.data(GameListItemPath::AddedRole).toDateTime();
+        const qint64 time_a = added_a.isValid() ? added_a.toMSecsSinceEpoch() : 0;
+        const qint64 time_b = added_b.isValid() ? added_b.toMSecsSinceEpoch() : 0;
+        by_key = time_a < time_b ? -1 : (time_a > time_b ? 1 : 0);
+        break;
+    }
+    case Settings::GameListSort::PlayTime: {
+        const qulonglong played_a = a.data(GameListItemPath::PlayTimeRole).toULongLong();
+        const qulonglong played_b = b.data(GameListItemPath::PlayTimeRole).toULongLong();
+        by_key = played_a < played_b ? -1 : (played_a > played_b ? 1 : 0);
+        break;
+    }
+    }
+    if (by_key != 0) {
+        return sort.descending ? by_key > 0 : by_key < 0;
+    }
+    return by_name();
+}
+
+int SortedGameRow(const QStandardItem& parent, const QStandardItem& game, GameSort sort) {
+    // The first row that sorts after the new game, so equal games keep their arrival order.
     int low = 0;
     int high = parent.rowCount();
     while (low < high) {
         const int middle = (low + high) / 2;
         const QStandardItem* const row = parent.child(middle, 0);
-        const bool row_first =
-            row != nullptr &&
-            GameSortsBefore(row->data(GameListItemPath::TitleRole).toString(),
-                            row->data(GameListItemPath::FullPathRole).toString(), title, path);
-        if (row_first) {
+        if (row != nullptr && !GameSortsBefore(game, *row, sort)) {
             low = middle + 1;
         } else {
             high = middle;
@@ -107,10 +153,35 @@ int SortedGameRow(const QStandardItem& parent, const QString& title, const QStri
     return low;
 }
 
+void SortGames(QStandardItemModel& model, GameSort sort) {
+    QList<QList<QStandardItem*>> rows;
+    rows.reserve(model.rowCount());
+    while (model.rowCount() > 0) {
+        rows.append(model.takeRow(0));
+    }
+    std::stable_sort(rows.begin(), rows.end(),
+                     [sort](const QList<QStandardItem*>& a, const QList<QStandardItem*>& b) {
+                         return !a.isEmpty() && !b.isEmpty() &&
+                                GameSortsBefore(*a.front(), *b.front(), sort);
+                     });
+    for (const QList<QStandardItem*>& row : rows) {
+        model.appendRow(row);
+    }
+}
+
 void SortForView(QStandardItemModel& model, bool tree_view, int column, Qt::SortOrder order) {
     if (tree_view) {
         model.sort(column, order);
     }
+}
+
+QDateTime GameFileAdded(const QString& path) {
+    const QFileInfo file(path);
+    if (!file.exists()) {
+        return {};
+    }
+    const QDateTime born = file.birthTime();
+    return born.isValid() ? born : file.lastModified();
 }
 
 } // namespace QtCommon

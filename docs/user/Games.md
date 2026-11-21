@@ -32,9 +32,16 @@ turns each one on or off. See [Updates and DLC](InstallingUpdatesDLC.md) for the
 *Carousel View*, *Cover View* (the games' icons, large, as on a shelf) and *Full Cover View* (each
 game's case, as in a shop).
 
-Every view but the tree lists games by name, as you'd read them: case and accents aside, and
-numbers by value, so *Mario 2* comes before *Mario 10*. The tree view sorts by whichever column
-you click. In the two cover views, *View > Separate Switch 2 Games* shows Switch 2 games first, under
+*View > Sort Games By* orders every view but the tree, and remembers your choice:
+
+- *Name*: as you'd read them, case and accents aside, numbers by value (*Mario 2* before
+  *Mario 10*).
+- *Date Added*: when the game file arrived on this computer (copied, downloaded or converted).
+- *Play Time*: how long you have played each game; it updates when you close a game.
+
+*Ascending* and *Descending* turn any of them around. Picking an order starts it the way it's most
+useful: names from A, the newest and the most played first. Games equal in the order, such as the
+ones you never played, follow by name. The tree view sorts by whichever column you click. In the two cover views, *View > Separate Switch 2 Games* shows Switch 2 games first, under
 their own heading, then the Switch ones under theirs. A game counts as Switch 2 by its title id
 (Switch 2 ids start with `04`), so a Switch game with a Switch 2 Edition upgrade stays with the
 Switch games.
