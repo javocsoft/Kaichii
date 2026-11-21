@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <QDialog>
+#include <QElapsedTimer>
 #include <QJsonObject>
 
 #include "common/common_types.h"
@@ -22,6 +23,7 @@ class QNetworkAccessManager;
 class QNetworkReply;
 class QPlainTextEdit;
 class QPushButton;
+class QTimer;
 class QVBoxLayout;
 
 namespace Core {
@@ -58,6 +60,12 @@ private:
     bool Anthropic() const;
     std::string_view ProviderId() const;
     void PrepareRequest();
+    /// Shows a spinner and the time spent on `button` while a request runs; `text` gives its label
+    /// for the elapsed seconds.
+    void StartBusy(QPushButton* button, std::function<QString(qint64)> text);
+    void StopBusy();
+    void UpdateBusy();
+    void ClearProposal();
     void Analyze();
     void HandleReply(QNetworkReply* reply);
     void ShowPlan(const QJsonObject& plan);
@@ -89,6 +97,12 @@ private:
     QCheckBox* remember_key;
     QPushButton* forget_key_button;
     bool key_saved = false;
+    QTimer* busy_timer;
+    QElapsedTimer busy_clock;
+    QPushButton* busy_button = nullptr;
+    QString busy_restore_text;
+    std::function<QString(qint64)> busy_text;
+    int busy_frame = 0;
     bool developer_mode = false;
     QPlainTextEdit* complaint;
     QPlainTextEdit* data_preview;

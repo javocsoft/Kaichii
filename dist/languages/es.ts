@@ -97,12 +97,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
 <context>
     <name>AiOptimizeDialog</name>
     <message>
-        <location filename="../../src/yuzu/ai_optimize_dialog.cpp" line="+135"/>
+        <location filename="../../src/yuzu/ai_optimize_dialog.cpp" line="+138"/>
         <source>AI settings assistant</source>
         <translation>Asistente de ajustes con IA</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+9"/>
         <source>Describe what you want to improve on this computer. Kaichii will send a diagnostic of your computer and settings to your chosen AI provider and show proposed global settings for your approval.</source>
         <translation>Describe lo que quieres mejorar en este equipo. Kaichii enviará un diagnóstico de tu equipo y tus ajustes al proveedor de IA elegido y te mostrará los ajustes globales propuestos para que los apruebes.</translation>
     </message>
@@ -129,7 +129,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation type="vanished">Tu clave de API (no se guarda)</translation>
     </message>
     <message>
-        <location line="-56"/>
+        <location line="-59"/>
         <source>Recommended</source>
         <translation>Recomendado</translation>
     </message>
@@ -164,7 +164,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>El más capaz y el de mayor coste</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+53"/>
         <source>Pick one of the provider&apos;s main models, or type another model name.</source>
         <translation>Elige uno de los modelos principales del proveedor o escribe el nombre de otro modelo.</translation>
     </message>
@@ -264,7 +264,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+57"/>
         <source>Model chosen by name or listed by the provider.</source>
         <translation>Modelo elegido por nombre o de la lista del proveedor.</translation>
     </message>
@@ -299,12 +299,26 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Escribe tu clave de API para cargar los modelos del proveedor.</translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Asking %1 for its models…</source>
-        <translation>Pidiendo a %1 su lista de modelos…</translation>
+        <location line="+20"/>
+        <source>Loading… %1 s</source>
+        <translation>Cargando… %1 s</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+228"/>
+        <source>Waiting for %1… %2 s · Click to cancel</source>
+        <translation>Esperando a %1… %2 s · Pulsa para cancelar</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Request cancelled. No settings were changed.</source>
+        <translation>Consulta cancelada. No se ha cambiado ningún ajuste.</translation>
+    </message>
+    <message>
+        <source>Asking %1 for its models…</source>
+        <translation type="vanished">Pidiendo a %1 su lista de modelos…</translation>
+    </message>
+    <message>
+        <location line="-228"/>
         <source>The provider didn&apos;t list its models: %1</source>
         <translation>El proveedor no ha devuelto su lista de modelos: %1</translation>
     </message>
@@ -327,12 +341,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Indica un modelo, tu clave de API y una descripción del problema.</translation>
     </message>
     <message>
-        <location line="+74"/>
         <source>Waiting for %1…</source>
-        <translation>Esperando a %1…</translation>
+        <translation type="vanished">Esperando a %1…</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+102"/>
         <source>The provider could not complete the request: %1</source>
         <translation>El proveedor no pudo completar la consulta: %1</translation>
     </message>
@@ -357,7 +370,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>El proveedor devolvió una propuesta inválida. No se cambió ningún ajuste.</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+76"/>
         <source>The proposal did not pass Kaichii&apos;s validation.</source>
         <translation>La propuesta no superó la validación de Kaichii.</translation>
     </message>

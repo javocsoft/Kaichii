@@ -22,6 +22,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QPainter>
+#include <QPixmap>
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSaveFile>
@@ -29,6 +31,7 @@
 #include <QSignalBlocker>
 #include <QStringList>
 #include <QSysInfo>
+#include <QTimer>
 #include <QVBoxLayout>
 
 #include "common/ai_optimize_policy.h"
@@ -133,6 +136,9 @@ AiOptimizeDialog::AiOptimizeDialog(QWidget* parent, Core::System& system_, Setti
       save_global{std::move(save_global_)},
       network{new QNetworkAccessManager(this)} {
     setWindowTitle(tr("AI settings assistant"));
+    busy_timer = new QTimer(this);
+    busy_timer->setInterval(80);
+    connect(busy_timer, &QTimer::timeout, this, &AiOptimizeDialog::UpdateBusy);
     developer_mode = UISettings::values.settings_developer_mode.GetValue();
     resize(730, developer_mode ? 740 : 600);
     auto* const outer = new QVBoxLayout(this);
@@ -258,7 +264,13 @@ AiOptimizeDialog::AiOptimizeDialog(QWidget* parent, Core::System& system_, Setti
     connect(forget_key_button, &QPushButton::clicked, this, &AiOptimizeDialog::ForgetKey);
     connect(complaint, &QPlainTextEdit::textChanged, this, &AiOptimizeDialog::PrepareRequest);
     connect(refresh_button, &QPushButton::clicked, this, &AiOptimizeDialog::PrepareRequest);
-    connect(analyze_button, &QPushButton::clicked, this, &AiOptimizeDialog::Analyze);
+    connect(analyze_button, &QPushButton::clicked, this, [this] {
+        if (active_reply) {
+            active_reply->abort(); // Ends in HandleReply with OperationCanceledError
+            return;
+        }
+        Analyze();
+    });
     connect(apply_button, &QPushButton::clicked, this, &AiOptimizeDialog::Apply);
     connect(undo_button, &QPushButton::clicked, this, &AiOptimizeDialog::Undo);
     connect(close_button, &QPushButton::clicked, this, &QDialog::reject);
@@ -412,8 +424,12 @@ void AiOptimizeDialog::ListModels() {
         request.setRawHeader("Authorization", "Bearer " + api_key->text().trimmed().toUtf8());
     }
     list_models_button->setEnabled(false);
+    analyze_button->setEnabled(false);
     provider->setEnabled(false);
-    status->setText(tr("Asking %1 for its models…").arg(provider->currentText()));
+    status->clear();
+    StartBusy(list_models_button, [](qint64 seconds) {
+        return tr("Loading… %1 s").arg(seconds);
+    });
     models_reply = network->get(request);
     connect(models_reply, &QNetworkReply::finished, this,
             [this, reply = models_reply] { HandleModelList(reply); });
@@ -421,7 +437,9 @@ void AiOptimizeDialog::ListModels() {
 
 void AiOptimizeDialog::HandleModelList(QNetworkReply* reply) {
     models_reply = nullptr;
+    StopBusy();
     list_models_button->setEnabled(true);
+    analyze_button->setEnabled(true);
     provider->setEnabled(active_reply == nullptr);
     const QByteArray bytes = reply->readAll();
     const auto error = reply->error();
@@ -557,7 +575,7 @@ void AiOptimizeDialog::PrepareRequest() {
 }
 
 void AiOptimizeDialog::Analyze() {
-    if (active_reply) {
+    if (active_reply || models_reply) {
         return;
     }
     if (api_key->text().trimmed().isEmpty() || model->currentText().trimmed().isEmpty() ||
@@ -629,14 +647,17 @@ void AiOptimizeDialog::Analyze() {
                                           {QStringLiteral("strict"), true},
                                           {QStringLiteral("schema"), schema}}}}}};
     }
-    analyze_button->setEnabled(false);
+    // The previous answer would read as this one's while it runs.
+    ClearProposal();
     refresh_button->setEnabled(false);
-    apply_button->setEnabled(false);
     provider->setEnabled(false);
     model->setEnabled(false);
     list_models_button->setEnabled(false);
     complaint->setReadOnly(true);
-    status->setText(tr("Waiting for %1…").arg(provider->currentText()));
+    status->clear();
+    StartBusy(analyze_button, [name = provider->currentText()](qint64 seconds) {
+        return tr("Waiting for %1… %2 s · Click to cancel").arg(name).arg(seconds);
+    });
     active_reply = network->post(request, QJsonDocument(body).toJson(QJsonDocument::Compact));
     connect(active_reply, &QNetworkReply::finished, this,
             [this, reply = active_reply] { HandleReply(reply); });
@@ -644,7 +665,7 @@ void AiOptimizeDialog::Analyze() {
 
 void AiOptimizeDialog::HandleReply(QNetworkReply* reply) {
     active_reply = nullptr;
-    analyze_button->setEnabled(true);
+    StopBusy();
     refresh_button->setEnabled(true);
     provider->setEnabled(true);
     model->setEnabled(true);
@@ -655,6 +676,10 @@ void AiOptimizeDialog::HandleReply(QNetworkReply* reply) {
     reply->deleteLater();
     QJsonParseError parse_error;
     const QJsonObject response = QJsonDocument::fromJson(bytes, &parse_error).object();
+    if (error == QNetworkReply::OperationCanceledError) {
+        status->setText(tr("Request cancelled. No settings were changed."));
+        return;
+    }
     if (error != QNetworkReply::NoError) {
         const QString provider_error = response.value(QStringLiteral("error")).toObject().value(QStringLiteral("message")).toString();
         status->setText(tr("The provider could not complete the request: %1")
@@ -694,7 +719,7 @@ void AiOptimizeDialog::HandleReply(QNetworkReply* reply) {
     ShowPlan(plan.object());
 }
 
-void AiOptimizeDialog::ShowPlan(const QJsonObject& plan) {
+void AiOptimizeDialog::ClearProposal() {
     while (auto* item = proposals->takeAt(0)) {
         if (item->widget()) {
             item->widget()->deleteLater();
@@ -702,6 +727,63 @@ void AiOptimizeDialog::ShowPlan(const QJsonObject& plan) {
         delete item;
     }
     changes.clear();
+    explanation->clear();
+    apply_button->setEnabled(false);
+}
+
+void AiOptimizeDialog::StartBusy(QPushButton* button, std::function<QString(qint64)> text) {
+    StopBusy();
+    busy_button = button;
+    busy_restore_text = button->text();
+    busy_text = std::move(text);
+    busy_frame = 0;
+    busy_clock.start();
+    UpdateBusy();
+    busy_timer->start();
+}
+
+void AiOptimizeDialog::StopBusy() {
+    busy_timer->stop();
+    if (busy_button) {
+        busy_button->setIcon(QIcon{});
+        busy_button->setText(busy_restore_text);
+    }
+    busy_button = nullptr;
+    busy_text = {};
+}
+
+void AiOptimizeDialog::UpdateBusy() {
+    if (!busy_button) {
+        return;
+    }
+    // A 270° arc that turns a twelfth of a circle every tick, drawn in the highlight colour. The
+    // same pixmap serves the disabled state, which Qt would otherwise grey out.
+    const qreal ratio = devicePixelRatioF();
+    const int side = busy_button->fontMetrics().height();
+    QPixmap frame(QSize(side, side) * ratio);
+    frame.setDevicePixelRatio(ratio);
+    frame.fill(Qt::transparent);
+    {
+        QPainter painter(&frame);
+        painter.setRenderHint(QPainter::Antialiasing);
+        QPen pen(palette().color(QPalette::Highlight), qMax(2.0, side / 7.0));
+        pen.setCapStyle(Qt::RoundCap);
+        painter.setPen(pen);
+        const qreal inset = pen.widthF();
+        painter.drawArc(QRectF(inset, inset, side - 2 * inset, side - 2 * inset),
+                        -busy_frame * 30 * 16, 270 * 16);
+    }
+    busy_frame = (busy_frame + 1) % 12;
+    QIcon icon;
+    icon.addPixmap(frame, QIcon::Normal);
+    icon.addPixmap(frame, QIcon::Disabled);
+    busy_button->setIconSize(QSize(side, side));
+    busy_button->setIcon(icon);
+    busy_button->setText(busy_text(busy_clock.elapsed() / 1000));
+}
+
+void AiOptimizeDialog::ShowPlan(const QJsonObject& plan) {
+    ClearProposal();
     const QJsonArray proposed = plan.value(QStringLiteral("changes")).toArray();
     const bool switch2 = (program_id >> 56) == 4 ||
                          (GameRunning() && Settings::CurrentProgramIsSwitch2());
