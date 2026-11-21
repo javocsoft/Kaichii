@@ -28,4 +28,23 @@ Instálalos con *Archivo > Instalar archivos en NAND*. En el menú del clic dere
 *Configurar juego > Complementos* activa o desactiva cada uno. Los detalles están en
 [Updates and DLC](InstallingUpdatesDLC.md) (en inglés).
 
+## Cómo muestra la lista tus juegos
+
+*Ver > Modo de la lista de juegos* elige una de cinco vistas: *Vista en árbol* (una tabla con
+detalles), *Vista en cuadrícula*, *Vista de carrusel*, *Vista en carátulas* (los iconos de los
+juegos, grandes, como en una estantería) y *Vista en cajas* (la caja de cada juego, como en una
+tienda).
+
+La vista en cajas muestra la imagen de la caja que elijas. Abre las propiedades del juego (clic
+derecho, *Configurar juego*), elige la pestaña *Caja* encima de los datos del juego, después
+*Elegir imagen de la caja...* y *Aceptar*. *Quitar* vuelve al icono. Un juego sin imagen de caja
+muestra su icono sobre una caja, para que la estantería no tenga huecos. Funciona con cualquier
+formato de juego y nunca modifica el archivo del juego.
+
+Kaichii guarda las cajas en la carpeta `box_art` de su carpeta de datos (mira
+[dónde se guardan tus datos](Install.es.md#donde-se-guardan-tus-datos)). Para añadir muchas a la vez, copia ahí las
+imágenes con el id del juego como nombre, tal como lo muestra *Configurar juego*, en mayúsculas:
+`0400486024DEC000.jpg` para Ocarina of Time. Valen PNG, JPEG y WebP, mejor con forma de unos 105
+por 170; las de otra forma se recortan para llenar la caja.
+
 Siguiente: [Ajustes para tu equipo](Performance.es.md).

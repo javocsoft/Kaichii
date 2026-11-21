@@ -35,6 +35,8 @@
 #include <QImageReader>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QTabWidget>
+#include <QVBoxLayout>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -48,6 +50,7 @@
 #include <QtConcurrent/QtConcurrentRun>
 
 #include "common/fs/fs_util.h"
+#include "common/fs/path_util.h"
 #include "common/settings_enums.h"
 #include "common/settings_input.h"
 #include "common/string_util.h"
@@ -82,6 +85,7 @@
 #include "yuzu/configuration/setting_help_panel.h"
 #include "yuzu/configuration/settings_organizer.h"
 #include "yuzu/configuration/settings_style.h"
+#include "yuzu/configuration/box_art_editor.h"
 #include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/util/util.h"
 
@@ -469,6 +473,33 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
     ui->verticalLayout_3->insertWidget(1, help_panel);
     help_panel->Watch(ui->tabWidget);
 
+    // The game's pictures: its icon, and the box art the full cover view shows.
+    auto* const icon_page = new QWidget;
+    auto* const icon_layout = new QVBoxLayout(icon_page);
+    icon_layout->setContentsMargins(6, 6, 6, 6);
+    ui->verticalLayout->removeWidget(ui->icon_view);
+    ui->verticalLayout->removeWidget(ui->nup_icon_widget);
+    icon_layout->addWidget(ui->icon_view, 0, Qt::AlignHCenter);
+    icon_layout->addWidget(ui->nup_icon_widget, 0, Qt::AlignHCenter);
+    icon_layout->addStretch();
+    auto* const box_art_page = new QWidget;
+    auto* const box_art_layout = new QVBoxLayout(box_art_page);
+    box_art_layout->setContentsMargins(6, 6, 6, 6);
+    const auto pick_box_art = [](QWidget*) {
+        return QtCommon::Frontend::GetOpenFileName(
+            tr("Select Box Art"),
+            QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
+            tr("Images (*.png *.jpg *.jpeg *.bmp *.webp);;All Files (*)"));
+    };
+    box_art_editor = new BoxArtEditor(title_id, pick_box_art, ReadIconFile, box_art_page);
+    box_art_layout->addWidget(box_art_editor);
+    box_art_layout->addStretch();
+    picture_tabs = new QTabWidget(ui->groupBox);
+    picture_tabs->setObjectName(QStringLiteral("pictureTabs"));
+    picture_tabs->addTab(icon_page, tr("Icon"));
+    picture_tabs->addTab(box_art_page, tr("Box Art"));
+    ui->verticalLayout->insertWidget(0, picture_tabs);
+
     // The game's info panel scrolls too: at high scale it alone is taller than a 1080p screen.
     const int info_index = ui->horizontalLayout->indexOf(ui->groupBox);
     auto* const info_scroll = new ConfigurationShared::SettingsPageScroll(ui->groupBox, this);
@@ -539,7 +570,8 @@ ConfigurePerGame::~ConfigurePerGame() {
 }
 
 void ConfigurePerGame::done(int result) {
-    if (result == QDialog::Accepted && (detect_watcher.isRunning() || !SaveNupMetadata(true))) {
+    if (result == QDialog::Accepted &&
+        (detect_watcher.isRunning() || !SaveNupMetadata(true) || !SaveBoxArt())) {
         return;
     }
     if (detect_cancel) {
@@ -578,6 +610,10 @@ void ConfigurePerGame::changeEvent(QEvent* event) {
 
 void ConfigurePerGame::RetranslateUI() {
     ui->retranslateUi(this);
+    if (picture_tabs) {
+        picture_tabs->setTabText(0, tr("Icon"));
+        picture_tabs->setTabText(1, tr("Box Art"));
+    }
     RetranslateLevels();
     for (int index = 0; index < ui->tabWidget->count(); ++index) {
         QWidget* const scroll = ui->tabWidget->widget(index);
@@ -662,7 +698,7 @@ void ConfigurePerGame::SetLevels(bool show_advanced, bool developer_mode) {
 }
 
 void ConfigurePerGame::HandleApplyButtonClicked() {
-    if (detect_watcher.isRunning() || !SaveNupMetadata(true)) {
+    if (detect_watcher.isRunning() || !SaveNupMetadata(true) || !SaveBoxArt()) {
         return;
     }
     UISettings::values.configuration_applied = true;
@@ -1016,6 +1052,22 @@ void ConfigurePerGame::OnDetectNupIcon() {
             }
             return out;
         }));
+}
+
+bool ConfigurePerGame::SaveBoxArt() {
+    if (!box_art_editor->HasChanges()) {
+        return true;
+    }
+    if (!box_art_editor->Save()) {
+        QMessageBox::warning(
+            this, tr("Box Art"),
+            tr("The box art couldn't be saved in %1.")
+                .arg(QString::fromStdString(Common::FS::PathToUTF8String(
+                    Common::FS::GetEdenPath(Common::FS::EdenPath::BoxArtDir)))));
+        return false;
+    }
+    UISettings::values.is_game_list_reload_pending.exchange(true);
+    return true;
 }
 
 bool ConfigurePerGame::SaveNupMetadata(bool show_error) {

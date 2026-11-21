@@ -117,6 +117,7 @@
      <addaction name="action_Grid_View"/>
      <addaction name="action_Carousel_View"/>
      <addaction name="action_Cover_View"/>
+     <addaction name="action_Full_Cover_View"/>
     </widget>
     <widget class="QMenu" name="menuGame_Icon_Size">
      <property name="title">
@@ -687,6 +688,17 @@
    </property>
    <property name="toolTip">
     <string>Only the games' covers, larger, as on a shelf</string>
+   </property>
+  </action>
+  <action name="action_Full_Cover_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Full Cover View</string>
+   </property>
+   <property name="toolTip">
+    <string>The games' box art, as cases on a shelf. Choose a game's box art in its properties</string>
    </property>
   </action>
  </widget>

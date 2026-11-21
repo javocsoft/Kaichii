@@ -1050,6 +1050,51 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
 </context>
 <context>
+    <name>BoxArtEditor</name>
+    <message>
+        <location filename="../../src/yuzu/configuration/box_art_editor.cpp" line="+30"/>
+        <source>Choose Box Art...</source>
+        <translation>Elegir imagen de la caja...</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Preview an image as the game&apos;s box art, shown by View &gt; Game List Mode &gt; Full Cover View. OK or Apply saves it.</source>
+        <translation>Previsualiza una imagen como caja del juego, la que muestra Ver &gt; Modo de la lista de juegos &gt; Vista en cajas. Aceptar o Aplicar la guarda.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Remove</source>
+        <translation>Quitar</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Show the game&apos;s icon on its case again. OK or Apply saves it.</source>
+        <translation>Vuelve a mostrar el icono del juego en su caja. Aceptar o Aplicar lo guarda.</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>This game has no program id, so it can&apos;t have box art.</source>
+        <translation>Este juego no tiene id de programa, así que no puede tener imagen de caja.</translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>Invalid Image</source>
+        <translation>Imagen no válida</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Select a PNG, JPEG, BMP or WebP image up to 8 MiB, 8192 pixels per side and 16 megapixels.</source>
+        <translation>Elige una imagen PNG, JPEG, BMP o WebP de hasta 8 MiB, 8192 píxeles por lado y 16 megapíxeles.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>No box art.
+The full cover view shows the game&apos;s icon on a case.</source>
+        <translation>Sin imagen de caja.
+La vista en cajas muestra el icono del juego sobre una caja.</translation>
+    </message>
+</context>
+<context>
     <name>CalibrationConfigurationDialog</name>
     <message>
         <location filename="../../src/yuzu/configuration/configure_motion_touch.cpp" line="+26"/>
@@ -7113,7 +7158,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
 <context>
     <name>ConfigurePerGame</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+422"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+426"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -7134,9 +7179,9 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+79"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+106"/>
         <location line="+10"/>
-        <location line="+302"/>
+        <location line="+307"/>
         <location line="+5"/>
         <source>Detect Icon</source>
         <translation>Detectar icono</translation>
@@ -7202,7 +7247,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Algunos ajustes solo están disponibles cuando no se estén ejecutando los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-395"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-427"/>
         <source>Add-Ons</source>
         <translation>Complementos</translation>
     </message>
@@ -7269,12 +7314,30 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Emulación de GPU</translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+54"/>
+        <source>Select Box Art</source>
+        <translation>Elegir imagen de la caja</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <location line="+115"/>
+        <source>Icon</source>
+        <translation>Icono</translation>
+    </message>
+    <message>
+        <location line="-114"/>
+        <location line="+115"/>
+        <location line="+448"/>
+        <source>Box Art</source>
+        <translation>Caja</translation>
+    </message>
+    <message>
+        <location line="-551"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
     <message>
-        <location line="+148"/>
+        <location line="+153"/>
         <source>Show advanced options</source>
         <translation>Mostrar opciones avanzadas</translation>
     </message>
@@ -7309,7 +7372,8 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Seleccionar icono del juego</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-323"/>
+        <location line="+324"/>
         <source>Images (*.png *.jpg *.jpeg *.bmp *.webp);;All Files (*)</source>
         <translation>Imágenes (*.png *.jpg *.jpeg *.bmp *.webp);;Todos los archivos (*)</translation>
     </message>
@@ -7339,7 +7403,12 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Detectando...</translation>
     </message>
     <message>
-        <location line="+208"/>
+        <location line="+204"/>
+        <source>The box art couldn&apos;t be saved in %1.</source>
+        <translation>No se ha podido guardar la imagen de la caja en %1.</translation>
+    </message>
+    <message>
+        <location line="+20"/>
         <location line="+22"/>
         <source>Update NUP Metadata</source>
         <translation>Actualizar metadatos del NUP</translation>
@@ -9145,7 +9214,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameList</name>
     <message>
-        <location filename="../../src/yuzu/game/game_list.cpp" line="+579"/>
+        <location filename="../../src/yuzu/game/game_list.cpp" line="+601"/>
         <source>Ask AI to tune this game...</source>
         <translation>Pedir a la IA que ajuste este juego...</translation>
     </message>
@@ -9349,7 +9418,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameListItemCompat</name>
     <message>
-        <location filename="../../src/qt_common/game_list/game_list_p.h" line="+208"/>
+        <location filename="../../src/qt_common/game_list/game_list_p.h" line="+209"/>
         <source>Ingame</source>
         <translation>En juego</translation>
     </message>
@@ -10065,7 +10134,7 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/yuzu/main.ui" line="+507"/>
+        <location filename="../../src/yuzu/main.ui" line="+508"/>
         <source>Ask AI to tune current game...</source>
         <translation>Pedir a la IA que ajuste el juego actual...</translation>
     </message>
@@ -10075,18 +10144,18 @@ o haz clic para buscarlo</translation>
         <translation>Pedir a la IA que ajuste este equipo...</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+2467"/>
-        <location line="+1826"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+2468"/>
+        <location line="+1832"/>
         <source>AI settings assistant</source>
         <translation>Asistente de ajustes con IA</translation>
     </message>
     <message>
-        <location line="-1825"/>
+        <location line="-1831"/>
         <source>Stop the running game before tuning another game.</source>
         <translation>Detén el juego en marcha antes de ajustar otro juego.</translation>
     </message>
     <message>
-        <location line="+1826"/>
+        <location line="+1832"/>
         <source>Stop the game before tuning settings for the whole computer.</source>
         <translation>Detén el juego antes de ajustar la configuración de todo el equipo.</translation>
     </message>
@@ -10116,7 +10185,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location line="-2297"/>
+        <location line="-2303"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -10183,7 +10252,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">yuzu</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main.ui" line="-462"/>
+        <location filename="../../src/yuzu/main.ui" line="-463"/>
         <source>&amp;File</source>
         <translation>&amp;Archivo</translation>
     </message>
@@ -10222,7 +10291,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Modo de la lista de &amp;juegos</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Game &amp;Icon Size</source>
         <translation>Tamaño del &amp;icono de los juegos</translation>
     </message>
@@ -10336,8 +10405,8 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">&amp;Acerca de Eden</translation>
     </message>
     <message>
-        <location line="-288"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3866"/>
+        <location line="-289"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3872"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -10349,7 +10418,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Abrir carpetas de &amp;Kaichii</translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+210"/>
         <source>Add &amp;Games Folder...</source>
         <translation>Añadir carpeta de &amp;juegos...</translation>
     </message>
@@ -10600,11 +10669,21 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Dependencias de &amp;Kaichii</translation>
     </message>
     <message>
+        <location line="+79"/>
+        <source>&amp;Full Cover View</source>
+        <translation>Vista en &amp;cajas</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The games&apos; box art, as cases on a shelf. Choose a game&apos;s box art in its properties</source>
+        <translation>Las cajas de los juegos, como en una estantería. La imagen de la caja de cada juego se elige en sus propiedades</translation>
+    </message>
+    <message>
         <source>&amp;Eden Dependencies</source>
         <translation type="vanished">&amp;Dependencias de Eden</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-77"/>
         <source>&amp;Data Manager</source>
         <translation>Gestor de &amp;datos</translation>
     </message>
@@ -10625,7 +10704,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4769"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4776"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -10765,7 +10844,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+427"/>
+        <location line="+428"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -10883,25 +10962,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2629"/>
+        <location line="+2635"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2629"/>
-        <location line="+2629"/>
+        <location line="-2635"/>
+        <location line="+2635"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2628"/>
-        <location line="+2630"/>
+        <location line="-2634"/>
+        <location line="+2636"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2617"/>
+        <location line="-2623"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -11065,12 +11144,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2277"/>
+        <location line="+2283"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2251"/>
+        <location line="-2257"/>
         <location line="+132"/>
         <source>Add to the game list?</source>
         <translation>¿Añadir a la lista de juegos?</translation>
@@ -11301,7 +11380,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>No se pudo abrir URL &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location line="+428"/>
+        <location line="+434"/>
         <source>TAS Recording</source>
         <translation>Grabación TAS</translation>
     </message>
@@ -13329,7 +13408,7 @@ p, li { white-space: pre-wrap; }
         <translation>%1 esta jugando %2</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/game_list/game_list_p.h" line="-114"/>
+        <location filename="../../src/qt_common/game_list/game_list_p.h" line="-115"/>
         <source>Play Time: %1</source>
         <translation>Tiempo de juego: %1</translation>
     </message>
@@ -13349,7 +13428,7 @@ p, li { white-space: pre-wrap; }
         <translation>Versión: 1.0.0</translation>
     </message>
     <message>
-        <location line="+212"/>
+        <location line="+213"/>
         <source>Installed SD Titles</source>
         <translation>Títulos instalados en la SD</translation>
     </message>

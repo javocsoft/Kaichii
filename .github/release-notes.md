@@ -9,5 +9,8 @@ understands, then says what they saw, what caused it, what was measured or playe
 pull request number. Say plainly what was not confirmed. HTML comments like this one are dropped.
 -->
 
+### New features
+- **A full cover view, with each game's box art.** *View > Game List Mode > Full Cover View* shows the games as cases on a shelf, in a Switch case's shape and without names. A game's properties have a new *Box Art* tab, next to its icon, to choose the picture or remove it; it works for every game format and is kept in Kaichii's `box_art` data folder, never in the game file, so pictures can also be copied there by hand under the game's title id. A game without box art shows its icon on a case. Unit tests cover storing, replacing and removing box art, the editor and the view drawing it; checked on screen with synthetic pictures, not with real box art (#92).
+
 ### Interface
 - **Covers with transparent parts show the shelf behind them.** In *Cover View*, a game whose icon has transparent areas (Donkey Kong Bananza's cut-out art, the rounded corners of Super Mario Bros. Wonder's) showed a grey square there: the shelf's shadow was drawn as a full square under every cover. The shadow now follows the picture's own shape. A unit test paints a cover with a transparent cut-out and checks that the shelf shows through; the real covers were not checked on screen (#91).

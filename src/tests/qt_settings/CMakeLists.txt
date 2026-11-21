@@ -46,6 +46,18 @@ target_link_libraries(game_list_tests PRIVATE qt_common frontend_common common
 add_test(NAME game_list COMMAND game_list_tests)
 set_tests_properties(game_list PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
+# Box art: where it is kept, the editor in a game's properties, and the full cover view drawing it.
+add_executable(box_art_tests box_art.cpp
+               ../../yuzu/configuration/box_art_editor.cpp ../../yuzu/configuration/box_art_editor.h
+               ../../yuzu/game/cover_art.cpp ../../yuzu/game/cover_art.h
+               ../../yuzu/game/game_covers.cpp ../../yuzu/game/game_covers.h)
+target_compile_features(box_art_tests PRIVATE cxx_std_20)
+target_include_directories(box_art_tests PRIVATE ../..)
+target_link_libraries(box_art_tests PRIVATE qt_common frontend_common common
+                      SimpleIni::SimpleIni Qt6::Widgets Qt6::Test)
+add_test(NAME box_art COMMAND box_art_tests)
+set_tests_properties(box_art PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
 # The first-run assistant: the preset it proposes and what it asks the main window to do.
 add_executable(first_run_assistant_tests
     first_run_assistant.cpp
