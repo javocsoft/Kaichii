@@ -4,6 +4,8 @@ Kaichii puede pedir a OpenAI o Anthropic una propuesta de ajustes para tu equipo
 clave de API propia del proveedor elegido; el servicio puede cobrarte por cada consulta. La función
 es opcional: los perfiles de rendimiento y **Optimizar para este juego** siguen funcionando sin IA.
 
+El asistente es propio de Kaichii: Lichii, Eden y yuzu no lo tienen.
+
 ## Cómo usarlo
 
 - **Para todos los juegos:** abre *Emulación > Pedir a la IA que ajuste este equipo*. Cierra el juego

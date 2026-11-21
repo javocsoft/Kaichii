@@ -49,6 +49,13 @@ Kaichii is developed and measured on a laptop with an RTX 3050 (4 GB of video me
   Quality or Ultra.
 - **Optimize for This Game.** In a game's right-click menu: Kaichii measures the game where it is
   played and proposes the settings that suit it.
+- **An AI settings assistant, only in Kaichii and optional.** Describe the problem in your own
+  words ("it stutters when I enter a new area") and Kaichii asks OpenAI or Anthropic, with your own
+  API key, which settings suit your computer or one game. It can only propose options from a fixed
+  catalog, shows each change with its reason before applying it, and undoes the last AI change on
+  request. The key can be kept in your system's credential store, never in Kaichii's files, and
+  nothing is sent until you ask. Everything else in Kaichii works without it.
+  ([How to use it](https://javocsoft.github.io/Kaichii/AIOptimization/))
 - **Built for 4 GB cards.** Textures can be decoded on the processor, the texture cache stops a
   runaway before it fills the card, and when video memory does run out Kaichii retries or leaves an
   image out instead of crashing.

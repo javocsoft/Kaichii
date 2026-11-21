@@ -4,6 +4,8 @@ Kaichii can ask OpenAI or Anthropic to propose settings for your computer. You n
 for the chosen provider; the provider may charge for each request. This is optional: performance
 presets and **Optimize for This Game** work without AI.
 
+The assistant is Kaichii's own: Lichii, Eden and yuzu don't have it.
+
 ## Use it
 
 - **All games:** open *Emulation > Ask AI to tune this computer*. Stop any game first. The proposal
