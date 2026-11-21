@@ -295,8 +295,8 @@ void AiLogDialog::Ask() {
     if (!analysis.has_problems) {
         return;
     }
-    if (!provider_panel->Ready()) {
-        status->setText(tr("Enter a model and your API key."));
+    if (const QString missing = provider_panel->CheckMissing(); !missing.isEmpty()) {
+        status->setText(missing);
         return;
     }
     QJsonArray found;

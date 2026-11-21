@@ -356,8 +356,13 @@ void AiOptimizeDialog::Analyze() {
     if (request->Running() || provider_panel->Busy()) {
         return;
     }
-    if (!provider_panel->Ready() || complaint->toPlainText().trimmed().isEmpty()) {
-        status->setText(tr("Enter a model, your API key and a description of the problem."));
+    if (const QString missing = provider_panel->CheckMissing(); !missing.isEmpty()) {
+        status->setText(missing);
+        return;
+    }
+    if (complaint->toPlainText().trimmed().isEmpty()) {
+        complaint->setFocus();
+        status->setText(tr("Describe what you would like to improve first, in your own words."));
         return;
     }
     const QString instructions =

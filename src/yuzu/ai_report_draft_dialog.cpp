@@ -96,8 +96,13 @@ void AiReportDraftDialog::Write() {
     if (provider_panel->Busy()) {
         return;
     }
-    if (!provider_panel->Ready() || description->toPlainText().trimmed().isEmpty()) {
-        status->setText(tr("Enter a model, your API key and what happened."));
+    if (const QString missing = provider_panel->CheckMissing(); !missing.isEmpty()) {
+        status->setText(missing);
+        return;
+    }
+    if (description->toPlainText().trimmed().isEmpty()) {
+        description->setFocus();
+        status->setText(tr("Tell what happened first, in your own words."));
         return;
     }
     const QJsonObject input{

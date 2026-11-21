@@ -231,12 +231,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Más en la guía</translation>
     </message>
     <message>
-        <location line="+20"/>
         <source>Enter a model and your API key.</source>
-        <translation>Escribe un modelo y tu clave de API.</translation>
+        <translation type="vanished">Escribe un modelo y tu clave de API.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+62"/>
         <source>Waiting for %1… %2 s · Click to cancel</source>
         <translation>Esperando a %1… %2 s · Pulsa para cancelar</translation>
     </message>
@@ -461,7 +460,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation type="vanished">Cargando… %1 s</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+183"/>
         <source>Waiting for %1… %2 s · Click to cancel</source>
         <translation>Esperando a %1… %2 s · Pulsa para cancelar</translation>
     </message>
@@ -489,9 +488,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
         </translation>
     </message>
     <message>
-        <location line="-24"/>
         <source>Enter a model, your API key and a description of the problem.</source>
-        <translation>Indica un modelo, tu clave de API y una descripción del problema.</translation>
+        <translation type="vanished">Indica un modelo, tu clave de API y una descripción del problema.</translation>
     </message>
     <message>
         <source>Waiting for %1…</source>
@@ -518,7 +516,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation type="vanished">El proveedor devolvió una propuesta inválida. No se cambió ningún ajuste.</translation>
     </message>
     <message>
-        <location line="-268"/>
+        <location line="-297"/>
         <source>%1 fps, 1% low %2 fps, %3 stutters</source>
         <translation>%1 fps, 1 % bajo %2 fps, %3 tirones</translation>
     </message>
@@ -543,7 +541,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Mantener estos ajustes</translation>
     </message>
     <message>
-        <location line="+282"/>
+        <location line="+218"/>
+        <source>Describe what you would like to improve first, in your own words.</source>
+        <translation>Primero describe con tus palabras qué te gustaría mejorar.</translation>
+    </message>
+    <message>
+        <location line="+69"/>
         <source>The proposal did not pass Kaichii&apos;s validation.</source>
         <translation>La propuesta no superó la validación de Kaichii.</translation>
     </message>
@@ -776,7 +779,22 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Clave de API:</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+52"/>
+        <source>Choose a model and enter your API key.</source>
+        <translation>Elige un modelo y escribe tu clave de API.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Choose a model.</source>
+        <translation>Elige un modelo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Enter your API key.</source>
+        <translation>Escribe tu clave de API.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
         <source>Model chosen by name or listed by the provider.</source>
         <translation>Modelo elegido por nombre o de la lista del proveedor.</translation>
     </message>
@@ -872,9 +890,13 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Redactar el informe</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+39"/>
+        <source>Tell what happened first, in your own words.</source>
+        <translation>Primero cuenta con tus palabras qué ha pasado.</translation>
+    </message>
+    <message>
         <source>Enter a model, your API key and what happened.</source>
-        <translation>Escribe un modelo, tu clave de API y lo que ha pasado.</translation>
+        <translation type="vanished">Escribe un modelo, tu clave de API y lo que ha pasado.</translation>
     </message>
     <message>
         <location line="+25"/>

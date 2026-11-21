@@ -146,6 +146,26 @@ bool AiProviderPanel::Ready() const {
     return !Model().isEmpty() && !Key().isEmpty();
 }
 
+QString AiProviderPanel::CheckMissing() {
+    const bool no_model = Model().isEmpty();
+    const bool no_key = Key().isEmpty();
+    if (no_model) {
+        model->setFocus();
+    } else if (no_key) {
+        api_key->setFocus();
+    }
+    if (no_model && no_key) {
+        return tr("Choose a model and enter your API key.");
+    }
+    if (no_model) {
+        return tr("Choose a model.");
+    }
+    if (no_key) {
+        return tr("Enter your API key.");
+    }
+    return {};
+}
+
 bool AiProviderPanel::Busy() const {
     return models_reply != nullptr;
 }

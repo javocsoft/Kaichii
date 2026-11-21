@@ -33,6 +33,9 @@ public:
     [[nodiscard]] QString Key() const;
     /// Whether a model and a key are filled in.
     [[nodiscard]] bool Ready() const;
+    /// Says which of the model and the key is missing, and puts the cursor there. Empty and
+    /// untouched when both are filled in.
+    QString CheckMissing();
     /// Whether the model list is loading.
     [[nodiscard]] bool Busy() const;
 
