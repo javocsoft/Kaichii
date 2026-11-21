@@ -35,6 +35,26 @@ detalles), *Vista en cuadrícula*, *Vista de carrusel*, *Vista en carátulas* (l
 juegos, grandes, como en una estantería) y *Vista en cajas* (la caja de cada juego, como en una
 tienda).
 
+*Ver > Ordenar juegos por* ordena todas las vistas menos la de árbol, y recuerda lo que elijas:
+
+- *Nombre*: como se leen, sin distinguir mayúsculas ni acentos y con los números por su valor
+  (*Mario 2* antes que *Mario 10*).
+- *Fecha en que se añadió*: cuándo llegó el archivo del juego a este equipo (copiado, descargado o
+  convertido).
+- *Tiempo de juego*: cuánto has jugado a cada uno; se actualiza al cerrar un juego.
+
+*Ascendente* y *Descendente* dan la vuelta a cualquiera de ellos. Al elegir un orden empieza en el
+sentido más útil: los nombres desde la A, y los más recientes y los más jugados primero. Los juegos
+empatados, como los que nunca has jugado, siguen por nombre. La vista en árbol ordena por la
+columna en la que hagas clic.
+
+Haz clic derecho en una parte vacía de la lista para tener las mismas opciones: el modo de la lista,
+el orden y las secciones de Switch 2. En las dos vistas de carátulas, *Ver >
+Separar los juegos de Switch 2* muestra primero los juegos de Switch 2, bajo su propio título, y
+después los de Switch bajo el suyo. Un juego cuenta como de Switch 2 por su id (los de Switch 2
+empiezan por `04`), así que un juego de Switch con la mejora Switch 2 Edition se queda con los de
+Switch.
+
 La vista en cajas muestra la imagen de la caja que elijas. Abre las propiedades del juego (clic
 derecho, *Configurar juego*), elige la pestaña *Caja* encima de los datos del juego, después
 *Elegir imagen de la caja...* y *Aceptar*. *Quitar* vuelve al icono. Un juego sin imagen de caja

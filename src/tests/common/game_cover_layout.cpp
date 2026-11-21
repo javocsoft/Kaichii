@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <cstdlib>
+#include <vector>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -66,4 +67,61 @@ TEST_CASE("The box shelf fills the width with cases of a Switch case's shape", "
     const auto full_hd = ComputeBoxLayout(1920);
     CHECK(full_hd.columns == 9);
     CHECK(full_hd.width >= Yuzu::TargetBox);
+}
+
+namespace {
+
+std::vector<Yuzu::ShelfEntry> Library() {
+    // Rows in name order; Switch 2 games at rows 1, 3 and 4.
+    return {{0, false}, {1, true}, {2, false}, {3, true}, {4, true}, {5, false}, {6, false}};
+}
+
+} // Anonymous namespace
+
+TEST_CASE("Without sections the shelf keeps the list's order", "[frontend][cover_view]") {
+    const auto entries = Library();
+    const auto shelf = Yuzu::ComputeShelf(entries, 3, 100, 150, false);
+    CHECK(shelf.headings.empty());
+    REQUIRE(shelf.spots.size() == entries.size());
+    for (std::size_t i = 0; i < entries.size(); ++i) {
+        CHECK(shelf.spots[i].row == static_cast<int>(i));
+        CHECK(shelf.spots[i].x == static_cast<int>(i % 3) * 100);
+        CHECK(shelf.spots[i].y == static_cast<int>(i / 3) * 150);
+    }
+    CHECK(shelf.height == 3 * 150);
+}
+
+TEST_CASE("With sections Switch 2 games come first, each section on its own rows",
+          "[frontend][cover_view]") {
+    const auto entries = Library();
+    const auto shelf = Yuzu::ComputeShelf(entries, 2, 100, 150, true);
+    const int heading = Yuzu::ShelfHeadingHeight;
+    REQUIRE(shelf.headings.size() == 2);
+    CHECK(shelf.headings[0].switch2);
+    CHECK(shelf.headings[0].count == 3);
+    CHECK(shelf.headings[0].y == 0);
+    // Three Switch 2 games take two rows; the Switch section starts below them.
+    CHECK_FALSE(shelf.headings[1].switch2);
+    CHECK(shelf.headings[1].count == 4);
+    CHECK(shelf.headings[1].y == heading + 2 * 150);
+
+    std::vector<int> rows;
+    for (const auto& spot : shelf.spots) {
+        rows.push_back(spot.row);
+    }
+    // Name order kept inside each section.
+    CHECK(rows == std::vector<int>{1, 3, 4, 0, 2, 5, 6});
+    CHECK(shelf.spots[2].x == 0);
+    CHECK(shelf.spots[2].y == heading + 150);
+    CHECK(shelf.spots[3].x == 0);
+    CHECK(shelf.spots[3].y == shelf.headings[1].y + heading);
+    CHECK(shelf.height == 2 * heading + 4 * 150);
+}
+
+TEST_CASE("A section without games has no heading", "[frontend][cover_view]") {
+    const std::vector<Yuzu::ShelfEntry> only_switch = {{0, false}, {1, false}};
+    const auto shelf = Yuzu::ComputeShelf(only_switch, 4, 100, 150, true);
+    REQUIRE(shelf.headings.size() == 1);
+    CHECK_FALSE(shelf.headings[0].switch2);
+    CHECK(Yuzu::ComputeShelf({}, 4, 100, 150, true).height == 0);
 }

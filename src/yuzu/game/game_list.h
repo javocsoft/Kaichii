@@ -41,6 +41,7 @@ enum class StartGameType;
 
 class GameCarousel;
 class GameCovers;
+class SmoothScroll;
 
 class QAbstractItemView;
 namespace Core {
@@ -86,6 +87,10 @@ public:
     [[nodiscard]] std::optional<Selection> SelectedGame() const;
 
     void PopulateAsync(QVector<UISettings::GameDir>& game_dirs);
+    /// Puts the flat views' games in the order chosen in View > Sort Games By.
+    void ApplyGameSort();
+    /// Shows Switch 2 and Switch games apart in the cover views.
+    void SetCoverSections(bool sections);
     void SetScanEnabled(bool enabled);
     void SetReportableProgramId(u64 program_id);
 
@@ -178,10 +183,7 @@ private:
 
     ControllerNavigation* controller_navigation = nullptr;
 
-    QVariantAnimation* vertical_scroll = nullptr;
-    QVariantAnimation* horizontal_scroll = nullptr;
-    int vertical_scroll_target = 0;
-    int horizontal_scroll_target = 0;
+    SmoothScroll* smooth_scroll = nullptr;
 
     const PlayTime::PlayTimeManager& play_time_manager;
     Core::System& system;

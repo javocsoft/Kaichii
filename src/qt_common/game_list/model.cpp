@@ -19,6 +19,7 @@
 #include "qt_common/util/game.h"
 
 #include "qt_common/game_list/game_list_p.h"
+#include "qt_common/game_list/game_order.h"
 #include "qt_common/game_list/model.h"
 #include "qt_common/game_list/worker.h"
 
@@ -89,7 +90,13 @@ void GameListModel::AddDirEntry(GameListDir* entry_items) {
 
 void GameListModel::AddEntry(const QList<QStandardItem*>& entry_items, GameListDir* parent) {
     if (m_flat) {
-        invisibleRootItem()->appendRow(entry_items);
+        // The flat views (grid, carousel and covers) show games in the order the player chose;
+        // the tree sorts itself.
+        const QStandardItem* const game = entry_items.value(0);
+        const int row = game == nullptr ? invisibleRootItem()->rowCount()
+                                        : QtCommon::SortedGameRow(*invisibleRootItem(), *game,
+                                                                  QtCommon::CurrentGameSort());
+        invisibleRootItem()->insertRow(row, entry_items);
     } else {
         parent->appendRow(entry_items);
     }

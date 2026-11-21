@@ -42,6 +42,7 @@ add_library(qt_common STATIC
     game_list/game_list_p.h
     game_list/placeholder_icon.h
     game_list/game_pictures.h game_list/game_pictures.cpp
+    game_list/game_order.h game_list/game_order.cpp
 
     qt_string_lookup.h
     qt_compat.h

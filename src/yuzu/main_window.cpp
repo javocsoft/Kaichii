@@ -109,6 +109,7 @@
 // Qt Common //
 #include "qt_common/config/shared_translation.h"
 #include "qt_common/config/uisettings.h"
+#include "qt_common/game_list/game_order.h"
 
 #include "qt_common/abstract/frontend.h"
 
@@ -1674,6 +1675,50 @@ void MainWindow::ConnectMenuEvents() {
 
     ui->action_Show_Game_Name->setChecked(UISettings::values.show_game_name.GetValue());
     connect(ui->action_Show_Game_Name, &QAction::triggered, this, &MainWindow::ToggleShowGameName);
+    ui->action_Separate_Switch_2_Games->setChecked(
+        UISettings::values.cover_view_sections.GetValue());
+    connect(ui->action_Separate_Switch_2_Games, &QAction::toggled, this, [this](bool sections) {
+        UISettings::values.cover_view_sections.SetValue(sections);
+        game_list->SetCoverSections(sections);
+    });
+
+    // View > Sort Games By: the flat views' order and its direction. Picking an order starts it
+    // in its natural direction (names from A, the newest and the most played first).
+    auto* const sort_keys = new QActionGroup(this);
+    auto* const sort_directions = new QActionGroup(this);
+    const std::array<std::pair<QAction*, Settings::GameListSort>, 3> keys{{
+        {ui->action_Sort_By_Name, Settings::GameListSort::Name},
+        {ui->action_Sort_By_Date_Added, Settings::GameListSort::DateAdded},
+        {ui->action_Sort_By_Play_Time, Settings::GameListSort::PlayTime},
+    }};
+    const auto show_sort = [this, keys] {
+        for (const auto& [action, key] : keys) {
+            action->setChecked(UISettings::values.game_list_sort.GetValue() == key);
+        }
+        const bool descending = UISettings::values.game_list_sort_descending.GetValue();
+        ui->action_Sort_Descending->setChecked(descending);
+        ui->action_Sort_Ascending->setChecked(!descending);
+    };
+    for (const auto& [action, key] : keys) {
+        sort_keys->addAction(action);
+        connect(action, &QAction::triggered, this, [this, show_sort, key] {
+            UISettings::values.game_list_sort.SetValue(key);
+            UISettings::values.game_list_sort_descending.SetValue(
+                QtCommon::DescendingByDefault(key));
+            show_sort();
+            game_list->ApplyGameSort();
+        });
+    }
+    for (QAction* const action : {ui->action_Sort_Ascending, ui->action_Sort_Descending}) {
+        sort_directions->addAction(action);
+        connect(action, &QAction::triggered, this, [this, show_sort, action] {
+            UISettings::values.game_list_sort_descending.SetValue(action ==
+                                                                  ui->action_Sort_Descending);
+            show_sort();
+            game_list->ApplyGameSort();
+        });
+    }
+    show_sort();
 
     // Multiplayer
     connect(ui->action_View_Lobby, &QAction::triggered, multiplayer_state,
@@ -3887,6 +3932,9 @@ void MainWindow::SetGameListMode(Settings::GameListMode mode) {
                         mode == Settings::GameListMode::FullCoverView;
     ui->action_Show_Game_Name->setEnabled(mode != Settings::GameListMode::TreeView && !covers);
     ui->menuGame_Icon_Size->setEnabled(!covers);
+    ui->action_Separate_Switch_2_Games->setEnabled(covers);
+    // The tree sorts by its columns instead.
+    ui->menu_Sort_Games->setEnabled(mode != Settings::GameListMode::TreeView);
 
     CheckIconSize();
     game_list->ResetViewMode();
@@ -3906,6 +3954,12 @@ void MainWindow::SetCarouselView() {
 
 void MainWindow::SetCoverView() {
     SetGameListMode(Settings::GameListMode::CoverView);
+}
+
+void MainWindow::AddGameListViewEntries(QMenu& menu) {
+    menu.addMenu(ui->menu_Game_List_Mode);
+    menu.addMenu(ui->menu_Sort_Games);
+    menu.addAction(ui->action_Separate_Switch_2_Games);
 }
 
 void MainWindow::SetFullCoverView() {
@@ -5934,10 +5988,10 @@ void MainWindow::UpdateMenuIcons() {
         {ui->action_Stop, "stop"},
         {ui->action_Restart, "restart"},
         {ui->action_Configure, "sliders"},
-        {ui->action_AI_Tune_Computer, "sparkles"},
+        {ui->action_AI_Tune_Computer, "ai"},
         {ui->action_Configure_Current_Game, "gamepad"},
-        {ui->action_Optimize_Current_Game, "sparkles"},
-        {ui->action_AI_Optimize_Current_Game, "sparkles"},
+        {ui->action_Optimize_Current_Game, "gauge"},
+        {ui->action_AI_Optimize_Current_Game, "ai"},
         {ui->menu_Reset_Window_Size->menuAction(), "monitor"},
         {ui->menu_View_Debugging->menuAction(), "bug"},
         {ui->menu_Game_List_Mode->menuAction(), "grid"},
@@ -5970,7 +6024,7 @@ void MainWindow::UpdateMenuIcons() {
         {ui->action_Launch_Controller, "gamepad"},
         {ui->action_Launch_PhotoViewer, "image"},
         {ui->action_Open_UserHandbook, "help"},
-        {ui->action_Explain_Problem, "sparkles"},
+        {ui->action_Explain_Problem, "ai"},
         {ui->action_Compatibility_List, "list"},
         {ui->action_Open_Mods_Page, "puzzle"},
         {ui->action_First_Run_Assistant, "wand"},
