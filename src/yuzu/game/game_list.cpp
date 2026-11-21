@@ -75,12 +75,11 @@ GameList::GameList(FileSys::VirtualFilesystem vfs_, FileSys::ManualContentProvid
     connect(carousel_view, &QListView::activated, this, &GameList::ValidateEntry);
     connect(carousel_view, &QListView::customContextMenuRequested, this, &GameList::PopupContextMenu);
 
-    connect(cover_view, &QListView::activated, this, &GameList::ValidateEntry);
-    connect(cover_view, &QListView::customContextMenuRequested, this, &GameList::PopupContextMenu);
-
-    connect(full_cover_view, &QListView::activated, this, &GameList::ValidateEntry);
-    connect(full_cover_view, &QListView::customContextMenuRequested, this,
-            &GameList::PopupContextMenu);
+    for (GameCovers* const covers : {cover_view, full_cover_view}) {
+        connect(covers, &QAbstractItemView::activated, this, &GameList::ValidateEntry);
+        connect(covers, &QAbstractItemView::customContextMenuRequested, this,
+                &GameList::PopupContextMenu);
+    }
 
     connect(controller_navigation, &ControllerNavigation::TriggerKeyboardEvent, this,
             [this](Qt::Key key) {
@@ -130,6 +129,7 @@ void GameList::SetupViews() {
     carousel_view->SetModel(item_model);
     cover_view->SetModel(item_model);
     full_cover_view->SetModel(item_model);
+    SetCoverSections(UISettings::values.cover_view_sections.GetValue());
 
     const std::array<QAbstractItemView*, 5> views{tree_view, grid_view, carousel_view, cover_view,
                                                   full_cover_view};
@@ -201,6 +201,11 @@ void GameList::OnPopulate() {
         full_cover_view->UpdateCoverSize();
         break;
     }
+}
+
+void GameList::SetCoverSections(bool sections) {
+    cover_view->SetSections(sections);
+    full_cover_view->SetSections(sections);
 }
 
 void GameList::PopulateAsync(QVector<UISettings::GameDir>& game_dirs) {

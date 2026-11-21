@@ -161,6 +161,7 @@
     <addaction name="menu_Game_List_Mode"/>
     <addaction name="menuGame_Icon_Size"/>
     <addaction name="action_Show_Game_Name"/>
+    <addaction name="action_Separate_Switch_2_Games"/>
    </widget>
    <widget class="QMenu" name="menu_Multiplayer">
     <property name="enabled">
@@ -648,6 +649,17 @@
   <action name="actionNone">
    <property name="text">
     <string>None</string>
+   </property>
+  </action>
+  <action name="action_Separate_Switch_2_Games">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Separate Switch &amp;2 Games</string>
+   </property>
+   <property name="toolTip">
+    <string>In the cover views, show Switch 2 games and Switch games in two sections</string>
    </property>
   </action>
   <action name="action_Show_Game_Name">

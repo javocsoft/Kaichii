@@ -86,6 +86,8 @@ public:
     [[nodiscard]] std::optional<Selection> SelectedGame() const;
 
     void PopulateAsync(QVector<UISettings::GameDir>& game_dirs);
+    /// Shows Switch 2 and Switch games apart in the cover views.
+    void SetCoverSections(bool sections);
     void SetScanEnabled(bool enabled);
     void SetReportableProgramId(u64 program_id);
 

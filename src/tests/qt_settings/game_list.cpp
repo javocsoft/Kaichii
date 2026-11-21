@@ -14,6 +14,7 @@
 
 #include "qt_common/config/uisettings.h"
 #include "qt_common/game_list/game_list_p.h"
+#include "qt_common/game_list/game_order.h"
 #include "qt_common/game_list/placeholder_icon.h"
 #include "qt_common/util/game_folders.h"
 #include "yuzu/game/cover_art.h"
@@ -30,6 +31,13 @@ private slots:
     void CoverShadowFollowsThePicturesShape();
     void ShelfShowsThroughATransparentCover();
     void WebPPicturesCanBeRead();
+    void GamesSortByNameAsPeopleReadIt();
+    void NewGamesTakeTheirPlaceByName();
+    void Switch2TitlesAreToldByTheirId();
+    void ShelfKeepsTheListsOrder();
+    void SectionsPutSwitch2GamesFirst();
+    void ArrowKeysMoveAcrossTheShelf();
+    void FilteredGamesLeaveTheShelf();
     void AddAndFavoritesRowsAloneAreEmpty();
     void FoldersCoverTheirGamesAndDeepScannedSubfolders();
     void ListsGameFilesByExtension();
@@ -150,6 +158,155 @@ void GameListTest::WebPPicturesCanBeRead() {
     QCOMPARE(read.size(), QSize(64, 64));
     QCOMPARE(qAlpha(read.pixel(8, 32)), 0);
     QCOMPARE(qAlpha(read.pixel(32, 32)), 255);
+}
+
+void GameListTest::GamesSortByNameAsPeopleReadIt() {
+    using QtCommon::GameSortsBefore;
+    const QString path = QStringLiteral("/games/a.nsp");
+    // Case aside, and numbers by value.
+    QVERIFY(GameSortsBefore(QStringLiteral("animal Crossing"), path,
+                            QStringLiteral("Bananza"), path));
+    QVERIFY(GameSortsBefore(QStringLiteral("Mario Kart 8"), path,
+                            QStringLiteral("mario kart 10"), path));
+    QVERIFY(!GameSortsBefore(QStringLiteral("Zelda"), path, QStringLiteral("Tunic"), path));
+    QVERIFY(GameSortsBefore(QStringLiteral("Ōkami"), path, QStringLiteral("Overcooked"), path));
+    QVERIFY(GameSortsBefore(QStringLiteral("Game 007"), path, QStringLiteral("Game 8"), path));
+    // Two copies of a game: by path.
+    QVERIFY(GameSortsBefore(QStringLiteral("Tunic"), QStringLiteral("/a/tunic.nsp"),
+                            QStringLiteral("Tunic"), QStringLiteral("/b/tunic.xci")));
+    // A game without a title sorts by its file name.
+    QVERIFY(GameSortsBefore(QString{}, QStringLiteral("/games/Astral Chain.xci"),
+                            QStringLiteral("Bayonetta"), path));
+}
+
+namespace {
+
+QStandardItem* Game(const QString& title, u64 program_id = 0x0100000000010000ULL) {
+    auto* const item = new QStandardItem;
+    item->setData(static_cast<int>(GameListItemType::Game), GameListItem::TypeRole);
+    item->setData(title, GameListItemPath::TitleRole);
+    item->setData(QStringLiteral("/games/%1.nsp").arg(title), GameListItemPath::FullPathRole);
+    item->setData(qulonglong(program_id), GameListItemPath::ProgramIdRole);
+    return item;
+}
+
+QStringList Titles(const QStandardItemModel& model) {
+    QStringList titles;
+    for (int row = 0; row < model.rowCount(); ++row) {
+        titles << model.item(row)->data(GameListItemPath::TitleRole).toString();
+    }
+    return titles;
+}
+
+constexpr u64 Switch2Id = 0x0400486024DEC000ULL;
+
+} // Anonymous namespace
+
+void GameListTest::NewGamesTakeTheirPlaceByName() {
+    QStandardItemModel model;
+    for (const char* title : {"Tunic", "Donkey Kong Bananza", "astral chain", "Zelda", "Mario 10",
+                              "Mario 2"}) {
+        const QString name = QString::fromLatin1(title);
+        model.insertRow(QtCommon::SortedGameRow(*model.invisibleRootItem(), name,
+                                                QStringLiteral("/games/%1.nsp").arg(name)),
+                        Game(name));
+    }
+    QCOMPARE(Titles(model), (QStringList{QStringLiteral("astral chain"),
+                                         QStringLiteral("Donkey Kong Bananza"),
+                                         QStringLiteral("Mario 2"), QStringLiteral("Mario 10"),
+                                         QStringLiteral("Tunic"), QStringLiteral("Zelda")}));
+}
+
+void GameListTest::Switch2TitlesAreToldByTheirId() {
+    QVERIFY(QtCommon::IsSwitch2Program(0x0400486024DEC000ULL)); // Ocarina of Time
+    QVERIFY(QtCommon::IsSwitch2Program(0x040074A01BF12000ULL)); // Donkey Kong Bananza
+    QVERIFY(!QtCommon::IsSwitch2Program(0x010015100B514000ULL)); // Mario Wonder, a Switch program
+    QVERIFY(!QtCommon::IsSwitch2Program(0));
+}
+
+namespace {
+
+/// A shelf of square covers, shown so it lays out at a known width.
+struct TestShelf {
+    QStandardItemModel model;
+    GameCovers view{CoverShape::Square};
+
+    TestShelf() {
+        // Name order: Astral (Switch 2), Bayonetta, Celeste (Switch 2), Dredge, Eastward.
+        model.appendRow(Game(QStringLiteral("Astral"), Switch2Id));
+        model.appendRow(Game(QStringLiteral("Bayonetta")));
+        model.appendRow(Game(QStringLiteral("Celeste"), Switch2Id + 0x1000));
+        model.appendRow(Game(QStringLiteral("Dredge")));
+        model.appendRow(Game(QStringLiteral("Eastward")));
+        view.SetModel(&model);
+        // Room for two columns of covers.
+        view.resize(2 * (Yuzu::TargetCover + Yuzu::CoverGap) + 40, 900);
+        view.show();
+        view.UpdateCoverSize();
+    }
+
+    QRect Rect(int row) {
+        return view.visualRect(model.index(row, 0));
+    }
+};
+
+} // Anonymous namespace
+
+void GameListTest::ShelfKeepsTheListsOrder() {
+    TestShelf shelf;
+    // Two per row, in the model's order.
+    QCOMPARE(shelf.Rect(0).top(), shelf.Rect(1).top());
+    QVERIFY(shelf.Rect(0).left() < shelf.Rect(1).left());
+    QVERIFY(shelf.Rect(2).top() > shelf.Rect(1).top());
+    QCOMPARE(shelf.Rect(2).left(), shelf.Rect(0).left());
+    // A click on a cover picks that game, and the gap around it picks nothing.
+    const QRect cover = shelf.Rect(3);
+    QCOMPARE(shelf.view.indexAt(cover.center()), shelf.model.index(3, 0));
+    QVERIFY(!shelf.view.indexAt(cover.topLeft()).isValid());
+}
+
+void GameListTest::SectionsPutSwitch2GamesFirst() {
+    TestShelf shelf;
+    shelf.view.SetSections(true);
+    // Astral and Celeste, the Switch 2 games, share the first row, below their heading.
+    QCOMPARE(shelf.Rect(0).top(), shelf.Rect(2).top());
+    QVERIFY(shelf.Rect(0).top() >= Yuzu::ShelfHeadingHeight);
+    // Bayonetta, Dredge and Eastward follow under the second heading, starting a row.
+    QVERIFY(shelf.Rect(1).top() >= shelf.Rect(0).bottom() + Yuzu::ShelfHeadingHeight);
+    QCOMPARE(shelf.Rect(1).left(), shelf.Rect(0).left());
+    QCOMPARE(shelf.Rect(1).top(), shelf.Rect(3).top());
+    QVERIFY(shelf.Rect(4).top() > shelf.Rect(3).top());
+    // Turned off, the list's order is back.
+    shelf.view.SetSections(false);
+    QCOMPARE(shelf.Rect(0).top(), shelf.Rect(1).top());
+}
+
+void GameListTest::ArrowKeysMoveAcrossTheShelf() {
+    TestShelf shelf;
+    shelf.view.SetSections(true);
+    shelf.view.setCurrentIndex(shelf.model.index(0, 0));
+    QTest::keyClick(&shelf.view, Qt::Key_Right);
+    QCOMPARE(shelf.view.currentIndex().row(), 2);
+    // Down from Celeste, in the second column, lands on Dredge under it in the next section.
+    QTest::keyClick(&shelf.view, Qt::Key_Down);
+    QCOMPARE(shelf.view.currentIndex().row(), 3);
+    QTest::keyClick(&shelf.view, Qt::Key_Left);
+    QCOMPARE(shelf.view.currentIndex().row(), 1);
+    QTest::keyClick(&shelf.view, Qt::Key_Up);
+    QCOMPARE(shelf.view.currentIndex().row(), 0);
+    QTest::keyClick(&shelf.view, Qt::Key_End);
+    QCOMPARE(shelf.view.currentIndex().row(), 4);
+}
+
+void GameListTest::FilteredGamesLeaveTheShelf() {
+    TestShelf shelf;
+    shelf.view.ApplyFilter(QStringLiteral("dredge"), &shelf.model);
+    QVERIFY(shelf.Rect(0).isNull());
+    QVERIFY(!shelf.Rect(3).isNull());
+    // Dredge, the only one left, takes the first place.
+    QCOMPARE(shelf.Rect(3).topLeft(), QPoint(0, 0));
+    shelf.view.ApplyFilter(QString{}, &shelf.model);
+    QVERIFY(!shelf.Rect(0).isNull());
 }
 
 void GameListTest::AddAndFavoritesRowsAloneAreEmpty() {

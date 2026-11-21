@@ -1673,6 +1673,12 @@ void MainWindow::ConnectMenuEvents() {
 
     ui->action_Show_Game_Name->setChecked(UISettings::values.show_game_name.GetValue());
     connect(ui->action_Show_Game_Name, &QAction::triggered, this, &MainWindow::ToggleShowGameName);
+    ui->action_Separate_Switch_2_Games->setChecked(
+        UISettings::values.cover_view_sections.GetValue());
+    connect(ui->action_Separate_Switch_2_Games, &QAction::toggled, this, [this](bool sections) {
+        UISettings::values.cover_view_sections.SetValue(sections);
+        game_list->SetCoverSections(sections);
+    });
 
     // Multiplayer
     connect(ui->action_View_Lobby, &QAction::triggered, multiplayer_state,
@@ -3886,6 +3892,7 @@ void MainWindow::SetGameListMode(Settings::GameListMode mode) {
                         mode == Settings::GameListMode::FullCoverView;
     ui->action_Show_Game_Name->setEnabled(mode != Settings::GameListMode::TreeView && !covers);
     ui->menuGame_Icon_Size->setEnabled(!covers);
+    ui->action_Separate_Switch_2_Games->setEnabled(covers);
 
     CheckIconSize();
     game_list->ResetViewMode();
