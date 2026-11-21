@@ -2,12 +2,13 @@
 SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Line icons for the menus, from zortos293/Lichii#1365. src/yuzu/util/menu_icon.cpp colours them for
-the theme.
+Line icons for the menus, from zortos293/Lichii#1365, plus Kaichii's own ai and gauge.
+src/yuzu/util/menu_icon.cpp colours them for the theme.
 -->
 
 <RCC>
   <qresource prefix="menu_icons">
+    <file>ai.svg</file>
     <file>apps.svg</file>
     <file>archive.svg</file>
     <file>bug.svg</file>
@@ -23,6 +24,7 @@ the theme.
     <file>file.svg</file>
     <file>folder.svg</file>
     <file>gamepad.svg</file>
+    <file>gauge.svg</file>
     <file>globe.svg</file>
     <file>grid.svg</file>
     <file>hdd.svg</file>
@@ -46,7 +48,6 @@ the theme.
     <file>sd.svg</file>
     <file>share.svg</file>
     <file>sliders.svg</file>
-    <file>sparkles.svg</file>
     <file>star.svg</file>
     <file>stop.svg</file>
     <file>system.svg</file>
