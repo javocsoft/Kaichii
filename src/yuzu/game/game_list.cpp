@@ -78,6 +78,10 @@ GameList::GameList(FileSys::VirtualFilesystem vfs_, FileSys::ManualContentProvid
     connect(cover_view, &QListView::activated, this, &GameList::ValidateEntry);
     connect(cover_view, &QListView::customContextMenuRequested, this, &GameList::PopupContextMenu);
 
+    connect(full_cover_view, &QListView::activated, this, &GameList::ValidateEntry);
+    connect(full_cover_view, &QListView::customContextMenuRequested, this,
+            &GameList::PopupContextMenu);
+
     connect(controller_navigation, &ControllerNavigation::TriggerKeyboardEvent, this,
             [this](Qt::Key key) {
                 if (system.IsPoweredOn()) {
@@ -118,14 +122,17 @@ void GameList::SetupViews() {
     tree_view = new GameTree(this);
     grid_view = new GameGrid(this);
     carousel_view = new GameCarousel(this);
-    cover_view = new GameCovers(this);
+    cover_view = new GameCovers(CoverShape::Square, this);
+    full_cover_view = new GameCovers(CoverShape::Box, this);
 
     tree_view->SetModel(item_model);
     grid_view->SetModel(item_model);
     carousel_view->SetModel(item_model);
     cover_view->SetModel(item_model);
+    full_cover_view->SetModel(item_model);
 
-    const std::array<QAbstractItemView*, 4> views{tree_view, grid_view, carousel_view, cover_view};
+    const std::array<QAbstractItemView*, 5> views{tree_view, grid_view, carousel_view, cover_view,
+                                                  full_cover_view};
     for (QAbstractItemView* const view : views) {
         connect(view->selectionModel(), &QItemSelectionModel::selectionChanged, this,
                 &GameList::SelectedGameChanged);
@@ -190,6 +197,9 @@ void GameList::OnPopulate() {
     case Settings::GameListMode::CoverView:
         cover_view->UpdateCoverSize();
         break;
+    case Settings::GameListMode::FullCoverView:
+        full_cover_view->UpdateCoverSize();
+        break;
     }
 }
 
@@ -247,6 +257,11 @@ void GameList::ResetViewMode() {
         newTreeMode = false;
 
         break;
+    case Settings::GameListMode::FullCoverView:
+        m_currentView = full_cover_view;
+        newTreeMode = false;
+
+        break;
     default:
         UNREACHABLE();
     }
@@ -255,11 +270,13 @@ void GameList::ResetViewMode() {
     grid_view->setVisible(false);
     carousel_view->setVisible(false);
     cover_view->setVisible(false);
+    full_cover_view->setVisible(false);
 
     tree_view->setEnabled(false);
     grid_view->setEnabled(false);
     carousel_view->setEnabled(false);
     cover_view->setEnabled(false);
+    full_cover_view->setEnabled(false);
 
     m_currentView->setVisible(true);
     // MainWindow switches the view right after starting the first populate; keep it disabled
@@ -300,6 +317,8 @@ void GameList::OnTextChanged(const QString& new_text) {
         tree_view->ApplyFilter(edit_filter_text, item_model);
     } else if (game_list_mode == Settings::GameListMode::CoverView) {
         cover_view->ApplyFilter(edit_filter_text, item_model);
+    } else if (game_list_mode == Settings::GameListMode::FullCoverView) {
+        full_cover_view->ApplyFilter(edit_filter_text, item_model);
     } else {
         grid_view->ApplyFilter(edit_filter_text, item_model);
     }
@@ -418,6 +437,9 @@ void GameList::UpdateIconSizes() {
         break;
     case Settings::GameListMode::CoverView:
         cover_view->UpdateCoverSize();
+        break;
+    case Settings::GameListMode::FullCoverView:
+        full_cover_view->UpdateCoverSize();
         break;
     case Settings::GameListMode::TreeView:
         break;

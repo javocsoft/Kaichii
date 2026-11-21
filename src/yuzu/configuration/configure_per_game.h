@@ -34,7 +34,9 @@ class InputSubsystem;
 }
 
 class ConfigurePerGameAddons;
+class BoxArtEditor;
 class QCheckBox;
+class QTabWidget;
 
 namespace ConfigurationShared {
 class PerGameSummary;
@@ -94,6 +96,8 @@ private:
     void OnUploadNupIcon();
     void OnDetectNupIcon();
     bool SaveNupMetadata(bool show_error = false);
+    /// Stores a changed box art; warns and returns false when it can't be written.
+    bool SaveBoxArt();
 
     struct DetectIconResult {
         std::vector<u8> icon_bytes;
@@ -113,6 +117,8 @@ private:
     std::shared_ptr<std::atomic_bool> detect_cancel;
 
     QGraphicsScene* scene;
+    QTabWidget* picture_tabs = nullptr;
+    BoxArtEditor* box_art_editor = nullptr;
 
     std::unique_ptr<QtConfig> game_config;
 

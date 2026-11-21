@@ -73,7 +73,7 @@ QImage CutOutPicture() {
 
 void GameListTest::CoverKeepsThePicturesTransparency() {
     // A cover with transparent parts (Donkey Kong Bananza's) must show the shelf behind them.
-    const QImage cover = Yuzu::FitCover(CutOutPicture(), 64, 6);
+    const QImage cover = Yuzu::FitCover(CutOutPicture(), QSize(64, 64), 6);
     QCOMPARE(cover.size(), QSize(64, 64));
     QCOMPARE(qAlpha(cover.pixel(8, 32)), 0);
     QCOMPARE(qAlpha(cover.pixel(32, 8)), 0);
@@ -85,7 +85,7 @@ void GameListTest::CoverFillsItsSquareWithRoundedCorners() {
     // A wide picture is cropped to the square rather than letterboxed.
     QImage picture(128, 64, QImage::Format_RGB32);
     picture.fill(qRgb(0, 0, 255));
-    const QImage cover = Yuzu::FitCover(picture, 64, 10);
+    const QImage cover = Yuzu::FitCover(picture, QSize(64, 64), 10);
     QCOMPARE(cover.size(), QSize(64, 64));
     QCOMPARE(qAlpha(cover.pixel(0, 0)), 0);
     QCOMPARE(qAlpha(cover.pixel(63, 63)), 0);
@@ -95,7 +95,7 @@ void GameListTest::CoverFillsItsSquareWithRoundedCorners() {
 }
 
 void GameListTest::CoverShadowFollowsThePicturesShape() {
-    const QImage shadow = Yuzu::CoverShadow(Yuzu::FitCover(CutOutPicture(), 64, 6), 22);
+    const QImage shadow = Yuzu::CoverShadow(Yuzu::FitCover(CutOutPicture(), QSize(64, 64), 6), 22);
     QCOMPARE(qAlpha(shadow.pixel(8, 32)), 0);
     QVERIFY(std::abs(qAlpha(shadow.pixel(32, 32)) - 22) <= 1);
     QCOMPARE(qRed(shadow.pixel(32, 32)), 0);
@@ -116,7 +116,7 @@ void GameListTest::ShelfShowsThroughATransparentCover() {
     model.appendRow(item);
 
     GameCoverDelegate delegate;
-    delegate.SetSizes(64, QSize(80, 80));
+    delegate.SetSizes(QSize(64, 64), QSize(80, 80));
     QStyleOptionViewItem option;
     option.rect = QRect(0, 0, 80, 80);
     QImage shelf(80, 80, QImage::Format_ARGB32);

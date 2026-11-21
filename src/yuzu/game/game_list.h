@@ -172,6 +172,7 @@ private:
     GameGrid* grid_view = nullptr;
     GameCarousel* carousel_view = nullptr;
     GameCovers* cover_view = nullptr;
+    GameCovers* full_cover_view = nullptr;
     GameListModel* item_model = nullptr;
     Settings::GameListMode game_list_mode;
 

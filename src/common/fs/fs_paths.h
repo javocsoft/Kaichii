@@ -31,6 +31,7 @@
 #define STREAMLINE_DIR "streamline"
 #define TAS_DIR "tas"
 #define ICONS_DIR "icons"
+#define BOX_ART_DIR "box_art"
 
 // Compatibility with other emulators
 #define CITRON_DIR "citron"

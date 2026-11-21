@@ -9,6 +9,7 @@
 #include <QResizeEvent>
 #include <QToolTip>
 
+#include "qt_common/game_list/box_art.h"
 #include "qt_common/game_list/game_list_p.h"
 #include "qt_common/game_list/model.h"
 #include "yuzu/game/common.h"
@@ -38,11 +39,12 @@ bool IsGame(const QModelIndex& index) {
 
 } // Anonymous namespace
 
-GameCoverDelegate::GameCoverDelegate(QObject* parent) : QStyledItemDelegate{parent} {
+GameCoverDelegate::GameCoverDelegate(CoverShape shape, QObject* parent)
+    : QStyledItemDelegate{parent}, m_shape{shape} {
     setObjectName(QStringLiteral("GameCover"));
 }
 
-void GameCoverDelegate::SetSizes(int cover, const QSize& cell) {
+void GameCoverDelegate::SetSizes(const QSize& cover, const QSize& cell) {
     if (cover != m_cover) {
         m_cache.clear();
     }
@@ -50,8 +52,13 @@ void GameCoverDelegate::SetSizes(int cover, const QSize& cell) {
     m_cell = cell;
 }
 
+void GameCoverDelegate::ClearCache() {
+    m_cache.clear();
+}
+
 QRect GameCoverDelegate::CoverRect(const QRect& cell) const {
-    return {cell.left() + (cell.width() - m_cover) / 2, cell.top() + Gap / 2, m_cover, m_cover};
+    return {QPoint{cell.left() + (cell.width() - m_cover.width()) / 2, cell.top() + Gap / 2},
+            m_cover};
 }
 
 QSize GameCoverDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const {
@@ -59,7 +66,9 @@ QSize GameCoverDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex
 }
 
 qreal GameCoverDelegate::Radius() const {
-    return std::max(6.0, m_cover / 24.0);
+    // A case's corners are tighter than an icon's.
+    return m_shape == CoverShape::Box ? std::max(4.0, m_cover.width() / 30.0)
+                                      : std::max(6.0, m_cover.width() / 24.0);
 }
 
 const GameCoverDelegate::Art& GameCoverDelegate::Cover(const QModelIndex& index,
@@ -68,13 +77,24 @@ const GameCoverDelegate::Art& GameCoverDelegate::Cover(const QModelIndex& index,
     if (const auto it = m_cache.constFind(key); it != m_cache.cend()) {
         return it.value();
     }
-    const int side = static_cast<int>(m_cover * device_pixel_ratio);
-    QImage image = QImage::fromData(index.data(GameListItemPath::CoverRole).toByteArray());
-    if (image.isNull()) {
-        // No icon in the game: the list's own picture (its initials) at the cover's size.
-        image = QtCommon::PlaceholderIcon(Title(index), side);
+    const QSize size = (QSizeF(m_cover) * device_pixel_ratio).toSize();
+    const qreal radius = Radius() * device_pixel_ratio;
+    const QImage box_art =
+        m_shape == CoverShape::Box
+            ? QtCommon::BoxArt::Load(index.data(GameListItemPath::ProgramIdRole).toULongLong())
+            : QImage{};
+    QImage cover;
+    if (!box_art.isNull()) {
+        cover = Yuzu::FitCover(box_art, size, radius);
+    } else {
+        QImage icon = QImage::fromData(index.data(GameListItemPath::CoverRole).toByteArray());
+        if (icon.isNull()) {
+            // No icon in the game: the list's own picture (its initials) at the cover's size.
+            icon = QtCommon::PlaceholderIcon(Title(index), size.width());
+        }
+        cover = m_shape == CoverShape::Box ? Yuzu::IconBox(icon, size, radius)
+                                           : Yuzu::FitCover(icon, size, radius);
     }
-    const QImage cover = Yuzu::FitCover(image, side, Radius() * device_pixel_ratio);
     Art art{QPixmap::fromImage(cover),
             QPixmap::fromImage(Yuzu::CoverShadow(cover, ShadowAlpha))};
     art.cover.setDevicePixelRatio(device_pixel_ratio);
@@ -119,14 +139,14 @@ void GameCoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
         painter->setPen(QPen(palette.mid().color(), 1));
         painter->drawPath(shape);
         const QPixmap icon = index.data(Qt::DecorationRole).value<QPixmap>();
-        const int icon_side = m_cover / 3;
-        const QRect icon_rect{cover.left() + (m_cover - icon_side) / 2,
-                              cover.top() + m_cover / 4, icon_side, icon_side};
+        const int icon_side = m_cover.width() / 3;
+        const QRect icon_rect{cover.left() + (m_cover.width() - icon_side) / 2,
+                              cover.top() + m_cover.height() / 4, icon_side, icon_side};
         if (!icon.isNull()) {
             painter->drawPixmap(icon_rect, icon);
         }
         painter->setPen(palette.text().color());
-        painter->drawText(QRect{cover.left() + 8, icon_rect.bottom() + 8, m_cover - 16,
+        painter->drawText(QRect{cover.left() + 8, icon_rect.bottom() + 8, m_cover.width() - 16,
                                 cover.bottom() - icon_rect.bottom() - 16},
                           Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, Title(index));
     }
@@ -162,8 +182,8 @@ bool GameCoverDelegate::helpEvent(QHelpEvent* event, QAbstractItemView* view,
     return true;
 }
 
-GameCovers::GameCovers(QWidget* parent) : QListView{parent} {
-    m_delegate = new GameCoverDelegate(this);
+GameCovers::GameCovers(CoverShape shape, QWidget* parent) : QListView{parent}, m_shape{shape} {
+    m_delegate = new GameCoverDelegate(shape, this);
     setItemDelegate(m_delegate);
 
     setViewMode(QListView::ListMode);
@@ -183,6 +203,11 @@ GameCovers::GameCovers(QWidget* parent) : QListView{parent} {
 
 void GameCovers::SetModel(GameListModel* model) {
     QListView::setModel(model);
+    // A repopulate after a game's icon or box art changed must draw the new picture.
+    connect(model, &QAbstractItemModel::rowsAboutToBeRemoved, m_delegate,
+            &GameCoverDelegate::ClearCache);
+    connect(model, &QAbstractItemModel::modelAboutToBeReset, m_delegate,
+            &GameCoverDelegate::ClearCache);
     UpdateCoverSize();
 }
 
@@ -195,10 +220,19 @@ void GameCovers::ApplyFilter(const QString& edit_filter_text, GameListModel* mod
 }
 
 void GameCovers::UpdateCoverSize() {
-    const auto layout = Yuzu::ComputeCoverLayout(viewport()->width());
-    const QSize cell{layout.cell_width, layout.cover + Gap};
+    QSize cover;
+    QSize cell;
+    if (m_shape == CoverShape::Box) {
+        const auto layout = Yuzu::ComputeBoxLayout(viewport()->width());
+        cover = {layout.width, layout.height};
+        cell = {layout.cell_width, layout.height + Gap};
+    } else {
+        const auto layout = Yuzu::ComputeCoverLayout(viewport()->width());
+        cover = {layout.cover, layout.cover};
+        cell = {layout.cell_width, layout.cover + Gap};
+    }
     if (gridSize() != cell) {
-        m_delegate->SetSizes(layout.cover, cell);
+        m_delegate->SetSizes(cover, cell);
         setGridSize(cell);
         viewport()->update();
     }
