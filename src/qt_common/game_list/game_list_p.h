@@ -180,6 +180,7 @@ public:
             case Settings::GameListMode::GridView:
             case Settings::GameListMode::CarouselView:
             case Settings::GameListMode::CoverView:
+            case Settings::GameListMode::FullCoverView:
                 return row1;
             default:
                 break;

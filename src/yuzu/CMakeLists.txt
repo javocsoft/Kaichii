@@ -139,6 +139,8 @@ add_executable(yuzu
     configuration/configure_per_game.cpp
     configuration/configure_per_game.h
     configuration/configure_per_game.ui
+    configuration/box_art_editor.cpp
+    configuration/box_art_editor.h
     configuration/configure_performance.cpp
     configuration/configure_performance.h
     configuration/configure_per_game_addons.cpp

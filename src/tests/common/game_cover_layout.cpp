@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: Copyright 2026 Eden Emulator Project
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <cstdlib>
+
 #include <catch2/catch_test_macros.hpp>
 
 #include "yuzu/game/cover_layout.h"
 
+using Yuzu::ComputeBoxLayout;
 using Yuzu::ComputeCoverLayout;
 
 // The cover view ("View > Game List Mode > Cover View") lays the game list out as a shelf.
@@ -41,4 +44,26 @@ TEST_CASE("The cover shelf stays usable in a tiny or empty view", "[frontend][co
         CHECK(layout.columns == 1);
         CHECK(layout.cover == Yuzu::MinCover);
     }
+}
+
+// The full cover view ("View > Game List Mode > Full Cover View") shows each game's case front.
+TEST_CASE("The box shelf fills the width with cases of a Switch case's shape", "[frontend][cover_view]") {
+    for (const int width : {0, 300, 640, 1024, 1280, 1920, 2560, 3840}) {
+        const auto layout = ComputeBoxLayout(width);
+        INFO("width " << width);
+        CHECK(layout.columns >= 1);
+        if (width > Yuzu::MinBox + Yuzu::CoverGap) {
+            CHECK(layout.columns * layout.cell_width < width);
+            CHECK(layout.width + Yuzu::CoverGap <= layout.cell_width);
+        }
+        CHECK(layout.width >= Yuzu::MinBox);
+        CHECK(layout.width <= Yuzu::MaxBox);
+        // 105 by 170, to the nearest pixel.
+        CHECK(std::abs(layout.height * Yuzu::BoxAspectWidth -
+                       layout.width * Yuzu::BoxAspectHeight) <= Yuzu::BoxAspectWidth / 2);
+    }
+    // A full HD window holds nine cases a row, a little wider than the target.
+    const auto full_hd = ComputeBoxLayout(1920);
+    CHECK(full_hd.columns == 9);
+    CHECK(full_hd.width >= Yuzu::TargetBox);
 }
