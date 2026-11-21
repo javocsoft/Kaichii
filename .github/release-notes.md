@@ -10,4 +10,4 @@ pull request number. Say plainly what was not confirmed. HTML comments like this
 -->
 
 ### Interface
-- **Covers with transparent parts show the shelf behind them.** In *Cover View*, a game whose icon has transparent areas (Donkey Kong Bananza's cut-out art, the rounded corners of Super Mario Bros. Wonder's) showed a grey square there: the shelf's shadow was drawn as a full square under every cover. The shadow now follows the picture's own shape. A unit test paints a cover with a transparent cut-out and checks that the shelf shows through; the real covers were not checked on screen.
+- **Covers with transparent parts show the shelf behind them.** In *Cover View*, a game whose icon has transparent areas (Donkey Kong Bananza's cut-out art, the rounded corners of Super Mario Bros. Wonder's) showed a grey square there: the shelf's shadow was drawn as a full square under every cover. The shadow now follows the picture's own shape. A unit test paints a cover with a transparent cut-out and checks that the shelf shows through; the real covers were not checked on screen (#91).
