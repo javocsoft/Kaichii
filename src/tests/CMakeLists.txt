@@ -7,6 +7,7 @@
 add_executable(tests
     common/addon_config.cpp
     common/auto_optimize.cpp
+    common/ai_optimize_policy.cpp
     common/ca_store.cpp
     common/frame_pacing.cpp
     common/game_cover_layout.cpp

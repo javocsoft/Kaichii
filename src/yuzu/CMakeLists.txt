@@ -26,6 +26,10 @@ add_executable(yuzu
     aboutdialog.ui
     auto_optimize_dialog.cpp
     auto_optimize_dialog.h
+    ai_credentials.cpp
+    ai_credentials.h
+    ai_optimize_dialog.cpp
+    ai_optimize_dialog.h
     compatibility_report.cpp
     first_run_assistant.cpp
     first_run_assistant.h
@@ -458,6 +462,16 @@ endif()
 
 if (UNIX AND NOT APPLE)
     target_link_libraries(yuzu PRIVATE Qt6::DBus)
+endif()
+
+# The AI assistant keeps API keys in the system's credential store (ai_credentials.cpp). On Linux
+# it loads libsecret at run time instead.
+if (APPLE)
+    target_link_libraries(yuzu PRIVATE "-framework Security" "-framework CoreFoundation")
+elseif (WIN32)
+    target_link_libraries(yuzu PRIVATE advapi32)
+elseif (UNIX)
+    target_link_libraries(yuzu PRIVATE ${CMAKE_DL_LIBS})
 endif()
 
 if (ENABLE_WEB_SERVICE)
