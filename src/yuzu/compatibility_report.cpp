@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QDialogButtonBox>
+#include <QJsonValue>
 #include <QFormLayout>
 #include <QGuiApplication>
 #include <QLabel>
@@ -143,10 +144,11 @@ IssueLink NewIssueLink(const QString& repository, const QString& title, const QS
             false};
 }
 
-Dialog::Dialog(const Session& session, const QString& repository_, QWidget* parent,
-               UrlOpener open_url_)
+Dialog::Dialog(const Session& session_, const QString& repository_, QWidget* parent,
+               UrlOpener open_url_, DraftWriter draft_writer_)
     : QDialog(parent), repository{repository_}, open_url{std::move(open_url_)},
-      program_id{session.program_id} {
+      draft_writer{std::move(draft_writer_)}, session{session_},
+      program_id{session_.program_id} {
     if (!open_url) {
         open_url = [](const QUrl& url) { return QDesktopServices::openUrl(url); };
     }
@@ -271,6 +273,13 @@ Dialog::Dialog(const Session& session, const QString& repository_, QWidget* pare
     layout->addWidget(status);
     auto* buttons = new QDialogButtonBox(QDialogButtonBox::Close, this);
     clear = buttons->addButton(tr("Clear draft"), QDialogButtonBox::ResetRole);
+    if (draft_writer) {
+        write_with_ai = buttons->addButton(tr("Write it with AI…"), QDialogButtonBox::ActionRole);
+        write_with_ai->setObjectName(QStringLiteral("writeWithAi"));
+        write_with_ai->setToolTip(tr("Tell what happened in your own words, in any language, and "
+                                     "an AI writes the report in English for you to review. "
+                                     "Needs your own OpenAI or Anthropic API key."));
+    }
     copy = buttons->addButton(tr("Copy report"), QDialogButtonBox::ActionRole);
     open = buttons->addButton(tr("Open on GitHub"), QDialogButtonBox::ActionRole);
     clear->setObjectName(QStringLiteral("clear"));
@@ -285,6 +294,13 @@ Dialog::Dialog(const Session& session, const QString& repository_, QWidget* pare
     connect(open, &QPushButton::clicked, this, &Dialog::Open);
     connect(copy, &QPushButton::clicked, this, &Dialog::Copy);
     connect(clear, &QPushButton::clicked, this, &Dialog::Clear);
+    if (write_with_ai) {
+        connect(write_with_ai, &QPushButton::clicked, this, [this] {
+            if (const auto draft = draft_writer(session, this)) {
+                ApplyDraft(*draft);
+            }
+        });
+    }
     for (auto* field : fields) {
         connect(field, &QLineEdit::textChanged, this, &Dialog::Refresh);
     }
@@ -298,6 +314,37 @@ Dialog::Dialog(const Session& session, const QString& repository_, QWidget* pare
 }
 
 Dialog::~Dialog() = default;
+
+void Dialog::ApplyDraft(const Draft& draft) {
+    fields[QStringLiteral("summary")]->setText(draft.summary);
+    paragraphs[QStringLiteral("progress")]->setPlainText(draft.progress);
+    paragraphs[QStringLiteral("details")]->setPlainText(draft.details);
+    paragraphs[QStringLiteral("reproduction")]->setPlainText(draft.reproduction);
+    tabs->setCurrentIndex(0);
+    status->setText(tr("The AI wrote the report from your words. Check that it says what "
+                       "happened, then choose the compatibility and smoothness yourself."));
+}
+
+std::optional<Draft> DraftFromJson(const QJsonObject& object) {
+    const auto text = [&object](const char* key, int limit) -> std::optional<QString> {
+        const QJsonValue value = object.value(QLatin1String(key));
+        if (!value.isString()) {
+            return std::nullopt;
+        }
+        return value.toString().trimmed().left(limit);
+    };
+    const auto summary = text("summary", Limits.value(QStringLiteral("summary")));
+    const auto progress = text("progress", Limits.value(QStringLiteral("progress")));
+    const auto details = text("details", Limits.value(QStringLiteral("details")));
+    const auto reproduction = text("reproduction", Limits.value(QStringLiteral("reproduction")));
+    if (!summary || !progress || !details || !reproduction || summary->isEmpty()) {
+        return std::nullopt;
+    }
+    // One line: the summary is the issue's headline.
+    QString line = *summary;
+    line.replace(QLatin1Char('\n'), QLatin1Char(' '));
+    return Draft{line.simplified(), *progress, *details, *reproduction};
+}
 
 QString Dialog::Text(const QString& key) const {
     if (const auto it = fields.find(key); it != fields.end()) {

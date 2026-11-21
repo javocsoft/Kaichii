@@ -12,8 +12,9 @@ la descarga a jugar, y te ayuda cuando algo falla.
 > **Novedad, solo en Kaichii: el [asistente de ajustes con IA](AIOptimization.es.md).** Describe el
 > problema con tus palabras («va a tirones cuando entro en una zona nueva») y Kaichii pregunta a
 > OpenAI o Anthropic, con tu propia clave de API, qué ajustes le van a tu equipo o a un juego.
-> Revisas cada cambio antes de aplicarlo y puedes deshacerlo. Es opcional: todo lo demás funciona
-> sin él.
+> Revisas cada cambio antes de aplicarlo, mides el resultado y puedes deshacerlo. También explica el
+> último problema a partir del registro y redacta un informe de compatibilidad con tus palabras. Es
+> opcional: todo lo demás funciona sin él.
 
 ## Empieza aquí
 

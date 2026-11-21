@@ -238,6 +238,7 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="action_Open_UserHandbook"/>
+    <addaction name="action_Explain_Problem"/>
     <addaction name="action_Compatibility_List"/>
     <addaction name="action_Open_Mods_Page"/>
     <addaction name="action_First_Run_Assistant"/>
@@ -421,6 +422,14 @@
   <action name="action_Open_UserHandbook">
    <property name="text">
     <string>&amp;User Handbook</string>
+   </property>
+  </action>
+  <action name="action_Explain_Problem">
+   <property name="text">
+    <string>Explain the last problem...</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
   <action name="action_Compatibility_List">

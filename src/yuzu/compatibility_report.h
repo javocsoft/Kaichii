@@ -3,8 +3,10 @@
 #pragma once
 
 #include <functional>
+#include <optional>
 
 #include <QDialog>
+#include <QJsonObject>
 #include <QList>
 #include <QMap>
 #include <QString>
@@ -43,6 +45,18 @@ struct Session {
     QString updates;
 };
 
+/// The written part of a report, as an AI drafted it from the player's own words.
+struct Draft {
+    QString summary;
+    QString progress;
+    QString details;
+    QString reproduction;
+};
+
+/// A draft from the AI's JSON reply: every field a string, trimmed and cut to the report's limits.
+/// Empty when a field is missing or there is no summary.
+[[nodiscard]] std::optional<Draft> DraftFromJson(const QJsonObject& object);
+
 /// The issue form the reports fill in, in .github/ISSUE_TEMPLATE, and its report field.
 inline constexpr char IssueTemplate[] = "compatibility_report.yml";
 inline constexpr char ReportField[] = "report";
@@ -67,9 +81,15 @@ class Dialog final : public QDialog {
 public:
     /// Opens a URL in the browser; the tests replace it.
     using UrlOpener = std::function<bool(const QUrl&)>;
+    /// Writes a draft from the player's own words, or nothing if they cancel. Optional: without
+    /// it the dialog has no "Write it with AI" button.
+    using DraftWriter = std::function<std::optional<Draft>(const Session&, QWidget* parent)>;
 
     Dialog(const Session& session, const QString& repository, QWidget* parent = nullptr,
-           UrlOpener open_url = {});
+           UrlOpener open_url = {}, DraftWriter draft_writer = {});
+
+    /// Fills the written fields from `draft`, for the player to review.
+    void ApplyDraft(const Draft& draft);
     ~Dialog() override;
 
     /// The report as Markdown, as it goes to GitHub.
@@ -90,6 +110,8 @@ private:
 
     QString repository;
     UrlOpener open_url;
+    DraftWriter draft_writer;
+    Session session;
     quint64 program_id;
     QMap<QString, QLineEdit*> fields;
     QMap<QString, QPlainTextEdit*> paragraphs;
@@ -99,6 +121,7 @@ private:
     QPushButton* open;
     QPushButton* copy;
     QPushButton* clear;
+    QPushButton* write_with_ai = nullptr;
     QLabel* status;
     QTabWidget* tabs;
     QPlainTextEdit* preview;

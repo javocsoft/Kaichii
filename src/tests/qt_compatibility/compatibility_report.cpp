@@ -6,6 +6,7 @@
 #include <QClipboard>
 #include <QComboBox>
 #include <QFile>
+#include <QJsonObject>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPlainTextEdit>
@@ -45,6 +46,9 @@ private slots:
     void asksHowSmoothlyAPlayedGameRan();
     void smoothnessIsNotAskedWhenTheGameDidNotGetIntoPlay();
     void writesTheFrameRateWhenGiven();
+    void aiWritingIsOfferedOnlyWithAWriter();
+    void anAiDraftFillsTheWrittenFieldsOnly();
+    void anAiDraftNeedsEveryFieldAndASummary();
 };
 
 namespace {
@@ -233,6 +237,61 @@ void DialogTest::refusesAnInvalidRepository() {
     dialog.open->click();
     QVERIFY(browser.opened.isEmpty());
     QVERIFY(!dialog.status->text().isEmpty());
+}
+
+void DialogTest::aiWritingIsOfferedOnlyWithAWriter() {
+    {
+        Dialog dialog(Seed(), Repository, nullptr, NoBrowser);
+        QVERIFY(dialog.findChild<QPushButton*>(QStringLiteral("writeWithAi")) == nullptr);
+    }
+    bool asked = false;
+    Dialog dialog(Seed(), Repository, nullptr, NoBrowser,
+                  [&asked](const Session& session, QWidget*) -> std::optional<Draft> {
+                      asked = true;
+                      // The writer gets the session the report describes.
+                      return Draft{session.title + QStringLiteral(" works"), {}, {}, {}};
+                  });
+    auto* const button = dialog.findChild<QPushButton*>(QStringLiteral("writeWithAi"));
+    QVERIFY(button != nullptr);
+    button->click();
+    QVERIFY(asked);
+    QCOMPARE(dialog.fields[QStringLiteral("summary")]->text(), Seed().title + QStringLiteral(" works"));
+}
+
+void DialogTest::anAiDraftFillsTheWrittenFieldsOnly() {
+    Dialog dialog(Seed(), Repository, nullptr, NoBrowser);
+    const QString cpu = dialog.fields[QStringLiteral("cpu")]->text();
+    dialog.ApplyDraft({QStringLiteral("Boots and plays"), QStringLiteral("Second dungeon"),
+                       QStringLiteral("Sound crackles in caves."), QStringLiteral("Enter a cave.")});
+    QCOMPARE(dialog.fields[QStringLiteral("summary")]->text(), QStringLiteral("Boots and plays"));
+    QCOMPARE(dialog.paragraphs[QStringLiteral("progress")]->toPlainText(), QStringLiteral("Second dungeon"));
+    QCOMPARE(dialog.paragraphs[QStringLiteral("details")]->toPlainText(),
+             QStringLiteral("Sound crackles in caves."));
+    QCOMPARE(dialog.paragraphs[QStringLiteral("reproduction")]->toPlainText(),
+             QStringLiteral("Enter a cave."));
+    // The player still rates the game, and the machine fields stay as they were.
+    QCOMPARE(dialog.outcome->currentIndex(), 0);
+    QCOMPARE(dialog.smoothness->currentIndex(), 0);
+    QCOMPARE(dialog.fields[QStringLiteral("cpu")]->text(), cpu);
+}
+
+void DialogTest::anAiDraftNeedsEveryFieldAndASummary() {
+    QJsonObject reply{{QStringLiteral("summary"), QStringLiteral("  Runs\nwell  ")},
+                      {QStringLiteral("progress"), QString{}},
+                      {QStringLiteral("details"), QStringLiteral("Fine.")},
+                      {QStringLiteral("reproduction"), QString{}}};
+    const auto draft = DraftFromJson(reply);
+    QVERIFY(draft.has_value());
+    QCOMPARE(draft->summary, QStringLiteral("Runs well"));
+    reply.insert(QStringLiteral("summary"), QString(500, QLatin1Char('a')));
+    QCOMPARE(DraftFromJson(reply)->summary.size(), 120);
+    reply.insert(QStringLiteral("summary"), QStringLiteral("   "));
+    QVERIFY(!DraftFromJson(reply).has_value());
+    reply.insert(QStringLiteral("summary"), QStringLiteral("Runs"));
+    reply.remove(QStringLiteral("details"));
+    QVERIFY(!DraftFromJson(reply).has_value());
+    reply.insert(QStringLiteral("details"), 3);
+    QVERIFY(!DraftFromJson(reply).has_value());
 }
 
 void DialogTest::clearEmptiesTheDraft() {

@@ -50,6 +50,8 @@
 #include "yuzu/game/game_list.h"
 #include "yuzu/auto_optimize_dialog.h"
 #include "yuzu/ai_optimize_dialog.h"
+#include "yuzu/ai_log_dialog.h"
+#include "yuzu/ai_report_draft_dialog.h"
 #include "yuzu/nup_dialogs.h"
 
 #include "applets/qt_amiibo_settings.h"
@@ -1522,7 +1524,15 @@ void MainWindow::ConnectWidgetEvents() {
         }
         // Reports go to the repository this build comes from, like its updates.
         CompatibilityReporting::Dialog dialog(
-            *report_session, QString::fromUtf8(Common::g_build_auto_update_repo), this);
+            *report_session, QString::fromUtf8(Common::g_build_auto_update_repo), this, {},
+            [](const CompatibilityReporting::Session& session,
+               QWidget* parent) -> std::optional<CompatibilityReporting::Draft> {
+                AiReportDraftDialog writer(session, parent);
+                if (writer.exec() != QDialog::Accepted) {
+                    return std::nullopt;
+                }
+                return writer.Result();
+            });
         dialog.exec();
     });
     connect(game_list, &GameList::BootGame, this, &MainWindow::BootGameFromList);
@@ -1598,6 +1608,7 @@ void MainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Stop, &MainWindow::OnStopGame);
     connect_menu(ui->action_Open_Mods_Page, &MainWindow::OnOpenModsPage);
     connect_menu(ui->action_Open_UserHandbook, &MainWindow::OnOpenUserHandbook);
+    connect_menu(ui->action_Explain_Problem, &MainWindow::OnExplainProblem);
     connect_menu(ui->action_Compatibility_List, &MainWindow::OnOpenCompatibilityList);
     connect_menu(ui->action_Restart, &MainWindow::OnRestartGame);
     connect_menu(ui->action_Configure, &MainWindow::OnConfigure);
@@ -3676,6 +3687,11 @@ void MainWindow::OpenURL(const QUrl& url) {
 
 void MainWindow::OnOpenModsPage() {
     OpenURL(QUrl(QStringLiteral("https://github.com/eden-emulator/yuzu-mod-archive")));
+}
+
+void MainWindow::OnExplainProblem() {
+    AiLogDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::OnOpenUserHandbook() {
@@ -5865,7 +5881,7 @@ void MainWindow::UpdateUITheme() {
 void MainWindow::UpdateMenuIcons() {
     // From Lichii's list (zortos293/Lichii#1365), plus Kaichii's own entries. Checkable actions
     // get none: in some styles an icon replaces the check mark, which would hide their state.
-    const std::array<std::pair<QAction*, const char*>, 58> icons{{
+    const std::array<std::pair<QAction*, const char*>, 59> icons{{
         {ui->action_Install_File_NAND, "download"},
         {ui->action_Add_Game_Folder, "plus"},
         {ui->action_Load_File, "file"},
@@ -5919,6 +5935,7 @@ void MainWindow::UpdateMenuIcons() {
         {ui->action_Launch_Controller, "gamepad"},
         {ui->action_Launch_PhotoViewer, "image"},
         {ui->action_Open_UserHandbook, "help"},
+        {ui->action_Explain_Problem, "sparkles"},
         {ui->action_Compatibility_List, "list"},
         {ui->action_Open_Mods_Page, "puzzle"},
         {ui->action_First_Run_Assistant, "wand"},

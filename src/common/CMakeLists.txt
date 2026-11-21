@@ -84,6 +84,8 @@ add_library(
     literals.h
     log_file_rotation.h
     hardware_test.h
+    log_diagnosis.cpp
+    log_diagnosis.h
     logging.cpp
     logging.h
     overlay_position.h

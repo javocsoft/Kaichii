@@ -33,7 +33,10 @@ funciona un juego en Windows, Linux y macOS.
    desactiva. Si los conoces, añade los FPS habituales: los muestra el panel de rendimiento (menú
    **Ver**).
 
-   Después escribe un resumen, hasta dónde has jugado y qué ha funcionado o fallado.
+   Después escribe un resumen, hasta dónde has jugado y qué ha funcionado o fallado. O pulsa
+   **Redactar con IA…** y cuéntalo con tus palabras, en cualquier idioma: el
+   [asistente de IA](AIOptimization.es.md#redactar-un-informe-de-compatibilidad) escribe esos campos
+   en inglés para que los revises. Necesita tu propia clave de API de OpenAI o Anthropic.
 4. **Sistema y ajustes** ya viene relleno: el juego y su versión, la versión de Kaichii, tu
    procesador, tarjeta gráfica y controlador, el sistema operativo y los ajustes con los que arrancó
    el juego. Corrige lo que haya cambiado mientras jugabas.
