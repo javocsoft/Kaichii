@@ -25,6 +25,17 @@ def requested_names():
     return names
 
 
+# The actions that ask an AI provider. They share an icon no other action uses, so the AI features
+# stand apart in the menus from the ones that don't use AI, such as Optimize for This Game.
+AI_ACTIONS = {"action_AI_Tune_Computer", "action_AI_Optimize_Current_Game", "action_Explain_Problem"}
+
+
+def icon_table():
+    """UpdateMenuIcons' table, action name to icon name."""
+    text = (ROOT / "src" / "yuzu" / "main_window.cpp").read_text(encoding="utf-8")
+    return dict(re.findall(r'\{ui->([A-Za-z0-9_]+),\s*"([a-z_]+)"\}', text))
+
+
 class MenuIcons(unittest.TestCase):
     def test_every_requested_icon_exists(self):
         names = requested_names()
@@ -38,6 +49,14 @@ class MenuIcons(unittest.TestCase):
         present = {path.name for path in ICONS.glob("*.svg")}
         self.assertEqual(listed, present)
         self.assertIn('prefix="menu_icons"', qrc)
+
+    def test_the_ai_features_have_an_icon_of_their_own(self):
+        table = icon_table()
+        self.assertTrue(AI_ACTIONS <= table.keys(), sorted(AI_ACTIONS - table.keys()))
+        ai_icons = {table[action] for action in AI_ACTIONS}
+        self.assertEqual(len(ai_icons), 1, ai_icons)
+        others = {action for action, icon in table.items() if icon in ai_icons} - AI_ACTIONS
+        self.assertEqual(others, set())
 
     def test_every_icon_uses_the_colour_menu_icon_replaces(self):
         for path in ICONS.glob("*.svg"):
