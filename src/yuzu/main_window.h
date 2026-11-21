@@ -440,6 +440,8 @@ private slots:
     void SetCarouselView();
     void SetCoverView();
     void SetFullCoverView();
+    /// Shows the menu entries the advanced options and developer mode ask for (menu_levels.h).
+    void UpdateMenuLevels();
 
     void CheckIconSize();
     void ToggleShowGameName();

@@ -42,6 +42,7 @@
 #include "yuzu/game/game_tree.h"
 #include "yuzu/game/search_field.h"
 #include "yuzu/game/smooth_scroll.h"
+#include "yuzu/menu_levels.h"
 #include "yuzu/main_window.h"
 #include "yuzu/util/controller_navigation.h"
 
@@ -630,6 +631,27 @@ void GameList::AddGamePopup(QMenu& context_menu, u64 program_id, const std::stri
     remove_vk_shader_cache->setVisible(program_id != 0);
     remove_shader_cache->setVisible(program_id != 0);
     remove_all_content->setVisible(program_id != 0);
+
+    // Entries for the advanced options and developer mode, as in the menu bar (menu_levels.h).
+    const bool show_advanced = UISettings::values.settings_show_advanced.GetValue();
+    const bool developer_mode = UISettings::values.settings_developer_mode.GetValue();
+    const auto keep_for = [&](QAction* action, Yuzu::MenuLevel level) {
+        if (action != nullptr && !Yuzu::MenuShows(level, show_advanced, developer_mode)) {
+            action->setVisible(false);
+        }
+    };
+    using Yuzu::MenuLevel;
+    keep_for(start_game_global, MenuLevel::Advanced);
+    keep_for(open_transferable_shader_cache, MenuLevel::Developer);
+    keep_for(ryujinx, MenuLevel::Advanced);
+    keep_for(remove_cache_storage, MenuLevel::Advanced);
+    keep_for(remove_gl_shader_cache, MenuLevel::Advanced);
+    keep_for(remove_vk_shader_cache, MenuLevel::Advanced);
+    keep_for(extract_nup, MenuLevel::Advanced);
+    keep_for(dump_romfs_menu->menuAction(), MenuLevel::Advanced);
+    keep_for(verify_integrity, MenuLevel::Advanced);
+    keep_for(copy_tid, MenuLevel::Advanced);
+    keep_for(edit_nup, MenuLevel::Advanced);
 
     connect(favorite, &QAction::triggered, this,
             [this, program_id]() { ToggleFavorite(program_id); });

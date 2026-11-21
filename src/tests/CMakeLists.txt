@@ -12,6 +12,7 @@ add_executable(tests
     common/ca_store.cpp
     common/frame_pacing.cpp
     common/game_cover_layout.cpp
+    common/menu_levels.cpp
     common/hardware_test.cpp
     common/log_file_rotation.cpp
     common/nvidia_shader_cache.cpp

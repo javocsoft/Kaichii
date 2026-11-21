@@ -48,6 +48,7 @@
 #include "util/util.h"
 #include "yuzu/first_run_assistant.h"
 #include "yuzu/game/game_list.h"
+#include "yuzu/menu_levels.h"
 #include "yuzu/auto_optimize_dialog.h"
 #include "yuzu/ai_optimize_dialog.h"
 #include "yuzu/ai_log_dialog.h"
@@ -1718,6 +1719,9 @@ void MainWindow::ConnectMenuEvents() {
         });
     }
     show_sort();
+
+    // Entries for the advanced options and developer mode, shown as the settings say.
+    UpdateMenuLevels();
 
     // Multiplayer
     connect(ui->action_View_Lobby, &QAction::triggered, multiplayer_state,
@@ -4023,6 +4027,8 @@ void MainWindow::OnConfigure() {
             &MainWindow::OnGameListRefresh);
 
     const auto result = configure_dialog.exec();
+    // The advanced options and developer mode set there are the menus' too.
+    UpdateMenuLevels();
     if (result != QDialog::Accepted && !UISettings::values.configuration_applied &&
         !UISettings::values.reset_to_defaults) {
         // Runs if the user hit Cancel or closed the window, and did not ever press the Apply button
@@ -4372,6 +4378,8 @@ void MainWindow::OpenPerGameConfiguration(u64 title_id, const std::string& file_
     dialog.LoadFromFile(Core::GetGameFileFromPath(QtCommon::vfs, file_name));
 
     const auto result = dialog.exec();
+    // The advanced options and developer mode set there are the menus' too.
+    UpdateMenuLevels();
 
     if (result != QDialog::Accepted && !UISettings::values.configuration_applied) {
         Settings::RestoreGlobalState(QtCommon::system->IsPoweredOn());
@@ -5963,6 +5971,27 @@ void MainWindow::UpdateUITheme() {
 #ifdef _WIN32
     RemoveTitlebarFilter();
     ApplyGlobalDarkTitlebar(UISettings::IsDarkTheme());
+#endif
+}
+
+void MainWindow::UpdateMenuLevels() {
+    const bool show_advanced = UISettings::values.settings_show_advanced.GetValue();
+    const bool developer_mode = UISettings::values.settings_developer_mode.GetValue();
+    for (const auto& [name, level] : Yuzu::MainMenuLevels) {
+        const QString object_name = QString::fromUtf8(name.data(), name.size());
+        QAction* action = findChild<QAction*>(object_name);
+        if (action == nullptr) {
+            if (QMenu* const menu = findChild<QMenu*>(object_name)) {
+                action = menu->menuAction();
+            }
+        }
+        if (action != nullptr) {
+            action->setVisible(Yuzu::MenuShows(level, show_advanced, developer_mode));
+        }
+    }
+#ifndef HAS_RESHADE
+    // Only builds with ReShade have post-processing shaders.
+    ui->action_Post_Processing_Shaders->setVisible(false);
 #endif
 }
 

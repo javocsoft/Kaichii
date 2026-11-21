@@ -28,7 +28,8 @@ turns each one on or off. See [Updates and DLC](InstallingUpdatesDLC.md) for the
 
 ## How the list shows your games
 
-*View > Game List Mode* picks one of five views: *Tree View* (a table with details), *Grid View*,
+Kaichii starts on *Cover View*, with Switch 2 and Switch games apart. *View > Game List Mode* picks
+one of five views: *Tree View* (a table with details), *Grid View*,
 *Carousel View*, *Cover View* (the games' icons, large, as on a shelf) and *Full Cover View* (each
 game's case, as in a shop).
 
