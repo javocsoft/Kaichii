@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-#include "qt_common/game_list/box_art.h"
+#include "qt_common/game_list/game_pictures.h"
 #include "yuzu/configuration/box_art_editor.h"
 #include "yuzu/game/cover_art.h"
 #include "yuzu/game/cover_layout.h"

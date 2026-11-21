@@ -47,4 +47,13 @@ imágenes con el id del juego como nombre, tal como lo muestra *Configurar juego
 `0400486024DEC000.jpg` para Ocarina of Time. Valen PNG, JPEG y WebP, mejor con forma de unos 105
 por 170; las de otra forma se recortan para llenar la caja.
 
+### Un icono propio para un juego
+
+La pestaña *Icono* de las propiedades de un juego cambia el icono que muestran todas las vistas. En
+NSP, XCI y los demás formatos, *Subir icono...* toma una imagen tuya, recortada a cuadrado, y
+*Restaurar icono del juego* vuelve al del juego; el archivo del juego nunca se modifica, y el icono
+se guarda en la carpeta `custom_icons` de la carpeta de datos de Kaichii, con el mismo nombre que
+las cajas. Los juegos NUP siguen igual: su *Subir icono...* y *Detectar icono* escriben el icono
+dentro del propio archivo `.nup`.
+
 Siguiente: [Ajustes para tu equipo](Performance.es.md).

@@ -36,6 +36,7 @@
 #include "qt_common/qt_common.h"
 
 #include "qt_common/game_list/game_list_p.h"
+#include "qt_common/game_list/game_pictures.h"
 
 #include "qt_common/game_list/model.h"
 #include "qt_common/game_list/discovery.h"
@@ -285,9 +286,16 @@ QList<QStandardItem*> MakeGameListEntry(const std::string& path, const std::stri
         }
     }
 
+    // An icon the player chose replaces the game file's; NUP games keep theirs inside the file.
+    std::vector<u8> custom_icon;
+    if (file_type != Loader::FileType::NUP) {
+        custom_icon = QtCommon::CustomIcon::ReadBytes(program_id);
+    }
+    const std::vector<u8>& shown_icon = custom_icon.empty() ? icon : custom_icon;
+
     u64 play_time = play_time_manager.GetPlayTime(program_id);
     return QList<QStandardItem*>{
-        new GameListItemPath(FormatGameName(path), icon, QString::fromStdString(name),
+        new GameListItemPath(FormatGameName(path), shown_icon, QString::fromStdString(name),
                              file_type_string, program_id, play_time, patch_versions),
         new GameListItem(file_type_string),
         new GameListItemSize(size),

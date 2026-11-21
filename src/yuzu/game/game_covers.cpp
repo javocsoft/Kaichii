@@ -9,7 +9,7 @@
 #include <QResizeEvent>
 #include <QToolTip>
 
-#include "qt_common/game_list/box_art.h"
+#include "qt_common/game_list/game_pictures.h"
 #include "qt_common/game_list/game_list_p.h"
 #include "qt_common/game_list/model.h"
 #include "yuzu/game/common.h"

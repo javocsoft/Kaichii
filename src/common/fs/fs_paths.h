@@ -32,6 +32,7 @@
 #define TAS_DIR "tas"
 #define ICONS_DIR "icons"
 #define BOX_ART_DIR "box_art"
+#define CUSTOM_ICONS_DIR "custom_icons"
 
 // Compatibility with other emulators
 #define CITRON_DIR "citron"

@@ -86,6 +86,7 @@
 #include "yuzu/configuration/settings_organizer.h"
 #include "yuzu/configuration/settings_style.h"
 #include "yuzu/configuration/box_art_editor.h"
+#include "yuzu/configuration/custom_icon_editor.h"
 #include "yuzu/configuration/settings_page_scroll.h"
 #include "yuzu/util/util.h"
 
@@ -481,6 +482,19 @@ ConfigurePerGame::ConfigurePerGame(QWidget* parent, u64 title_id_, const std::st
     ui->verticalLayout->removeWidget(ui->nup_icon_widget);
     icon_layout->addWidget(ui->icon_view, 0, Qt::AlignHCenter);
     icon_layout->addWidget(ui->nup_icon_widget, 0, Qt::AlignHCenter);
+    // Games other than NUP: an icon of the player's own, kept outside the game file.
+    const auto pick_icon = [](QWidget*) {
+        return QtCommon::Frontend::GetOpenFileName(
+            tr("Select Game Icon"),
+            QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
+            tr("Images (*.png *.jpg *.jpeg *.bmp *.webp);;All Files (*)"));
+    };
+    custom_icon_editor = new CustomIconEditor(title_id, pick_icon, ReadIconFile, icon_page);
+    custom_icon_editor->setFixedWidth(ui->icon_view->maximumWidth());
+    icon_layout->addWidget(custom_icon_editor, 0, Qt::AlignHCenter);
+    connect(custom_icon_editor, &CustomIconEditor::IconChanged, this, [this](const QImage& icon) {
+        UpdateIconPreview(icon.isNull() ? game_icon : QPixmap::fromImage(icon));
+    });
     icon_layout->addStretch();
     auto* const box_art_page = new QWidget;
     auto* const box_art_layout = new QVBoxLayout(box_art_page);
@@ -571,7 +585,7 @@ ConfigurePerGame::~ConfigurePerGame() {
 
 void ConfigurePerGame::done(int result) {
     if (result == QDialog::Accepted &&
-        (detect_watcher.isRunning() || !SaveNupMetadata(true) || !SaveBoxArt())) {
+        (detect_watcher.isRunning() || !SaveNupMetadata(true) || !SavePictures())) {
         return;
     }
     if (detect_cancel) {
@@ -698,7 +712,7 @@ void ConfigurePerGame::SetLevels(bool show_advanced, bool developer_mode) {
 }
 
 void ConfigurePerGame::HandleApplyButtonClicked() {
-    if (detect_watcher.isRunning() || !SaveNupMetadata(true) || !SaveBoxArt()) {
+    if (detect_watcher.isRunning() || !SaveNupMetadata(true) || !SavePictures()) {
         return;
     }
     UISettings::values.configuration_applied = true;
@@ -732,6 +746,7 @@ void ConfigurePerGame::LoadConfiguration() {
                 &ConfigurePerGame::HandleApplyButtonClicked);
     }
     ui->nup_icon_widget->setVisible(is_nup_file);
+    custom_icon_editor->setVisible(!is_nup_file);
     ui->nup_icon_widget->setEnabled(!system.IsPoweredOn());
     ui->display_name->setReadOnly(!is_nup_file || system.IsPoweredOn());
     ui->display_name->setClearButtonEnabled(is_nup_file && !system.IsPoweredOn());
@@ -767,21 +782,18 @@ void ConfigurePerGame::LoadConfiguration() {
     pending_nup_icon.clear();
 
     scene->clear();
+    game_icon = {};
     if (!is_nup_file && control.second != nullptr) {
-        QPixmap map;
         const auto bytes = control.second->ReadAllBytes();
-        if (map.loadFromData(bytes.data(), static_cast<u32>(bytes.size()))) {
-            UpdateIconPreview(map);
-        }
+        game_icon.loadFromData(bytes.data(), static_cast<u32>(bytes.size()));
     } else if (loader != nullptr) {
         std::vector<u8> bytes;
         if (loader->ReadIcon(bytes) == Loader::ResultStatus::Success) {
-            QPixmap map;
-            if (map.loadFromData(bytes.data(), static_cast<u32>(bytes.size()))) {
-                UpdateIconPreview(map);
-            }
+            game_icon.loadFromData(bytes.data(), static_cast<u32>(bytes.size()));
         }
     }
+    const QImage custom_icon = is_nup_file ? QImage{} : custom_icon_editor->Icon();
+    UpdateIconPreview(custom_icon.isNull() ? game_icon : QPixmap::fromImage(custom_icon));
 
     ui->display_filename->setText(QString::fromStdString(file->GetName()));
 
@@ -1054,20 +1066,25 @@ void ConfigurePerGame::OnDetectNupIcon() {
         }));
 }
 
-bool ConfigurePerGame::SaveBoxArt() {
-    if (!box_art_editor->HasChanges()) {
+bool ConfigurePerGame::SavePictures() {
+    const auto saved = [this](auto* editor, Common::FS::EdenPath dir, const QString& title,
+                              const QString& message) {
+        if (!editor->HasChanges()) {
+            return true;
+        }
+        if (!editor->Save()) {
+            QMessageBox::warning(this, title,
+                                 message.arg(QString::fromStdString(Common::FS::PathToUTF8String(
+                                     Common::FS::GetEdenPath(dir)))));
+            return false;
+        }
+        UISettings::values.is_game_list_reload_pending.exchange(true);
         return true;
-    }
-    if (!box_art_editor->Save()) {
-        QMessageBox::warning(
-            this, tr("Box Art"),
-            tr("The box art couldn't be saved in %1.")
-                .arg(QString::fromStdString(Common::FS::PathToUTF8String(
-                    Common::FS::GetEdenPath(Common::FS::EdenPath::BoxArtDir)))));
-        return false;
-    }
-    UISettings::values.is_game_list_reload_pending.exchange(true);
-    return true;
+    };
+    return saved(custom_icon_editor, Common::FS::EdenPath::CustomIconsDir, tr("Game Icon"),
+                 tr("The icon couldn't be saved in %1.")) &&
+           saved(box_art_editor, Common::FS::EdenPath::BoxArtDir, tr("Box Art"),
+                 tr("The box art couldn't be saved in %1."));
 }
 
 bool ConfigurePerGame::SaveNupMetadata(bool show_error) {
