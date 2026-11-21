@@ -43,4 +43,12 @@ after each game's title id, as *Configure Game* shows it, in capitals: `04004860
 Ocarina of Time. PNG, JPEG and WebP work, best at about 105 by 170 in shape; other shapes are
 cropped to fill the case.
 
+### Your own icon for a game
+
+The *Icon* tab in a game's properties changes the icon every view shows. For NSP, XCI and the other
+formats, *Upload Icon...* takes a picture of your own, cropped to a square, and *Restore Game Icon*
+goes back to the game's; the game file is never changed, and the icon is kept in the
+`custom_icons` folder of Kaichii's data folder, named like box art. NUP games work as before: their
+*Upload Icon...* and *Detect Icon* write the icon into the `.nup` file itself.
+
 Next: [Settings for your computer](Performance.md).

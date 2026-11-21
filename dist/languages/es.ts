@@ -7158,7 +7158,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
 <context>
     <name>ConfigurePerGame</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+426"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+427"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -7179,9 +7179,9 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+106"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="+119"/>
         <location line="+10"/>
-        <location line="+307"/>
+        <location line="+305"/>
         <location line="+5"/>
         <source>Detect Icon</source>
         <translation>Detectar icono</translation>
@@ -7247,7 +7247,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Algunos ajustes solo están disponibles cuando no se estén ejecutando los juegos.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-427"/>
+        <location filename="../../src/yuzu/configuration/configure_per_game.cpp" line="-438"/>
         <source>Add-Ons</source>
         <translation>Complementos</translation>
     </message>
@@ -7314,7 +7314,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Emulación de GPU</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+67"/>
         <source>Select Box Art</source>
         <translation>Elegir imagen de la caja</translation>
     </message>
@@ -7327,12 +7327,12 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
     <message>
         <location line="-114"/>
         <location line="+115"/>
-        <location line="+448"/>
+        <location line="+457"/>
         <source>Box Art</source>
         <translation>Caja</translation>
     </message>
     <message>
-        <location line="-551"/>
+        <location line="-560"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
@@ -7357,7 +7357,7 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Muestra también las opciones para depurar Kaichii.</translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+70"/>
         <source>Enter game name...</source>
         <translation>Escribe el nombre del juego...</translation>
     </message>
@@ -7367,13 +7367,15 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Edita el nombre del juego guardado en los metadatos del NUP</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="-267"/>
+        <location line="+339"/>
         <source>Select Game Icon</source>
         <translation>Seleccionar icono del juego</translation>
     </message>
     <message>
-        <location line="-323"/>
-        <location line="+324"/>
+        <location line="-337"/>
+        <location line="+16"/>
+        <location line="+322"/>
         <source>Images (*.png *.jpg *.jpeg *.bmp *.webp);;All Files (*)</source>
         <translation>Imágenes (*.png *.jpg *.jpeg *.bmp *.webp);;Todos los archivos (*)</translation>
     </message>
@@ -7403,12 +7405,22 @@ Los valores actuales son %1% y %2% respectivamente.</translation>
         <translation>Detectando...</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+212"/>
+        <source>Game Icon</source>
+        <translation>Icono del juego</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The icon couldn&apos;t be saved in %1.</source>
+        <translation>No se ha podido guardar el icono en %1.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The box art couldn&apos;t be saved in %1.</source>
         <translation>No se ha podido guardar la imagen de la caja en %1.</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <location line="+22"/>
         <source>Update NUP Metadata</source>
         <translation>Actualizar metadatos del NUP</translation>
@@ -8761,6 +8773,44 @@ Arrastre los puntos para cambiar de posición, o haga doble clic en las celdas d
     </message>
 </context>
 <context>
+    <name>CustomIconEditor</name>
+    <message>
+        <location filename="../../src/yuzu/configuration/custom_icon_editor.cpp" line="+18"/>
+        <source>Upload Icon...</source>
+        <translation>Subir icono...</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Show an image of your own as the game&apos;s icon in the game list. The game file isn&apos;t changed. OK or Apply saves it.</source>
+        <translation>Muestra una imagen tuya como icono del juego en la lista de juegos. El archivo del juego no se modifica. Aceptar o Aplicar lo guarda.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Restore Game Icon</source>
+        <translation>Restaurar icono del juego</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Show the icon from the game file again. OK or Apply saves it.</source>
+        <translation>Vuelve a mostrar el icono del archivo del juego. Aceptar o Aplicar lo guarda.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>This game has no program id, so it can&apos;t have an icon of its own.</source>
+        <translation>Este juego no tiene id de programa, así que no puede tener un icono propio.</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Invalid Image</source>
+        <translation>Imagen no válida</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Select a PNG, JPEG, BMP or WebP image up to 8 MiB, 8192 pixels per side and 16 megapixels.</source>
+        <translation>Elige una imagen PNG, JPEG, BMP o WebP de hasta 8 MiB, 8192 píxeles por lado y 16 megapíxeles.</translation>
+    </message>
+</context>
+<context>
     <name>DataDialog</name>
     <message>
         <location filename="../../src/yuzu/data_dialog.ui" line="+26"/>
@@ -9557,7 +9607,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameListWorker</name>
     <message>
-        <location filename="../../src/qt_common/game_list/worker.cpp" line="+459"/>
+        <location filename="../../src/qt_common/game_list/worker.cpp" line="+467"/>
         <source>%1
 Dump current keys from your own console and install them with Tools &gt; Install Decryption Keys.</source>
         <translation>%1
@@ -13453,7 +13503,7 @@ p, li { white-space: pre-wrap; }
         <translation>Favoritos</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/game_list/worker.cpp" line="-297"/>
+        <location filename="../../src/qt_common/game_list/worker.cpp" line="-304"/>
         <source>%1 (update)</source>
         <translation>%1 (actualización)</translation>
     </message>

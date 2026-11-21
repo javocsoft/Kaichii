@@ -35,6 +35,7 @@ class InputSubsystem;
 
 class ConfigurePerGameAddons;
 class BoxArtEditor;
+class CustomIconEditor;
 class QCheckBox;
 class QTabWidget;
 
@@ -96,8 +97,8 @@ private:
     void OnUploadNupIcon();
     void OnDetectNupIcon();
     bool SaveNupMetadata(bool show_error = false);
-    /// Stores a changed box art; warns and returns false when it can't be written.
-    bool SaveBoxArt();
+    /// Stores a changed custom icon and box art; warns and returns false when one can't be written.
+    bool SavePictures();
 
     struct DetectIconResult {
         std::vector<u8> icon_bytes;
@@ -119,6 +120,9 @@ private:
     QGraphicsScene* scene;
     QTabWidget* picture_tabs = nullptr;
     BoxArtEditor* box_art_editor = nullptr;
+    CustomIconEditor* custom_icon_editor = nullptr;
+    /// The icon in the game file, shown when there is no custom one.
+    QPixmap game_icon;
 
     std::unique_ptr<QtConfig> game_config;
 
