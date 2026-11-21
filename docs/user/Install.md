@@ -24,7 +24,9 @@ The AppImage carries everything it needs. It runs on systems with glibc 2.39 or 
   Kaichii offers to add itself there; say yes and the taskbar shows its icon. **Add Kaichii to
   the applications menu** in *Configure > Interface* changes it later.
 - **You'd rather use your system's libraries.** The `.tar.gz` holds the same programs without
-  their libraries; Qt 6 and the usual libraries must be installed.
+  their libraries; Qt 6 and the usual libraries must be installed, with Qt's image formats plugins
+  for WebP icons and box art (`qt6-image-formats-plugins` on Debian and Ubuntu, `qt6-imageformats`
+  on Arch, `qt6-qtimageformats` on Fedora).
 
 ## Windows
 

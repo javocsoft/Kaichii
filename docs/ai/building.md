@@ -7,8 +7,9 @@ only Docker and nothing is installed on it.
 ## The container
 
 `tools/dev/Dockerfile` mirrors `.github/workflows/build-check.yml`: Ubuntu 24.04, GCC 13, Clang 20,
-CMake 4.4.4, Qt 6.8.3, Ninja, ccache, and the linters and Mesa's software Vulkan driver.
-`tools/dev/in-docker.sh` builds the image on first use, mounts the repository at `/src`, and runs a
+CMake 4.4.4, Qt 6.8.3 (with `qtcharts` and `qtimageformats`), Ninja, ccache, and the linters and Mesa's software Vulkan driver.
+`tools/dev/in-docker.sh` builds the image on first use (after a Dockerfile change, rebuild it
+with `docker build -t lichii-dev:latest tools/dev`), mounts the repository at `/src`, and runs a
 command as your user, so its files stay yours.
 
 ```sh
