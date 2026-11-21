@@ -33,6 +33,7 @@ private slots:
     void WebPPicturesCanBeRead();
     void GamesSortByNameAsPeopleReadIt();
     void NewGamesTakeTheirPlaceByName();
+    void ATreeColumnOrderLeavesTheFlatViewsByName();
     void Switch2TitlesAreToldByTheirId();
     void ShelfKeepsTheListsOrder();
     void SectionsPutSwitch2GamesFirst();
@@ -215,6 +216,24 @@ void GameListTest::NewGamesTakeTheirPlaceByName() {
                                          QStringLiteral("Donkey Kong Bananza"),
                                          QStringLiteral("Mario 2"), QStringLiteral("Mario 10"),
                                          QStringLiteral("Tunic"), QStringLiteral("Zelda")}));
+}
+
+void GameListTest::ATreeColumnOrderLeavesTheFlatViewsByName() {
+    // The tree's header remembered a descending order: the cover views, which share the model,
+    // showed games from Z to A.
+    QStandardItemModel model;
+    for (const char* title : {"A Short Hike", "Axiom Verge", "Tunic"}) {
+        QStandardItem* const game = Game(QString::fromLatin1(title));
+        game->setText(QString::fromLatin1(title));
+        model.appendRow(game);
+    }
+    const QStringList by_name = Titles(model);
+    QtCommon::SortForView(model, false, 0, Qt::DescendingOrder);
+    QCOMPARE(Titles(model), by_name);
+    // The tree itself still follows its column.
+    QtCommon::SortForView(model, true, 0, Qt::DescendingOrder);
+    QCOMPARE(Titles(model), (QStringList{QStringLiteral("Tunic"), QStringLiteral("Axiom Verge"),
+                                         QStringLiteral("A Short Hike")}));
 }
 
 void GameListTest::Switch2TitlesAreToldByTheirId() {

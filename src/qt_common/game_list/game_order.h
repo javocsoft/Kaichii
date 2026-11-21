@@ -3,11 +3,13 @@
 
 #pragma once
 
+#include <Qt>
 #include <QString>
 
 #include "common/common_types.h"
 
 class QStandardItem;
+class QStandardItemModel;
 
 namespace QtCommon {
 
@@ -19,6 +21,11 @@ namespace QtCommon {
 /// The row a game goes to among `parent`'s games, keeping them sorted by GameSortsBefore.
 [[nodiscard]] int SortedGameRow(const QStandardItem& parent, const QString& title,
                                 const QString& path);
+
+/// Sorts the game list for the view showing it. The tree sorts by the column the player picked;
+/// the flat views (grid, carousel and covers) share the model and keep the name order games were
+/// inserted in, which a tree column's order (say, descending) must not undo.
+void SortForView(QStandardItemModel& model, bool tree_view, int column, Qt::SortOrder order);
 
 /// Whether a program is a Switch 2 title: their program ids start with 04 (Switch titles with 01),
 /// as the ids in AGENTS.md show. Switch games with a Switch 2 Edition upgrade keep their 01 id.

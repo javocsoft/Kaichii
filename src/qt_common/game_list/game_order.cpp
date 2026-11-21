@@ -3,6 +3,7 @@
 
 #include <QFileInfo>
 #include <QStandardItem>
+#include <QStandardItemModel>
 
 #include "qt_common/game_list/game_list_p.h"
 #include "qt_common/game_list/game_order.h"
@@ -104,6 +105,12 @@ int SortedGameRow(const QStandardItem& parent, const QString& title, const QStri
         }
     }
     return low;
+}
+
+void SortForView(QStandardItemModel& model, bool tree_view, int column, Qt::SortOrder order) {
+    if (tree_view) {
+        model.sort(column, order);
+    }
 }
 
 } // namespace QtCommon

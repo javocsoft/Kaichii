@@ -31,6 +31,7 @@
 #include "core/file_sys/registered_cache.h"
 #include "qt_common/config/uisettings.h"
 #include "qt_common/game_list/game_list_p.h"
+#include "qt_common/game_list/game_order.h"
 #include "qt_common/game_list/model.h"
 #include "qt_common/qt_common.h"
 #include "qt_common/util/game.h"
@@ -411,9 +412,8 @@ void GameList::OnPopulatingCompleted(const QStringList& watch_list) {
         search_field->setFocus();
     }
 
-    // TODO: carousel/grid impl.
-    item_model->sort(tree_view->header()->sortIndicatorSection(),
-                     tree_view->header()->sortIndicatorOrder());
+    QtCommon::SortForView(*item_model, m_isTreeMode, tree_view->header()->sortIndicatorSection(),
+                          tree_view->header()->sortIndicatorOrder());
 
     // A repopulate (a directory removed, deep scan toggled) replaces the rows: apply the search
     // text the user still has typed to them.
@@ -492,8 +492,9 @@ void GameList::ToggleFavorite(u64 program_id) {
     if (UISettings::values.favorited_ids.contains(program_id)) {
         tree_view->setRowHidden(0, item_model->invisibleRootItem()->index(),
                                 !search_field->filterText().isEmpty());
-        item_model->sort(tree_view->header()->sortIndicatorSection(),
-                         tree_view->header()->sortIndicatorOrder());
+        QtCommon::SortForView(*item_model, m_isTreeMode,
+                              tree_view->header()->sortIndicatorSection(),
+                              tree_view->header()->sortIndicatorOrder());
     } else {
         if (UISettings::values.favorited_ids.size() == 0) {
             tree_view->setRowHidden(0, item_model->invisibleRootItem()->index(), true);
