@@ -12,7 +12,7 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QFileInfo>
-#include <QFormLayout>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -20,18 +20,11 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QPainter>
-#include <QPixmap>
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSaveFile>
 #include <QScrollArea>
-#include <QSignalBlocker>
-#include <QStringList>
 #include <QSysInfo>
-#include <QTimer>
 #include <QVBoxLayout>
 
 #include "common/ai_optimize_policy.h"
@@ -44,7 +37,8 @@
 #include "qt_common/config/shared_translation.h"
 #include "qt_common/config/uisettings.h"
 #include "video_core/video_memory_status.h"
-#include "yuzu/ai_credentials.h"
+#include "yuzu/ai_provider_panel.h"
+#include "yuzu/button_spinner.h"
 
 namespace {
 
@@ -71,59 +65,38 @@ QJsonObject PlanSchema() {
             {QStringLiteral("additionalProperties"), false}};
 }
 
-QString ResponseText(const QJsonObject& response, bool anthropic) {
-    if (anthropic) {
-        for (const QJsonValue item : response.value(QStringLiteral("content")).toArray()) {
-            const auto block = item.toObject();
-            if (block.value(QStringLiteral("type")).toString() == QLatin1String("text")) {
-                return block.value(QStringLiteral("text")).toString();
-            }
-        }
-        return {};
-    }
-    for (const QJsonValue item : response.value(QStringLiteral("output")).toArray()) {
-        for (const QJsonValue content : item.toObject().value(QStringLiteral("content")).toArray()) {
-            const auto block = content.toObject();
-            if (block.value(QStringLiteral("type")).toString() == QLatin1String("output_text")) {
-                return block.value(QStringLiteral("text")).toString();
-            }
-        }
-    }
-    return {};
-}
-
-// The catalog's model notes, translated.
-QString ModelNote(std::string_view note) {
-    if (note == "recommended") {
-        return QCoreApplication::translate("AiOptimizeDialog", "Recommended");
-    }
-    if (note == "most capable") {
-        return QCoreApplication::translate("AiOptimizeDialog", "Most capable");
-    }
-    if (note == "newest") {
-        return QCoreApplication::translate("AiOptimizeDialog", "Newest");
-    }
-    if (note == "balance of cost and capability") {
-        return QCoreApplication::translate("AiOptimizeDialog", "Balance of cost and capability");
-    }
-    if (note == "lowest cost") {
-        return QCoreApplication::translate("AiOptimizeDialog", "Lowest cost");
-    }
-    if (note == "faster, lower cost") {
-        return QCoreApplication::translate("AiOptimizeDialog", "Faster, lower cost");
-    }
-    if (note == "most capable, highest cost") {
-        return QCoreApplication::translate("AiOptimizeDialog", "Most capable, highest cost");
-    }
-    return QString::fromLatin1(note.data(), note.size());
-}
 
 Settings::BasicSetting* FindSetting(std::string_view key) {
     const auto it = Settings::values.linkage.by_key.find(std::string{key});
     return it == Settings::values.linkage.by_key.end() ? nullptr : it->second;
 }
 
+QJsonObject MeasurementJson(const Common::AiOptimize::Measurement& m) {
+    return {{QStringLiteral("fps"), qRound(m.fps * 10.0) / 10.0},
+            {QStringLiteral("low_1pct_fps"), qRound(m.low_1pct_fps * 10.0) / 10.0},
+            {QStringLiteral("stutters"), static_cast<int>(m.stutters)}};
+}
+
+std::optional<Common::AiOptimize::Measurement> MeasurementFromJson(const QJsonValue& value) {
+    if (!value.isObject()) {
+        return std::nullopt;
+    }
+    const QJsonObject object = value.toObject();
+    return Common::AiOptimize::Measurement{
+        .fps = object.value(QStringLiteral("fps")).toDouble(),
+        .low_1pct_fps = object.value(QStringLiteral("low_1pct_fps")).toDouble(),
+        .stutters = static_cast<unsigned>(object.value(QStringLiteral("stutters")).toInt())};
+}
+
+QString DescribeMeasurement(const Common::AiOptimize::Measurement& m) {
+    return QCoreApplication::translate("AiOptimizeDialog", "%1 fps, 1% low %2 fps, %3 stutters")
+        .arg(m.fps, 0, 'f', 1)
+        .arg(m.low_1pct_fps, 0, 'f', 1)
+        .arg(m.stutters);
+}
+
 } // Anonymous namespace
+
 
 AiOptimizeDialog::AiOptimizeDialog(QWidget* parent, Core::System& system_, Settings::HostProfile host_,
                                    std::string config_name_, u64 program_id_, QString game_name_,
@@ -136,11 +109,8 @@ AiOptimizeDialog::AiOptimizeDialog(QWidget* parent, Core::System& system_, Setti
       save_global{std::move(save_global_)},
       network{new QNetworkAccessManager(this)} {
     setWindowTitle(tr("AI settings assistant"));
-    busy_timer = new QTimer(this);
-    busy_timer->setInterval(80);
-    connect(busy_timer, &QTimer::timeout, this, &AiOptimizeDialog::UpdateBusy);
     developer_mode = UISettings::values.settings_developer_mode.GetValue();
-    resize(730, developer_mode ? 740 : 600);
+    resize(730, developer_mode ? 860 : 760);
     auto* const outer = new QVBoxLayout(this);
     auto* const intro = new QLabel(
         global_scope
@@ -159,51 +129,27 @@ AiOptimizeDialog::AiOptimizeDialog(QWidget* parent, Core::System& system_, Setti
     cost->setWordWrap(true);
     outer->addWidget(cost);
 
-    auto* const credentials = new QFormLayout;
-    provider = new QComboBox(this);
-    provider->addItem(QStringLiteral("OpenAI"));
-    provider->addItem(QStringLiteral("Anthropic"));
-    model = new QComboBox(this);
-    model->setEditable(true);
-    model->setInsertPolicy(QComboBox::NoInsert);
-    model->setToolTip(tr("Pick one of the provider's main models, or type another model name."));
-    list_models_button = new QPushButton(tr("Load from provider"), this);
-    list_models_button->setToolTip(
-        tr("Ask the provider which models your key can use. Needs your API key."));
-    auto* const model_row = new QHBoxLayout;
-    model_row->addWidget(model, 1);
-    model_row->addWidget(list_models_button);
-    model_note = new QLabel(this);
-    model_note->setEnabled(false); // Greyed: a hint, not a control
-    api_key = new QLineEdit(this);
-    api_key->setEchoMode(QLineEdit::Password);
-    api_key->setPlaceholderText(tr("Your API key"));
-    remember_key = new QCheckBox(tr("Remember this key in the system's credential store"), this);
-    forget_key_button = new QPushButton(tr("Forget saved key"), this);
-    forget_key_button->setEnabled(false);
-    if (!AiCredentials::Available()) {
-        remember_key->setEnabled(false);
-        remember_key->setToolTip(tr("This system has no credential store Kaichii can use, so the "
-                                    "key stays in memory only while this window is open."));
-    } else {
-        remember_key->setToolTip(tr("Saved by the operating system (Keychain, Credential Manager "
-                                    "or Secret Service), never in Kaichii's settings files. "
-                                    "It is saved once a request succeeds."));
-    }
-    auto* const remember_row = new QHBoxLayout;
-    remember_row->addWidget(remember_key, 1);
-    remember_row->addWidget(forget_key_button);
-    credentials->addRow(tr("Provider:"), provider);
-    credentials->addRow(tr("Model:"), model_row);
-    credentials->addRow(QString{}, model_note);
-    key_link = new QLabel(this);
-    key_link->setTextFormat(Qt::RichText);
-    key_link->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    key_link->setOpenExternalLinks(true);
-    credentials->addRow(tr("API key:"), api_key);
-    credentials->addRow(QString{}, key_link);
-    credentials->addRow(QString{}, remember_row);
-    outer->addLayout(credentials);
+    provider_panel = new AiProviderPanel(network, this);
+    outer->addWidget(provider_panel);
+    request = new AiRequest(network, this);
+
+    // The measured result of the last change, for one game: before it was applied, and now.
+    measurement_box = new QGroupBox(tr("Measured result of the last AI change"), this);
+    auto* const measurement_layout = new QVBoxLayout(measurement_box);
+    measurement_text = new QLabel(measurement_box);
+    measurement_text->setWordWrap(true);
+    measurement_text->setTextFormat(Qt::PlainText);
+    measurement_layout->addWidget(measurement_text);
+    auto* const measurement_buttons = new QHBoxLayout;
+    measure_button = new QPushButton(tr("Measure now (last 10 s)"), measurement_box);
+    measure_button->setToolTip(tr("Play the same scene as before the change for a few seconds "
+                                  "first: a different scene or new shaders change the numbers."));
+    keep_button = new QPushButton(tr("Keep these settings"), measurement_box);
+    measurement_buttons->addWidget(measure_button);
+    measurement_buttons->addStretch();
+    measurement_buttons->addWidget(keep_button);
+    measurement_layout->addLayout(measurement_buttons);
+    outer->addWidget(measurement_box);
 
     outer->addWidget(new QLabel(tr("What would you like to improve?"), this));
     complaint = new QPlainTextEdit(this);
@@ -232,6 +178,7 @@ AiOptimizeDialog::AiOptimizeDialog(QWidget* parent, Core::System& system_, Setti
     refresh_button = new QPushButton(tr("Refresh diagnostic"), this);
     refresh_button->setVisible(developer_mode);
     analyze_button = new QPushButton(tr("Ask for a proposal"), this);
+    analyze_spinner = new ButtonSpinner(analyze_button);
     request_buttons->addWidget(refresh_button);
     request_buttons->addWidget(analyze_button);
     outer->addLayout(request_buttons);
@@ -263,39 +210,29 @@ AiOptimizeDialog::AiOptimizeDialog(QWidget* parent, Core::System& system_, Setti
     buttons->addWidget(close_button);
     outer->addLayout(buttons);
 
-    connect(provider, &QComboBox::currentIndexChanged, this, &AiOptimizeDialog::UpdateProvider);
-    connect(list_models_button, &QPushButton::clicked, this, &AiOptimizeDialog::ListModels);
-    connect(model, &QComboBox::currentTextChanged, this, &AiOptimizeDialog::UpdateModelNote);
-    connect(forget_key_button, &QPushButton::clicked, this, &AiOptimizeDialog::ForgetKey);
+    connect(provider_panel, &AiProviderPanel::StatusChanged, status, &QLabel::setText);
+    connect(provider_panel, &AiProviderPanel::BusyChanged, this,
+            [this](bool busy) { analyze_button->setEnabled(!busy); });
+    connect(request, &AiRequest::Finished, this, &AiOptimizeDialog::HandleReply);
     connect(complaint, &QPlainTextEdit::textChanged, this, &AiOptimizeDialog::PrepareRequest);
     connect(refresh_button, &QPushButton::clicked, this, &AiOptimizeDialog::PrepareRequest);
     connect(analyze_button, &QPushButton::clicked, this, [this] {
-        if (active_reply) {
-            active_reply->abort(); // Ends in HandleReply with OperationCanceledError
+        if (request->Running()) {
+            request->Cancel();
             return;
         }
         Analyze();
     });
+    connect(measure_button, &QPushButton::clicked, this, &AiOptimizeDialog::MeasureResult);
+    connect(keep_button, &QPushButton::clicked, this, &AiOptimizeDialog::KeepResult);
     connect(apply_button, &QPushButton::clicked, this, &AiOptimizeDialog::Apply);
     connect(undo_button, &QPushButton::clicked, this, &AiOptimizeDialog::Undo);
     connect(close_button, &QPushButton::clicked, this, &QDialog::reject);
-    {
-        const QSignalBlocker blocker(provider);
-        provider->setCurrentIndex(
-            UISettings::values.ai_assistant_provider.GetValue() == 1 ? 1 : 0);
-    }
-    UpdateProvider();
+    UpdateMeasurementPanel();
+    PrepareRequest();
 }
 
-AiOptimizeDialog::~AiOptimizeDialog() {
-    for (QNetworkReply* reply : {active_reply, models_reply}) {
-        if (reply) {
-            reply->disconnect(this);
-            reply->abort();
-        }
-    }
-    api_key->clear();
-}
+AiOptimizeDialog::~AiOptimizeDialog() = default;
 
 bool AiOptimizeDialog::GameRunning() const {
     return system.IsPoweredOn();
@@ -310,184 +247,6 @@ QString AiOptimizeDialog::UndoPath() const {
     return QString::fromStdString(Common::FS::PathToUTF8String(path));
 }
 
-void AiOptimizeDialog::UpdateModelNote() {
-    const int index = model->findText(model->currentText());
-    const QString note = index < 0 ? QString{} : model->itemData(index, Qt::ToolTipRole).toString();
-    model_note->setText(note.isEmpty() ? tr("Model chosen by name or listed by the provider.")
-                                       : note);
-}
-
-bool AiOptimizeDialog::Anthropic() const {
-    return provider->currentIndex() == 1;
-}
-
-std::string_view AiOptimizeDialog::ProviderId() const {
-    return Anthropic() ? "anthropic" : "openai";
-}
-
-void AiOptimizeDialog::UpdateProvider() {
-    using Common::AiOptimize::Provider;
-    const auto which = Anthropic() ? Provider::Anthropic : Provider::OpenAI;
-    UISettings::values.ai_assistant_provider = Anthropic() ? 1U : 0U;
-    const std::string saved = Anthropic() ? UISettings::values.ai_assistant_anthropic_model.GetValue()
-                                          : UISettings::values.ai_assistant_openai_model.GetValue();
-    model->clear();
-    const auto add = [this](const auto& models) {
-        for (const auto& entry : models) {
-            const QString id = QString::fromLatin1(entry.id.data(), entry.id.size());
-            model->addItem(id, id);
-            model->setItemData(model->count() - 1, ModelNote(entry.note), Qt::ToolTipRole);
-        }
-    };
-    if (Anthropic()) {
-        add(Common::AiOptimize::AnthropicModels);
-    } else {
-        add(Common::AiOptimize::OpenAIModels);
-    }
-    const std::string_view url = Common::AiOptimize::KeyPageUrl(which);
-    key_link->setText(tr("Don't have a key? <a href=\"%1\">Create one on the %2 website</a>.")
-                          .arg(QString::fromLatin1(url.data(), url.size()), provider->currentText()));
-    key_link->setToolTip(QString::fromLatin1(url.data(), url.size()));
-    const std::string_view fallback = Common::AiOptimize::DefaultModel(which);
-    model->setCurrentText(QString::fromStdString(saved.empty() ? std::string{fallback} : saved));
-    UpdateModelNote();
-    LoadSavedKey();
-    PrepareRequest();
-}
-
-void AiOptimizeDialog::LoadSavedKey() {
-    api_key->clear();
-    key_saved = false;
-    remember_key->setChecked(false);
-    forget_key_button->setEnabled(false);
-    if (!AiCredentials::Available()) {
-        return;
-    }
-    AiCredentials::Result result{};
-    const auto key = AiCredentials::Load(ProviderId(), &result);
-    if (key) {
-        api_key->setText(*key);
-        key_saved = true;
-        remember_key->setChecked(true);
-        forget_key_button->setEnabled(true);
-        status->setText(tr("Using the API key saved for %1.").arg(provider->currentText()));
-    } else if (result == AiCredentials::Result::Failed) {
-        status->setText(tr("The system's credential store didn't give the saved key. Enter it "
-                           "again, or check that the store is unlocked."));
-    } else {
-        status->clear();
-    }
-}
-
-void AiOptimizeDialog::ForgetKey() {
-    const auto result = AiCredentials::Forget(ProviderId());
-    if (result == AiCredentials::Result::Ok || result == AiCredentials::Result::NotFound) {
-        key_saved = false;
-        api_key->clear();
-        remember_key->setChecked(false);
-        forget_key_button->setEnabled(false);
-        status->setText(tr("The saved %1 key was removed from this computer.")
-                            .arg(provider->currentText()));
-    } else {
-        status->setText(tr("The system's credential store didn't remove the key."));
-    }
-}
-
-void AiOptimizeDialog::RememberKeyAfterSuccess() {
-    if (!AiCredentials::Available()) {
-        return;
-    }
-    if (remember_key->isChecked()) {
-        if (AiCredentials::Save(ProviderId(), api_key->text().trimmed()) ==
-            AiCredentials::Result::Ok) {
-            key_saved = true;
-            forget_key_button->setEnabled(true);
-        } else {
-            status->setText(tr("The proposal is below, but the system's credential store didn't "
-                               "save the key."));
-        }
-    } else if (key_saved) {
-        // Unticking the box means "don't keep it": forget the copy saved earlier.
-        ForgetKey();
-    }
-}
-
-void AiOptimizeDialog::ListModels() {
-    if (models_reply || active_reply) {
-        return;
-    }
-    if (api_key->text().trimmed().isEmpty()) {
-        status->setText(tr("Enter your API key to load the provider's models."));
-        return;
-    }
-    QNetworkRequest request(Anthropic()
-                                ? QUrl{QStringLiteral("https://api.anthropic.com/v1/models?limit=100")}
-                                : QUrl{QStringLiteral("https://api.openai.com/v1/models")});
-    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
-                         QNetworkRequest::ManualRedirectPolicy);
-    request.setTransferTimeout(30000);
-    if (Anthropic()) {
-        request.setRawHeader("x-api-key", api_key->text().trimmed().toUtf8());
-        request.setRawHeader("anthropic-version", "2026-10-21");
-    } else {
-        request.setRawHeader("Authorization", "Bearer " + api_key->text().trimmed().toUtf8());
-    }
-    list_models_button->setEnabled(false);
-    analyze_button->setEnabled(false);
-    provider->setEnabled(false);
-    status->clear();
-    StartBusy(list_models_button, [](qint64 seconds) {
-        return tr("Loading… %1 s").arg(seconds);
-    });
-    models_reply = network->get(request);
-    connect(models_reply, &QNetworkReply::finished, this,
-            [this, reply = models_reply] { HandleModelList(reply); });
-}
-
-void AiOptimizeDialog::HandleModelList(QNetworkReply* reply) {
-    models_reply = nullptr;
-    StopBusy();
-    list_models_button->setEnabled(true);
-    analyze_button->setEnabled(true);
-    provider->setEnabled(active_reply == nullptr);
-    const QByteArray bytes = reply->readAll();
-    const auto error = reply->error();
-    const QString error_text = reply->errorString();
-    reply->deleteLater();
-    const QJsonObject response = QJsonDocument::fromJson(bytes).object();
-    if (error != QNetworkReply::NoError) {
-        const QString message =
-            response.value(QStringLiteral("error")).toObject().value(QStringLiteral("message")).toString();
-        status->setText(tr("The provider didn't list its models: %1")
-                            .arg(message.isEmpty() ? error_text : message.left(300)));
-        return;
-    }
-    using Common::AiOptimize::Provider;
-    const auto which = Anthropic() ? Provider::Anthropic : Provider::OpenAI;
-    QStringList ids;
-    for (const QJsonValue item : response.value(QStringLiteral("data")).toArray()) {
-        const QString id = item.toObject().value(QStringLiteral("id")).toString();
-        if (Common::AiOptimize::IsTextModel(which, id.toStdString()) && !ids.contains(id)) {
-            ids.append(id);
-        }
-    }
-    if (ids.isEmpty()) {
-        status->setText(tr("The provider listed no models this assistant can use."));
-        return;
-    }
-    if (!Anthropic()) {
-        // OpenAI lists in no particular order; newer versions sort higher by name.
-        std::ranges::sort(ids, std::greater<>{});
-    }
-    const QString current = model->currentText();
-    for (const QString& id : ids) {
-        if (model->findText(id) < 0) {
-            model->addItem(id, id);
-        }
-    }
-    model->setCurrentText(current);
-    status->setText(tr("%n model(s) available for your key.", nullptr, static_cast<int>(ids.size())));
-}
 
 QJsonObject AiOptimizeDialog::Diagnostic() const {
     QJsonObject current;
@@ -572,10 +331,19 @@ QJsonObject AiOptimizeDialog::Diagnostic() const {
         }
         if (!safe_history.isEmpty()) {
             diagnostic.insert(QStringLiteral("last_ai_change"), safe_history);
+            // Measured before and after it, in the same scene: what the change really did.
+            const QJsonObject record = ReadUndoRecord();
+            if (record.contains(QStringLiteral("measured_before")) &&
+                record.contains(QStringLiteral("measured_after"))) {
+                diagnostic.insert(QStringLiteral("last_ai_change_measured"),
+                                  QJsonObject{{QStringLiteral("before"), record.value(QStringLiteral("measured_before"))},
+                                              {QStringLiteral("after"), record.value(QStringLiteral("measured_after"))}});
+            }
         }
     }
     return diagnostic;
 }
+
 
 void AiOptimizeDialog::PrepareRequest() {
     prepared_diagnostic = Diagnostic();
@@ -583,18 +351,20 @@ void AiOptimizeDialog::PrepareRequest() {
         QString::fromUtf8(QJsonDocument(prepared_diagnostic).toJson(QJsonDocument::Indented)));
 }
 
+
 void AiOptimizeDialog::Analyze() {
-    if (active_reply || models_reply) {
+    if (request->Running() || provider_panel->Busy()) {
         return;
     }
-    if (api_key->text().trimmed().isEmpty() || model->currentText().trimmed().isEmpty() ||
-        complaint->toPlainText().trimmed().isEmpty()) {
-        status->setText(tr("Enter a model, your API key and a description of the problem."));
+    if (const QString missing = provider_panel->CheckMissing(); !missing.isEmpty()) {
+        status->setText(missing);
         return;
     }
-    const bool anthropic = Anthropic();
-    const QString model_id = model->currentText().trimmed();
-    const QJsonObject diagnostic = prepared_diagnostic;
+    if (complaint->toPlainText().trimmed().isEmpty()) {
+        complaint->setFocus();
+        status->setText(tr("Describe what you would like to improve first, in your own words."));
+        return;
+    }
     const QString instructions =
         QStringLiteral("You advise on Kaichii emulator settings. Use only allowed_changes and "
                        "their exact serialized values. Suggest at most four changes for the requested scope. "
@@ -603,129 +373,42 @@ void AiOptimizeDialog::Analyze() {
                        "Do not claim a game is fixed or promise an FPS increase. Missing textures "
                        "can be an emulator bug; say so when settings lack evidence. "
                        "Recent gameplay metrics are only available while the game runs. "
-                       "Frame generation is measured by Kaichii's separate optimizer.");
-    const QString scoped_instructions =
-        instructions +
+                       "last_ai_change_measured, when present, is what the previous change did in "
+                       "the same scene: build on what helped and revert what didn't. "
+                       "Frame generation is measured by Kaichii's separate optimizer.") +
         (global_scope ? QStringLiteral(" Global changes affect both Switch 1 and Switch 2 games; "
                                        "prefer conservative changes that fit both.")
                       : QStringLiteral(" Changes are saved for this game only."));
-    const QString input = QString::fromUtf8(QJsonDocument(diagnostic).toJson(QJsonDocument::Compact));
-    const QJsonObject schema = PlanSchema();
-    QJsonObject body;
-    QNetworkRequest request(anthropic ? QUrl{QStringLiteral("https://api.anthropic.com/v1/messages")}
-                                      : QUrl{QStringLiteral("https://api.openai.com/v1/responses")});
-    request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
-    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
-                         QNetworkRequest::ManualRedirectPolicy);
-    // Current models think before they answer; give them time.
-    request.setTransferTimeout(120000);
-    if (anthropic) {
-        request.setRawHeader("x-api-key", api_key->text().trimmed().toUtf8());
-        request.setRawHeader("anthropic-version", "2026-10-21");
-        body = {{QStringLiteral("model"), model_id},
-                // Thinking can't be turned off on the current models and counts against this.
-                {QStringLiteral("max_tokens"), 16000},
-                {QStringLiteral("system"), scoped_instructions},
-                {QStringLiteral("messages"),
-                 QJsonArray{QJsonObject{{QStringLiteral("role"), QStringLiteral("user")},
-                                        {QStringLiteral("content"), input}}}},
-                {QStringLiteral("output_config"),
-                 QJsonObject{{QStringLiteral("effort"), QStringLiteral("low")},
-                             {QStringLiteral("format"),
-                              QJsonObject{{QStringLiteral("type"), QStringLiteral("json_schema")},
-                                          {QStringLiteral("schema"), schema}}}}}};
-        // If a safety classifier declines, the API retries on a model it picks.
-        if (Common::AiOptimize::SupportsRefusalFallback(model_id.toStdString())) {
-            request.setRawHeader("anthropic-beta", "server-side-fallback-2026-07-01");
-            body.insert(QStringLiteral("fallbacks"), QStringLiteral("default"));
-        }
-    } else {
-        request.setRawHeader("Authorization", "Bearer " + api_key->text().trimmed().toUtf8());
-        body = {{QStringLiteral("model"), model_id},
-                {QStringLiteral("input"),
-                 QJsonArray{QJsonObject{{QStringLiteral("role"), QStringLiteral("system")},
-                                        {QStringLiteral("content"), scoped_instructions}},
-                            QJsonObject{{QStringLiteral("role"), QStringLiteral("user")},
-                                        {QStringLiteral("content"), input}}}},
-                {QStringLiteral("store"), false},
-                {QStringLiteral("max_output_tokens"), 16000},
-                {QStringLiteral("text"),
-                 QJsonObject{{QStringLiteral("format"),
-                              QJsonObject{{QStringLiteral("type"), QStringLiteral("json_schema")},
-                                          {QStringLiteral("name"), QStringLiteral("kaichii_settings_plan")},
-                                          {QStringLiteral("strict"), true},
-                                          {QStringLiteral("schema"), schema}}}}}};
-    }
     // The previous answer would read as this one's while it runs.
     ClearProposal();
     refresh_button->setEnabled(false);
-    provider->setEnabled(false);
-    model->setEnabled(false);
-    list_models_button->setEnabled(false);
+    provider_panel->SetLocked(true);
     complaint->setReadOnly(true);
     status->clear();
-    StartBusy(analyze_button, [name = provider->currentText()](qint64 seconds) {
+    analyze_spinner->Start([name = provider_panel->ProviderName()](qint64 seconds) {
         return tr("Waiting for %1… %2 s · Click to cancel").arg(name).arg(seconds);
     });
-    active_reply = network->post(request, QJsonDocument(body).toJson(QJsonDocument::Compact));
-    connect(active_reply, &QNetworkReply::finished, this,
-            [this, reply = active_reply] { HandleReply(reply); });
+    request->Send({.anthropic = provider_panel->Anthropic(),
+                   .model = provider_panel->Model(),
+                   .key = provider_panel->Key(),
+                   .instructions = instructions,
+                   .input = QString::fromUtf8(
+                       QJsonDocument(prepared_diagnostic).toJson(QJsonDocument::Compact)),
+                   .schema = PlanSchema(),
+                   .schema_name = QStringLiteral("kaichii_settings_plan")});
 }
 
-void AiOptimizeDialog::HandleReply(QNetworkReply* reply) {
-    active_reply = nullptr;
-    StopBusy();
+void AiOptimizeDialog::HandleReply(const AiReply& reply) {
+    analyze_spinner->Stop();
     refresh_button->setEnabled(true);
-    provider->setEnabled(true);
-    model->setEnabled(true);
-    list_models_button->setEnabled(true);
+    provider_panel->SetLocked(false);
     complaint->setReadOnly(false);
-    const QByteArray bytes = reply->readAll();
-    const auto error = reply->error();
-    reply->deleteLater();
-    QJsonParseError parse_error;
-    const QJsonObject response = QJsonDocument::fromJson(bytes, &parse_error).object();
-    if (error == QNetworkReply::OperationCanceledError) {
-        status->setText(tr("Request cancelled. No settings were changed."));
+    if (reply.status != AiReply::Status::Ok) {
+        status->setText(AiRequest::Describe(reply));
         return;
     }
-    if (error != QNetworkReply::NoError) {
-        const QString provider_error = response.value(QStringLiteral("error")).toObject().value(QStringLiteral("message")).toString();
-        status->setText(tr("The provider could not complete the request: %1")
-                            .arg(provider_error.isEmpty() ? reply->errorString()
-                                                          : provider_error.left(300)));
-        return;
-    }
-    const QString stop =
-        response.value(Anthropic() ? QStringLiteral("stop_reason") : QStringLiteral("status")).toString();
-    if (stop == QLatin1String("refusal")) {
-        status->setText(tr("The provider declined this request. Try rewording the description."));
-        return;
-    }
-    if (stop == QLatin1String("max_tokens") || stop == QLatin1String("incomplete")) {
-        status->setText(tr("The provider stopped before finishing its proposal. Try again, or "
-                           "pick another model."));
-        return;
-    }
-    const QString output = ResponseText(response, Anthropic());
-    if (output.isEmpty()) {
-        status->setText(tr("The provider returned no usable proposal."));
-        return;
-    }
-    // The request worked: keep this model for next time, and the key if asked to.
-    const std::string used_model = model->currentText().trimmed().toStdString();
-    if (Anthropic()) {
-        UISettings::values.ai_assistant_anthropic_model = used_model;
-    } else {
-        UISettings::values.ai_assistant_openai_model = used_model;
-    }
-    RememberKeyAfterSuccess();
-    const QJsonDocument plan = QJsonDocument::fromJson(output.toUtf8(), &parse_error);
-    if (parse_error.error != QJsonParseError::NoError || !plan.isObject()) {
-        status->setText(tr("The provider returned an invalid proposal. No settings were changed."));
-        return;
-    }
-    ShowPlan(plan.object());
+    provider_panel->RequestSucceeded();
+    ShowPlan(reply.result);
 }
 
 void AiOptimizeDialog::ClearProposal() {
@@ -740,56 +423,6 @@ void AiOptimizeDialog::ClearProposal() {
     apply_button->setEnabled(false);
 }
 
-void AiOptimizeDialog::StartBusy(QPushButton* button, std::function<QString(qint64)> text) {
-    StopBusy();
-    busy_button = button;
-    busy_restore_text = button->text();
-    busy_text = std::move(text);
-    busy_frame = 0;
-    busy_clock.start();
-    UpdateBusy();
-    busy_timer->start();
-}
-
-void AiOptimizeDialog::StopBusy() {
-    busy_timer->stop();
-    if (busy_button) {
-        busy_button->setIcon(QIcon{});
-        busy_button->setText(busy_restore_text);
-    }
-    busy_button = nullptr;
-    busy_text = {};
-}
-
-void AiOptimizeDialog::UpdateBusy() {
-    if (!busy_button) {
-        return;
-    }
-    // A 270° arc that turns a twelfth of a circle every tick, drawn in the highlight colour. The
-    // same pixmap serves the disabled state, which Qt would otherwise grey out.
-    const qreal ratio = devicePixelRatioF();
-    const int side = busy_button->fontMetrics().height();
-    QPixmap frame(QSize(side, side) * ratio);
-    frame.setDevicePixelRatio(ratio);
-    frame.fill(Qt::transparent);
-    {
-        QPainter painter(&frame);
-        painter.setRenderHint(QPainter::Antialiasing);
-        QPen pen(palette().color(QPalette::Highlight), qMax(2.0, side / 7.0));
-        pen.setCapStyle(Qt::RoundCap);
-        painter.setPen(pen);
-        const qreal inset = pen.widthF();
-        painter.drawArc(QRectF(inset, inset, side - 2 * inset, side - 2 * inset),
-                        -busy_frame * 30 * 16, 270 * 16);
-    }
-    busy_frame = (busy_frame + 1) % 12;
-    QIcon icon;
-    icon.addPixmap(frame, QIcon::Normal);
-    icon.addPixmap(frame, QIcon::Disabled);
-    busy_button->setIconSize(QSize(side, side));
-    busy_button->setIcon(icon);
-    busy_button->setText(busy_text(busy_clock.elapsed() / 1000));
-}
 
 void AiOptimizeDialog::ShowPlan(const QJsonObject& plan) {
     ClearProposal();
@@ -864,7 +497,10 @@ void AiOptimizeDialog::ShowPlan(const QJsonObject& plan) {
                                     : tr("Review the proposed changes, then apply only those you want."));
 }
 
+
 void AiOptimizeDialog::Apply() {
+    // Measured before the game stops: the scene the player is in is the "before".
+    const auto before = global_scope ? std::nullopt : MeasureNow();
     if (GameRunning()) {
         if (QMessageBox::question(this, tr("Stop the game?"),
                                   tr("These changes take effect on the next start. Stop the game "
@@ -903,8 +539,11 @@ void AiOptimizeDialog::Apply() {
         return;
     }
     QSaveFile undo_file(UndoPath());
-    const QByteArray undo_data =
-        QJsonDocument(QJsonObject{{QStringLiteral("changes"), undo_changes}}).toJson();
+    QJsonObject undo_record{{QStringLiteral("changes"), undo_changes}};
+    if (before) {
+        undo_record.insert(QStringLiteral("measured_before"), MeasurementJson(*before));
+    }
+    const QByteArray undo_data = QJsonDocument(undo_record).toJson();
     if (!undo_file.open(QIODevice::WriteOnly) ||
         undo_file.write(undo_data) != undo_data.size() ||
         !undo_file.commit()) {
@@ -925,11 +564,15 @@ void AiOptimizeDialog::Apply() {
     apply_button->setEnabled(false);
     undo_button->setEnabled(true);
     PrepareRequest();
+    UpdateMeasurementPanel();
     status->setText(global_scope
                         ? tr("Saved globally. Restart Kaichii to test the result. You can reopen "
                              "this assistant and undo the change.")
-                        : tr("Saved for this game. Start it again to test the result. You can "
-                             "reopen this assistant and undo the change."));
+                        : before ? tr("Saved for this game, with a measurement of the last 10 s. "
+                                      "Start the game again, play the same scene, and reopen "
+                                      "this assistant to measure the result.")
+                                 : tr("Saved for this game. Start it again to test the result. "
+                                      "You can reopen this assistant and undo the change."));
 }
 
 void AiOptimizeDialog::Undo() {
@@ -982,6 +625,106 @@ void AiOptimizeDialog::Undo() {
     undo_button->setEnabled(false);
     apply_button->setEnabled(false);
     PrepareRequest();
+    UpdateMeasurementPanel();
     status->setText(global_scope ? tr("The previous global settings were restored.")
                                  : tr("The previous settings were restored for this game."));
+}
+
+
+QJsonObject AiOptimizeDialog::ReadUndoRecord() const {
+    QFile file(UndoPath());
+    if (!file.open(QIODevice::ReadOnly)) {
+        return {};
+    }
+    return QJsonDocument::fromJson(file.readAll()).object();
+}
+
+bool AiOptimizeDialog::WriteUndoRecord(const QJsonObject& record) const {
+    QSaveFile file(UndoPath());
+    const QByteArray data = QJsonDocument(record).toJson();
+    return file.open(QIODevice::WriteOnly) && file.write(data) == data.size() && file.commit();
+}
+
+std::optional<Common::AiOptimize::Measurement> AiOptimizeDialog::MeasureNow() const {
+    if (!GameRunning()) {
+        return std::nullopt;
+    }
+    const auto intervals = Core::RecentPresentIntervals(10000.0);
+    if (intervals.size() < 30) {
+        return std::nullopt;
+    }
+    const auto pacing = Common::ComputeFramePacing(intervals, 10000.0);
+    return Common::AiOptimize::Measurement{.fps = pacing.average_fps,
+                                           .low_1pct_fps = pacing.low_1pct_fps,
+                                           .stutters = static_cast<unsigned>(pacing.stutters)};
+}
+
+void AiOptimizeDialog::UpdateMeasurementPanel() {
+    const QJsonObject record = ReadUndoRecord();
+    const auto before = MeasurementFromJson(record.value(QStringLiteral("measured_before")));
+    const auto after = MeasurementFromJson(record.value(QStringLiteral("measured_after")));
+    const bool pending = !record.isEmpty() && !record.value(QStringLiteral("kept")).toBool();
+    measurement_box->setVisible(!global_scope && pending);
+    if (global_scope || !pending) {
+        return;
+    }
+    measure_button->setEnabled(GameRunning());
+    keep_button->setEnabled(true);
+    QStringList lines;
+    lines.append(before ? tr("Before the change: %1.").arg(DescribeMeasurement(*before))
+                        : tr("Before the change: not measured (the game wasn't running when it "
+                             "was applied)."));
+    if (after) {
+        lines.append(tr("With the change: %1.").arg(DescribeMeasurement(*after)));
+        if (before) {
+            switch (Common::AiOptimize::Compare(*before, *after)) {
+            case Common::AiOptimize::Verdict::Better:
+                lines.append(tr("Result: better. Keep the settings if the game also looks right."));
+                break;
+            case Common::AiOptimize::Verdict::Worse:
+                lines.append(tr("Result: worse. Stop the game and undo the change."));
+                break;
+            case Common::AiOptimize::Verdict::NoClearChange:
+                lines.append(tr("Result: no clear change. A few percent either way is the "
+                                "difference between two runs of one scene."));
+                break;
+            case Common::AiOptimize::Verdict::NotComparable:
+                lines.append(tr("Result: the measurements can't be compared."));
+                break;
+            }
+        }
+    } else if (GameRunning()) {
+        lines.append(tr("Play the scene you measured before for a few seconds, then measure."));
+    } else {
+        lines.append(tr("Start the game with the new settings, play the same scene, and reopen "
+                        "this assistant to measure."));
+    }
+    measurement_text->setText(lines.join(QLatin1Char('\n')));
+}
+
+void AiOptimizeDialog::MeasureResult() {
+    const auto now = MeasureNow();
+    if (!now) {
+        status->setText(tr("Not enough frames in the last 10 s to measure. Play for a few seconds "
+                           "and try again."));
+        return;
+    }
+    QJsonObject record = ReadUndoRecord();
+    record.insert(QStringLiteral("measured_after"), MeasurementJson(*now));
+    if (!WriteUndoRecord(record)) {
+        status->setText(tr("Could not save the measurement."));
+        return;
+    }
+    UpdateMeasurementPanel();
+    PrepareRequest();
+    status->setText(tr("Measured. The next proposal will take this result into account."));
+}
+
+void AiOptimizeDialog::KeepResult() {
+    QJsonObject record = ReadUndoRecord();
+    record.insert(QStringLiteral("kept"), true);
+    if (WriteUndoRecord(record)) {
+        UpdateMeasurementPanel();
+        status->setText(tr("Kept. You can still undo this change later."));
+    }
 }

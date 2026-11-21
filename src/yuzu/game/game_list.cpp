@@ -4,6 +4,8 @@
 // SPDX-FileCopyrightText: 2015 Citra Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <array>
+
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QDir>
@@ -122,6 +124,31 @@ void GameList::SetupViews() {
     grid_view->SetModel(item_model);
     carousel_view->SetModel(item_model);
     cover_view->SetModel(item_model);
+
+    const std::array<QAbstractItemView*, 4> views{tree_view, grid_view, carousel_view, cover_view};
+    for (QAbstractItemView* const view : views) {
+        connect(view->selectionModel(), &QItemSelectionModel::selectionChanged, this,
+                &GameList::SelectedGameChanged);
+        connect(view->selectionModel(), &QItemSelectionModel::currentChanged, this,
+                &GameList::SelectedGameChanged);
+    }
+}
+
+std::optional<GameList::Selection> GameList::SelectedGame() const {
+    if (m_currentView == nullptr) {
+        return std::nullopt;
+    }
+    const QModelIndex current = m_currentView->currentIndex();
+    if (!current.isValid() ||
+        !m_currentView->selectionModel()->isSelected(current)) {
+        return std::nullopt;
+    }
+    const QModelIndex selected = current.sibling(current.row(), 0);
+    if (selected.data(GameListItem::TypeRole).value<GameListItemType>() != GameListItemType::Game) {
+        return std::nullopt;
+    }
+    return Selection{selected.data(GameListItemPath::ProgramIdRole).toULongLong(),
+                     selected.data(GameListItemPath::FullPathRole).toString()};
 }
 
 QString GameList::GetLastFilterResultItem() const {
@@ -263,6 +290,7 @@ void GameList::ResetViewMode() {
             item_model->PopulateAsync(UISettings::values.game_dirs);
         }
     }
+    emit SelectedGameChanged();
 }
 
 void GameList::OnTextChanged(const QString& new_text) {

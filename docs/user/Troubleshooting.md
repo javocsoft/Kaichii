@@ -3,8 +3,13 @@
 ## The log
 
 Kaichii writes what happens in a log. *File > Open Kaichii Folders > Log Folder* opens its folder:
-`eden_log.txt` is the current or last session, and `eden_log.txt.old` the one before. Its first line
-names the build. Attach it when you report a problem, after checking it for personal information.
+`eden_log.txt` is the current or last session, and `eden_log.txt.old.txt` the one before. Its first
+line names the build. Attach it when you report a problem, after checking it for personal
+information.
+
+*Help > Explain the last problem* reads the log for you: it points out the usual causes (keys,
+firmware, a damaged game file, the graphics driver, video memory) without sending anything, and can
+ask an AI to explain the rest. See [Explain the last problem](AIOptimization.md#explain-the-last-problem).
 
 ## Kaichii doesn't start
 

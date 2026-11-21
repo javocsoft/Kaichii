@@ -95,14 +95,185 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
 </context>
 <context>
+    <name>AiLogDialog</name>
+    <message>
+        <location filename="../../src/yuzu/ai_log_dialog.cpp" line="+44"/>
+        <source>The game needs your console&apos;s decryption keys, and they are missing or older than the game.</source>
+        <translation>El juego necesita las claves de descifrado de tu consola, y faltan o son más antiguas que el juego.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The game file didn&apos;t load. It may be damaged or incomplete: dump it again from your console.</source>
+        <translation>El archivo del juego no ha cargado. Puede estar dañado o incompleto: vuelve a volcarlo desde tu consola.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>No firmware is installed. Some games need your console&apos;s firmware.</source>
+        <translation>No hay firmware instalado. Algunos juegos necesitan el firmware de tu consola.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Vulkan didn&apos;t start, and Kaichii needs it. Update your graphics driver.</source>
+        <translation>Vulkan no ha arrancado, y Kaichii lo necesita. Actualiza el controlador de tu tarjeta gráfica.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The graphics driver stopped responding while playing (device lost). Update the driver; a lower resolution can help. If it keeps happening in one place, report it.</source>
+        <translation>El controlador gráfico dejó de responder mientras jugabas (dispositivo perdido). Actualiza el controlador; bajar la resolución puede ayudar. Si se repite siempre en el mismo sitio, infórmalo.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The graphics card ran out of video memory. A lower resolution or the Performance preset uses less.</source>
+        <translation>La tarjeta gráfica se quedó sin memoria de vídeo. Una resolución más baja o el ajuste predefinido Rendimiento usan menos.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Kaichii can&apos;t translate some of this game&apos;s shaders yet, so some objects or effects may be missing. That&apos;s a limit of the emulator, not your settings, and worth reporting.</source>
+        <translation>Kaichii todavía no puede traducir algunos shaders de este juego, así que pueden faltar objetos o efectos. Es un límite del emulador, no de tus ajustes, y merece la pena informarlo.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The game stopped on a memory access Kaichii doesn&apos;t handle: an emulator bug. Report it with the log.</source>
+        <translation>El juego se detuvo en un acceso a memoria que Kaichii no gestiona: es un fallo del emulador. Infórmalo con el registro.</translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <source>Explain the last problem</source>
+        <translation>Explicar el último problema</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Kaichii reads its log for the usual causes of a game that doesn&apos;t start, crashes or shows something wrong. This part needs no AI and sends nothing.</source>
+        <translation>Kaichii lee su registro en busca de las causas habituales de un juego que no arranca, se cierra o muestra algo mal. Esta parte no usa IA y no envía nada.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Log:</source>
+        <translation>Registro:</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This session</source>
+        <translation>Esta sesión</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The previous session (before Kaichii was restarted)</source>
+        <translation>La sesión anterior (antes de reiniciar Kaichii)</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Want more? An AI can read the log lines below and explain what went wrong. It uses your own OpenAI or Anthropic API key, and your provider may charge for the request.</source>
+        <translation>¿Quieres más? Una IA puede leer las líneas del registro de abajo y explicar qué ha fallado. Usa tu propia clave de API de OpenAI o Anthropic, y tu proveedor puede cobrarte la consulta.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>What happened? (optional) For example: the game closes when I enter the castle.</source>
+        <translation>¿Qué ha pasado? (opcional) Por ejemplo: el juego se cierra al entrar en el castillo.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Show the log lines that would be sent</source>
+        <translation>Mostrar las líneas del registro que se enviarían</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Nothing would be sent.</source>
+        <translation>No se enviaría nada.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Only the lines about the problem and the build are sent, with your user name taken out of paths. Never your games, saves or keys.</source>
+        <translation>Solo se envían las líneas sobre el problema y la versión, sin tu nombre de usuario en las rutas. Nunca tus juegos, partidas ni claves.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Ask the AI to explain</source>
+        <translation>Pedir a la IA que lo explique</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Draft a bug report on GitHub</source>
+        <translation>Preparar un informe de error en GitHub</translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>There is nothing in this log for the AI to explain.</source>
+        <translation>En este registro no hay nada que la IA pueda explicar.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>There is no log to read yet.</source>
+        <translation>Todavía no hay ningún registro que leer.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This log has no errors, so there is nothing for the AI to explain, and asking is turned off so you don&apos;t pay for a request. If a game fails, come back after it happens: when Kaichii closes on a problem, choose the previous session.</source>
+        <translation>Este registro no tiene errores, así que la IA no tiene nada que explicar, y la consulta está desactivada para que no pagues por ella. Si un juego falla, vuelve después de que pase: si Kaichii se cierra por el problema, elige la sesión anterior.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Kaichii found no known cause, but the log has errors the AI can look at.</source>
+        <translation>Kaichii no ha encontrado ninguna causa conocida, pero el registro tiene errores que la IA puede revisar.</translation>
+    </message>
+    <message>
+        <source>Kaichii found no known cause in this log.</source>
+        <translation type="vanished">Kaichii no ha encontrado ninguna causa conocida en este registro.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>What Kaichii found:</source>
+        <translation>Lo que ha encontrado Kaichii:</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>More in the guide</source>
+        <translation>Más en la guía</translation>
+    </message>
+    <message>
+        <source>Enter a model and your API key.</source>
+        <translation type="vanished">Escribe un modelo y tu clave de API.</translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Waiting for %1… %2 s · Click to cancel</source>
+        <translation>Esperando a %1… %2 s · Pulsa para cancelar</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>The provider&apos;s answer wasn&apos;t usable. Try again.</source>
+        <translation>La respuesta del proveedor no se puede usar. Vuelve a intentarlo.</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>This looks like a Kaichii bug: you can draft a report for the developers.</source>
+        <translation>Parece un fallo de Kaichii: puedes preparar un informe para los desarrolladores.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>This build doesn&apos;t know its repository, so it can&apos;t open a report.</source>
+        <translation>Esta versión no conoce su repositorio, así que no puede abrir un informe.</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>The browser didn&apos;t open.</source>
+        <translation>No se ha abierto el navegador.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The report opened on GitHub. Review it, pick the game, graphics card and system, attach eden_log.txt and publish it with your account.</source>
+        <translation>El informe se ha abierto en GitHub. Revísalo, elige el juego, la tarjeta gráfica y el sistema, adjunta eden_log.txt y publícalo con tu cuenta.</translation>
+    </message>
+</context>
+<context>
     <name>AiOptimizeDialog</name>
     <message>
-        <location filename="../../src/yuzu/ai_optimize_dialog.cpp" line="+138"/>
+        <location filename="../../src/yuzu/ai_optimize_dialog.cpp" line="+111"/>
         <source>AI settings assistant</source>
         <translation>Asistente de ajustes con IA</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+6"/>
         <source>Describe what you want to improve on this computer. Kaichii will send a diagnostic of your computer and settings to your chosen AI provider and show proposed global settings for your approval.</source>
         <translation>Describe lo que quieres mejorar en este equipo. Kaichii enviará un diagnóstico de tu equipo y tus ajustes al proveedor de IA elegido y te mostrará los ajustes globales propuestos para que los apruebes.</translation>
     </message>
@@ -129,7 +300,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation type="vanished">Tu clave de API (no se guarda)</translation>
     </message>
     <message>
-        <location line="-59"/>
+        <location filename="../../src/yuzu/ai_provider_panel.cpp" line="+36"/>
         <source>Recommended</source>
         <translation>Recomendado</translation>
     </message>
@@ -164,62 +335,51 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>El más capaz y el de mayor coste</translation>
     </message>
     <message>
-        <location line="+53"/>
         <source>Pick one of the provider&apos;s main models, or type another model name.</source>
-        <translation>Elige uno de los modelos principales del proveedor o escribe el nombre de otro modelo.</translation>
+        <translation type="vanished">Elige uno de los modelos principales del proveedor o escribe el nombre de otro modelo.</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Load from provider</source>
-        <translation>Cargar del proveedor</translation>
+        <translation type="vanished">Cargar del proveedor</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Ask the provider which models your key can use. Needs your API key.</source>
-        <translation>Pregunta al proveedor qué modelos puede usar tu clave. Necesita tu clave de API.</translation>
+        <translation type="vanished">Pregunta al proveedor qué modelos puede usar tu clave. Necesita tu clave de API.</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Your API key</source>
-        <translation>Tu clave de API</translation>
+        <translation type="vanished">Tu clave de API</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Remember this key in the system&apos;s credential store</source>
-        <translation>Recordar esta clave en el almacén de credenciales del sistema</translation>
+        <translation type="vanished">Recordar esta clave en el almacén de credenciales del sistema</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Forget saved key</source>
-        <translation>Olvidar la clave guardada</translation>
+        <translation type="vanished">Olvidar la clave guardada</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>This system has no credential store Kaichii can use, so the key stays in memory only while this window is open.</source>
-        <translation>Este sistema no tiene un almacén de credenciales que Kaichii pueda usar, así que la clave solo permanece en memoria mientras la ventana está abierta.</translation>
+        <translation type="vanished">Este sistema no tiene un almacén de credenciales que Kaichii pueda usar, así que la clave solo permanece en memoria mientras la ventana está abierta.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Saved by the operating system (Keychain, Credential Manager or Secret Service), never in Kaichii&apos;s settings files. It is saved once a request succeeds.</source>
-        <translation>La guarda el sistema operativo (Llavero, Administrador de credenciales o Secret Service), nunca los archivos de configuración de Kaichii. Se guarda cuando una consulta sale bien.</translation>
+        <translation type="vanished">La guarda el sistema operativo (Llavero, Administrador de credenciales o Secret Service), nunca los archivos de configuración de Kaichii. Se guarda cuando una consulta sale bien.</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Provider:</source>
-        <translation>Proveedor:</translation>
+        <translation type="vanished">Proveedor:</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Model:</source>
-        <translation>Modelo:</translation>
+        <translation type="vanished">Modelo:</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>API key:</source>
-        <translation>Clave de API:</translation>
+        <translation type="vanished">Clave de API:</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../../src/yuzu/ai_optimize_dialog.cpp" line="+27"/>
         <source>What would you like to improve?</source>
         <translation>¿Qué te gustaría mejorar?</translation>
     </message>
@@ -249,7 +409,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Pedir una propuesta</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>Undo last AI change</source>
         <translation>Deshacer el último cambio de IA</translation>
     </message>
@@ -264,118 +424,129 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location line="+57"/>
         <source>Model chosen by name or listed by the provider.</source>
-        <translation>Modelo elegido por nombre o de la lista del proveedor.</translation>
+        <translation type="vanished">Modelo elegido por nombre o de la lista del proveedor.</translation>
     </message>
     <message>
-        <location line="+32"/>
         <source>Don&apos;t have a key? &lt;a href=&quot;%1&quot;&gt;Create one on the %2 website&lt;/a&gt;.</source>
-        <translation>¿No tienes clave? &lt;a href=&quot;%1&quot;&gt;Créala en la web de %2&lt;/a&gt;.</translation>
+        <translation type="vanished">¿No tienes clave? &lt;a href=&quot;%1&quot;&gt;Créala en la web de %2&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location line="+25"/>
         <source>Using the API key saved for %1.</source>
-        <translation>Se usa la clave de API guardada para %1.</translation>
+        <translation type="vanished">Se usa la clave de API guardada para %1.</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>The system&apos;s credential store didn&apos;t give the saved key. Enter it again, or check that the store is unlocked.</source>
-        <translation>El almacén de credenciales del sistema no ha devuelto la clave guardada. Vuelve a escribirla o comprueba que el almacén está desbloqueado.</translation>
+        <translation type="vanished">El almacén de credenciales del sistema no ha devuelto la clave guardada. Vuelve a escribirla o comprueba que el almacén está desbloqueado.</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>The saved %1 key was removed from this computer.</source>
-        <translation>Se ha borrado de este equipo la clave guardada de %1.</translation>
+        <translation type="vanished">Se ha borrado de este equipo la clave guardada de %1.</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>The system&apos;s credential store didn&apos;t remove the key.</source>
-        <translation>El almacén de credenciales del sistema no ha borrado la clave.</translation>
+        <translation type="vanished">El almacén de credenciales del sistema no ha borrado la clave.</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>The proposal is below, but the system&apos;s credential store didn&apos;t save the key.</source>
-        <translation>La propuesta está abajo, pero el almacén de credenciales del sistema no ha guardado la clave.</translation>
+        <translation type="vanished">La propuesta está abajo, pero el almacén de credenciales del sistema no ha guardado la clave.</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>Enter your API key to load the provider&apos;s models.</source>
-        <translation>Escribe tu clave de API para cargar los modelos del proveedor.</translation>
+        <translation type="vanished">Escribe tu clave de API para cargar los modelos del proveedor.</translation>
     </message>
     <message>
-        <location line="+20"/>
         <source>Loading… %1 s</source>
-        <translation>Cargando… %1 s</translation>
+        <translation type="vanished">Cargando… %1 s</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+183"/>
         <source>Waiting for %1… %2 s · Click to cancel</source>
         <translation>Esperando a %1… %2 s · Pulsa para cancelar</translation>
     </message>
     <message>
-        <location line="+21"/>
         <source>Request cancelled. No settings were changed.</source>
-        <translation>Consulta cancelada. No se ha cambiado ningún ajuste.</translation>
+        <translation type="vanished">Consulta cancelada. No se ha cambiado ningún ajuste.</translation>
     </message>
     <message>
         <source>Asking %1 for its models…</source>
         <translation type="vanished">Pidiendo a %1 su lista de modelos…</translation>
     </message>
     <message>
-        <location line="-228"/>
         <source>The provider didn&apos;t list its models: %1</source>
-        <translation>El proveedor no ha devuelto su lista de modelos: %1</translation>
+        <translation type="vanished">El proveedor no ha devuelto su lista de modelos: %1</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>The provider listed no models this assistant can use.</source>
-        <translation>El proveedor no ha devuelto ningún modelo que este asistente pueda usar.</translation>
+        <translation type="vanished">El proveedor no ha devuelto ningún modelo que este asistente pueda usar.</translation>
     </message>
     <message numerus="yes">
-        <location line="+14"/>
         <source>%n model(s) available for your key.</source>
-        <translation>
+        <translation type="vanished">
             <numerusform>%n modelo disponible para tu clave.</numerusform>
             <numerusform>%n modelos disponibles para tu clave.</numerusform>
         </translation>
     </message>
     <message>
-        <location line="+103"/>
         <source>Enter a model, your API key and a description of the problem.</source>
-        <translation>Indica un modelo, tu clave de API y una descripción del problema.</translation>
+        <translation type="vanished">Indica un modelo, tu clave de API y una descripción del problema.</translation>
     </message>
     <message>
         <source>Waiting for %1…</source>
         <translation type="vanished">Esperando a %1…</translation>
     </message>
     <message>
-        <location line="+102"/>
         <source>The provider could not complete the request: %1</source>
-        <translation>El proveedor no pudo completar la consulta: %1</translation>
+        <translation type="vanished">El proveedor no pudo completar la consulta: %1</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>The provider declined this request. Try rewording the description.</source>
-        <translation>El proveedor ha rechazado esta consulta. Prueba a redactar la descripción de otra forma.</translation>
+        <translation type="vanished">El proveedor ha rechazado esta consulta. Prueba a redactar la descripción de otra forma.</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>The provider stopped before finishing its proposal. Try again, or pick another model.</source>
-        <translation>El proveedor se ha detenido antes de terminar la propuesta. Vuelve a intentarlo o elige otro modelo.</translation>
+        <translation type="vanished">El proveedor se ha detenido antes de terminar la propuesta. Vuelve a intentarlo o elige otro modelo.</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>The provider returned no usable proposal.</source>
-        <translation>El proveedor no devolvió una propuesta utilizable.</translation>
+        <translation type="vanished">El proveedor no devolvió una propuesta utilizable.</translation>
     </message>
     <message>
-        <location line="+13"/>
         <source>The provider returned an invalid proposal. No settings were changed.</source>
-        <translation>El proveedor devolvió una propuesta inválida. No se cambió ningún ajuste.</translation>
+        <translation type="vanished">El proveedor devolvió una propuesta inválida. No se cambió ningún ajuste.</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="-297"/>
+        <source>%1 fps, 1% low %2 fps, %3 stutters</source>
+        <translation>%1 fps, 1 % bajo %2 fps, %3 tirones</translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>Measured result of the last AI change</source>
+        <translation>Resultado medido del último cambio de la IA</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Measure now (last 10 s)</source>
+        <translation>Medir ahora (últimos 10 s)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Play the same scene as before the change for a few seconds first: a different scene or new shaders change the numbers.</source>
+        <translation>Juega antes unos segundos en la misma escena que antes del cambio: otra escena o shaders nuevos cambian los números.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Keep these settings</source>
+        <translation>Mantener estos ajustes</translation>
+    </message>
+    <message>
+        <location line="+218"/>
+        <source>Describe what you would like to improve first, in your own words.</source>
+        <translation>Primero describe con tus palabras qué te gustaría mejorar.</translation>
+    </message>
+    <message>
+        <location line="+69"/>
         <source>The proposal did not pass Kaichii&apos;s validation.</source>
         <translation>La propuesta no superó la validación de Kaichii.</translation>
     </message>
@@ -410,7 +581,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Revisa los cambios propuestos y aplica solo los que quieras.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+8"/>
         <source>Stop the game?</source>
         <translation>¿Detener el juego?</translation>
     </message>
@@ -435,17 +606,22 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>No has seleccionado ningún cambio.</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Could not save the undo information. Nothing was changed.</source>
         <translation>No se pudo guardar la información para deshacer. No se cambió nada.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>Saved globally. Restart Kaichii to test the result. You can reopen this assistant and undo the change.</source>
         <translation>Guardado para todos los juegos. Reinicia Kaichii para probar el resultado. Puedes volver a abrir este asistente y deshacer el cambio.</translation>
     </message>
     <message>
         <location line="+2"/>
+        <source>Saved for this game, with a measurement of the last 10 s. Start the game again, play the same scene, and reopen this assistant to measure the result.</source>
+        <translation>Guardado para este juego, con una medición de los últimos 10 s. Vuelve a iniciar el juego, juega en la misma escena y abre de nuevo este asistente para medir el resultado.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Saved for this game. Start it again to test the result. You can reopen this assistant and undo the change.</source>
         <translation>Guardado para este juego. Inícialo de nuevo para probar el resultado. Puedes volver a abrir este asistente y deshacer el cambio.</translation>
     </message>
@@ -470,7 +646,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Estos ajustes han vuelto a cambiar. Deshacer sobrescribiría una elección más reciente, así que Kaichii los ha dejado como están.</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>The previous global settings were restored.</source>
         <translation>Se han restaurado los ajustes globales anteriores.</translation>
     </message>
@@ -478,6 +654,287 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <location line="+1"/>
         <source>The previous settings were restored for this game.</source>
         <translation>Se han restaurado los ajustes anteriores de este juego.</translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>Before the change: %1.</source>
+        <translation>Antes del cambio: %1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Before the change: not measured (the game wasn&apos;t running when it was applied).</source>
+        <translation>Antes del cambio: sin medir (el juego no estaba abierto al aplicarlo).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>With the change: %1.</source>
+        <translation>Con el cambio: %1.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Result: better. Keep the settings if the game also looks right.</source>
+        <translation>Resultado: mejor. Mantén los ajustes si el juego también se ve bien.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Result: worse. Stop the game and undo the change.</source>
+        <translation>Resultado: peor. Detén el juego y deshaz el cambio.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Result: no clear change. A few percent either way is the difference between two runs of one scene.</source>
+        <translation>Resultado: sin cambio claro. Unos pocos puntos arriba o abajo son la diferencia normal entre dos pasadas por la misma escena.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Result: the measurements can&apos;t be compared.</source>
+        <translation>Resultado: las mediciones no se pueden comparar.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Play the scene you measured before for a few seconds, then measure.</source>
+        <translation>Juega unos segundos en la escena que mediste antes y después mide.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Start the game with the new settings, play the same scene, and reopen this assistant to measure.</source>
+        <translation>Inicia el juego con los ajustes nuevos, juega en la misma escena y vuelve a abrir este asistente para medir.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Not enough frames in the last 10 s to measure. Play for a few seconds and try again.</source>
+        <translation>No hay suficientes fotogramas en los últimos 10 s para medir. Juega unos segundos y vuelve a intentarlo.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Could not save the measurement.</source>
+        <translation>No se ha podido guardar la medición.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Measured. The next proposal will take this result into account.</source>
+        <translation>Medido. La próxima propuesta tendrá en cuenta este resultado.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Kept. You can still undo this change later.</source>
+        <translation>Mantenido. Todavía puedes deshacer este cambio más adelante.</translation>
+    </message>
+</context>
+<context>
+    <name>AiProviderPanel</name>
+    <message>
+        <location filename="../../src/yuzu/ai_provider_panel.cpp" line="+17"/>
+        <source>Pick one of the provider&apos;s main models, or type another model name.</source>
+        <translation>Elige uno de los modelos principales del proveedor o escribe el nombre de otro modelo.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Load from provider</source>
+        <translation>Cargar del proveedor</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ask the provider which models your key can use. Needs your API key.</source>
+        <translation>Pregunta al proveedor qué modelos puede usar tu clave. Necesita tu clave de API.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Your API key</source>
+        <translation>Tu clave de API</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Remember this key in the system&apos;s credential store</source>
+        <translation>Recordar esta clave en el almacén de credenciales del sistema</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Forget saved key</source>
+        <translation>Olvidar la clave guardada</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>This system has no credential store Kaichii can use, so the key stays in memory only while this window is open.</source>
+        <translation>Este sistema no tiene un almacén de credenciales que Kaichii pueda usar, así que la clave solo permanece en memoria mientras la ventana está abierta.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Saved by the operating system (Keychain, Credential Manager or Secret Service), never in Kaichii&apos;s settings files. It is saved once a request succeeds.</source>
+        <translation>La guarda el sistema operativo (Llavero, Administrador de credenciales o Secret Service), nunca los archivos de configuración de Kaichii. Se guarda cuando una consulta sale bien.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Provider:</source>
+        <translation>Proveedor:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Model:</source>
+        <translation>Modelo:</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>API key:</source>
+        <translation>Clave de API:</translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <source>Choose a model and enter your API key.</source>
+        <translation>Elige un modelo y escribe tu clave de API.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Choose a model.</source>
+        <translation>Elige un modelo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Enter your API key.</source>
+        <translation>Escribe tu clave de API.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Model chosen by name or listed by the provider.</source>
+        <translation>Modelo elegido por nombre o de la lista del proveedor.</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Don&apos;t have a key? &lt;a href=&quot;%1&quot;&gt;Create one on the %2 website&lt;/a&gt;.</source>
+        <translation>¿No tienes clave? &lt;a href=&quot;%1&quot;&gt;Créala en la web de %2&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Using the API key saved for %1.</source>
+        <translation>Se usa la clave de API guardada para %1.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The system&apos;s credential store didn&apos;t give the saved key. Enter it again, or check that the store is unlocked.</source>
+        <translation>El almacén de credenciales del sistema no ha devuelto la clave guardada. Vuelve a escribirla o comprueba que el almacén está desbloqueado.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The saved %1 key was removed from this computer.</source>
+        <translation>Se ha borrado de este equipo la clave guardada de %1.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The system&apos;s credential store didn&apos;t remove the key.</source>
+        <translation>El almacén de credenciales del sistema no ha borrado la clave.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>The answer is below, but the system&apos;s credential store didn&apos;t save the key.</source>
+        <translation>La respuesta está abajo, pero el almacén de credenciales del sistema no ha guardado la clave.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Enter your API key to load the provider&apos;s models.</source>
+        <translation>Escribe tu clave de API para cargar los modelos del proveedor.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Loading… %1 s</source>
+        <translation>Cargando… %1 s</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>The provider didn&apos;t list its models: %1</source>
+        <translation>El proveedor no ha devuelto su lista de modelos: %1</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The provider listed no models this assistant can use.</source>
+        <translation>El proveedor no ha devuelto ningún modelo que este asistente pueda usar.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+15"/>
+        <source>%n model(s) available for your key.</source>
+        <translation>
+            <numerusform>%n modelo disponible para tu clave.</numerusform>
+            <numerusform>%n modelos disponibles para tu clave.</numerusform>
+        </translation>
+    </message>
+</context>
+<context>
+    <name>AiReportDraftDialog</name>
+    <message>
+        <location filename="../../src/yuzu/ai_report_draft_dialog.cpp" line="+41"/>
+        <source>Write the report with AI</source>
+        <translation>Redactar el informe con IA</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Tell how %1 ran, in your own words and in any language: what worked, what failed, how far you got. An AI writes the report in English from what you say, and you review it before anything goes to GitHub. Your provider may charge for the request.</source>
+        <translation>Cuenta cómo ha ido %1, con tus palabras y en cualquier idioma: qué ha funcionado, qué ha fallado y hasta dónde has llegado. Una IA redacta el informe en inglés a partir de lo que digas, y lo revisas antes de que nada llegue a GitHub. Tu proveedor puede cobrarte la consulta.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>the game</source>
+        <translation>el juego</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>For example: I reached the second temple. The sound crackles in caves, and it stutters for a moment when I enter the town.</source>
+        <translation>Por ejemplo: llegué al segundo templo. El sonido cruje en las cuevas y da un tirón al entrar en el pueblo.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Sent: what you write here, the game, the Kaichii build, your graphics card, operating system and launch settings, which the report includes anyway. Never your games, saves, keys or logs.</source>
+        <translation>Se envía: lo que escribas aquí, el juego, la versión de Kaichii, tu tarjeta gráfica, el sistema operativo y los ajustes de inicio, que el informe ya incluye. Nunca tus juegos, partidas, claves ni registros.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Write the report</source>
+        <translation>Redactar el informe</translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Tell what happened first, in your own words.</source>
+        <translation>Primero cuenta con tus palabras qué ha pasado.</translation>
+    </message>
+    <message>
+        <source>Enter a model, your API key and what happened.</source>
+        <translation type="vanished">Escribe un modelo, tu clave de API y lo que ha pasado.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Waiting for %1… %2 s · Click to cancel</source>
+        <translation>Esperando a %1… %2 s · Pulsa para cancelar</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>The provider&apos;s answer wasn&apos;t a usable report. Try again.</source>
+        <translation>La respuesta del proveedor no es un informe utilizable. Vuelve a intentarlo.</translation>
+    </message>
+</context>
+<context>
+    <name>AiRequest</name>
+    <message>
+        <location filename="../../src/yuzu/ai_request.cpp" line="+155"/>
+        <source>Request cancelled. Nothing was changed.</source>
+        <translation>Consulta cancelada. No se ha cambiado nada.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The provider could not complete the request: %1</source>
+        <translation>El proveedor no pudo completar la consulta: %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The provider declined this request. Try rewording the description.</source>
+        <translation>El proveedor ha rechazado esta consulta. Prueba a redactar la descripción de otra forma.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The provider stopped before finishing its answer. Try again, or pick another model.</source>
+        <translation>El proveedor se ha detenido antes de terminar la respuesta. Vuelve a intentarlo o elige otro modelo.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The provider returned no usable answer. Nothing was changed.</source>
+        <translation>El proveedor no ha devuelto una respuesta utilizable. No se ha cambiado nada.</translation>
     </message>
 </context>
 <context>
@@ -767,7 +1224,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
 <context>
     <name>CompatibilityReporting::Dialog</name>
     <message>
-        <location filename="../../src/yuzu/compatibility_report.cpp" line="+153"/>
+        <location filename="../../src/yuzu/compatibility_report.cpp" line="+155"/>
         <source>Submit compatibility report</source>
         <translation>Enviar informe de compatibilidad</translation>
     </message>
@@ -962,7 +1419,17 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Todo lo que aparece en la vista previa será público en GitHub. No incluyas archivos de juegos, claves, firmware, partidas guardadas ni datos privados.</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
+        <source>Write it with AI…</source>
+        <translation>Redactar con IA…</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Tell what happened in your own words, in any language, and an AI writes the report in English for you to review. Needs your own OpenAI or Anthropic API key.</source>
+        <translation>Cuenta lo que ha pasado con tus palabras, en cualquier idioma, y una IA redacta el informe en inglés para que lo revises. Necesita tu propia clave de API de OpenAI o Anthropic.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Copy report</source>
         <translation>Copiar informe</translation>
     </message>
@@ -972,7 +1439,12 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Abrir en GitHub</translation>
     </message>
     <message>
-        <location line="+142"/>
+        <location line="+40"/>
+        <source>The AI wrote the report from your words. Check that it says what happened, then choose the compatibility and smoothness yourself.</source>
+        <translation>La IA ha redactado el informe a partir de tus palabras. Comprueba que dice lo que pasó y elige tú la compatibilidad y la fluidez.</translation>
+    </message>
+    <message>
+        <location line="+140"/>
         <source>Report copied. Paste it into a new compatibility report on GitHub.</source>
         <translation>Informe copiado. Pégalo en un nuevo informe de compatibilidad en GitHub.</translation>
     </message>
@@ -1018,7 +1490,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation type="vanished">Mi informe no contiene archivos de juegos, claves, firmware, partidas guardadas ni datos privados de cuentas.</translation>
     </message>
     <message>
-        <location line="-185"/>
+        <location line="-230"/>
         <source>Clear draft</source>
         <translation>Borrar borrador</translation>
     </message>
@@ -1039,7 +1511,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation type="vanished">Primero busca y confirma el juego del catálogo.</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+146"/>
         <source>Check %1: required fields must be filled, within their length limit, and contain no control characters.</source>
         <translation>Revisa %1: los campos obligatorios deben estar rellenos, sin pasar de su longitud máxima y sin caracteres de control.</translation>
     </message>
@@ -1117,7 +1589,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation type="vanished">El catálogo devolvió una respuesta no válida. No se confirmó ningún juego.</translation>
     </message>
     <message>
-        <location line="-156"/>
+        <location line="-201"/>
         <source>Choose how smoothly it ran</source>
         <translation>Elige cómo de fluido ha ido</translation>
     </message>
@@ -1172,7 +1644,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Por ejemplo 30, o 25-30</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+188"/>
         <source>Choose how smoothly the game ran.</source>
         <translation>Elige cómo de fluido ha ido el juego.</translation>
     </message>
@@ -8673,7 +9145,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameList</name>
     <message>
-        <location filename="../../src/yuzu/game/game_list.cpp" line="+551"/>
+        <location filename="../../src/yuzu/game/game_list.cpp" line="+579"/>
         <source>Ask AI to tune this game...</source>
         <translation>Pedir a la IA que ajuste este juego...</translation>
     </message>
@@ -9593,7 +10065,7 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/yuzu/main.ui" line="+498"/>
+        <location filename="../../src/yuzu/main.ui" line="+507"/>
         <source>Ask AI to tune current game...</source>
         <translation>Pedir a la IA que ajuste el juego actual...</translation>
     </message>
@@ -9603,18 +10075,18 @@ o haz clic para buscarlo</translation>
         <translation>Pedir a la IA que ajuste este equipo...</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+2456"/>
-        <location line="+1794"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+2467"/>
+        <location line="+1826"/>
         <source>AI settings assistant</source>
         <translation>Asistente de ajustes con IA</translation>
     </message>
     <message>
-        <location line="-1793"/>
+        <location line="-1825"/>
         <source>Stop the running game before tuning another game.</source>
         <translation>Detén el juego en marcha antes de ajustar otro juego.</translation>
     </message>
     <message>
-        <location line="+1794"/>
+        <location line="+1826"/>
         <source>Stop the game before tuning settings for the whole computer.</source>
         <translation>Detén el juego antes de ajustar la configuración de todo el equipo.</translation>
     </message>
@@ -9644,7 +10116,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location line="-2265"/>
+        <location line="-2297"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -9711,7 +10183,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">yuzu</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main.ui" line="-453"/>
+        <location filename="../../src/yuzu/main.ui" line="-462"/>
         <source>&amp;File</source>
         <translation>&amp;Archivo</translation>
     </message>
@@ -9825,7 +10297,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Ayuda</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+23"/>
         <source>&amp;Install Files to NAND...</source>
         <translation>&amp;Instalar archivos en NAND...</translation>
     </message>
@@ -9864,8 +10336,8 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">&amp;Acerca de Eden</translation>
     </message>
     <message>
-        <location line="-287"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3834"/>
+        <location line="-288"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3866"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -9877,7 +10349,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Abrir carpetas de &amp;Kaichii</translation>
     </message>
     <message>
-        <location line="+208"/>
+        <location line="+209"/>
         <source>Add &amp;Games Folder...</source>
         <translation>Añadir carpeta de &amp;juegos...</translation>
     </message>
@@ -9982,6 +10454,11 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+5"/>
+        <source>Explain the last problem...</source>
+        <translation>Explicar el último problema...</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>&amp;Compatibility List</source>
         <translation>Lista de &amp;compatibilidad</translation>
     </message>
@@ -10148,7 +10625,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4728"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4769"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -10288,7 +10765,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+416"/>
+        <location line="+427"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -10313,7 +10790,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>No se pudo restaurar la versión anterior: %1</translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+46"/>
         <source>&amp;Continue</source>
         <translation>&amp;Continuar</translation>
     </message>
@@ -10406,25 +10883,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2597"/>
+        <location line="+2629"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2597"/>
-        <location line="+2597"/>
+        <location line="-2629"/>
+        <location line="+2629"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2596"/>
-        <location line="+2598"/>
+        <location line="-2628"/>
+        <location line="+2630"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2585"/>
+        <location line="-2617"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -10588,12 +11065,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2245"/>
+        <location line="+2277"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2219"/>
+        <location line="-2251"/>
         <location line="+132"/>
         <source>Add to the game list?</source>
         <translation>¿Añadir a la lista de juegos?</translation>
@@ -10824,7 +11301,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>No se pudo abrir URL &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location line="+423"/>
+        <location line="+428"/>
         <source>TAS Recording</source>
         <translation>Grabación TAS</translation>
     </message>
@@ -10844,7 +11321,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>El mando del modo portátil no puede usarse en el modo sobremesa. El mando pro será seleccionado en su lugar.</translation>
     </message>
     <message>
-        <location line="+185"/>
+        <location line="+212"/>
         <location line="+51"/>
         <source>Amiibo</source>
         <translation>Amiibo</translation>

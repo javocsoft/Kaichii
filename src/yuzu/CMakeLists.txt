@@ -28,6 +28,16 @@ add_executable(yuzu
     auto_optimize_dialog.h
     ai_credentials.cpp
     ai_credentials.h
+    ai_log_dialog.cpp
+    ai_log_dialog.h
+    ai_provider_panel.cpp
+    ai_provider_panel.h
+    ai_report_draft_dialog.cpp
+    ai_report_draft_dialog.h
+    ai_request.cpp
+    ai_request.h
+    button_spinner.cpp
+    button_spinner.h
     ai_optimize_dialog.cpp
     ai_optimize_dialog.h
     compatibility_report.cpp

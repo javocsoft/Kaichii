@@ -106,3 +106,24 @@ TEST_CASE("Each provider links to the page where its API keys are made", "[commo
     CHECK(KeyPageUrl(Provider::OpenAI) == "https://platform.openai.com/api-keys");
     CHECK(KeyPageUrl(Provider::Anthropic) == "https://platform.claude.com/settings/keys");
 }
+
+TEST_CASE("A measured AI change reads as better, worse or no clear change", "[common][ai_optimize]") {
+    using Common::AiOptimize::Compare;
+    using Common::AiOptimize::Measurement;
+    using Common::AiOptimize::Verdict;
+
+    const Measurement before{.fps = 30.0, .low_1pct_fps = 20.0, .stutters = 10};
+    CHECK(Compare(before, {.fps = 36.0, .low_1pct_fps = 21.0, .stutters = 9}) == Verdict::Better);
+    CHECK(Compare(before, {.fps = 30.5, .low_1pct_fps = 24.0, .stutters = 10}) == Verdict::Better);
+    CHECK(Compare(before, {.fps = 30.0, .low_1pct_fps = 20.0, .stutters = 3}) == Verdict::Better);
+    CHECK(Compare(before, {.fps = 27.0, .low_1pct_fps = 20.0, .stutters = 10}) == Verdict::Worse);
+    CHECK(Compare(before, {.fps = 31.0, .low_1pct_fps = 16.0, .stutters = 10}) == Verdict::Worse);
+    CHECK(Compare(before, {.fps = 30.0, .low_1pct_fps = 20.0, .stutters = 15}) == Verdict::Worse);
+    // Run-to-run noise.
+    CHECK(Compare(before, {.fps = 31.0, .low_1pct_fps = 19.5, .stutters = 9}) ==
+          Verdict::NoClearChange);
+    // More frames but a much worse 1 % low isn't better.
+    CHECK(Compare(before, {.fps = 36.0, .low_1pct_fps = 16.0, .stutters = 10}) == Verdict::Worse);
+    CHECK(Compare({}, before) == Verdict::NotComparable);
+    CHECK(Compare(before, {}) == Verdict::NotComparable);
+}

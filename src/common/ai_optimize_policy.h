@@ -134,4 +134,32 @@ constexpr bool SupportsRefusalFallback(std::string_view id) {
     return id == "claude-opus-5-5" || id == "claude-sonnet-5-5" || id == "claude-fable-5-2";
 }
 
+// What a stretch of play measured: before and after an AI change, in the same scene.
+struct Measurement {
+    double fps = 0.0;          ///< Average of the game's own frames
+    double low_1pct_fps = 0.0; ///< The slowest 1 % of frames
+    unsigned stutters = 0;
+};
+
+enum class Verdict { Better, Worse, NoClearChange, NotComparable };
+
+// Whether `after` is clearly better or worse than `before`. A few percent either way is the
+// noise between two runs of one scene, so it reads as no clear change.
+constexpr Verdict Compare(const Measurement& before, const Measurement& after) {
+    if (before.fps <= 0.0 || after.fps <= 0.0) {
+        return Verdict::NotComparable;
+    }
+    const double fps = after.fps / before.fps;
+    const double low = before.low_1pct_fps > 0.0 ? after.low_1pct_fps / before.low_1pct_fps : 1.0;
+    const bool fewer_stutters = before.stutters >= 3 && after.stutters * 10 <= before.stutters * 7;
+    const bool more_stutters = after.stutters >= 3 && after.stutters * 7 >= before.stutters * 10;
+    if (fps <= 0.95 || low <= 0.85 || (more_stutters && fps < 1.05)) {
+        return Verdict::Worse;
+    }
+    if ((fps >= 1.05 && low > 0.9) || (low >= 1.1 && fps > 0.95) || (fewer_stutters && fps > 0.95)) {
+        return Verdict::Better;
+    }
+    return Verdict::NoClearChange;
+}
+
 } // namespace Common::AiOptimize

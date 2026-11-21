@@ -12,7 +12,9 @@ playing, and helps when something goes wrong.
 > **New, and only in Kaichii: an [AI settings assistant](AIOptimization.md).** Describe the problem
 > in your own words ("it stutters when I enter a new area") and Kaichii asks OpenAI or Anthropic,
 > with your own API key, which settings suit your computer or one game. You review every change
-> before it is applied, and can undo it. It is optional: everything else works without it.
+> before it is applied, measure the result and undo it. It can also explain the last problem from
+> the log and write a compatibility report from your own words. It is optional: everything else
+> works without it.
 
 ## Start here
 
