@@ -8,6 +8,12 @@ playing, and helps when something goes wrong.
 > Kaichii is not affiliated with Nintendo. Games, keys and firmware are not included: use only games
 > and system files you have legally obtained from your own console.
 
+> [!TIP]
+> **New, and only in Kaichii: an [AI settings assistant](AIOptimization.md).** Describe the problem
+> in your own words ("it stutters when I enter a new area") and Kaichii asks OpenAI or Anthropic,
+> with your own API key, which settings suit your computer or one game. You review every change
+> before it is applied, and can undo it. It is optional: everything else works without it.
+
 ## Start here
 
 1. [Install Kaichii](Install.md) on Linux, Windows or macOS.
