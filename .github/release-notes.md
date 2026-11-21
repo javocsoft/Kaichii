@@ -8,10 +8,12 @@ game, "Crashes and stability" and "For developers". Each entry starts with a bol
 understands, then says what they saw, what caused it, what was measured or played, and ends with the
 pull request number. Say plainly what was not confirmed. HTML comments like this one are dropped.
 -->
-### Performance
-- **Fewer duplicate mesh pipeline builds with static vertex input.** A mesh draw could inherit vertex attributes left by an earlier draw and compile another Vulkan pipeline for the same shaders. An isolated Ocarina of Time save built 31 mesh pipeline keys instead of 72 for the same 26 shader sets with static vertex input. With the usual dynamic input setting, both builds produced 31 keys. This measures pipeline builds in one scene, not an FPS gain (#85).
 
-### Switch Sports Resort
-- **The Power Cruising shader can read an output attribute it wrote.** Kaichii previously rejected the reported `ISBERD.ATTR.32.O` instruction. It now supports that exact 32-bit, unskewed read in task and mesh programs while continuing to reject unmodelled modes. Synthetic translation tests and four SPIR-V validation cases pass. The affected game was not available for a visual check, so the water is not yet confirmed fixed (#86).
+### New features
+- **An AI settings assistant, only in Kaichii.** *Emulation > Ask AI to tune this computer*, or *Ask AI to tune this game* from a game's right-click menu, takes a description of the problem in your own words and asks OpenAI or Anthropic, with your own API key, which settings suit your computer. It can only propose options from a fixed catalog, shows each change with its reason and previous value before applying it, and *Undo last AI change* restores them. It is optional: presets and *Optimize for This Game* work as before (#88).
+  - **Your key can be remembered** in the system's credential store (Keychain on macOS, Credential Manager on Windows, Secret Service on Linux), never in Kaichii's files. It is saved only after a request succeeds, and *Forget saved key* removes it.
+  - **Pick a model from a list** of each provider's main models, or load the ones your key can use; the last provider and model are remembered. A link under the key field opens the provider's page to create a key.
+  - **A spinner and the seconds spent** show while the provider answers, and a second click cancels the request.
+  - The exact data sent is shown in developer mode; otherwise one sentence says what is sent, and games, saves, keys, screenshots and logs never are.
 
-An isolated Linux build containing both changes loaded an Ocarina of Time save and rendered Link's house. A non-publishing workflow built Linux, Windows and macOS binaries successfully; Windows and macOS games were not run. No Switch 1 game was run.
+Checked on Linux: the dialog on screen, a key saved, read and removed in GNOME Keyring, and real requests answered (Anthropic seen). Windows binaries built in a non-publishing workflow; the Windows and macOS credential stores were not run.

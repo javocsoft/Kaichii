@@ -73,6 +73,7 @@ plugins:
             First launch: Primer arranque
             Games, keys and firmware: Juegos, claves y firmware
             Settings for your computer: Ajustes para tu equipo
+            AI settings assistant: Asistente de ajustes con IA
             Games: Juegos
             Compatibility list: Lista de compatibilidad
             Sending a report: Enviar un informe
@@ -100,6 +101,7 @@ nav:
       - First launch: FirstLaunch.md
       - Games, keys and firmware: Games.md
       - Settings for your computer: Performance.md
+      - AI settings assistant: AIOptimization.md
   - Games:
       - "The Legend of Zelda: Ocarina of Time": OcarinaOfTime.md
       - Compatibility list: Compatibility.md

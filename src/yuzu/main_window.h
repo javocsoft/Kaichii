@@ -284,6 +284,7 @@ private:
     void BootGameFromList(const QString& filename, StartGameType with_config);
     /// Optimize for This Game from the game list: starts the game when none runs.
     void OnOptimizeGameFromList(const QString& game_path);
+    void OnAiOptimizeGameFromList(const QString& game_path, u64 program_id);
     void ShutdownGame();
     void TerminateEmulationThread();
 
@@ -393,6 +394,8 @@ private slots:
     void OnToggleAdaptingFilter();
     void OnConfigurePerGame();
     void OnOptimizeCurrentGame();
+    void OnAiOptimizeCurrentGame();
+    void OnAiOptimizeComputer();
     void OnLoadAmiibo();
     void OnOpenRootDataFolder();
     void OnOpenNANDFolder();

@@ -8,6 +8,13 @@ la descarga a jugar, y te ayuda cuando algo falla.
 > Kaichii no está afiliado a Nintendo. No incluye juegos, claves ni firmware: usa solo juegos y
 > archivos del sistema obtenidos legalmente de tu propia consola.
 
+> [!TIP]
+> **Novedad, solo en Kaichii: el [asistente de ajustes con IA](AIOptimization.es.md).** Describe el
+> problema con tus palabras («va a tirones cuando entro en una zona nueva») y Kaichii pregunta a
+> OpenAI o Anthropic, con tu propia clave de API, qué ajustes le van a tu equipo o a un juego.
+> Revisas cada cambio antes de aplicarlo y puedes deshacerlo. Es opcional: todo lo demás funciona
+> sin él.
+
 ## Empieza aquí
 
 1. [Instala Kaichii](Install.es.md) en Linux, Windows o macOS.
@@ -15,6 +22,8 @@ la descarga a jugar, y te ayuda cuando algo falla.
 3. [Juegos, claves y firmware](Games.es.md): qué necesita cada tipo de archivo.
 4. [Ajustes para tu equipo](Performance.es.md): los ajustes predefinidos, *Optimizar para este juego* y
    qué esperar de una tarjeta de 4 GB.
+5. [Asistente de ajustes con IA](AIOptimization.es.md): propuestas opcionales con tu propia clave de
+   OpenAI o Anthropic.
 
 ## Juegos
 

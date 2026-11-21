@@ -33,6 +33,10 @@ Ocarina of Time, Rendimiento además omite la pasada de nitidez del juego.
 
 ## Optimizar para este juego
 
+Para describir un problema con tus palabras y recibir una propuesta que puedes revisar y deshacer,
+consulta el [asistente de ajustes con IA](AIOptimization.es.md). También funciona con el juego cerrado
+y requiere una clave de API propia.
+
 Haz clic derecho en un juego y elige **Optimizar para este juego** (mientras juegas: *Emulación >
 Optimizar para este juego*, o Ctrl+Mayús+O). Kaichii mide el juego mientras funciona, prueba la
 generación de fotogramas durante unos segundos y propone cambios; no cambia nada hasta que aceptas.

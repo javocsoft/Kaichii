@@ -548,6 +548,7 @@ void GameList::AddGamePopup(QMenu& context_menu, u64 program_id, const std::stri
     }
     QAction* properties = context_menu.addAction(tr("Configure Game"));
     QAction* optimize = context_menu.addAction(tr("Optimize for This Game..."));
+    QAction* ai_optimize = context_menu.addAction(tr("Ask AI to tune this game..."));
     if (program_id != 0 && program_id == reportable_program_id) {
         auto* report = context_menu.addAction(tr("Submit compatibility report…"));
         connect(report, &QAction::triggered, this,
@@ -650,6 +651,9 @@ void GameList::AddGamePopup(QMenu& context_menu, u64 program_id, const std::stri
             [this, path]() { emit OpenPerGameGeneralRequested(path); });
     connect(optimize, &QAction::triggered, this,
             [this, path]() { emit OptimizeGameRequested(QString::fromStdString(path)); });
+    connect(ai_optimize, &QAction::triggered, this, [this, path, program_id] {
+        emit AiOptimizeGameRequested(QString::fromStdString(path), program_id);
+    });
 
     connect(ryujinx, &QAction::triggered, this,
             [this, program_id]() { emit LinkToRyujinxRequested(program_id); });

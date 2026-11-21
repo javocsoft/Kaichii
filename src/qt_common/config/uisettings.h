@@ -195,6 +195,13 @@ struct Values {
 
     // Optional key that enables the SteamGridDB icon fallback
     Setting<std::string> steamgriddb_api_key{linkage, {}, "steamgriddb_api_key", Category::Ui};
+    // The AI settings assistant's last provider (0 OpenAI, 1 Anthropic) and model for each. Its API
+    // keys live in the system's credential store, never here.
+    Setting<u32> ai_assistant_provider{linkage, 0, "ai_assistant_provider", Category::Ui};
+    Setting<std::string> ai_assistant_openai_model{linkage, {}, "ai_assistant_openai_model",
+                                                   Category::Ui};
+    Setting<std::string> ai_assistant_anthropic_model{linkage, {}, "ai_assistant_anthropic_model",
+                                                      Category::Ui};
 
     std::string theme;
 
