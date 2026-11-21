@@ -440,8 +440,11 @@ private slots:
     void SetCarouselView();
     void SetCoverView();
     void SetFullCoverView();
-    /// Shows the menu entries the advanced options and developer mode ask for (menu_levels.h).
+    /// Shows the menu entries the advanced options and developer mode ask for (menu_levels.h),
+    /// and shows the advanced options' state in the Emulation menu and the status bar.
     void UpdateMenuLevels();
+    /// Turns the advanced options on or off, as the settings' "Show advanced options" does.
+    void SetShowAdvanced(bool show);
 
     void CheckIconSize();
     void ToggleShowGameName();
@@ -572,6 +575,8 @@ private:
     QPushButton* aa_status_button = nullptr;
     QPushButton* post_shader_status_button = nullptr;
     QPushButton* frame_gen_status_button = nullptr;
+    /// Turns the advanced options on and off from the status bar.
+    QPushButton* advanced_status_button = nullptr;
     VideoCore::FrameGenState frame_gen_state{};
     u64 frame_gen_frames = 0;
     bool frame_gen_generating = false;

@@ -1026,6 +1026,15 @@ void MainWindow::InitializeWidgets() {
     firmware_label->setFocusPolicy(Qt::NoFocus);
     statusBar()->addPermanentWidget(firmware_label);
 
+    // The advanced options at hand: the menus hide their entries until they are on.
+    advanced_status_button = new QPushButton();
+    advanced_status_button->setObjectName(QStringLiteral("TogglableStatusBarButton"));
+    advanced_status_button->setFocusPolicy(Qt::NoFocus);
+    advanced_status_button->setCheckable(true);
+    connect(advanced_status_button, &QPushButton::clicked, this,
+            [this](bool checked) { SetShowAdvanced(checked); });
+    statusBar()->addPermanentWidget(advanced_status_button);
+
     statusBar()->addPermanentWidget(multiplayer_state->GetStatusText(), 0);
     statusBar()->addPermanentWidget(multiplayer_state->GetStatusIcon(), 0);
 
@@ -1720,7 +1729,10 @@ void MainWindow::ConnectMenuEvents() {
     }
     show_sort();
 
-    // Entries for the advanced options and developer mode, shown as the settings say.
+    // Entries for the advanced options and developer mode, shown as the settings say, and a
+    // quick way to turn the advanced options on.
+    connect(ui->action_Show_Advanced_Options, &QAction::triggered, this,
+            &MainWindow::SetShowAdvanced);
     UpdateMenuLevels();
 
     // Multiplayer
@@ -5974,9 +5986,23 @@ void MainWindow::UpdateUITheme() {
 #endif
 }
 
+void MainWindow::SetShowAdvanced(bool show) {
+    UISettings::values.settings_show_advanced.SetValue(show);
+    UpdateMenuLevels();
+}
+
 void MainWindow::UpdateMenuLevels() {
     const bool show_advanced = UISettings::values.settings_show_advanced.GetValue();
     const bool developer_mode = UISettings::values.settings_developer_mode.GetValue();
+    ui->action_Show_Advanced_Options->setChecked(show_advanced);
+    if (advanced_status_button != nullptr) {
+        // Named here, so a language change (UpdateStatusButtons) names it again.
+        advanced_status_button->setText(tr("ADVANCED"));
+        advanced_status_button->setToolTip(
+            tr("Advanced options: show the settings and menu entries for fine tuning, "
+               "maintenance and console tools. Click to turn them on or off."));
+        advanced_status_button->setChecked(show_advanced);
+    }
     for (const auto& [name, level] : Yuzu::MainMenuLevels) {
         const QString object_name = QString::fromUtf8(name.data(), name.size());
         QAction* action = findChild<QAction*>(object_name);
@@ -6099,6 +6125,7 @@ void MainWindow::OnLanguageChanged(const QString& locale) {
     UpdateWindowTitle();
     // The status bar's buttons are named in code, so retranslateUi leaves them as they were.
     UpdateStatusButtons();
+    UpdateMenuLevels();
 #ifdef HAS_RESHADE
     UpdatePostShaderText();
 #endif

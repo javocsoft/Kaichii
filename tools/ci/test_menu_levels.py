@@ -41,6 +41,16 @@ class MenuLevels(unittest.TestCase):
         size = int(re.search(r"MenuLevel>, (\d+)> MainMenuLevels", text).group(1))
         self.assertEqual(size, len(leveled_names()))
 
+    def test_the_advanced_options_switch_is_always_shown(self):
+        # The quick way to turn the advanced options on must not hide itself.
+        root = ElementTree.parse(MAIN_UI).getroot()
+        emulation = next(widget for widget in root.iter("widget")
+                         if widget.get("name") == "menu_Emulation")
+        entries = [action.get("name") for action in emulation.findall("addaction")]
+        self.assertIn("action_Show_Advanced_Options", entries)
+        self.assertNotIn("action_Show_Advanced_Options", [name for name, _ in leveled_names()])
+        self.assertNotIn("menu_Emulation", [name for name, _ in leveled_names()])
+
     def test_no_entry_is_listed_twice(self):
         names = [name for name, _ in leveled_names()]
         self.assertEqual(len(names), len(set(names)))

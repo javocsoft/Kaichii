@@ -56,7 +56,9 @@ Fluidez y shaders, Audio, Controles, Sistema e Interfaz.
   verificar contenidos, el gestor de datos, las herramientas de Amiibo y applets, y en el menú de
   un juego arrancarlo sin su configuración, sus cachés de pipelines, los volcados, la verificación
   y su id) aparecen con *Mostrar opciones avanzadas*, y las herramientas de depuración y TAS
-  además con *Modo desarrollador*.
+  además con *Modo desarrollador*. Para activar o desactivar las opciones avanzadas sin abrir la
+  configuración, usa *Emulación > Mostrar opciones avanzadas* o el botón *AVANZADO* de la barra de
+  estado.
 - **El buscador** encuentra cualquier ajuste por su nombre o su descripción.
 
 Un juego puede cambiar su volumen o silenciarse mientras funciona. Esas órdenes pueden afectar al
