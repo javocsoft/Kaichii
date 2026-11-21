@@ -241,10 +241,11 @@ struct Values {
     Setting<u8> row_1_text_id{linkage, 3, "row_1_text_id", Category::UiGameList};
     // None: the title id was there, and the other columns already say the rest.
     Setting<u8> row_2_text_id{linkage, 4, "row_2_text_id", Category::UiGameList};
-    Setting<Settings::GameListMode> game_list_mode{linkage, Settings::GameListMode::TreeView, "game_list_mode", Category::UiGameList};
+    /// New players start on the cover view: the games' covers, as on a shelf.
+    Setting<Settings::GameListMode> game_list_mode{linkage, Settings::GameListMode::CoverView, "game_list_mode", Category::UiGameList};
     Setting<bool> show_game_name{linkage, true, "show_game_name", Category::UiGameList};
     /// The cover views show Switch 2 and Switch games in two sections.
-    Setting<bool> cover_view_sections{linkage, false, "cover_view_sections",
+    Setting<bool> cover_view_sections{linkage, true, "cover_view_sections",
                                       Category::UiGameList};
     /// How the flat views (grid, carousel and covers) order the games, and in which direction.
     Setting<Settings::GameListSort> game_list_sort{linkage, Settings::GameListSort::Name,

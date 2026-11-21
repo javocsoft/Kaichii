@@ -50,7 +50,15 @@ Fluidez y shaders, Audio, Controles, Sistema e Interfaz.
 - **Cada opción se explica sola.** Señala una opción, o llega a ella con el teclado, y el panel de
   abajo dice qué hace, qué cuesta y qué se recomienda para este equipo.
 - **La vista básica** muestra lo que necesita la mayoría. *Mostrar opciones avanzadas* añade el
-  resto, y *Modo desarrollador* las opciones de depuración.
+  resto, y *Modo desarrollador* las opciones de depuración. Los menús siguen la misma elección: las
+  entradas de ajuste fino, mantenimiento y herramientas de consola (abrir un juego extraído, las
+  carpetas NAND y SD, el tamaño de ventana y la superposición, los shaders de postprocesado,
+  verificar contenidos, el gestor de datos, las herramientas de Amiibo y applets, y en el menú de
+  un juego arrancarlo sin su configuración, sus cachés de pipelines, los volcados, la verificación
+  y su id) aparecen con *Mostrar opciones avanzadas*, y las herramientas de depuración y TAS
+  además con *Modo desarrollador*. Para activar o desactivar las opciones avanzadas sin abrir la
+  configuración, usa *Emulación > Mostrar opciones avanzadas* o el botón *AVANZADO* de la barra de
+  estado.
 - **El buscador** encuentra cualquier ajuste por su nombre o su descripción.
 
 Un juego puede cambiar su volumen o silenciarse mientras funciona. Esas órdenes pueden afectar al

@@ -94,6 +94,8 @@
     <addaction name="action_Configure_Current_Game"/>
     <addaction name="action_Optimize_Current_Game"/>
     <addaction name="action_AI_Optimize_Current_Game"/>
+    <addaction name="separator"/>
+    <addaction name="action_Show_Advanced_Options"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -716,6 +718,17 @@
    </property>
    <property name="toolTip">
     <string>Z to A, newest first, most played first</string>
+   </property>
+  </action>
+  <action name="action_Show_Advanced_Options">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show &amp;Advanced Options</string>
+   </property>
+   <property name="toolTip">
+    <string>Shows the settings and menu entries for fine tuning, maintenance and console tools</string>
    </property>
   </action>
   <action name="action_Separate_Switch_2_Games">

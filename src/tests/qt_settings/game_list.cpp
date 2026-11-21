@@ -48,6 +48,7 @@ private slots:
     void ArrowKeysMoveAcrossTheShelf();
     void FilteredGamesLeaveTheShelf();
     void TheWheelScrollsWhicheverViewIsShown();
+    void NewPlayersStartOnTheCoverViewBySystem();
     void AddAndFavoritesRowsAloneAreEmpty();
     void FoldersCoverTheirGamesAndDeepScannedSubfolders();
     void ListsGameFilesByExtension();
@@ -465,6 +466,14 @@ void GameListTest::TheWheelScrollsWhicheverViewIsShown() {
     turn(*cases.view.viewport());
     QCOMPARE(cases.view.verticalScrollBar()->value(), 120);
     QCOMPARE(covers.view.verticalScrollBar()->value(), 120);
+}
+
+void GameListTest::NewPlayersStartOnTheCoverViewBySystem() {
+    // A first start shows the covers, Switch 2 and Switch games apart, by name from A.
+    QCOMPARE(UISettings::values.game_list_mode.GetDefault(), Settings::GameListMode::CoverView);
+    QVERIFY(UISettings::values.cover_view_sections.GetDefault());
+    QCOMPARE(UISettings::values.game_list_sort.GetDefault(), Settings::GameListSort::Name);
+    QVERIFY(!UISettings::values.game_list_sort_descending.GetDefault());
 }
 
 void GameListTest::AddAndFavoritesRowsAloneAreEmpty() {

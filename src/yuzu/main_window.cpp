@@ -48,6 +48,7 @@
 #include "util/util.h"
 #include "yuzu/first_run_assistant.h"
 #include "yuzu/game/game_list.h"
+#include "yuzu/menu_levels.h"
 #include "yuzu/auto_optimize_dialog.h"
 #include "yuzu/ai_optimize_dialog.h"
 #include "yuzu/ai_log_dialog.h"
@@ -1026,6 +1027,15 @@ void MainWindow::InitializeWidgets() {
     firmware_label->setFocusPolicy(Qt::NoFocus);
     statusBar()->addPermanentWidget(firmware_label);
 
+    // The advanced options at hand: the menus hide their entries until they are on.
+    advanced_status_button = new QPushButton();
+    advanced_status_button->setObjectName(QStringLiteral("TogglableStatusBarButton"));
+    advanced_status_button->setFocusPolicy(Qt::NoFocus);
+    advanced_status_button->setCheckable(true);
+    connect(advanced_status_button, &QPushButton::clicked, this,
+            [this](bool checked) { SetShowAdvanced(checked); });
+    statusBar()->addPermanentWidget(advanced_status_button);
+
     statusBar()->addPermanentWidget(multiplayer_state->GetStatusText(), 0);
     statusBar()->addPermanentWidget(multiplayer_state->GetStatusIcon(), 0);
 
@@ -1680,6 +1690,7 @@ void MainWindow::ConnectMenuEvents() {
     connect(ui->action_Separate_Switch_2_Games, &QAction::toggled, this, [this](bool sections) {
         UISettings::values.cover_view_sections.SetValue(sections);
         game_list->SetCoverSections(sections);
+        config->SaveAllValues();
     });
 
     // View > Sort Games By: the flat views' order and its direction. Picking an order starts it
@@ -1707,6 +1718,7 @@ void MainWindow::ConnectMenuEvents() {
                 QtCommon::DescendingByDefault(key));
             show_sort();
             game_list->ApplyGameSort();
+            config->SaveAllValues();
         });
     }
     for (QAction* const action : {ui->action_Sort_Ascending, ui->action_Sort_Descending}) {
@@ -1716,9 +1728,16 @@ void MainWindow::ConnectMenuEvents() {
                                                                   ui->action_Sort_Descending);
             show_sort();
             game_list->ApplyGameSort();
+            config->SaveAllValues();
         });
     }
     show_sort();
+
+    // Entries for the advanced options and developer mode, shown as the settings say, and a
+    // quick way to turn the advanced options on.
+    connect(ui->action_Show_Advanced_Options, &QAction::triggered, this,
+            &MainWindow::SetShowAdvanced);
+    UpdateMenuLevels();
 
     // Multiplayer
     connect(ui->action_View_Lobby, &QAction::triggered, multiplayer_state,
@@ -3942,18 +3961,22 @@ void MainWindow::SetGameListMode(Settings::GameListMode mode) {
 
 void MainWindow::SetGridView() {
     SetGameListMode(Settings::GameListMode::GridView);
+    config->SaveAllValues();
 }
 
 void MainWindow::SetTreeView() {
     SetGameListMode(Settings::GameListMode::TreeView);
+    config->SaveAllValues();
 }
 
 void MainWindow::SetCarouselView() {
     SetGameListMode(Settings::GameListMode::CarouselView);
+    config->SaveAllValues();
 }
 
 void MainWindow::SetCoverView() {
     SetGameListMode(Settings::GameListMode::CoverView);
+    config->SaveAllValues();
 }
 
 void MainWindow::AddGameListViewEntries(QMenu& menu) {
@@ -3964,6 +3987,7 @@ void MainWindow::AddGameListViewEntries(QMenu& menu) {
 
 void MainWindow::SetFullCoverView() {
     SetGameListMode(Settings::GameListMode::FullCoverView);
+    config->SaveAllValues();
 }
 
 void MainWindow::CheckIconSize() {
@@ -4024,6 +4048,8 @@ void MainWindow::OnConfigure() {
             &MainWindow::OnGameListRefresh);
 
     const auto result = configure_dialog.exec();
+    // The advanced options and developer mode set there are the menus' too.
+    UpdateMenuLevels();
     if (result != QDialog::Accepted && !UISettings::values.configuration_applied &&
         !UISettings::values.reset_to_defaults) {
         // Runs if the user hit Cancel or closed the window, and did not ever press the Apply button
@@ -4373,6 +4399,8 @@ void MainWindow::OpenPerGameConfiguration(u64 title_id, const std::string& file_
     dialog.LoadFromFile(Core::GetGameFileFromPath(QtCommon::vfs, file_name));
 
     const auto result = dialog.exec();
+    // The advanced options and developer mode set there are the menus' too.
+    UpdateMenuLevels();
 
     if (result != QDialog::Accepted && !UISettings::values.configuration_applied) {
         Settings::RestoreGlobalState(QtCommon::system->IsPoweredOn());
@@ -5967,6 +5995,43 @@ void MainWindow::UpdateUITheme() {
 #endif
 }
 
+void MainWindow::SetShowAdvanced(bool show) {
+    UISettings::values.settings_show_advanced.SetValue(show);
+    UpdateMenuLevels();
+    // Kept even if Kaichii doesn't close normally: the config is otherwise written on exit.
+    config->SaveAllValues();
+}
+
+void MainWindow::UpdateMenuLevels() {
+    const bool show_advanced = UISettings::values.settings_show_advanced.GetValue();
+    const bool developer_mode = UISettings::values.settings_developer_mode.GetValue();
+    ui->action_Show_Advanced_Options->setChecked(show_advanced);
+    if (advanced_status_button != nullptr) {
+        // Named here, so a language change (UpdateStatusButtons) names it again.
+        advanced_status_button->setText(tr("ADVANCED"));
+        advanced_status_button->setToolTip(
+            tr("Advanced options: show the settings and menu entries for fine tuning, "
+               "maintenance and console tools. Click to turn them on or off."));
+        advanced_status_button->setChecked(show_advanced);
+    }
+    for (const auto& [name, level] : Yuzu::MainMenuLevels) {
+        const QString object_name = QString::fromUtf8(name.data(), name.size());
+        QAction* action = findChild<QAction*>(object_name);
+        if (action == nullptr) {
+            if (QMenu* const menu = findChild<QMenu*>(object_name)) {
+                action = menu->menuAction();
+            }
+        }
+        if (action != nullptr) {
+            action->setVisible(Yuzu::MenuShows(level, show_advanced, developer_mode));
+        }
+    }
+#ifndef HAS_RESHADE
+    // Only builds with ReShade have post-processing shaders.
+    ui->action_Post_Processing_Shaders->setVisible(false);
+#endif
+}
+
 void MainWindow::UpdateMenuIcons() {
     // From Lichii's list (zortos293/Lichii#1365), plus Kaichii's own entries. Checkable actions
     // get none: in some styles an icon replaces the check mark, which would hide their state.
@@ -6071,6 +6136,7 @@ void MainWindow::OnLanguageChanged(const QString& locale) {
     UpdateWindowTitle();
     // The status bar's buttons are named in code, so retranslateUi leaves them as they were.
     UpdateStatusButtons();
+    UpdateMenuLevels();
 #ifdef HAS_RESHADE
     UpdatePostShaderText();
 #endif

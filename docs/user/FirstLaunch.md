@@ -48,7 +48,14 @@ Smoothness and shaders, Audio, Controls, System and Interface.
 - **Every option explains itself.** Point at an option, or reach it with the keyboard, and the panel
   at the bottom says what it does, what it costs and what is recommended for this computer.
 - **The basic view** shows what most players need. *Show advanced options* adds the rest, and
-  *Developer mode* the options for debugging.
+  *Developer mode* the options for debugging. The menus follow the same choice: entries for fine
+  tuning, maintenance and console tools (opening an extracted game, the NAND and SD folders, the
+  window size and overlay, post-processing shaders, verifying contents, the data manager, Amiibo
+  and applet tools, and in a game's menu starting it without its configuration, its pipeline
+  caches, dumping, verifying and its title id) appear with *Show advanced options*, and the
+  debugging and TAS tools with *Developer mode* too. To turn the advanced options on or off without
+  opening the settings, use *Emulation > Show Advanced Options* or the *ADVANCED* button in the
+  status bar.
 - **The search box** finds any setting by its name or description.
 
 A game can change its own volume or mute state while it runs. Those commands can affect the current

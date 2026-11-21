@@ -30,7 +30,8 @@ Instálalos con *Archivo > Instalar archivos en NAND*. En el menú del clic dere
 
 ## Cómo muestra la lista tus juegos
 
-*Ver > Modo de la lista de juegos* elige una de cinco vistas: *Vista en árbol* (una tabla con
+Kaichii empieza en la *Vista en carátulas*, con los juegos de Switch 2 y de Switch separados. *Ver >
+Modo de la lista de juegos* elige una de cinco vistas: *Vista en árbol* (una tabla con
 detalles), *Vista en cuadrícula*, *Vista de carrusel*, *Vista en carátulas* (los iconos de los
 juegos, grandes, como en una estantería) y *Vista en cajas* (la caja de cada juego, como en una
 tienda).
