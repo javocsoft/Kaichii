@@ -1537,6 +1537,8 @@ void MainWindow::ConnectWidgetEvents() {
     });
     connect(game_list, &GameList::BootGame, this, &MainWindow::BootGameFromList);
     connect(game_list, &GameList::OptimizeGameRequested, this, &MainWindow::OnOptimizeGameFromList);
+    connect(game_list, &GameList::SelectedGameChanged, this, &MainWindow::UpdateGameActions);
+    connect(ui->menu_Emulation, &QMenu::aboutToShow, this, &MainWindow::UpdateGameActions);
     connect(game_list, &GameList::AiOptimizeGameRequested, this,
             &MainWindow::OnAiOptimizeGameFromList);
     connect(game_list, &GameList::GameChosen, this, &MainWindow::OnGameListLoadFile);
@@ -1808,9 +1810,6 @@ void MainWindow::UpdateMenuState() {
     const std::array running_actions{
         ui->action_Stop,
         ui->action_Restart,
-        ui->action_Configure_Current_Game,
-        ui->action_Optimize_Current_Game,
-        ui->action_AI_Optimize_Current_Game,
         ui->action_Load_Amiibo,
         ui->action_Pause,
     };
@@ -1824,6 +1823,7 @@ void MainWindow::UpdateMenuState() {
     for (QAction* action : running_actions) {
         action->setEnabled(emulation_running);
     }
+    UpdateGameActions();
 
     ui->action_Firmware_From_Folder->setEnabled(!emulation_running);
     ui->action_Firmware_From_ZIP->setEnabled(!emulation_running);
@@ -4237,12 +4237,33 @@ void MainWindow::OnToggleGraphicsAPI() {
     UpdateAPIText();
 }
 
+void MainWindow::UpdateGameActions() {
+    // The running game, or else the one selected in the list, as its right-click menu offers.
+    const bool game = emulation_running || (!QtCommon::system->IsPoweredOn() && !boot_in_progress &&
+                                            game_list->SelectedGame().has_value());
+    ui->action_Configure_Current_Game->setEnabled(game);
+    ui->action_Optimize_Current_Game->setEnabled(game);
+    ui->action_AI_Optimize_Current_Game->setEnabled(game);
+}
+
 void MainWindow::OnConfigurePerGame() {
+    if (!emulation_running) {
+        if (const auto selected = game_list->SelectedGame()) {
+            OnGameListOpenPerGameProperties(selected->path.toStdString());
+        }
+        return;
+    }
     const u64 title_id = QtCommon::system->GetApplicationProcessProgramID();
     OpenPerGameConfiguration(title_id, current_game_path.toStdString());
 }
 
 void MainWindow::OnOptimizeCurrentGame() {
+    if (!emulation_running) {
+        if (const auto selected = game_list->SelectedGame()) {
+            OnOptimizeGameFromList(selected->path);
+        }
+        return;
+    }
     const u64 title_id = QtCommon::system->GetApplicationProcessProgramID();
     const auto file_path = std::filesystem::path{
         Common::U16StringFromBuffer(current_game_path.utf16(), current_game_path.size())};
@@ -4257,6 +4278,12 @@ void MainWindow::OnOptimizeCurrentGame() {
 }
 
 void MainWindow::OnAiOptimizeCurrentGame() {
+    if (!emulation_running) {
+        if (const auto selected = game_list->SelectedGame()) {
+            OnAiOptimizeGameFromList(selected->path, selected->program_id);
+        }
+        return;
+    }
     OnAiOptimizeGameFromList(current_game_path,
                              QtCommon::system->GetApplicationProcessProgramID());
 }

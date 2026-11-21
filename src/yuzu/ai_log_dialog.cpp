@@ -168,6 +168,7 @@ AiLogDialog::AiLogDialog(QWidget* parent)
     sent_preview->setReadOnly(true);
     sent_preview->setLineWrapMode(QPlainTextEdit::NoWrap);
     sent_preview->setMinimumHeight(140);
+    sent_preview->setPlaceholderText(tr("Nothing would be sent."));
     sent_preview->setVisible(false);
     layout->addWidget(sent_preview, 1);
     auto* const sent_note = new QLabel(
@@ -202,7 +203,7 @@ AiLogDialog::AiLogDialog(QWidget* parent)
     connect(show_sent, &QCheckBox::toggled, sent_preview, &QWidget::setVisible);
     connect(provider_panel, &AiProviderPanel::StatusChanged, status, &QLabel::setText);
     connect(provider_panel, &AiProviderPanel::BusyChanged, this,
-            [this](bool busy) { ask_button->setEnabled(!busy); });
+            [this](bool busy) { ask_button->setEnabled(!busy && analysis.has_problems); });
     connect(request, &AiRequest::Finished, this, &AiLogDialog::HandleReply);
     connect(ask_button, &QPushButton::clicked, this, [this] {
         if (request->Running()) {
@@ -213,7 +214,31 @@ AiLogDialog::AiLogDialog(QWidget* parent)
     });
     connect(bug_button, &QPushButton::clicked, this, &AiLogDialog::OpenBugReport);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    // When Kaichii closed on the problem, this session is clean and the one before has it.
+    const auto current = ReadLog(false);
+    if (log_choice->count() > 1 && (!current || !current->has_problems)) {
+        const auto previous = ReadLog(true);
+        if (previous && previous->has_problems) {
+            log_choice->setCurrentIndex(1); // Loads it
+            return;
+        }
+    }
     LoadLog();
+}
+
+std::optional<Common::LogDiagnosis::Analysis> AiLogDialog::ReadLog(bool previous) const {
+    QFile file(LogPath(previous));
+    if (!file.open(QIODevice::ReadOnly)) {
+        return std::nullopt;
+    }
+    // A long session's log can be large: its end holds the last game.
+    constexpr qint64 MaxBytes = 4 * 1024 * 1024;
+    if (file.size() > MaxBytes) {
+        file.seek(file.size() - MaxBytes);
+    }
+    const QByteArray bytes = file.readAll();
+    return Common::LogDiagnosis::Analyze(
+        std::string_view{bytes.constData(), static_cast<size_t>(bytes.size())});
 }
 
 QString AiLogDialog::LogPath(bool previous) const {
@@ -228,26 +253,22 @@ void AiLogDialog::LoadLog() {
     answer = {};
     answer_text->clear();
     bug_button->setVisible(false);
-    QFile file(LogPath(log_choice->currentData().toBool()));
-    if (!file.open(QIODevice::ReadOnly)) {
-        analysis = {};
-        findings->setText(tr("There is no log to read yet."));
-        sent_preview->clear();
-        ask_button->setEnabled(false);
-        return;
-    }
-    // A long session's log can be large: its end holds the last game.
-    constexpr qint64 MaxBytes = 4 * 1024 * 1024;
-    if (file.size() > MaxBytes) {
-        file.seek(file.size() - MaxBytes);
-    }
-    const QByteArray bytes = file.readAll();
-    analysis = Common::LogDiagnosis::Analyze(std::string_view{bytes.constData(),
-                                                              static_cast<size_t>(bytes.size())});
-    ask_button->setEnabled(true);
+    status->clear();
+    const auto read = ReadLog(log_choice->currentData().toBool());
+    analysis = read.value_or(Common::LogDiagnosis::Analysis{});
+    ask_button->setEnabled(analysis.has_problems && !provider_panel->Busy());
+    ask_button->setToolTip(analysis.has_problems
+                               ? QString{}
+                               : tr("There is nothing in this log for the AI to explain."));
     QString text;
-    if (analysis.findings.empty()) {
-        text = tr("Kaichii found no known cause in this log.");
+    if (!read) {
+        text = tr("There is no log to read yet.");
+    } else if (!analysis.has_problems) {
+        text = tr("This log has no errors, so there is nothing for the AI to explain, and asking "
+                  "is turned off so you don't pay for a request. If a game fails, come back after "
+                  "it happens: when Kaichii closes on a problem, choose the previous session.");
+    } else if (analysis.findings.empty()) {
+        text = tr("Kaichii found no known cause, but the log has errors the AI can look at.");
     } else {
         text = tr("What Kaichii found:") + QStringLiteral("<ul>");
         for (const Finding finding : analysis.findings) {
@@ -271,8 +292,7 @@ void AiLogDialog::Ask() {
     if (provider_panel->Busy()) {
         return;
     }
-    if (analysis.lines.empty()) {
-        status->setText(tr("There is no log to read yet."));
+    if (!analysis.has_problems) {
         return;
     }
     if (!provider_panel->Ready()) {

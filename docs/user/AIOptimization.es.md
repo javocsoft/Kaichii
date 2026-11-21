@@ -14,7 +14,7 @@ con tus propias palabras.
 - **Para todos los juegos:** abre *Emulación > Pedir a la IA que ajuste este equipo*. Cierra el juego
   antes. La propuesta modifica los ajustes globales y se prueba tras reiniciar Kaichii.
 - **Para un juego:** haz clic derecho en él y elige *Pedir a la IA que ajuste este juego*. También
-  aparece en *Emulación* mientras juegas. Puedes consultar con el juego cerrado. Si está abierto,
+  aparece en *Emulación*, para el juego en marcha o el seleccionado en la lista. Puedes consultar con el juego cerrado. Si está abierto,
   Kaichii añade a la consulta los FPS y el uso de memoria recientes, cuando hay datos. Para aplicar
   los cambios, te preguntará si quieres detener el juego; se prueban al iniciarlo de nuevo.
 
@@ -59,8 +59,9 @@ incluso con ajustes apropiados, consulta [Solución de problemas](Troubleshootin
 un juego que no arranca, se cierra o muestra algo mal: claves que faltan o son antiguas, un archivo
 de juego dañado, falta de firmware, Vulkan o el controlador gráfico, la memoria de vídeo, shaders que
 Kaichii aún no traduce y cierres del emulador. Esta parte no usa IA ni envía nada; cada hallazgo
-enlaza con la página de esta guía que lo explica. Elige **La sesión anterior** si Kaichii se
-reinició después del problema.
+enlaza con la página de esta guía que lo explica. Si Kaichii se cerró por el problema, el diálogo
+abre **La sesión anterior** por sí solo. Un registro sin errores no tiene nada que explicar, así que
+la consulta a la IA se desactiva.
 
 Para saber más, cuenta qué ha pasado (opcional) y pulsa **Pedir a la IA que lo explique**. La IA
 responde en tu idioma, con lo que probablemente ha fallado y qué probar. Solo se envían las líneas del

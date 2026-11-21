@@ -13,7 +13,7 @@ can [explain the last problem](#explain-the-last-problem) from Kaichii's log and
 - **All games:** open *Emulation > Ask AI to tune this computer*. Stop any game first. The proposal
   changes global settings and can be tried after restarting Kaichii.
 - **One game:** right-click it and choose *Ask AI to tune this game*. The same action is in
-  *Emulation* while playing. The game need not be running. When it is running, recent FPS and memory
+  *Emulation*, for the game you are playing or the one selected in the list. The game need not be running. When it is running, recent FPS and memory
   figures are included if available. Kaichii asks before stopping it to save changes; try them on
   the next start.
 
@@ -57,7 +57,8 @@ persistent missing textures, see [Troubleshooting](Troubleshooting.md).
 start, crashes or shows something wrong: missing or old keys, a damaged game file, no firmware,
 Vulkan or the graphics driver, video memory, shaders Kaichii can't translate yet, and crashes in the
 emulator. This part needs no AI and sends nothing; each finding links to the page of this guide that
-explains it. Choose **The previous session** when Kaichii was restarted after the problem.
+explains it. When Kaichii closed on the problem, the dialog opens **The previous session** by
+itself. A log with no errors has nothing to explain, so asking the AI is turned off for it.
 
 For more, describe what happened (optional) and click **Ask the AI to explain**. The AI answers in
 your language, with what most likely went wrong and what to try. Only the log lines about the

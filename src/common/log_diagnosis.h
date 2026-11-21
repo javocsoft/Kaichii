@@ -31,6 +31,9 @@ struct Analysis {
     std::string program_id;         ///< Of the last game booted, if any
     std::string build;              ///< From the version line, if any
     bool game_booted = false;
+    /// Whether there is anything to explain: a finding, or an error in the session. A clean log
+    /// still keeps its build lines, but asking an AI about it would only cost the player.
+    bool has_problems = false;
 };
 
 /// The most lines `lines` holds, and the longest a line is kept.

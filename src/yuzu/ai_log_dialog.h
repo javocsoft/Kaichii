@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include <QDialog>
 #include <QJsonObject>
 #include <QStringList>
@@ -32,6 +34,8 @@ public:
 
 private:
     void LoadLog();
+    /// The analysis of a log, or nothing when it can't be read.
+    [[nodiscard]] std::optional<Common::LogDiagnosis::Analysis> ReadLog(bool previous) const;
     void Ask();
     void HandleReply(const AiReply& reply);
     void OpenBugReport();

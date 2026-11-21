@@ -105,6 +105,36 @@ TEST_CASE("A load failure without a key problem is a load failure", "[common][lo
     CHECK_FALSE(Has(analysis, Finding::MissingKeys));
 }
 
+TEST_CASE("A clean log has nothing to explain", "[common][log_diagnosis]") {
+    const std::string log =
+        std::string{Header} +
+        "[   0.160] Frontend <Warning> yuzu/main_window.cpp:5378:OnCheckFirmwareDecryption: "
+        "Decryption keys are missing from /home/ana/.local/share/eden/keys\n"
+        "[   3.000] Frontend <Info> core/core.cpp:300:Load: Booting game: 0400486024DEC000 | "
+        "Ocarina\n"
+        "[ 600.000] Frontend <Info> core/core.cpp:400:Shutdown: Shutting down\n";
+    const auto analysis = Analyze(log);
+    CHECK(analysis.findings.empty());
+    CHECK_FALSE(analysis.has_problems);
+
+    // Kaichii started and closed without a game: the build is still known.
+    const auto empty_session = Analyze(Header);
+    CHECK_FALSE(empty_session.has_problems);
+    CHECK_FALSE(empty_session.lines.empty());
+    CHECK(empty_session.build.find("Kaichii b48") != std::string::npos);
+}
+
+TEST_CASE("An error without a known cause is still worth explaining", "[common][log_diagnosis]") {
+    const std::string log =
+        std::string{Header} +
+        "[   3.000] Frontend <Info> core/core.cpp:300:Load: Booting game: 0400486024DEC000 | "
+        "Ocarina\n"
+        "[  42.000] Service.AM <Error> core/hle/service/am/am.cpp:10:Call: Something failed\n";
+    const auto analysis = Analyze(log);
+    CHECK(analysis.findings.empty());
+    CHECK(analysis.has_problems);
+}
+
 TEST_CASE("User names are taken out of paths", "[common][log_diagnosis]") {
     CHECK(Redact("open /home/ana/games/x.nsp") == "open ~/games/x.nsp");
     CHECK(Redact("/Users/bob/Library/x and /Users/bob/y") == "~/Library/x and ~/y");

@@ -156,9 +156,18 @@ Analysis Analyze(std::string_view log) {
             keep.push_back(line);
         }
     }
+    bool errors = false;
     for (size_t i = session_start; i < all.size(); ++i) {
         const std::string_view line = all[i];
+        errors = errors || IsProblem(line);
         bool interesting = IsProblem(line) || Contains(line, "Booting game: ");
+        // Without a game the whole log is the session, and its start still names the build.
+        if (!analysis.game_booted &&
+            (Contains(line, "Version: ") || Contains(line, "Host CPU") ||
+             Contains(line, "Host OS") || Contains(line, "GPU: ") ||
+             Contains(line, "Vulkan driver"))) {
+            interesting = true;
+        }
         if (Contains(line, "Version: ") && analysis.build.empty()) {
             analysis.build = std::string{Message(line)};
         }
@@ -211,6 +220,7 @@ Analysis Analyze(std::string_view log) {
     // In the order of the enum: what to fix first comes first.
     std::ranges::sort(found);
     analysis.findings = std::move(found);
+    analysis.has_problems = errors || !analysis.findings.empty();
 
     // One copy of each message, with how often it repeated, at most MaxLines.
     std::map<std::string_view, size_t> repeats;

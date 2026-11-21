@@ -177,7 +177,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Mostrar las líneas del registro que se enviarían</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+6"/>
+        <source>Nothing would be sent.</source>
+        <translation>No se enviaría nada.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Only the lines about the problem and the build are sent, with your user name taken out of paths. Never your games, saves or keys.</source>
         <translation>Solo se envían las líneas sobre el problema y la versión, sin tu nombre de usuario en las rutas. Nunca tus juegos, partidas ni claves.</translation>
     </message>
@@ -192,14 +197,28 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Preparar un informe de error en GitHub</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+65"/>
+        <source>There is nothing in this log for the AI to explain.</source>
+        <translation>En este registro no hay nada que la IA pueda explicar.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>There is no log to read yet.</source>
         <translation>Todavía no hay ningún registro que leer.</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+2"/>
+        <source>This log has no errors, so there is nothing for the AI to explain, and asking is turned off so you don&apos;t pay for a request. If a game fails, come back after it happens: when Kaichii closes on a problem, choose the previous session.</source>
+        <translation>Este registro no tiene errores, así que la IA no tiene nada que explicar, y la consulta está desactivada para que no pagues por ella. Si un juego falla, vuelve después de que pase: si Kaichii se cierra por el problema, elige la sesión anterior.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Kaichii found no known cause, but the log has errors the AI can look at.</source>
+        <translation>Kaichii no ha encontrado ninguna causa conocida, pero el registro tiene errores que la IA puede revisar.</translation>
+    </message>
+    <message>
         <source>Kaichii found no known cause in this log.</source>
-        <translation>Kaichii no ha encontrado ninguna causa conocida en este registro.</translation>
+        <translation type="vanished">Kaichii no ha encontrado ninguna causa conocida en este registro.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -212,7 +231,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Más en la guía</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+20"/>
         <source>Enter a model and your API key.</source>
         <translation>Escribe un modelo y tu clave de API.</translation>
     </message>
@@ -9104,7 +9123,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameList</name>
     <message>
-        <location filename="../../src/yuzu/game/game_list.cpp" line="+551"/>
+        <location filename="../../src/yuzu/game/game_list.cpp" line="+579"/>
         <source>Ask AI to tune this game...</source>
         <translation>Pedir a la IA que ajuste este juego...</translation>
     </message>
@@ -10035,17 +10054,17 @@ o haz clic para buscarlo</translation>
     </message>
     <message>
         <location filename="../../src/yuzu/main_window.cpp" line="+2467"/>
-        <location line="+1799"/>
+        <location line="+1826"/>
         <source>AI settings assistant</source>
         <translation>Asistente de ajustes con IA</translation>
     </message>
     <message>
-        <location line="-1798"/>
+        <location line="-1825"/>
         <source>Stop the running game before tuning another game.</source>
         <translation>Detén el juego en marcha antes de ajustar otro juego.</translation>
     </message>
     <message>
-        <location line="+1799"/>
+        <location line="+1826"/>
         <source>Stop the game before tuning settings for the whole computer.</source>
         <translation>Detén el juego antes de ajustar la configuración de todo el equipo.</translation>
     </message>
@@ -10075,7 +10094,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location line="-2270"/>
+        <location line="-2297"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -10296,7 +10315,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="-288"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3839"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3866"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -10584,7 +10603,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4742"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4769"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -10724,7 +10743,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+425"/>
+        <location line="+427"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -10749,7 +10768,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>No se pudo restaurar la versión anterior: %1</translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+46"/>
         <source>&amp;Continue</source>
         <translation>&amp;Continuar</translation>
     </message>
@@ -10842,25 +10861,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2602"/>
+        <location line="+2629"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2602"/>
-        <location line="+2602"/>
+        <location line="-2629"/>
+        <location line="+2629"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2601"/>
-        <location line="+2603"/>
+        <location line="-2628"/>
+        <location line="+2630"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2590"/>
+        <location line="-2617"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -11024,12 +11043,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2250"/>
+        <location line="+2277"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2224"/>
+        <location line="-2251"/>
         <location line="+132"/>
         <source>Add to the game list?</source>
         <translation>¿Añadir a la lista de juegos?</translation>
@@ -11280,7 +11299,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>El mando del modo portátil no puede usarse en el modo sobremesa. El mando pro será seleccionado en su lugar.</translation>
     </message>
     <message>
-        <location line="+185"/>
+        <location line="+212"/>
         <location line="+51"/>
         <source>Amiibo</source>
         <translation>Amiibo</translation>
