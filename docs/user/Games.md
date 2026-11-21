@@ -41,7 +41,10 @@ game's case, as in a shop).
 
 *Ascending* and *Descending* turn any of them around. Picking an order starts it the way it's most
 useful: names from A, the newest and the most played first. Games equal in the order, such as the
-ones you never played, follow by name. The tree view sorts by whichever column you click. In the two cover views, *View > Separate Switch 2 Games* shows Switch 2 games first, under
+ones you never played, follow by name. The tree view sorts by whichever column you click.
+
+Right-click an empty part of the list for the same choices: the list mode, the order and the Switch 2
+sections. In the two cover views, *View > Separate Switch 2 Games* shows Switch 2 games first, under
 their own heading, then the Switch ones under theirs. A game counts as Switch 2 by its title id
 (Switch 2 ids start with `04`), so a Switch game with a Switch 2 Edition upgrade stays with the
 Switch games.

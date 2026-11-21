@@ -46,7 +46,10 @@ tienda).
 *Ascendente* y *Descendente* dan la vuelta a cualquiera de ellos. Al elegir un orden empieza en el
 sentido más útil: los nombres desde la A, y los más recientes y los más jugados primero. Los juegos
 empatados, como los que nunca has jugado, siguen por nombre. La vista en árbol ordena por la
-columna en la que hagas clic. En las dos vistas de carátulas, *Ver >
+columna en la que hagas clic.
+
+Haz clic derecho en una parte vacía de la lista para tener las mismas opciones: el modo de la lista,
+el orden y las secciones de Switch 2. En las dos vistas de carátulas, *Ver >
 Separar los juegos de Switch 2* muestra primero los juegos de Switch 2, bajo su propio título, y
 después los de Switch bajo el suyo. Un juego cuenta como de Switch 2 por su id (los de Switch 2
 empiezan por `04`), así que un juego de Switch con la mejora Switch 2 Edition se queda con los de

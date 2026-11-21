@@ -9,7 +9,9 @@
 #include <QPainter>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
+#include <QScrollBar>
 #include <QTimeZone>
+#include <QWheelEvent>
 #include <QTemporaryDir>
 #include <QtTest>
 
@@ -20,6 +22,7 @@
 #include "qt_common/util/game_folders.h"
 #include "yuzu/game/cover_art.h"
 #include "yuzu/game/game_covers.h"
+#include "yuzu/game/smooth_scroll.h"
 
 class GameListTest : public QObject {
     Q_OBJECT
@@ -44,6 +47,7 @@ private slots:
     void SectionsPutSwitch2GamesFirst();
     void ArrowKeysMoveAcrossTheShelf();
     void FilteredGamesLeaveTheShelf();
+    void TheWheelScrollsWhicheverViewIsShown();
     void AddAndFavoritesRowsAloneAreEmpty();
     void FoldersCoverTheirGamesAndDeepScannedSubfolders();
     void ListsGameFilesByExtension();
@@ -414,6 +418,53 @@ void GameListTest::FilteredGamesLeaveTheShelf() {
     QCOMPARE(shelf.Rect(3).topLeft(), QPoint(0, 0));
     shelf.view.ApplyFilter(QString{}, &shelf.model);
     QVERIFY(!shelf.Rect(0).isNull());
+}
+
+namespace {
+
+/// A shelf of many games in a short view, so it can scroll.
+struct TallShelf {
+    QStandardItemModel model;
+    GameCovers view;
+
+    explicit TallShelf(CoverShape shape) : view{shape} {
+        for (int i = 0; i < 30; ++i) {
+            model.appendRow(Game(QStringLiteral("Game %1").arg(i)));
+        }
+        view.SetModel(&model);
+        view.resize(800, 300);
+        view.show();
+        view.UpdateCoverSize();
+    }
+};
+
+} // Anonymous namespace
+
+void GameListTest::TheWheelScrollsWhicheverViewIsShown() {
+    // The game list animated the wheel on the tree's and the grid's scroll bars only, so the
+    // cover views didn't scroll at all.
+    TallShelf covers{CoverShape::Square};
+    TallShelf cases{CoverShape::Box};
+    QVERIFY(covers.view.verticalScrollBar()->maximum() > 0);
+    QVERIFY(cases.view.verticalScrollBar()->maximum() > 0);
+
+    QAbstractScrollArea* shown = &covers.view;
+    SmoothScroll scroll([&shown] { return shown; });
+    const auto turn = [&scroll](QWidget& viewport) {
+        const QPointF at = viewport.rect().center();
+        const QWheelEvent wheel(at, viewport.mapToGlobal(at), QPoint{}, QPoint{0, -120},
+                                Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase, false);
+        scroll.Wheel(wheel);
+        QTest::qWait(SmoothScroll::DurationMs + 150);
+    };
+    turn(*covers.view.viewport());
+    QCOMPARE(covers.view.verticalScrollBar()->value(), 120);
+
+    // Another view shown later scrolls too, and the first one stays where it was.
+    shown = &cases.view;
+    turn(*cases.view.viewport());
+    QCOMPARE(cases.view.verticalScrollBar()->value(), 120);
+    QCOMPARE(covers.view.verticalScrollBar()->value(), 120);
 }
 
 void GameListTest::AddAndFavoritesRowsAloneAreEmpty() {

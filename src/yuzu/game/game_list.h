@@ -41,6 +41,7 @@ enum class StartGameType;
 
 class GameCarousel;
 class GameCovers;
+class SmoothScroll;
 
 class QAbstractItemView;
 namespace Core {
@@ -182,10 +183,7 @@ private:
 
     ControllerNavigation* controller_navigation = nullptr;
 
-    QVariantAnimation* vertical_scroll = nullptr;
-    QVariantAnimation* horizontal_scroll = nullptr;
-    int vertical_scroll_target = 0;
-    int horizontal_scroll_target = 0;
+    SmoothScroll* smooth_scroll = nullptr;
 
     const PlayTime::PlayTimeManager& play_time_manager;
     Core::System& system;

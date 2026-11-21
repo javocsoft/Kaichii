@@ -41,6 +41,7 @@
 #include "yuzu/game/game_list.h"
 #include "yuzu/game/game_tree.h"
 #include "yuzu/game/search_field.h"
+#include "yuzu/game/smooth_scroll.h"
 #include "yuzu/main_window.h"
 #include "yuzu/util/controller_navigation.h"
 
@@ -512,13 +513,12 @@ void GameList::ToggleFavorite(u64 program_id) {
 void GameList::PopupContextMenu(const QPoint& menu_location) {
     QModelIndex item = m_currentView->indexAt(menu_location);
     if (!item.isValid()) {
-        if (m_isTreeMode)
-            return;
-
+        // An empty part of the list: adding a folder, and how the list is shown and ordered.
         QMenu blank_menu;
         QAction* addGameDirAction = blank_menu.addAction(tr("&Add New Game Directory"));
-
         connect(addGameDirAction, &QAction::triggered, this, &GameList::AddDirectory);
+        blank_menu.addSeparator();
+        main_window->AddGameListViewEntries(blank_menu);
         blank_menu.exec(m_currentView->viewport()->mapToGlobal(menu_location));
         return;
     }
@@ -812,65 +812,12 @@ void GameList::RetranslateUI() {
 }
 
 void GameList::SetupScrollAnimation() {
-    auto setup = [this](QVariantAnimation* anim, QScrollBar* bar) {
-        anim->setEasingCurve(QEasingCurve::OutCubic);
-        anim->setDuration(200);
-        connect(anim, &QVariantAnimation::valueChanged, this,
-                [bar](const QVariant& value) { bar->setValue(value.toInt()); });
-    };
-
-    vertical_scroll = new QVariantAnimation(this);
-    horizontal_scroll = new QVariantAnimation(this);
-
-    setup(vertical_scroll, tree_view->verticalScrollBar());
-    setup(horizontal_scroll, tree_view->horizontalScrollBar());
-
-    setup(vertical_scroll, grid_view->verticalScrollBar());
-    setup(horizontal_scroll, grid_view->horizontalScrollBar());
+    smooth_scroll = new SmoothScroll([this] { return m_currentView; }, this);
 }
 
 bool GameList::eventFilter(QObject* obj, QEvent* event) {
     if (obj == m_currentView->viewport() && event->type() == QEvent::Wheel) {
-        QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
-
-        bool horizontal = wheelEvent->modifiers() & Qt::ShiftModifier;
-
-        int deltaX = wheelEvent->angleDelta().x();
-        int deltaY = wheelEvent->angleDelta().y();
-
-        if (horizontal && deltaY != 0 && deltaX == 0) {
-            deltaX = deltaY;
-            deltaY = 0;
-        }
-
-        if (deltaY != 0) {
-            if (vertical_scroll->state() == QAbstractAnimation::Stopped)
-                vertical_scroll_target = m_currentView->verticalScrollBar()->value();
-
-            vertical_scroll_target -= deltaY;
-            vertical_scroll_target =
-                qBound(0, vertical_scroll_target, m_currentView->verticalScrollBar()->maximum());
-
-            vertical_scroll->stop();
-            vertical_scroll->setStartValue(m_currentView->verticalScrollBar()->value());
-            vertical_scroll->setEndValue(vertical_scroll_target);
-            vertical_scroll->start();
-        }
-
-        if (deltaX != 0) {
-            if (horizontal_scroll->state() == QAbstractAnimation::Stopped)
-                horizontal_scroll_target = m_currentView->horizontalScrollBar()->value();
-
-            horizontal_scroll_target -= deltaX;
-            horizontal_scroll_target = qBound(0, horizontal_scroll_target,
-                                              m_currentView->horizontalScrollBar()->maximum());
-
-            horizontal_scroll->stop();
-            horizontal_scroll->setStartValue(m_currentView->horizontalScrollBar()->value());
-            horizontal_scroll->setEndValue(horizontal_scroll_target);
-            horizontal_scroll->start();
-        }
-
+        smooth_scroll->Wheel(*static_cast<QWheelEvent*>(event));
         return true;
     }
 

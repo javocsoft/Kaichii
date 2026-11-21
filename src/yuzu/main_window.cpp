@@ -3955,6 +3955,12 @@ void MainWindow::SetCoverView() {
     SetGameListMode(Settings::GameListMode::CoverView);
 }
 
+void MainWindow::AddGameListViewEntries(QMenu& menu) {
+    menu.addMenu(ui->menu_Game_List_Mode);
+    menu.addMenu(ui->menu_Sort_Games);
+    menu.addAction(ui->action_Separate_Switch_2_Games);
+}
+
 void MainWindow::SetFullCoverView() {
     SetGameListMode(Settings::GameListMode::FullCoverView);
 }

@@ -290,6 +290,7 @@ add_executable(yuzu
     game/carousel.h game/carousel.cpp
     game/cover_art.h game/cover_art.cpp
     game/game_covers.h game/game_covers.cpp game/cover_layout.h
+    game/smooth_scroll.h game/smooth_scroll.cpp
 )
 
 set_target_properties(yuzu PROPERTIES OUTPUT_NAME "kaichii")
