@@ -90,8 +90,10 @@
     <addaction name="action_Restart"/>
     <addaction name="separator"/>
     <addaction name="action_Configure"/>
+    <addaction name="action_AI_Tune_Computer"/>
     <addaction name="action_Configure_Current_Game"/>
     <addaction name="action_Optimize_Current_Game"/>
+    <addaction name="action_AI_Optimize_Current_Game"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -483,6 +485,25 @@
    </property>
    <property name="text">
     <string>&amp;Optimize for This Game...</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="action_AI_Optimize_Current_Game">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Ask AI to tune current game...</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="action_AI_Tune_Computer">
+   <property name="text">
+    <string>Ask AI to tune this computer...</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

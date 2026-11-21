@@ -15,6 +15,8 @@ la descarga a jugar, y te ayuda cuando algo falla.
 3. [Juegos, claves y firmware](Games.es.md): qué necesita cada tipo de archivo.
 4. [Ajustes para tu equipo](Performance.es.md): los ajustes predefinidos, *Optimizar para este juego* y
    qué esperar de una tarjeta de 4 GB.
+5. [Asistente de ajustes con IA](AIOptimization.es.md): propuestas opcionales con tu propia clave de
+   OpenAI o Anthropic.
 
 ## Juegos
 

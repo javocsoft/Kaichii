@@ -29,6 +29,10 @@ pass.
 
 ## Optimize for This Game
 
+To describe a problem in your own words and receive a proposal you can review and undo, see the
+[AI settings assistant](AIOptimization.md). It also works with the game closed and requires your own
+API key.
+
 Right-click a game and choose **Optimize for This Game** (while playing: *Emulation > Optimize for
 This Game*, or Ctrl+Shift+O). Kaichii measures the game as it runs, tries frame generation for a
 few seconds, and proposes changes; nothing changes until you accept. Stand somewhere demanding, such

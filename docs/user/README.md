@@ -15,6 +15,8 @@ playing, and helps when something goes wrong.
 3. [Games, keys and firmware](Games.md): what each kind of game file needs.
 4. [Settings for your computer](Performance.md): presets, *Optimize for This Game*, and what to
    expect on a 4 GB card.
+5. [AI settings assistant](AIOptimization.md): optional proposals using your own OpenAI or Anthropic
+   key.
 
 ## Games
 

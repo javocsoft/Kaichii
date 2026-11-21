@@ -49,6 +49,7 @@
 #include "yuzu/first_run_assistant.h"
 #include "yuzu/game/game_list.h"
 #include "yuzu/auto_optimize_dialog.h"
+#include "yuzu/ai_optimize_dialog.h"
 #include "yuzu/nup_dialogs.h"
 
 #include "applets/qt_amiibo_settings.h"
@@ -1526,6 +1527,8 @@ void MainWindow::ConnectWidgetEvents() {
     });
     connect(game_list, &GameList::BootGame, this, &MainWindow::BootGameFromList);
     connect(game_list, &GameList::OptimizeGameRequested, this, &MainWindow::OnOptimizeGameFromList);
+    connect(game_list, &GameList::AiOptimizeGameRequested, this,
+            &MainWindow::OnAiOptimizeGameFromList);
     connect(game_list, &GameList::GameChosen, this, &MainWindow::OnGameListLoadFile);
     connect(game_list, &GameList::OpenDirectory, this, &MainWindow::OnGameListOpenDirectory);
     connect(game_list, &GameList::OpenFolderRequested, this, &MainWindow::OnGameListOpenFolder);
@@ -1600,6 +1603,8 @@ void MainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Configure, &MainWindow::OnConfigure);
     connect_menu(ui->action_Configure_Current_Game, &MainWindow::OnConfigurePerGame);
     connect_menu(ui->action_Optimize_Current_Game, &MainWindow::OnOptimizeCurrentGame);
+    connect_menu(ui->action_AI_Optimize_Current_Game, &MainWindow::OnAiOptimizeCurrentGame);
+    connect_menu(ui->action_AI_Tune_Computer, &MainWindow::OnAiOptimizeComputer);
 
     // View
     connect_menu(ui->action_Fullscreen, &MainWindow::ToggleFullscreen);
@@ -1794,6 +1799,7 @@ void MainWindow::UpdateMenuState() {
         ui->action_Restart,
         ui->action_Configure_Current_Game,
         ui->action_Optimize_Current_Game,
+        ui->action_AI_Optimize_Current_Game,
         ui->action_Load_Amiibo,
         ui->action_Pause,
     };
@@ -2443,6 +2449,40 @@ void MainWindow::OnOptimizeGameFromList(const QString& game_path) {
     // It measures the game where it is played, not at its title: start it, and say how.
     optimize_hint_path = game_path;
     BootGame(game_path, ApplicationAppletParameters(), StartGameType::Normal);
+}
+
+void MainWindow::OnAiOptimizeGameFromList(const QString& game_path, u64 program_id) {
+    if (QtCommon::system->IsPoweredOn() && game_path != current_game_path) {
+        QMessageBox::information(this, tr("AI settings assistant"),
+                                 tr("Stop the running game before tuning another game."));
+        return;
+    }
+    const auto file_path = std::filesystem::path{
+        Common::U16StringFromBuffer(game_path.utf16(), game_path.size())};
+    const std::string config_name = program_id == 0
+                                        ? Common::FS::PathToUTF8String(file_path.filename())
+                                        : fmt::format("{:016X}", program_id);
+    const auto host = VkDeviceInfo::DetectHostProfile(
+        vk_device_records, Settings::values.vulkan_device.GetValue());
+    Settings::SetConfiguringGlobal(false);
+    const auto show = [&] {
+        AiOptimizeDialog dialog(this, *QtCommon::system, host, config_name, program_id,
+                                QFileInfo(game_path).completeBaseName(),
+                                [this] { ShutdownGame(); });
+        dialog.exec();
+    };
+    if (QtCommon::system->IsPoweredOn()) {
+        show();
+    } else {
+        QtConfig game_config(config_name, Config::ConfigType::PerGameConfig);
+        show();
+    }
+    const bool powered_on = QtCommon::system->IsPoweredOn();
+    Settings::RestoreGlobalState(powered_on);
+    Settings::SetConfiguringGlobal(true);
+    if (!powered_on) {
+        config->SaveAllValues();
+    }
 }
 
 bool MainWindow::OnShutdownBegin() {
@@ -4200,6 +4240,28 @@ void MainWindow::OnOptimizeCurrentGame() {
     Settings::SetConfiguringGlobal(true);
 }
 
+void MainWindow::OnAiOptimizeCurrentGame() {
+    OnAiOptimizeGameFromList(current_game_path,
+                             QtCommon::system->GetApplicationProcessProgramID());
+}
+
+void MainWindow::OnAiOptimizeComputer() {
+    if (QtCommon::system->IsPoweredOn()) {
+        QMessageBox::information(this, tr("AI settings assistant"),
+                                 tr("Stop the game before tuning settings for the whole computer."));
+        return;
+    }
+    Settings::RestoreGlobalState(false);
+    const auto host = VkDeviceInfo::DetectHostProfile(
+        vk_device_records, Settings::values.vulkan_device.GetValue());
+    Settings::SetConfiguringGlobal(true);
+    AiOptimizeDialog dialog(this, *QtCommon::system, host, {}, 0, tr("All games"), {}, true,
+                            QString::fromStdString(config->GetConfigFilePath()) +
+                                QStringLiteral(".ai-undo.json"),
+                            [this] { config->SaveAllValues(); });
+    dialog.exec();
+}
+
 void MainWindow::OpenPerGameConfiguration(u64 title_id, const std::string& file_name) {
     Settings::SetConfiguringGlobal(false);
     ConfigurePerGame dialog(this, title_id, file_name, vk_device_records, *QtCommon::system);
@@ -5803,7 +5865,7 @@ void MainWindow::UpdateUITheme() {
 void MainWindow::UpdateMenuIcons() {
     // From Lichii's list (zortos293/Lichii#1365), plus Kaichii's own entries. Checkable actions
     // get none: in some styles an icon replaces the check mark, which would hide their state.
-    const std::array<std::pair<QAction*, const char*>, 56> icons{{
+    const std::array<std::pair<QAction*, const char*>, 58> icons{{
         {ui->action_Install_File_NAND, "download"},
         {ui->action_Add_Game_Folder, "plus"},
         {ui->action_Load_File, "file"},
@@ -5821,8 +5883,10 @@ void MainWindow::UpdateMenuIcons() {
         {ui->action_Stop, "stop"},
         {ui->action_Restart, "restart"},
         {ui->action_Configure, "sliders"},
+        {ui->action_AI_Tune_Computer, "sparkles"},
         {ui->action_Configure_Current_Game, "gamepad"},
         {ui->action_Optimize_Current_Game, "sparkles"},
+        {ui->action_AI_Optimize_Current_Game, "sparkles"},
         {ui->menu_Reset_Window_Size->menuAction(), "monitor"},
         {ui->menu_View_Debugging->menuAction(), "bug"},
         {ui->menu_Game_List_Mode->menuAction(), "grid"},

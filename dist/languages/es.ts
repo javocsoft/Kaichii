@@ -95,6 +95,374 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
 </context>
 <context>
+    <name>AiOptimizeDialog</name>
+    <message>
+        <location filename="../../src/yuzu/ai_optimize_dialog.cpp" line="+135"/>
+        <source>AI settings assistant</source>
+        <translation>Asistente de ajustes con IA</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Describe what you want to improve on this computer. Kaichii will send a diagnostic of your computer and settings to your chosen AI provider and show proposed global settings for your approval.</source>
+        <translation>Describe lo que quieres mejorar en este equipo. Kaichii enviará un diagnóstico de tu equipo y tus ajustes al proveedor de IA elegido y te mostrará los ajustes globales propuestos para que los apruebes.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Describe what happens in this game. Kaichii will send a diagnostic of your computer and settings to your chosen AI provider, then show any proposed changes for your approval.</source>
+        <translation>Describe lo que pasa en este juego. Kaichii enviará un diagnóstico de tu equipo y tus ajustes al proveedor de IA elegido y después te mostrará los cambios propuestos para que los apruebes.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Your provider may charge for each request. Nothing is sent until you ask for a proposal.</source>
+        <translation>Tu proveedor puede cobrar por cada consulta. No se envía nada hasta que pidas una propuesta.</translation>
+    </message>
+    <message>
+        <source>Describe what you want to improve on this computer. Kaichii will send the diagnostic shown below to your chosen AI provider and show proposed global settings for your approval. Your API key is not saved.</source>
+        <translation type="vanished">Describe qué quieres mejorar en este equipo. Kaichii enviará el diagnóstico que aparece abajo al proveedor de IA que elijas y te mostrará los ajustes globales propuestos para que los revises. Tu clave de API no se guarda.</translation>
+    </message>
+    <message>
+        <source>Describe what happens in this game. Kaichii will send the diagnostic shown below to your chosen AI provider, then show any proposed changes for your approval. Your API key stays in memory only while this window is open.</source>
+        <translation type="vanished">Describe qué ocurre en este juego. Kaichii enviará el diagnóstico que aparece abajo al proveedor de IA que elijas y te mostrará los cambios propuestos para que los revises. La clave de API solo permanece en memoria mientras esta ventana está abierta.</translation>
+    </message>
+    <message>
+        <source>Your API key (not saved)</source>
+        <translation type="vanished">Tu clave de API (no se guarda)</translation>
+    </message>
+    <message>
+        <location line="-56"/>
+        <source>Recommended</source>
+        <translation>Recomendado</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Most capable</source>
+        <translation>El más capaz</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Newest</source>
+        <translation>El más reciente</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Balance of cost and capability</source>
+        <translation>Equilibrio entre coste y capacidad</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Lowest cost</source>
+        <translation>El de menor coste</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Faster, lower cost</source>
+        <translation>Más rápido y de menor coste</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Most capable, highest cost</source>
+        <translation>El más capaz y el de mayor coste</translation>
+    </message>
+    <message>
+        <location line="+50"/>
+        <source>Pick one of the provider&apos;s main models, or type another model name.</source>
+        <translation>Elige uno de los modelos principales del proveedor o escribe el nombre de otro modelo.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Load from provider</source>
+        <translation>Cargar del proveedor</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ask the provider which models your key can use. Needs your API key.</source>
+        <translation>Pregunta al proveedor qué modelos puede usar tu clave. Necesita tu clave de API.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Your API key</source>
+        <translation>Tu clave de API</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remember this key in the system&apos;s credential store</source>
+        <translation>Recordar esta clave en el almacén de credenciales del sistema</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Forget saved key</source>
+        <translation>Olvidar la clave guardada</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>This system has no credential store Kaichii can use, so the key stays in memory only while this window is open.</source>
+        <translation>Este sistema no tiene un almacén de credenciales que Kaichii pueda usar, así que la clave solo permanece en memoria mientras la ventana está abierta.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Saved by the operating system (Keychain, Credential Manager or Secret Service), never in Kaichii&apos;s settings files. It is saved once a request succeeds.</source>
+        <translation>La guarda el sistema operativo (Llavero, Administrador de credenciales o Secret Service), nunca los archivos de configuración de Kaichii. Se guarda cuando una consulta sale bien.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Provider:</source>
+        <translation>Proveedor:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Model:</source>
+        <translation>Modelo:</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>API key:</source>
+        <translation>Clave de API:</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>What would you like to improve?</source>
+        <translation>¿Qué te gustaría mejorar?</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>For example: the game stutters when I enter a new area.</source>
+        <translation>Por ejemplo: el juego da tirones al entrar en una zona nueva.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Data sent with this request:</source>
+        <translation>Datos enviados con esta consulta:</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Sent with each request: your description, the game, your hardware (GPU, video memory, CPU threads, RAM, operating system) and the settings the assistant may change. Never your games, saves, keys, screenshots or logs.</source>
+        <translation>Se envía en cada consulta: tu descripción, el juego, tu equipo (GPU, memoria de vídeo, hilos de CPU, RAM, sistema operativo) y los ajustes que el asistente puede cambiar. Nunca tus juegos, partidas, claves, capturas ni registros.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Refresh diagnostic</source>
+        <translation>Actualizar diagnóstico</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ask for a proposal</source>
+        <translation>Pedir una propuesta</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Undo last AI change</source>
+        <translation>Deshacer el último cambio de IA</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Apply selected changes</source>
+        <translation>Aplicar cambios seleccionados</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Close</source>
+        <translation>Cerrar</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Model chosen by name or listed by the provider.</source>
+        <translation>Modelo elegido por nombre o de la lista del proveedor.</translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Using the API key saved for %1.</source>
+        <translation>Se usa la clave de API guardada para %1.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The system&apos;s credential store didn&apos;t give the saved key. Enter it again, or check that the store is unlocked.</source>
+        <translation>El almacén de credenciales del sistema no ha devuelto la clave guardada. Vuelve a escribirla o comprueba que el almacén está desbloqueado.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The saved %1 key was removed from this computer.</source>
+        <translation>Se ha borrado de este equipo la clave guardada de %1.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The system&apos;s credential store didn&apos;t remove the key.</source>
+        <translation>El almacén de credenciales del sistema no ha borrado la clave.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The proposal is below, but the system&apos;s credential store didn&apos;t save the key.</source>
+        <translation>La propuesta está abajo, pero el almacén de credenciales del sistema no ha guardado la clave.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Enter your API key to load the provider&apos;s models.</source>
+        <translation>Escribe tu clave de API para cargar los modelos del proveedor.</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Asking %1 for its models…</source>
+        <translation>Pidiendo a %1 su lista de modelos…</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>The provider didn&apos;t list its models: %1</source>
+        <translation>El proveedor no ha devuelto su lista de modelos: %1</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The provider listed no models this assistant can use.</source>
+        <translation>El proveedor no ha devuelto ningún modelo que este asistente pueda usar.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+14"/>
+        <source>%n model(s) available for your key.</source>
+        <translation>
+            <numerusform>%n modelo disponible para tu clave.</numerusform>
+            <numerusform>%n modelos disponibles para tu clave.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+103"/>
+        <source>Enter a model, your API key and a description of the problem.</source>
+        <translation>Indica un modelo, tu clave de API y una descripción del problema.</translation>
+    </message>
+    <message>
+        <location line="+74"/>
+        <source>Waiting for %1…</source>
+        <translation>Esperando a %1…</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>The provider could not complete the request: %1</source>
+        <translation>El proveedor no pudo completar la consulta: %1</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The provider declined this request. Try rewording the description.</source>
+        <translation>El proveedor ha rechazado esta consulta. Prueba a redactar la descripción de otra forma.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The provider stopped before finishing its proposal. Try again, or pick another model.</source>
+        <translation>El proveedor se ha detenido antes de terminar la propuesta. Vuelve a intentarlo o elige otro modelo.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The provider returned no usable proposal.</source>
+        <translation>El proveedor no devolvió una propuesta utilizable.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>The provider returned an invalid proposal. No settings were changed.</source>
+        <translation>El proveedor devolvió una propuesta inválida. No se cambió ningún ajuste.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>The proposal did not pass Kaichii&apos;s validation.</source>
+        <translation>La propuesta no superó la validación de Kaichii.</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>The proposal contains an unsupported or duplicate change. No settings were changed.</source>
+        <translation>La propuesta contiene un cambio no admitido o duplicado. No se cambió ningún ajuste.</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>%1: %2 → %3</source>
+        <translation>%1: %2 → %3</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1 (takes effect after restarting Kaichii)</source>
+        <translation>%1 (se aplica al reiniciar Kaichii)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 (takes effect the next time this game starts)</source>
+        <translation>%1 (se aplica la próxima vez que inicies este juego)</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The assistant found no safe setting change to propose.</source>
+        <translation>El asistente no encontró ningún cambio seguro que proponer.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Review the proposed changes, then apply only those you want.</source>
+        <translation>Revisa los cambios propuestos y aplica solo los que quieras.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Stop the game?</source>
+        <translation>¿Detener el juego?</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>These changes take effect on the next start. Stop the game now to save them safely? Unsaved game progress may be lost.</source>
+        <translation>Estos cambios se aplican la próxima vez que inicies el juego. ¿Quieres detenerlo ahora para guardarlos? Puedes perder el progreso que no hayas guardado.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The game is still running. Nothing was changed.</source>
+        <translation>El juego sigue en marcha. No se cambió nada.</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Settings changed since the proposal was made. Ask again before applying anything.</source>
+        <translation>Los ajustes han cambiado desde que se preparó la propuesta. Haz otra consulta antes de aplicar cambios.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No changes selected.</source>
+        <translation>No has seleccionado ningún cambio.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Could not save the undo information. Nothing was changed.</source>
+        <translation>No se pudo guardar la información para deshacer. No se cambió nada.</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Saved globally. Restart Kaichii to test the result. You can reopen this assistant and undo the change.</source>
+        <translation>Guardado para todos los juegos. Reinicia Kaichii para probar el resultado. Puedes volver a abrir este asistente y deshacer el cambio.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Saved for this game. Start it again to test the result. You can reopen this assistant and undo the change.</source>
+        <translation>Guardado para este juego. Inícialo de nuevo para probar el resultado. Puedes volver a abrir este asistente y deshacer el cambio.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Stop the game before undoing its settings.</source>
+        <translation>Detén el juego antes de deshacer sus ajustes.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>There is no saved AI change to undo.</source>
+        <translation>No hay ningún cambio de IA guardado que se pueda deshacer.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The undo record is invalid.</source>
+        <translation>La información para deshacer no es válida.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>These settings have changed again. Undo would overwrite a newer choice, so Kaichii left them alone.</source>
+        <translation>Estos ajustes han vuelto a cambiar. Deshacer sobrescribiría una elección más reciente, así que Kaichii los ha dejado como están.</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>The previous global settings were restored.</source>
+        <translation>Se han restaurado los ajustes globales anteriores.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The previous settings were restored for this game.</source>
+        <translation>Se han restaurado los ajustes anteriores de este juego.</translation>
+    </message>
+</context>
+<context>
     <name>AutoOptimizeDialog</name>
     <message>
         <location filename="../../src/yuzu/auto_optimize_dialog.cpp" line="+39"/>
@@ -381,7 +749,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
 <context>
     <name>CompatibilityReporting::Dialog</name>
     <message>
-        <location filename="../../src/yuzu/compatibility_report.cpp" line="+140"/>
+        <location filename="../../src/yuzu/compatibility_report.cpp" line="+153"/>
         <source>Submit compatibility report</source>
         <translation>Enviar informe de compatibilidad</translation>
     </message>
@@ -436,12 +804,12 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Elige tu valoración</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Compatibility</source>
         <translation>Compatibilidad</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+20"/>
         <source>Summary</source>
         <translation>Resumen</translation>
     </message>
@@ -481,12 +849,12 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Versión del juego</translation>
     </message>
     <message>
-        <location line="-62"/>
+        <location line="-83"/>
         <source>Tell how the game ran in your last session. Open on GitHub shows the report on a new issue in Kaichii&apos;s repository, where you review it and publish it with your GitHub account. Kaichii sends nothing by itself, and logs are never included.</source>
         <translation>Cuenta cómo funcionó el juego en tu última sesión. Abrir en GitHub muestra el informe en una nueva incidencia del repositorio de Kaichii, donde lo revisas y lo publicas con tu cuenta de GitHub. Kaichii no envía nada por su cuenta y nunca incluye los registros.</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+42"/>
         <source>Perfect: works as on the console, no errors</source>
         <translation>Perfecto: funciona como en la consola, sin errores</translation>
     </message>
@@ -511,7 +879,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Injugable: se cierra o no arranca</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+33"/>
         <source>Game</source>
         <translation>Juego</translation>
     </message>
@@ -586,7 +954,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>Abrir en GitHub</translation>
     </message>
     <message>
-        <location line="+112"/>
+        <location line="+142"/>
         <source>Report copied. Paste it into a new compatibility report on GitHub.</source>
         <translation>Informe copiado. Pégalo en un nuevo informe de compatibilidad en GitHub.</translation>
     </message>
@@ -611,7 +979,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation>El informe era demasiado largo para un enlace, así que está en tu portapapeles: pégalo en el campo del informe en GitHub y luego publícalo.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Draft cleared.</source>
         <translation>Borrador vaciado.</translation>
     </message>
@@ -632,7 +1000,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation type="vanished">Mi informe no contiene archivos de juegos, claves, firmware, partidas guardadas ni datos privados de cuentas.</translation>
     </message>
     <message>
-        <location line="-154"/>
+        <location line="-185"/>
         <source>Clear draft</source>
         <translation>Borrar borrador</translation>
     </message>
@@ -653,7 +1021,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation type="vanished">Primero busca y confirma el juego del catálogo.</translation>
     </message>
     <message>
-        <location line="+93"/>
+        <location line="+101"/>
         <source>Check %1: required fields must be filled, within their length limit, and contain no control characters.</source>
         <translation>Revisa %1: los campos obligatorios deben estar rellenos, sin pasar de su longitud máxima y sin caracteres de control.</translation>
     </message>
@@ -662,7 +1030,7 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation type="vanished">Un usuario de X debe tener de 1 a 15 letras, dígitos o guiones bajos, con una @ opcional.</translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-9"/>
         <source>Choose your own compatibility assessment.</source>
         <translation>Elige tu propia valoración de compatibilidad.</translation>
     </message>
@@ -731,62 +1099,62 @@ Esto vetará su nombre de usuario del foro y su dirección IP.</translation>
         <translation type="vanished">El catálogo devolvió una respuesta no válida. No se confirmó ningún juego.</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-156"/>
         <source>Choose how smoothly it ran</source>
         <translation>Elige cómo de fluido ha ido</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+1"/>
         <source>Perfect: steady at the game&apos;s frame rate, no stutters</source>
         <translation>Perfecta: estable a la velocidad del juego, sin tirones</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+2"/>
         <source>Smooth: steady, with a rare stutter</source>
         <translation>Fluida: estable, con algún tirón muy de vez en cuando</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+1"/>
         <source>Occasional stutters: runs well, but stutters in some places</source>
         <translation>Tirones puntuales: va bien, pero da tirones en algunas zonas o momentos</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+2"/>
         <source>Choppy: frequent drops or stutters you notice while playing</source>
         <translation>Poco fluida: bajadas o tirones frecuentes que se notan al jugar</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+2"/>
         <source>Very poor: slow most of the time, hard to play</source>
         <translation>Muy mala: va lenta casi todo el tiempo, cuesta jugar</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+2"/>
         <source>Not applicable: the game didn&apos;t get into play</source>
         <translation>No aplica: el juego no llegó a jugarse</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+1"/>
         <source>How smoothly the game ran on this computer, with the settings it started with. The performance overlay (View menu) shows the frame rate.</source>
         <translation>Cómo de fluido fue el juego en este equipo, con los ajustes con los que arrancó. El panel de rendimiento (menú Ver) muestra los FPS.</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+3"/>
         <source>Smoothness</source>
         <translation>Fluidez</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+1"/>
         <source>Usual frame rate (optional)</source>
         <translation>FPS habituales (opcional)</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+1"/>
         <source>For example 30, or 25-30</source>
         <translation>Por ejemplo 30, o 25-30</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+143"/>
         <source>Choose how smoothly the game ran.</source>
         <translation>Elige cómo de fluido ha ido el juego.</translation>
     </message>
@@ -4849,7 +5217,7 @@ Would you like to delete the old save data?</source>
         <translation>Restaurar valores predeterminados</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_hotkeys.cpp" line="+122"/>
+        <location filename="../../src/yuzu/configuration/configure_hotkeys.cpp" line="+133"/>
         <source>Action</source>
         <translation>Acción</translation>
     </message>
@@ -4866,12 +5234,12 @@ Would you like to delete the old save data?</source>
     <message>
         <location line="+39"/>
         <location line="+26"/>
-        <location line="+240"/>
+        <location line="+241"/>
         <source>Conflicting Key Sequence</source>
         <translation>Combinación de teclas en conflicto</translation>
     </message>
     <message>
-        <location line="-265"/>
+        <location line="-266"/>
         <location line="+26"/>
         <source>The entered key sequence is already assigned to: %1</source>
         <translation>La combinación de teclas introducida ya ha sido asignada a: %1</translation>
@@ -4887,17 +5255,15 @@ Would you like to delete the old save data?</source>
         <translation>No válido</translation>
     </message>
     <message>
-        <location line="+72"/>
         <source>Invalid hotkey settings</source>
-        <translation>Configuración de teclas de atajo no válida</translation>
+        <translation type="vanished">Configuración de teclas de atajo no válida</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>An error occurred. Please report this issue on github.</source>
-        <translation>Ha ocurrido un error. Por favor, repórtelo en Github.</translation>
+        <translation type="vanished">Ha ocurrido un error. Por favor, repórtelo en Github.</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+106"/>
         <source>Restore Default</source>
         <translation>Restaurar valor predeterminado</translation>
     </message>
@@ -4907,7 +5273,7 @@ Would you like to delete the old save data?</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+25"/>
         <source>Conflicting Button Sequence</source>
         <translation>Secuencia de botones en conflicto</translation>
     </message>
@@ -4917,7 +5283,7 @@ Would you like to delete the old save data?</source>
         <translation>La secuencia de botones por defecto ya esta asignada a: %1</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+19"/>
         <source>The default key sequence is already assigned to: %1</source>
         <translation>La combinación de teclas predeterminada ya ha sido asignada a: %1</translation>
     </message>
@@ -8289,7 +8655,12 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameList</name>
     <message>
-        <location filename="../../src/yuzu/game/game_list.cpp" line="+435"/>
+        <location filename="../../src/yuzu/game/game_list.cpp" line="+551"/>
+        <source>Ask AI to tune this game...</source>
+        <translation>Pedir a la IA que ajuste este juego...</translation>
+    </message>
+    <message>
+        <location line="-95"/>
         <source>&amp;Add New Game Directory</source>
         <translation>&amp;Añadir un nuevo directorio de juego</translation>
     </message>
@@ -8450,12 +8821,12 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation>Optimizar para este juego...</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Submit compatibility report…</source>
         <translation>Enviar informe de compatibilidad…</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+113"/>
         <source>Scan Subfolders</source>
         <translation>Escanear subdirectorios</translation>
     </message>
@@ -8488,7 +8859,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameListItemCompat</name>
     <message>
-        <location filename="../../src/qt_common/game_list/game_list_p.h" line="+200"/>
+        <location filename="../../src/qt_common/game_list/game_list_p.h" line="+208"/>
         <source>Ingame</source>
         <translation>En juego</translation>
     </message>
@@ -8773,11 +9144,12 @@ Mensaje de depuración:</translation>
         <location line="+1"/>
         <location line="+1"/>
         <location line="+1"/>
+        <location line="+1"/>
         <source>Main Window</source>
         <translation>Ventana principal</translation>
     </message>
     <message>
-        <location line="-31"/>
+        <location line="-32"/>
         <source>Audio Volume Down</source>
         <translation>Bajar volumen del audio</translation>
     </message>
@@ -8841,16 +9213,17 @@ Mensaje de depuración:</translation>
         <translation>Cargar archivo</translation>
     </message>
     <message>
+        <location line="+1"/>
         <source>Load/Remove Amiibo</source>
-        <translation type="vanished">Cargar/Eliminar Amiibo</translation>
+        <translation>Cargar/Eliminar Amiibo</translation>
     </message>
     <message>
-        <location line="-2"/>
+        <location line="-3"/>
         <source>Exit Eglantine</source>
         <translation>Salir de Eglantine</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Browse Public Game Lobby</source>
         <translation>Buscar en la sala de juegos públicos</translation>
     </message>
@@ -8945,7 +9318,7 @@ Mensaje de depuración:</translation>
         <translation>Optimizar para este juego</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_hotkeys.cpp" line="-399"/>
+        <location filename="../../src/yuzu/configuration/configure_hotkeys.cpp" line="-400"/>
         <source>Exit Kaichii</source>
         <translation>Salir de Kaichii</translation>
     </message>
@@ -9202,6 +9575,37 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
+        <location filename="../../src/yuzu/main.ui" line="+498"/>
+        <source>Ask AI to tune current game...</source>
+        <translation>Pedir a la IA que ajuste el juego actual...</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Ask AI to tune this computer...</source>
+        <translation>Pedir a la IA que ajuste este equipo...</translation>
+    </message>
+    <message>
+        <location filename="../../src/yuzu/main_window.cpp" line="+2456"/>
+        <location line="+1794"/>
+        <source>AI settings assistant</source>
+        <translation>Asistente de ajustes con IA</translation>
+    </message>
+    <message>
+        <location line="-1793"/>
+        <source>Stop the running game before tuning another game.</source>
+        <translation>Detén el juego en marcha antes de ajustar otro juego.</translation>
+    </message>
+    <message>
+        <location line="+1794"/>
+        <source>Stop the game before tuning settings for the whole computer.</source>
+        <translation>Detén el juego antes de ajustar la configuración de todo el equipo.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>All games</source>
+        <translation>Todos los juegos</translation>
+    </message>
+    <message>
         <source>Performance preset</source>
         <translation type="vanished">Ajuste predefinido de rendimiento</translation>
     </message>
@@ -9222,7 +9626,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+1984"/>
+        <location line="-2265"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -9259,7 +9663,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>%1&lt;br&gt;Puede que el archivo esté dañado o incompleto: vuelve a volcarlo desde tu consola. &lt;a href=&apos;%2&apos;&gt;La guía&lt;/a&gt; tiene más ayuda.</translation>
     </message>
     <message>
-        <location line="+1234"/>
+        <location line="+1268"/>
         <source>This folder doesn&apos;t hold a game extracted into files (a &apos;main&apos; file).
 
 To add a folder with your games to the game list, use File &gt; Add Games Folder.</source>
@@ -9289,7 +9693,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">yuzu</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main.ui" line="+53"/>
+        <location filename="../../src/yuzu/main.ui" line="-453"/>
         <source>&amp;File</source>
         <translation>&amp;Archivo</translation>
     </message>
@@ -9308,7 +9712,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Emulación</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+14"/>
         <source>&amp;View</source>
         <translation>&amp;Ver</translation>
     </message>
@@ -9328,7 +9732,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Modo de la lista de &amp;juegos</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>Game &amp;Icon Size</source>
         <translation>Tamaño del &amp;icono de los juegos</translation>
     </message>
@@ -9423,7 +9827,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-1465"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-1499"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -9442,8 +9846,8 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">&amp;Acerca de Eden</translation>
     </message>
     <message>
-        <location line="-284"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3770"/>
+        <location line="-287"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3834"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -9455,7 +9859,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Abrir carpetas de &amp;Kaichii</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+208"/>
         <source>Add &amp;Games Folder...</source>
         <translation>Añadir carpeta de &amp;juegos...</translation>
     </message>
@@ -9614,7 +10018,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Optimizar para este juego...</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+30"/>
         <source>Configure C&amp;urrent Game...</source>
         <translation>Configurar el j&amp;uego actual...</translation>
     </message>
@@ -9726,7 +10130,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4657"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4728"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -9866,7 +10270,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+410"/>
+        <location line="+416"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -9891,7 +10295,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>No se pudo restaurar la versión anterior: %1</translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+48"/>
         <source>&amp;Continue</source>
         <translation>&amp;Continuar</translation>
     </message>
@@ -9984,25 +10388,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2533"/>
+        <location line="+2597"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2533"/>
-        <location line="+2533"/>
+        <location line="-2597"/>
+        <location line="+2597"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2532"/>
-        <location line="+2534"/>
+        <location line="-2596"/>
+        <location line="+2598"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2521"/>
+        <location line="-2585"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -10017,7 +10421,7 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
         <translation>Detén primero el juego que está en marcha.</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+106"/>
         <source>Closing software...</source>
         <translation>Cerrando el programa...</translation>
     </message>
@@ -10166,12 +10570,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2215"/>
+        <location line="+2245"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2189"/>
+        <location line="-2219"/>
         <location line="+132"/>
         <source>Add to the game list?</source>
         <translation>¿Añadir a la lista de juegos?</translation>
@@ -10402,7 +10806,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>No se pudo abrir URL &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location line="+415"/>
+        <location line="+423"/>
         <source>TAS Recording</source>
         <translation>Grabación TAS</translation>
     </message>
@@ -10422,7 +10826,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>El mando del modo portátil no puede usarse en el modo sobremesa. El mando pro será seleccionado en su lugar.</translation>
     </message>
     <message>
-        <location line="+163"/>
+        <location line="+185"/>
         <location line="+51"/>
         <source>Amiibo</source>
         <translation>Amiibo</translation>
@@ -11867,113 +12271,85 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PerformanceOverlay</name>
     <message>
-        <location filename="../../src/yuzu/render/performance_overlay.ui" line="+14"/>
         <source>Form</source>
-        <translation>Forma</translation>
+        <translation type="vanished">Forma</translation>
     </message>
     <message>
-        <location line="+18"/>
         <source>Frametime</source>
-        <translation>T. fotograma</translation>
+        <translation type="vanished">T. fotograma</translation>
     </message>
     <message>
-        <location line="+13"/>
         <source>0 ms</source>
-        <translation>0 ms</translation>
+        <translation type="vanished">0 ms</translation>
     </message>
     <message>
-        <location line="+18"/>
-        <location line="+80"/>
         <source>Min: 0</source>
-        <translation>Mín: 0</translation>
+        <translation type="vanished">Mín: 0</translation>
     </message>
     <message>
-        <location line="-66"/>
-        <location line="+80"/>
         <source>Max: 0</source>
-        <translation>Máx: 0</translation>
+        <translation type="vanished">Máx: 0</translation>
     </message>
     <message>
-        <location line="-66"/>
-        <location line="+80"/>
         <source>Avg: 0</source>
-        <translation>Prom: 0</translation>
+        <translation type="vanished">Prom: 0</translation>
     </message>
     <message>
-        <location line="-59"/>
         <source>FPS</source>
-        <translation>FPS</translation>
+        <translation type="vanished">FPS</translation>
     </message>
     <message>
-        <location line="+13"/>
         <source>0 fps</source>
-        <translation>0 fps</translation>
+        <translation type="vanished">0 fps</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+162"/>
-        <location line="+109"/>
         <source>%1 fps</source>
-        <translation>%1 fps</translation>
+        <translation type="vanished">%1 fps</translation>
     </message>
     <message>
-        <location line="-88"/>
-        <location line="+52"/>
-        <location line="+38"/>
         <source>Avg: %1</source>
-        <translation>Prom: %1</translation>
+        <translation type="vanished">Prom: %1</translation>
     </message>
     <message>
-        <location line="-81"/>
-        <location line="+32"/>
-        <location line="+55"/>
         <source>Min: %1</source>
-        <translation>Mín: %1</translation>
+        <translation type="vanished">Mín: %1</translation>
     </message>
     <message>
-        <location line="-86"/>
-        <location line="+32"/>
-        <location line="+56"/>
         <source>Max: %1</source>
-        <translation>Máx: %1</translation>
+        <translation type="vanished">Máx: %1</translation>
     </message>
     <message>
-        <location line="-69"/>
-        <location line="+66"/>
         <source>%1 ms</source>
-        <translation>%1 ms</translation>
+        <translation type="vanished">%1 ms</translation>
     </message>
     <message>
-        <location line="-11"/>
         <source>%1 fps (%2 shown)</source>
-        <translation>%1 fps (%2 en pantalla)</translation>
+        <translation type="vanished">%1 fps (%2 en pantalla)</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>1% low: %1</source>
-        <translation>1 % bajo: %1</translation>
+        <translation type="vanished">1 % bajo: %1</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Stutters: %1</source>
-        <translation>Tirones: %1</translation>
+        <translation type="vanished">Tirones: %1</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>p99: %1</source>
-        <translation>p99: %1</translation>
+        <translation type="vanished">p99: %1</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+0"/>
+        <location filename="../../src/yuzu/render/performance_overlay.cpp" line="+263"/>
         <source>FG +%1</source>
         <translation>+%1 gen.</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+66"/>
         <source>1% low</source>
         <translation>1% bajo</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+2"/>
         <source>stutters</source>
         <translation>tirones</translation>
     </message>
@@ -12458,7 +12834,7 @@ p, li { white-space: pre-wrap; }
         <translation>%1 esta jugando %2</translation>
     </message>
     <message>
-        <location filename="../../src/qt_common/game_list/game_list_p.h" line="-109"/>
+        <location filename="../../src/qt_common/game_list/game_list_p.h" line="-114"/>
         <source>Play Time: %1</source>
         <translation>Tiempo de juego: %1</translation>
     </message>
@@ -12478,7 +12854,7 @@ p, li { white-space: pre-wrap; }
         <translation>Versión: 1.0.0</translation>
     </message>
     <message>
-        <location line="+207"/>
+        <location line="+212"/>
         <source>Installed SD Titles</source>
         <translation>Títulos instalados en la SD</translation>
     </message>
@@ -13995,7 +14371,7 @@ Si eliges &quot;Desde Kaichii&quot;, se borrarán las partidas guardadas anterio
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/updater/update_dialog.cpp" line="+42"/>
+        <location filename="../../src/yuzu/updater/update_dialog.cpp" line="+40"/>
         <source>%1 is available for download.</source>
         <translation>%1 está disponible para descargar.</translation>
     </message>
@@ -14011,29 +14387,29 @@ Si eliges &quot;Desde Kaichii&quot;, se borrarán las partidas guardadas anterio
     </message>
     <message>
         <location line="+115"/>
-        <location line="+49"/>
+        <location line="+47"/>
         <location line="+50"/>
         <source>Failed to save file</source>
         <translation>Fallo al guardar el archivo</translation>
     </message>
     <message>
-        <location line="-98"/>
+        <location line="-96"/>
         <source>Could not open file %1 for writing.</source>
         <translation>No se pudo abrir el archivo %1 para su escritura.</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+21"/>
         <source>Downloading...</source>
         <translation>Descargando...</translation>
     </message>
     <message>
-        <location line="-59"/>
-        <location line="+59"/>
+        <location line="-57"/>
+        <location line="+57"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-301"/>
         <source>&lt;a href=&quot;%1&quot;&gt;View on GitHub&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;%1&quot;&gt;Ver en GitHub&lt;/a&gt;</translation>
     </message>
@@ -14131,7 +14507,7 @@ Restart now?</source>
 ¿Reiniciar ahora?</translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+63"/>
         <source>Could not write to file %1.</source>
         <translation>No se pudo escribir en el archivo %1.</translation>
     </message>
@@ -14163,7 +14539,7 @@ Error code: %3</source>
 Código de error: %3</translation>
     </message>
     <message>
-        <location line="-179"/>
+        <location line="-177"/>
         <source>Download Complete</source>
         <translation>Descarga completada</translation>
     </message>
