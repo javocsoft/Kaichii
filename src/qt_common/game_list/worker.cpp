@@ -36,6 +36,7 @@
 #include "qt_common/qt_common.h"
 
 #include "qt_common/game_list/game_list_p.h"
+#include "qt_common/game_list/game_order.h"
 #include "qt_common/game_list/game_pictures.h"
 
 #include "qt_common/game_list/model.h"
@@ -294,9 +295,13 @@ QList<QStandardItem*> MakeGameListEntry(const std::string& path, const std::stri
     const std::vector<u8>& shown_icon = custom_icon.empty() ? icon : custom_icon;
 
     u64 play_time = play_time_manager.GetPlayTime(program_id);
-    return QList<QStandardItem*>{
+    auto* const path_item =
         new GameListItemPath(FormatGameName(path), shown_icon, QString::fromStdString(name),
-                             file_type_string, program_id, play_time, patch_versions),
+                             file_type_string, program_id, play_time, patch_versions);
+    path_item->setData(QtCommon::GameFileAdded(QString::fromStdString(path)),
+                       GameListItemPath::AddedRole);
+    return QList<QStandardItem*>{
+        path_item,
         new GameListItem(file_type_string),
         new GameListItemSize(size),
         new GameListItemPlayTime(play_time),

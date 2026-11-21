@@ -38,7 +38,8 @@ set_tests_properties(setting_help PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscr
 # as empty.
 add_executable(game_list_tests game_list.cpp game_folders_header.cpp
                ../../yuzu/game/cover_art.cpp ../../yuzu/game/cover_art.h
-               ../../yuzu/game/game_covers.cpp ../../yuzu/game/game_covers.h)
+               ../../yuzu/game/game_covers.cpp ../../yuzu/game/game_covers.h
+               ../../yuzu/game/smooth_scroll.cpp ../../yuzu/game/smooth_scroll.h)
 target_compile_features(game_list_tests PRIVATE cxx_std_20)
 target_include_directories(game_list_tests PRIVATE ../..)
 target_link_libraries(game_list_tests PRIVATE qt_common frontend_common common

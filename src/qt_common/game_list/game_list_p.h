@@ -87,6 +87,10 @@ public:
     /// The game's icon as stored in the game (QByteArray), for the cover view, which draws it
     /// larger than the scaled DecorationRole; empty for a game without one.
     static constexpr int CoverRole = SortRole + 5;
+    /// Seconds played (qulonglong), for sorting by play time.
+    static constexpr int PlayTimeRole = SortRole + 6;
+    /// When the game file arrived on disk (QDateTime), for sorting by date added.
+    static constexpr int AddedRole = SortRole + 7;
 
     GameListItemPath() = default;
     GameListItemPath(const QString& game_path, const std::vector<u8>& picture_data,
@@ -97,6 +101,7 @@ public:
         setData(game_name, TitleRole);
         setData(qulonglong(program_id), ProgramIdRole);
         setData(game_type, FileTypeRole);
+        setData(qulonglong(play_time), PlayTimeRole);
 
         const auto readable_play_time =
             play_time > 0 ? QObject::tr("Play Time: %1")

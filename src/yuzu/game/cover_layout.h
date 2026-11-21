@@ -4,6 +4,8 @@
 #pragma once
 
 #include <algorithm>
+#include <span>
+#include <vector>
 
 namespace Yuzu {
 
@@ -56,6 +58,80 @@ inline constexpr int MaxBox = 300;
     const int cell_width = width / columns;
     const int box_width = std::clamp(cell_width - CoverGap, MinBox, MaxBox);
     return {columns, cell_width, box_width, BoxHeight(box_width)};
+}
+
+/// A game on a shelf: its model row, and whether it is a Switch 2 title.
+struct ShelfEntry {
+    int row;
+    bool switch2;
+};
+
+/// Where a game's cell sits, in the shelf's own coordinates.
+struct ShelfSpot {
+    int row;
+    int x;
+    int y;
+};
+
+/// A section's heading: the platform it gathers, how many games, and where it sits.
+struct ShelfHeading {
+    bool switch2;
+    int count;
+    int y;
+};
+
+struct Shelf {
+    /// In reading order: left to right, top to bottom, section by section.
+    std::vector<ShelfSpot> spots;
+    std::vector<ShelfHeading> headings;
+    int height = 0;
+};
+
+/// The height of a section's heading.
+inline constexpr int ShelfHeadingHeight = 40;
+
+/// Lays the games out in rows of `columns` cells, in the order given. With `sections`, Switch 2
+/// games come first under their heading, then Switch games under theirs, each section starting a
+/// new row; an empty section has no heading.
+[[nodiscard]] inline Shelf ComputeShelf(std::span<const ShelfEntry> entries, int columns,
+                                        int cell_width, int cell_height, bool sections) {
+    columns = std::max(1, columns);
+    Shelf shelf;
+    int y = 0;
+    const auto place = [&](bool only_switch2, bool filter) {
+        int column = 0;
+        for (const ShelfEntry& entry : entries) {
+            if (filter && entry.switch2 != only_switch2) {
+                continue;
+            }
+            shelf.spots.push_back({entry.row, column * cell_width, y});
+            if (++column == columns) {
+                column = 0;
+                y += cell_height;
+            }
+        }
+        if (column != 0) {
+            y += cell_height;
+        }
+    };
+    if (!sections) {
+        place(false, false);
+    } else {
+        for (const bool switch2 : {true, false}) {
+            const auto count = std::count_if(entries.begin(), entries.end(),
+                                             [switch2](const ShelfEntry& entry) {
+                                                 return entry.switch2 == switch2;
+                                             });
+            if (count == 0) {
+                continue;
+            }
+            shelf.headings.push_back({switch2, static_cast<int>(count), y});
+            y += ShelfHeadingHeight;
+            place(switch2, true);
+        }
+    }
+    shelf.height = y;
+    return shelf;
 }
 
 } // namespace Yuzu

@@ -53,6 +53,7 @@ class LoadingScreen;
 class OverlayDialog;
 class ControllerDialog;
 class QLabel;
+class QMenu;
 class MultiplayerState;
 class QPushButton;
 class QProgressDialog;
@@ -172,6 +173,10 @@ class MainWindow : public QMainWindow {
     static const int max_recent_files_item = 10;
 
 public:
+    /// Adds the View menu's game list entries (the list mode, the order and the Switch 2
+    /// sections) to a menu, as the same actions, so both stay in step.
+    void AddGameListViewEntries(QMenu& menu);
+
     void filterBarSetChecked(bool state);
     void UpdateUITheme();
     /// Gives the menus their icons in the current theme's tone (util/menu_icon.h).
