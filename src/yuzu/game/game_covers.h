@@ -30,12 +30,19 @@ public:
     [[nodiscard]] QRect CoverRect(const QRect& cell) const;
 
 private:
+    struct Art {
+        QPixmap cover;
+        /// The cover's shape in black: its shadow follows transparent pictures instead of a square.
+        QPixmap shadow;
+    };
+
     /// The cover at the current side, decoded once and kept while it may be on screen.
-    QPixmap Cover(const QModelIndex& index, qreal device_pixel_ratio) const;
+    const Art& Cover(const QModelIndex& index, qreal device_pixel_ratio) const;
+    [[nodiscard]] qreal Radius() const;
 
     int m_cover = 200;
     QSize m_cell{220, 220};
-    mutable QHash<QString, QPixmap> m_cache;
+    mutable QHash<QString, Art> m_cache;
 };
 
 /// The game list as a shelf of large covers, without names: "View > Game List Mode > Cover View".

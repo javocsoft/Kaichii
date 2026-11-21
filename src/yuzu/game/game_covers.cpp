@@ -12,6 +12,7 @@
 #include "qt_common/game_list/game_list_p.h"
 #include "qt_common/game_list/model.h"
 #include "yuzu/game/common.h"
+#include "yuzu/game/cover_art.h"
 #include "yuzu/game/cover_layout.h"
 #include "yuzu/game/game_covers.h"
 
@@ -20,6 +21,8 @@ namespace {
 constexpr int Gap = Yuzu::CoverGap;
 /// Covers kept decoded; the shelf shows far fewer at once.
 constexpr qsizetype CacheLimit = 300;
+/// How dark each of the shadow's layers is, out of 255.
+constexpr int ShadowAlpha = 22;
 
 QString Title(const QModelIndex& index) {
     QString title = index.data(GameListItemPath::TitleRole).toString();
@@ -55,7 +58,12 @@ QSize GameCoverDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex
     return m_cell;
 }
 
-QPixmap GameCoverDelegate::Cover(const QModelIndex& index, qreal device_pixel_ratio) const {
+qreal GameCoverDelegate::Radius() const {
+    return std::max(6.0, m_cover / 24.0);
+}
+
+const GameCoverDelegate::Art& GameCoverDelegate::Cover(const QModelIndex& index,
+                                                       qreal device_pixel_ratio) const {
     const QString key = index.data(GameListItemPath::FullPathRole).toString();
     if (const auto it = m_cache.constFind(key); it != m_cache.cend()) {
         return it.value();
@@ -66,16 +74,15 @@ QPixmap GameCoverDelegate::Cover(const QModelIndex& index, qreal device_pixel_ra
         // No icon in the game: the list's own picture (its initials) at the cover's size.
         image = QtCommon::PlaceholderIcon(Title(index), side);
     }
-    // Fill the square, cropping a picture that isn't one rather than leaving bars.
-    image = image.scaled(side, side, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-    image = image.copy((image.width() - side) / 2, (image.height() - side) / 2, side, side);
-    QPixmap pixmap = QPixmap::fromImage(image);
-    pixmap.setDevicePixelRatio(device_pixel_ratio);
+    const QImage cover = Yuzu::FitCover(image, side, Radius() * device_pixel_ratio);
+    Art art{QPixmap::fromImage(cover),
+            QPixmap::fromImage(Yuzu::CoverShadow(cover, ShadowAlpha))};
+    art.cover.setDevicePixelRatio(device_pixel_ratio);
+    art.shadow.setDevicePixelRatio(device_pixel_ratio);
     if (m_cache.size() >= CacheLimit) {
         m_cache.clear();
     }
-    m_cache.insert(key, pixmap);
-    return pixmap;
+    return m_cache.insert(key, std::move(art)).value();
 }
 
 void GameCoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
@@ -88,26 +95,26 @@ void GameCoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
     const QRect cover = CoverRect(option.rect);
-    const qreal radius = std::max(6.0, m_cover / 24.0);
+    const qreal radius = Radius();
     const QPalette& palette = option.palette;
-
-    // A soft shadow under the cover: the shelf look.
-    painter->setPen(Qt::NoPen);
-    for (int step = 1; step <= 4; ++step) {
-        painter->setBrush(QColor(0, 0, 0, 22));
-        painter->drawRoundedRect(QRectF{cover}.translated(0, step).adjusted(-1, 0, 1, 1), radius,
-                                 radius);
-    }
 
     QPainterPath shape;
     shape.addRoundedRect(QRectF{cover}, radius, radius);
     if (IsGame(index)) {
-        painter->save();
-        painter->setClipPath(shape);
-        painter->drawPixmap(cover, Cover(index, painter->device()->devicePixelRatioF()));
-        painter->restore();
+        // A soft shadow under the picture's own shape (the shelf look), then the picture, whose
+        // transparent parts show the shelf behind it.
+        const Art& art = Cover(index, painter->device()->devicePixelRatioF());
+        for (int step = 1; step <= 4; ++step) {
+            painter->drawPixmap(cover.translated(0, step), art.shadow);
+        }
+        painter->drawPixmap(cover, art.cover);
     } else {
         // Not a game (the "add a folder" entry): its icon and name on a plain card.
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(QColor(0, 0, 0, ShadowAlpha));
+        for (int step = 1; step <= 4; ++step) {
+            painter->drawPath(shape.translated(0, step));
+        }
         painter->setBrush(palette.window().color().lighter(110));
         painter->setPen(QPen(palette.mid().color(), 1));
         painter->drawPath(shape);
