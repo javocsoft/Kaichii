@@ -24,6 +24,7 @@ add_library(
     address_space.cpp
     address_space.h
     algorithm.h
+    app_version.h
     auto_optimize.h
     ai_optimize_policy.h
     alignment.h

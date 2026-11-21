@@ -151,6 +151,7 @@ static FileSys::VirtualFile VfsDirectoryCreateFileWrapper(const FileSys::Virtual
 #include "common/fs/fs.h"
 #include "common/logging.h"
 #include "common/memory_detect.h"
+#include "common/app_version.h"
 #include "common/scm_rev.h"
 #include "common/scope_exit.h"
 #include "common/string_util.h"
@@ -5064,9 +5065,9 @@ void MainWindow::OnApplicationChanged(u64 program_id) {
 void MainWindow::UpdateWindowTitle(std::string_view title_name, std::string_view title_version,
                                    std::string_view gpu_vendor) {
     static const std::string build_id = std::string{Common::g_build_id};
+    // "Kaichii v1.0.49": the build and compiler are in Help > About.
     static const std::string yuzu_title =
-        fmt::format("{} | {} | {}", std::string{Common::g_build_name},
-                    std::string{Common::g_build_version}, std::string{Common::g_compiler_id});
+        Common::AppTitle(Common::g_build_name, Common::g_version, Common::g_build_number);
 
     const auto override_title =
         fmt::format(fmt::runtime(std::string(Common::g_title_bar_format_idle)), build_id);
