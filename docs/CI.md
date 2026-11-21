@@ -95,6 +95,11 @@ from a pinned LLVM (`tools/windows/install-llvm.ps1`) with ThinLTO against the M
 the PGO one adds `lichii-windows.profdata`, an MSVC-ABI profile trained on Ocarina of Time. Zortos's
 Windows clang-cl job in `build-check.yml` is not taken here: Windows does not build on pull requests.
 
+Every Qt install, here, in the pull request workflows and in `tools/dev/Dockerfile`, takes the
+`qtcharts` and `qtimageformats` modules. The second holds the WebP reader that game icons and box art
+need; `linuxdeploy`, `windeployqt` and `macdeployqt` ship its plugins, and macOS gets it with
+Homebrew's `qt@6`. `game_list_tests` fails when the WebP reader is missing.
+
 ### Release notes
 
 A release's notes start with "Changes since build N", from `tools/ci/release_changes.py`: the commit

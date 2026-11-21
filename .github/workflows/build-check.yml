@@ -69,7 +69,7 @@ jobs:
           host: linux
           target: desktop
           arch: linux_gcc_64
-          modules: qtcharts
+          modules: qtcharts qtimageformats
           cache: true
 
       - name: Cache dependencies and compiler objects

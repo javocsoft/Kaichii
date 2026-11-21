@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN python3 -m venv --system-site-packages /opt/venv \
     && /opt/venv/bin/pip install --no-cache-dir cmake==${CMAKE_VERSION} aqtinstall codespell vulkan==1.3.275.1 \
-    && /opt/venv/bin/aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -m qtcharts -O /opt/qt
+    && /opt/venv/bin/aqt install-qt linux desktop ${QT_VERSION} linux_gcc_64 -m qtcharts qtimageformats -O /opt/qt
 
 RUN curl -fsSLo /tmp/actionlint.tar.gz \
         https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz \

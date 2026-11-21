@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QBuffer>
 #include <QFile>
+#include <QImageReader>
 #include <QPainter>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
@@ -28,6 +29,7 @@ private slots:
     void CoverFillsItsSquareWithRoundedCorners();
     void CoverShadowFollowsThePicturesShape();
     void ShelfShowsThroughATransparentCover();
+    void WebPPicturesCanBeRead();
     void AddAndFavoritesRowsAloneAreEmpty();
     void FoldersCoverTheirGamesAndDeepScannedSubfolders();
     void ListsGameFilesByExtension();
@@ -129,6 +131,25 @@ void GameListTest::ShelfShowsThroughATransparentCover() {
     QCOMPARE(shelf.pixel(cover.center()), qRgb(255, 0, 0));
     // The shadow sits just under the picture's own bottom edge.
     QVERIFY(qGray(shelf.pixel(cover.left() + 32, cover.top() + 49)) < 255);
+}
+
+void GameListTest::WebPPicturesCanBeRead() {
+    // Icons and box art are often WebP. Qt reads it only with its image formats plugin
+    // (qtimageformats), which every build must install and ship.
+    QVERIFY2(QImageReader::supportedImageFormats().contains("webp"),
+             "Qt's WebP plugin is missing: install the qtimageformats module");
+    QByteArray webp;
+    QBuffer buffer(&webp);
+    buffer.open(QIODevice::WriteOnly);
+    QVERIFY(CutOutPicture().save(&buffer, "WEBP", 100));
+    buffer.close();
+    buffer.open(QIODevice::ReadOnly);
+    QImageReader reader(&buffer);
+    QCOMPARE(reader.format(), QByteArray("webp"));
+    const QImage read = reader.read();
+    QCOMPARE(read.size(), QSize(64, 64));
+    QCOMPARE(qAlpha(read.pixel(8, 32)), 0);
+    QCOMPARE(qAlpha(read.pixel(32, 32)), 255);
 }
 
 void GameListTest::AddAndFavoritesRowsAloneAreEmpty() {

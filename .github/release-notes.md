@@ -10,4 +10,5 @@ pull request number. Say plainly what was not confirmed. HTML comments like this
 -->
 
 ### Interface
+- **WebP pictures work as icons and box art.** Choosing a `.webp` file said the image wasn't valid, although the file dialog offered WebP: Kaichii's builds didn't include Qt's WebP reader. Every build now installs and ships it (Linux AppImage, Windows; macOS already had it). With the `.tar.gz`, install your system's Qt image formats plugins. A unit test fails if the reader is missing, and a reported WebP box art (393 by 640, with transparency) was decoded with it (#93).
 - **Covers with transparent parts show the shelf behind them.** In *Cover View*, a game whose icon has transparent areas (Donkey Kong Bananza's cut-out art, the rounded corners of Super Mario Bros. Wonder's) showed a grey square there: the shelf's shadow was drawn as a full square under every cover. The shadow now follows the picture's own shape. A unit test paints a cover with a transparent cut-out and checks that the shelf shows through; the real covers were not checked on screen (#91).

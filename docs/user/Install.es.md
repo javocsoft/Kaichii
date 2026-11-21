@@ -25,7 +25,9 @@ El AppImage lleva todo lo que necesita. Funciona en sistemas con glibc 2.39 o m�
   tareas muestra su icono. **Añadir Kaichii al menú de aplicaciones**, en *Configurar > Interfaz*,
   lo cambia más tarde.
 - **Prefieres usar las bibliotecas de tu sistema.** El `.tar.gz` trae los mismos programas sin sus
-  bibliotecas; necesitas Qt 6 y las bibliotecas habituales instaladas.
+  bibliotecas; necesitas Qt 6 y las bibliotecas habituales instaladas, con los complementos de
+  formatos de imagen de Qt para los iconos y cajas en WebP (`qt6-image-formats-plugins` en Debian y
+  Ubuntu, `qt6-imageformats` en Arch, `qt6-qtimageformats` en Fedora).
 
 ## Windows
 
