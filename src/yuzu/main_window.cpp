@@ -1689,6 +1689,7 @@ void MainWindow::ConnectMenuEvents() {
     connect(ui->action_Separate_Switch_2_Games, &QAction::toggled, this, [this](bool sections) {
         UISettings::values.cover_view_sections.SetValue(sections);
         game_list->SetCoverSections(sections);
+        config->SaveAllValues();
     });
 
     // View > Sort Games By: the flat views' order and its direction. Picking an order starts it
@@ -1716,6 +1717,7 @@ void MainWindow::ConnectMenuEvents() {
                 QtCommon::DescendingByDefault(key));
             show_sort();
             game_list->ApplyGameSort();
+            config->SaveAllValues();
         });
     }
     for (QAction* const action : {ui->action_Sort_Ascending, ui->action_Sort_Descending}) {
@@ -1725,6 +1727,7 @@ void MainWindow::ConnectMenuEvents() {
                                                                   ui->action_Sort_Descending);
             show_sort();
             game_list->ApplyGameSort();
+            config->SaveAllValues();
         });
     }
     show_sort();
@@ -3957,18 +3960,22 @@ void MainWindow::SetGameListMode(Settings::GameListMode mode) {
 
 void MainWindow::SetGridView() {
     SetGameListMode(Settings::GameListMode::GridView);
+    config->SaveAllValues();
 }
 
 void MainWindow::SetTreeView() {
     SetGameListMode(Settings::GameListMode::TreeView);
+    config->SaveAllValues();
 }
 
 void MainWindow::SetCarouselView() {
     SetGameListMode(Settings::GameListMode::CarouselView);
+    config->SaveAllValues();
 }
 
 void MainWindow::SetCoverView() {
     SetGameListMode(Settings::GameListMode::CoverView);
+    config->SaveAllValues();
 }
 
 void MainWindow::AddGameListViewEntries(QMenu& menu) {
@@ -3979,6 +3986,7 @@ void MainWindow::AddGameListViewEntries(QMenu& menu) {
 
 void MainWindow::SetFullCoverView() {
     SetGameListMode(Settings::GameListMode::FullCoverView);
+    config->SaveAllValues();
 }
 
 void MainWindow::CheckIconSize() {
@@ -5989,6 +5997,8 @@ void MainWindow::UpdateUITheme() {
 void MainWindow::SetShowAdvanced(bool show) {
     UISettings::values.settings_show_advanced.SetValue(show);
     UpdateMenuLevels();
+    // Kept even if Kaichii doesn't close normally: the config is otherwise written on exit.
+    config->SaveAllValues();
 }
 
 void MainWindow::UpdateMenuLevels() {
