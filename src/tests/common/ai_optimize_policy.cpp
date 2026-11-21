@@ -99,3 +99,10 @@ TEST_CASE("Refusal fallback is asked for only on models that take it", "[common]
     CHECK_FALSE(SupportsRefusalFallback("claude-haiku-5-5"));
     CHECK_FALSE(SupportsRefusalFallback("claude-opus-4-8"));
 }
+
+TEST_CASE("Each provider links to the page where its API keys are made", "[common][ai_optimize]") {
+    using Common::AiOptimize::KeyPageUrl;
+    using Common::AiOptimize::Provider;
+    CHECK(KeyPageUrl(Provider::OpenAI) == "https://platform.openai.com/api-keys");
+    CHECK(KeyPageUrl(Provider::Anthropic) == "https://platform.claude.com/settings/keys");
+}

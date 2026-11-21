@@ -13,6 +13,8 @@ presets and **Optimize for This Game** work without AI.
   figures are included if available. Kaichii asks before stopping it to save changes; try them on
   the next start.
 
+To get a key, follow the link under the key field: it opens the provider's key page
+([OpenAI](https://platform.openai.com/api-keys), [Anthropic](https://platform.claude.com/settings/keys)).
 Choose a provider and a model, enter your key, describe the issue and click **Ask for a
 proposal**. The model list shows each provider's main models, first the recommended one; you can
 type another name, or click **Load from provider** to list the models your key can use. Kaichii

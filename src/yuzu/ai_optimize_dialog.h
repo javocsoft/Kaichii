@@ -94,6 +94,7 @@ private:
     QPushButton* list_models_button;
     QLabel* model_note;
     QLineEdit* api_key;
+    QLabel* key_link;
     QCheckBox* remember_key;
     QPushButton* forget_key_button;
     bool key_saved = false;

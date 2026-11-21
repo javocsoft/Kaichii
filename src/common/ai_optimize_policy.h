@@ -93,6 +93,12 @@ inline constexpr std::array AnthropicModels{
     Model{"claude-fable-5-2", "most capable, highest cost"},
 };
 
+// Where the user creates an API key for the provider.
+constexpr std::string_view KeyPageUrl(Provider provider) {
+    return provider == Provider::Anthropic ? "https://platform.claude.com/settings/keys"
+                                           : "https://platform.openai.com/api-keys";
+}
+
 constexpr std::string_view DefaultModel(Provider provider) {
     return provider == Provider::Anthropic ? AnthropicModels[0].id : OpenAIModels[0].id;
 }

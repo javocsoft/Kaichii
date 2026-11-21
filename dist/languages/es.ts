@@ -214,12 +214,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Modelo:</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+6"/>
         <source>API key:</source>
         <translation>Clave de API:</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>What would you like to improve?</source>
         <translation>¿Qué te gustaría mejorar?</translation>
     </message>
@@ -269,7 +269,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
         <translation>Modelo elegido por nombre o de la lista del proveedor.</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+32"/>
+        <source>Don&apos;t have a key? &lt;a href=&quot;%1&quot;&gt;Create one on the %2 website&lt;/a&gt;.</source>
+        <translation>¿No tienes clave? &lt;a href=&quot;%1&quot;&gt;Créala en la web de %2&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Using the API key saved for %1.</source>
         <translation>Se usa la clave de API guardada para %1.</translation>
     </message>

@@ -13,7 +13,9 @@ es opcional: los perfiles de rendimiento y **Optimizar para este juego** siguen 
   Kaichii añade a la consulta los FPS y el uso de memoria recientes, cuando hay datos. Para aplicar
   los cambios, te preguntará si quieres detener el juego; se prueban al iniciarlo de nuevo.
 
-Elige el proveedor y el modelo, escribe tu clave, describe el problema y pulsa **Pedir una
+Para conseguir una clave, sigue el enlace que hay bajo el campo de la clave: abre la página de
+claves del proveedor ([OpenAI](https://platform.openai.com/api-keys),
+[Anthropic](https://platform.claude.com/settings/keys)). Elige el proveedor y el modelo, escribe tu clave, describe el problema y pulsa **Pedir una
 propuesta**. La lista de modelos muestra los principales de cada proveedor, primero el recomendado;
 puedes escribir otro nombre o pulsar **Cargar del proveedor** para ver los modelos que tu clave puede
 usar. Kaichii recuerda el último proveedor y modelo que usaste.

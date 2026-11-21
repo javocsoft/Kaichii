@@ -196,7 +196,12 @@ AiOptimizeDialog::AiOptimizeDialog(QWidget* parent, Core::System& system_, Setti
     credentials->addRow(tr("Provider:"), provider);
     credentials->addRow(tr("Model:"), model_row);
     credentials->addRow(QString{}, model_note);
+    key_link = new QLabel(this);
+    key_link->setTextFormat(Qt::RichText);
+    key_link->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    key_link->setOpenExternalLinks(true);
     credentials->addRow(tr("API key:"), api_key);
+    credentials->addRow(QString{}, key_link);
     credentials->addRow(QString{}, remember_row);
     outer->addLayout(credentials);
 
@@ -339,6 +344,10 @@ void AiOptimizeDialog::UpdateProvider() {
     } else {
         add(Common::AiOptimize::OpenAIModels);
     }
+    const std::string_view url = Common::AiOptimize::KeyPageUrl(which);
+    key_link->setText(tr("Don't have a key? <a href=\"%1\">Create one on the %2 website</a>.")
+                          .arg(QString::fromLatin1(url.data(), url.size()), provider->currentText()));
+    key_link->setToolTip(QString::fromLatin1(url.data(), url.size()));
     const std::string_view fallback = Common::AiOptimize::DefaultModel(which);
     model->setCurrentText(QString::fromStdString(saved.empty() ? std::string{fallback} : saved));
     UpdateModelNote();
