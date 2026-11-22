@@ -1,7 +1,7 @@
 # Lichii and Fritchii fixes reviewed on 2026-11-22
 
 This round reviewed the 200 Lichii PRs merged from 2026-11-17 to 2026-11-22 (#1422 to #2430) and
-Fritchii v6 to v6.5. Lichii now keeps its frontend in `src/lichii` and has many test files this tree
+Fritchii v6 to v6.5. Lichii has renamed its frontend folder and has many test files this tree
 lacks, so most PRs need adapting. Each port below was first checked against this tree: the bug it
 fixes is present here.
 
