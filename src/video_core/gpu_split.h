@@ -246,7 +246,9 @@ private:
 
     /// One step of a front wait for the back to consume `target`.
     void Backoff(u32 spins, u64 target);
-    /// After the back stored `consumed`: wakes a front sleeping in Backoff.
+    /// Sleeps until the back consumes `target` (and, with `wait_for_idle`, goes quiet).
+    void SleepForBack(u64 target, bool wait_for_idle = false);
+    /// After the back stored `consumed` or went quiet: wakes a sleeping front.
     void NotifyFront() {
         if (front_waiting.load(std::memory_order_seq_cst)) {
             front_wake.fetch_add(1, std::memory_order_seq_cst);

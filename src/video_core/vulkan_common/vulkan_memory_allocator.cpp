@@ -397,7 +397,8 @@ bool MemoryAllocator::CreateBufferInSeparatePool(const VkBufferCreateInfo& ci, M
                                                  VmaAllocationInfo& alloc_info) const {
     // The buffer cache's buffers, churned by its collector: in a pool of their own (see
     // Device::SeparatePool). Anything over half a block takes the default blocks (dedicated).
-    if (usage != MemoryUsage::DeviceLocal || ci.size > Device::SeparatePoolBlockSize / 2) {
+    const VkDeviceSize block_size = device.GetDeviceBufferPoolBlockSize();
+    if (usage != MemoryUsage::DeviceLocal || !FitsDeviceBufferPool(ci.size, 0, block_size)) {
         return false;
     }
     u32 memory_type{};
@@ -420,8 +421,19 @@ bool MemoryAllocator::CreateBufferInSeparatePool(const VkBufferCreateInfo& ci, M
     VmaAllocationCreateInfo pool_ci = alloc_ci;
     pool_ci.pool = pool;
     pool_ci.memoryTypeBits = 0;
-    return vmaCreateBuffer(allocator, &ci, &pool_ci, &handle, &allocation, &alloc_info) ==
-           VK_SUCCESS;
+    if (vmaCreateBuffer(allocator, &ci, &pool_ci, &handle, &allocation, &alloc_info) !=
+        VK_SUCCESS) {
+        return false;
+    }
+    // The driver's size can be larger than asked: past half a small block it goes elsewhere.
+    if (!FitsDeviceBufferPool(alloc_info.size, 0, block_size)) {
+        vmaDestroyBuffer(allocator, handle, allocation);
+        handle = {};
+        allocation = {};
+        alloc_info = {};
+        return false;
+    }
+    return true;
 }
 
 vk::Buffer MemoryAllocator::CreateBuffer(const VkBufferCreateInfo &ci, MemoryUsage usage) const {

@@ -31,6 +31,7 @@ add_executable(tests
     core/romfs.cpp
     core/vfs_files.cpp
     video_core/ampere_program_override.cpp
+    video_core/device_buffer_pool.cpp
     video_core/depth_bias.cpp
     video_core/macro_memo.cpp
     video_core/native_qmd.cpp

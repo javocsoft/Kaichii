@@ -9,6 +9,10 @@ understands, then says what they saw, what caused it, what was measured or playe
 pull request number. Say plainly what was not confirmed. HTML comments like this one are dropped.
 -->
 
+### Performance
+- **Less video memory held for nothing on small cards.** The buffer cache's small buffers live in pool blocks that stay allocated while any buffer in them lives. On discrete cards with under 9 GB, the blocks are now 4 MB instead of 16 MB. On an RTX 3050 Laptop (4 GB) in Ocarina of Time, memory held this way fell from 15 MB to 3 MB, with no change in frame rate. Port of Lichii #2316, with a unit test (#101).
+- **The GPU thread no longer keeps a core busy while it waits.** While waiting for the second GPU thread (full command ring, or the end of its idle work), the first one spun or yielded in a loop; it now sleeps until woken. Standing on Link's porch in Ocarina of Time, Kaichii used about 0.15 fewer CPU cores (6.04-6.15 against 6.22-6.27, three rounds each), at the same frame rate. Port of Lichii #2237, with a unit test (#101).
+
 ### Saves and game list
 - **A save folder copied to the wrong place is no longer deleted.** A game's save folder copied one level too high in the NAND (straight into `user/save/0000000000000000`) showed the *Orphaned Profiles Detected* message at every start, and an empty folder there was deleted. Only real profile folders count now. Port of Lichii #2265; a unit test covers title folders, other folders and real orphaned profiles (#100).
 - **Play time survives a crash when stopping a game.** When the services closed after a stop, a second copy of the play time list saved the times read at boot over the session just played; if Kaichii ended before saving again, the session was lost. Port of Lichii #1971, with a unit test (#100).

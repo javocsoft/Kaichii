@@ -20,6 +20,7 @@
 #include "common/common_types.h"
 #include "common/logging.h"
 #include "common/settings.h"
+#include "video_core/vulkan_common/device_buffer_pool.h"
 #include "video_core/vulkan_common/vulkan_wrapper.h"
 
 VK_DEFINE_HANDLE(VmaAllocator)
@@ -280,7 +281,12 @@ public:
         SparsePages,
         DeviceBuffers,
     };
-    static constexpr VkDeviceSize SeparatePoolBlockSize = 16ULL << 20;
+    static constexpr VkDeviceSize SeparatePoolBlockSize = DefaultSeparatePoolBlockSize;
+
+    /// The block size of the device-local buffer pool: smaller on small discrete cards.
+    VkDeviceSize GetDeviceBufferPoolBlockSize() const noexcept {
+        return device_buffer_pool_block_size;
+    }
 
     /// The pool of that kind for a memory type, created on first use (null if that failed).
     VmaPool GetSeparatePool(SeparatePool kind, u32 memory_type) const;
@@ -1392,6 +1398,7 @@ private:
     std::vector<size_t> valid_heap_memory;                   ///< Heaps used.
     size_t main_heap{};       ///< Largest device-local heap, where images live.
     u64 heap_size_limit{};    ///< EDEN_NX2_VRAM_LIMIT_MIB for device-local heaps, 0 if unset.
+    VkDeviceSize device_buffer_pool_block_size{SeparatePoolBlockSize};
 
     /// Format properties dictionary.
     ::Common::unordered_map<VkFormat, VkFormatProperties> format_properties;
