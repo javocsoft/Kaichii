@@ -196,10 +196,10 @@ add_executable(tests
     common/scratch_buffer.cpp
     common/slot_vector.cpp
     common/sparse_large_vector.cpp
-    common/undefined_fix.cpp
     common/unique_function.cpp
     common/zstd_compression.cpp
     core/core_timing.cpp
+    frontend_common/play_time.cpp
     core/profile_orphans.cpp
     core/filesystem_rename.cpp
     core/thread_startup_policy.cpp
