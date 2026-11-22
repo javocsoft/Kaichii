@@ -200,6 +200,7 @@ add_executable(tests
     common/zstd_compression.cpp
     core/core_timing.cpp
     frontend_common/play_time.cpp
+    core/manual_content_provider.cpp
     core/profile_orphans.cpp
     core/filesystem_rename.cpp
     core/thread_startup_policy.cpp
