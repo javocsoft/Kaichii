@@ -200,6 +200,7 @@ add_executable(tests
     common/unique_function.cpp
     common/zstd_compression.cpp
     core/core_timing.cpp
+    core/profile_orphans.cpp
     core/filesystem_rename.cpp
     core/thread_startup_policy.cpp
     core/nup_writer.cpp
