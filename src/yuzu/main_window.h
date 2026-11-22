@@ -491,6 +491,9 @@ private:
     void UpdateUISettings();
     /// Games folder, preset and console mode for a new installation; also in the Help menu.
     void ShowFirstRunAssistant();
+    /// Once per GPU, on starting a Switch 2 game: says when this GPU will likely run it too
+    /// slowly to play.
+    void ShowSwitch2GpuNotice(u64 program_id);
     /// Adds Kaichii to the applications menu, or removes it, as the setting says; when running
     /// as an AppImage for the first time and `ask`, asks first.
     void SyncDesktopIntegration(bool ask);

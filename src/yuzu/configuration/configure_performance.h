@@ -16,6 +16,7 @@
 #include "yuzu/configuration/configuration_shared.h"
 
 class QButtonGroup;
+class QFormLayout;
 class QLabel;
 class QPushButton;
 class QRadioButton;
@@ -60,5 +61,7 @@ private:
     QLabel* status_label{};
     QLabel* class_label{};
     QLabel* measured_label{};
+    QLabel* switch2_label{};
+    QFormLayout* machine_form{};
     QPushButton* test_button{};
 };

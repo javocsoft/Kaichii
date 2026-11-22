@@ -70,6 +70,7 @@ public:
     std::string device_name;
     u32 vendor_id{};
     bool integrated{}; ///< Its memory is the system's (SharesSystemMemory)
+    bool software{};   ///< It draws on the processor: llvmpipe and other software renderers
     u64 device_local_bytes{}; ///< The largest device-local memory heap
 };
 
