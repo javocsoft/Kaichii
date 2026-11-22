@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 
 #include "qt_common/config/setting_help.h"
+#include "qt_common/config/switch2_gpu_notice.h"
 
 namespace {
 
@@ -113,6 +114,13 @@ QWizardPage* FirstRunAssistant::ComputerPage() {
                 .arg(static_cast<double>(host->gpu_memory_bytes) / (1ULL << 30), 0, 'f', 1)
                 .arg(host->cpu_threads)
                 .arg(static_cast<double>(host->ram_bytes) / (1ULL << 30), 0, 'f', 0));
+        if (const QString notice = QtCommon::Switch2GpuNotice(*host); !notice.isEmpty()) {
+            auto* const warning = WrappedLabel(notice, page);
+            warning->setObjectName(QStringLiteral("switch2GpuNotice"));
+            warning->setFrameShape(QFrame::StyledPanel);
+            warning->setMargin(6);
+            layout->addWidget(warning);
+        }
         layout->addWidget(WrappedLabel(
             tr("A preset sets the resolution and the options that matter most for speed."), page));
         const std::array descriptions{

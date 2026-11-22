@@ -27,6 +27,7 @@
 #include "video_core/vulkan_common/hardware_test.h"
 #include "qt_common/config/setting_help.h"
 #include "qt_common/config/shared_translation.h"
+#include "qt_common/config/switch2_gpu_notice.h"
 #include "yuzu/configuration/configure_performance.h"
 #include "yuzu/configuration/shared_widget.h"
 
@@ -69,6 +70,11 @@ ConfigurePerformance::ConfigurePerformance(
     machine->addRow(tr("Processor:"), new QLabel(tr("%1 threads").arg(host.cpu_threads)));
     machine->addRow(tr("Memory:"), new QLabel(tr("%1 GB").arg(GigabytesText(host.ram_bytes))));
     machine->addRow(tr("System:"), new QLabel(QSysInfo::prettyProductName()));
+    switch2_label = new QLabel(machine_box);
+    switch2_label->setObjectName(QStringLiteral("switch2GpuNotice"));
+    switch2_label->setWordWrap(true);
+    machine->addRow(tr("Switch 2 games:"), switch2_label);
+    machine_form = machine;
     class_label = new QLabel(machine_box);
     machine->addRow(tr("Class:"), class_label);
     measured_label = new QLabel(machine_box);
@@ -144,6 +150,10 @@ void ConfigurePerformance::UpdateRecommendation() {
     const std::array tier_names{tr("Entry level"), tr("Mid range"), tr("High end"),
                                 tr("Enthusiast")};
     class_label->setText(tier_names[static_cast<size_t>(Settings::ClassifyHost(host))]);
+    // A measurement can clear an integrated GPU, or flag a dedicated one.
+    const QString notice = QtCommon::Switch2GpuNotice(host);
+    switch2_label->setText(notice);
+    machine_form->setRowVisible(switch2_label, !notice.isEmpty());
     const Settings::PerformancePreset recommended = Settings::RecommendedPreset(host);
     for (size_t i = 0; i < Settings::AllPerformancePresets.size(); ++i) {
         preset_radios[i]->setText(Settings::AllPerformancePresets[i] == recommended

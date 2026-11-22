@@ -118,6 +118,9 @@ struct Values {
     // Whether the hardware-based performance preset was offered once already.
     Setting<bool> performance_preset_offered{linkage, false, "performancePresetOffered",
                                              Category::Ui};
+    // The GPU the "Switch 2 games will run slowly here" notice was last shown for, on a first
+    // Switch 2 game start: shown once per GPU.
+    Setting<std::string> switch2_gpu_notice_gpu{linkage, {}, "switch2GpuNoticeGpu", Category::Ui};
     Setting<bool> pause_when_in_background{linkage,
                                            false,
                                            "pauseWhenInBackground",

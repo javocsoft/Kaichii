@@ -27,6 +27,23 @@ pass.
   processor's speed in about ten seconds, and recommends a preset from them. Close any game first.
 - In a game's *Configure Game > Performance*, the same page sets that game only.
 
+### Integrated graphics and Switch 2 games
+
+Switch games run well on integrated graphics, such as the Intel Iris Xe of many laptops. Switch 2
+games ask much more of the graphics card: on integrated graphics they load slowly and usually run at
+a few frames per second, even with *Performance*. They need a dedicated card, such as an NVIDIA
+GeForce RTX or an AMD Radeon RX.
+
+Kaichii says so on *Configure > Performance*, in the first start's assistant, and once per graphics
+card when a Switch 2 game starts. After *Test this computer*, the measurement decides instead: below
+half the reference computer's graphics speed the warning shows on any card, and a fast integrated
+GPU that measures above it doesn't get it. On a laptop with both integrated graphics and a dedicated
+card, the warning names the dedicated one: choose it under *Configure > Graphics > Device*.
+
+If *Graphics* shows *llvmpipe* or another software renderer, Kaichii is drawing on the processor
+because the graphics driver is missing or not working: every game runs very slowly then, Switch
+games too, and the warning says to install or update the driver.
+
 ## Optimize for This Game
 
 To describe a problem in your own words and receive a proposal you can review and undo, see the

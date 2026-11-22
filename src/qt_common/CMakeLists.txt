@@ -18,6 +18,8 @@ add_library(qt_common STATIC
     config/setting_help.h
     config/shared_translation.cpp
     config/shared_translation.h
+    config/switch2_gpu_notice.cpp
+    config/switch2_gpu_notice.h
 
     util/path.h util/path.cpp
     util/game.h util/game.cpp
@@ -28,7 +30,7 @@ add_library(qt_common STATIC
     util/compress.h util/compress.cpp
     util/fs.h util/fs.cpp
     util/mod.h util/mod.cpp
-    util/vk.h util/vk.cpp
+    util/vk.h util/vk.cpp util/vk_records.cpp
     util/translations.h util/translations.cpp
     util/guide.h util/guide.cpp
     util/game_folders.h util/game_folders.cpp

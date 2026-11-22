@@ -42,6 +42,35 @@ TEST_CASE("Hosts are classed by GPU memory, laptops and CPU", "[common][performa
     CHECK(ClassifyHost(HostProfile{}) == HardwareTier::Entry);
 }
 
+TEST_CASE("Integrated and slow measured GPUs are flagged for Switch 2 games",
+          "[common][performance_presets]") {
+    // The laptop a player saw Switch 2 games at 6-7 fps on.
+    CHECK(Switch2GpuConcernFor(Host("Intel(R) Iris(R) Xe Graphics", 8, true)) ==
+          Switch2GpuConcern::Integrated);
+    // A software renderer, measured or not: Switch games are slow there too.
+    HostProfile software = Host("llvmpipe (LLVM 19.1.7, 256 bits)", 31, true);
+    software.gpu_software = true;
+    CHECK(Switch2GpuConcernFor(software) == Switch2GpuConcern::Software);
+    software.measured_gpu_ratio = 0.9;
+    CHECK(Switch2GpuConcernFor(software) == Switch2GpuConcern::Software);
+    CHECK(Switch2GpuConcernFor(Host("NVIDIA GeForce RTX 3050 Laptop GPU", 4)) ==
+          Switch2GpuConcern::None);
+    CHECK(Switch2GpuConcernFor(HostProfile{}) == Switch2GpuConcern::None);
+
+    // A measurement decides, both ways.
+    HostProfile measured = Host("Intel(R) Iris(R) Xe Graphics", 8, true);
+    measured.measured_gpu_ratio = 0.26;
+    CHECK(Switch2GpuConcernFor(measured) == Switch2GpuConcern::Measured);
+    measured = Host("Apple M3 Max", 48, true);
+    measured.measured_gpu_ratio = 1.8;
+    CHECK(Switch2GpuConcernFor(measured) == Switch2GpuConcern::None);
+    measured = Host("NVIDIA GeForce GTX 1050", 2);
+    measured.measured_gpu_ratio = Switch2PlayableGpuRatio - 0.01;
+    CHECK(Switch2GpuConcernFor(measured) == Switch2GpuConcern::Measured);
+    measured.measured_gpu_ratio = Switch2PlayableGpuRatio;
+    CHECK(Switch2GpuConcernFor(measured) == Switch2GpuConcern::None);
+}
+
 TEST_CASE("Each tier recommends its own preset", "[common][performance_presets]") {
     CHECK(RecommendedPreset(Host("NVIDIA GeForce RTX 3050 Laptop GPU", 4)) ==
           PerformancePreset::Performance);
