@@ -294,6 +294,8 @@ private:
     boost::container::static_vector<VkSampler, MAX_TEXTURES> sampler_handles;
 
     u32 draw_counter = 0;
+    /// The slope bias scale last recorded (VideoCore::RescaledSlopeScale)
+    float depth_bias_slope_scale = 1.0f;
 #ifdef EGLANTINE_STREAMLINE
     std::optional<u64> oot_camera_sample_frame;
     struct OcarinaMotionTrace {

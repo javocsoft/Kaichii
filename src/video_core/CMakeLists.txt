@@ -35,6 +35,7 @@ add_library(video_core STATIC
     control/scheduler.cpp
     control/scheduler.h
     delayed_destruction_ring.h
+    depth_bias.h
     dirty_flags.cpp
     dirty_flags.h
     dma_pusher.cpp
