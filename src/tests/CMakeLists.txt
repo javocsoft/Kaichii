@@ -32,6 +32,7 @@ add_executable(tests
     core/vfs_files.cpp
     video_core/ampere_program_override.cpp
     video_core/device_buffer_pool.cpp
+    video_core/depth_bias.cpp
     video_core/macro_memo.cpp
     video_core/native_qmd.cpp
     video_core/nx2_page_tracking.cpp
@@ -197,10 +198,12 @@ add_executable(tests
     common/scratch_buffer.cpp
     common/slot_vector.cpp
     common/sparse_large_vector.cpp
-    common/undefined_fix.cpp
     common/unique_function.cpp
     common/zstd_compression.cpp
     core/core_timing.cpp
+    frontend_common/play_time.cpp
+    core/manual_content_provider.cpp
+    core/profile_orphans.cpp
     core/filesystem_rename.cpp
     core/thread_startup_policy.cpp
     core/nup_writer.cpp
@@ -266,7 +269,7 @@ target_link_libraries(tests PRIVATE common core audio_core input_common video_co
 target_link_libraries(tests PRIVATE ${PLATFORM_LIBRARIES} Catch2::Catch2WithMain Threads::Threads)
 
 if (TARGET dynarmic::dynarmic)
-    target_sources(tests PRIVATE core/window_trace.cpp)
+    target_sources(tests PRIVATE core/jit_round_int.cpp core/window_trace.cpp)
     target_link_libraries(tests PRIVATE dynarmic::dynarmic)
 endif()
 

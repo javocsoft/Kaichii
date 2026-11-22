@@ -5,7 +5,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include <algorithm>
-#include <thread>
 #include <utility>
 #include <vector>
 
@@ -13,8 +12,6 @@
 
 #include "common/dynamic_library.h"
 #include "common/logging.h"
-#include "common/memory_detect.h"
-#include "common/thread.h"
 #include "qt_common/util/vk.h"
 #include "video_core/vulkan_common/vulkan_device.h"
 #include "video_core/vulkan_common/vulkan_instance.h"
@@ -26,12 +23,6 @@
 class QWindow;
 
 namespace VkDeviceInfo {
-Record::Record(std::string_view name_, const std::vector<VkPresentModeKHR>& vsync_modes_,
-               bool has_broken_compute_)
-    : name{name_}, vsync_support{vsync_modes_}, has_broken_compute{has_broken_compute_} {}
-
-Record::~Record() = default;
-
 void PopulateRecords(std::vector<Record>& records, QWindow* window) try {
     using namespace Vulkan;
 
@@ -87,6 +78,7 @@ void PopulateRecords(std::vector<Record>& records, QWindow* window) try {
         record.device_name = properties.properties.deviceName;
         record.vendor_id = properties.properties.vendorID;
         record.integrated = SharesSystemMemory(properties.properties.deviceType);
+        record.software = properties.properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU;
         const VkPhysicalDeviceMemoryProperties memory =
             physical_device.GetMemoryProperties().memoryProperties;
         for (u32 heap = 0; heap < memory.memoryHeapCount; ++heap) {
@@ -98,30 +90,6 @@ void PopulateRecords(std::vector<Record>& records, QWindow* window) try {
     }
 } catch (const Vulkan::vk::Exception& exception) {
     LOG_ERROR(Frontend, "Failed to enumerate devices with error: {}", exception.what());
-}
-
-Settings::HostProfile DetectHostProfile(const std::vector<Record>& records, int device_index) {
-    Settings::HostProfile host{
-        .cpu_threads = std::thread::hardware_concurrency(),
-        .ram_bytes = Common::GetMemInfo().TotalPhysicalMemory,
-        .gpu_thread_pinning = Common::CanPinGpuThreads(),
-    };
-    if (device_index >= 0 && static_cast<size_t>(device_index) < records.size()) {
-        const Record& record = records[static_cast<size_t>(device_index)];
-        host.gpu_name = record.device_name;
-        host.gpu_vendor_id = record.vendor_id;
-        host.gpu_integrated = record.integrated;
-        host.gpu_memory_bytes = record.device_local_bytes;
-        // The hardware test's figures count only for the GPU they were measured on.
-        if (!host.gpu_name.empty() &&
-            Settings::values.hardware_test_gpu.GetValue() == host.gpu_name) {
-            host.measured_gpu_ratio =
-                Settings::values.hardware_test_gpu_permille.GetValue() / 1000.0;
-            host.measured_free_memory_bytes =
-                u64{Settings::values.hardware_test_free_memory_mib.GetValue()} << 20;
-        }
-    }
-    return host;
 }
 
 } // namespace VkDeviceInfo

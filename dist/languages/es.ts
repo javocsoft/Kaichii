@@ -7563,7 +7563,7 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
 <context>
     <name>ConfigurePerformance</name>
     <message>
-        <location filename="../../src/yuzu/configuration/configure_performance.cpp" line="+59"/>
+        <location filename="../../src/yuzu/configuration/configure_performance.cpp" line="+60"/>
         <source>This computer</source>
         <translation>Este equipo</translation>
     </message>
@@ -7623,7 +7623,12 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Sistema:</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
+        <source>Switch 2 games:</source>
+        <translation>Juegos de Switch 2:</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Measured:</source>
         <translation>Medido:</translation>
     </message>
@@ -7668,8 +7673,8 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Ajustes predefinidos</translation>
     </message>
     <message>
-        <location line="-41"/>
-        <location line="+43"/>
+        <location line="-46"/>
+        <location line="+48"/>
         <source>Performance</source>
         <translation>Rendimiento</translation>
     </message>
@@ -7709,12 +7714,12 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Resolución 1,5 veces la nativa. Para tarjetas de 16 GB o más.</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+59"/>
         <source>%1 (recommended for this computer)</source>
         <translation>%1 (recomendado para este equipo)</translation>
     </message>
     <message>
-        <location line="-41"/>
+        <location line="-45"/>
         <source>Every preset uses fast GPU accuracy and asynchronous shaders, sizes texture memory to the card, decodes ASTC textures on the processor when it has 8 threads or more, and gives the GPU threads performance cores of their own when it has enough. Other settings are left as they are.</source>
         <translation>Todos los ajustes predefinidos usan la precisión de GPU rápida y shaders asíncronos, ajustan la memoria de texturas a la tarjeta, descomprimen las texturas ASTC en el procesador si tiene 8 hilos o más y reservan núcleos de alto rendimiento para los hilos de la GPU si hay suficientes. El resto de ajustes no se modifica.</translation>
     </message>
@@ -7734,7 +7739,7 @@ Once deleted, these can NOT be recovered. Are you 100% sure you want to delete t
         <translation>Los ajustes predefinidos aplicados aquí solo afectan a este juego.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+30"/>
         <source>Not yet: the class comes from the video memory alone.</source>
         <translation>Todavía no: la categoría sale solo de la memoria de vídeo.</translation>
     </message>
@@ -9097,7 +9102,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>FirstRunAssistant</name>
     <message>
-        <location filename="../../src/yuzu/first_run_assistant.cpp" line="+37"/>
+        <location filename="../../src/yuzu/first_run_assistant.cpp" line="+38"/>
         <source>Welcome to Kaichii</source>
         <translation>Te damos la bienvenida a Kaichii</translation>
     </message>
@@ -9152,7 +9157,7 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation>Kaichii ha encontrado %1 con %2 GB de memoria de vídeo, un procesador de %3 hilos y %4 GB de memoria.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+14"/>
         <source>A preset sets the resolution and the options that matter most for speed.</source>
         <translation>Un preset ajusta la resolución y las opciones que más influyen en la velocidad.</translation>
     </message>
@@ -10217,18 +10222,18 @@ o haz clic para buscarlo</translation>
         <translation>Pedir a la IA que ajuste este equipo...</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+2529"/>
-        <location line="+1843"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+2535"/>
+        <location line="+1848"/>
         <source>AI settings assistant</source>
         <translation>Asistente de ajustes con IA</translation>
     </message>
     <message>
-        <location line="-1842"/>
+        <location line="-1847"/>
         <source>Stop the running game before tuning another game.</source>
         <translation>Detén el juego en marcha antes de ajustar otro juego.</translation>
     </message>
     <message>
-        <location line="+1843"/>
+        <location line="+1848"/>
         <source>Stop the game before tuning settings for the whole computer.</source>
         <translation>Detén el juego antes de ajustar la configuración de todo el equipo.</translation>
     </message>
@@ -10258,7 +10263,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location line="-2314"/>
+        <location line="-2320"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -10295,7 +10300,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>%1&lt;br&gt;Puede que el archivo esté dañado o incompleto: vuelve a volcarlo desde tu consola. &lt;a href=&apos;%2&apos;&gt;La guía&lt;/a&gt; tiene más ayuda.</translation>
     </message>
     <message>
-        <location line="+1268"/>
+        <location line="+1269"/>
         <source>This folder doesn&apos;t hold a game extracted into files (a &apos;main&apos; file).
 
 To add a folder with your games to the game list, use File &gt; Add Games Folder.</source>
@@ -10464,7 +10469,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-1499"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-1500"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -10484,7 +10489,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="-304"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3885"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3913"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -10666,7 +10671,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-698"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-720"/>
         <source>&amp;Start</source>
         <translation>&amp;Iniciar</translation>
     </message>
@@ -10852,7 +10857,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4848"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4857"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -10992,7 +10997,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+478"/>
+        <location line="+481"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -11094,7 +11099,7 @@ Vulkan, resolución 1x, GPU Rápido, shaders asíncronos, BC3, VRAM conservadora
 Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados no cambian.</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+37"/>
         <source>Preparing game files...</source>
         <translation>Preparando los archivos del juego...</translation>
     </message>
@@ -11110,25 +11115,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2648"/>
+        <location line="+2653"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2648"/>
-        <location line="+2648"/>
+        <location line="-2653"/>
+        <location line="+2653"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2647"/>
-        <location line="+2649"/>
+        <location line="-2652"/>
+        <location line="+2654"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2636"/>
+        <location line="-2641"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -11292,12 +11297,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2296"/>
+        <location line="+2323"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2270"/>
+        <location line="-2297"/>
         <location line="+132"/>
         <source>Add to the game list?</source>
         <translation>¿Añadir a la lista de juegos?</translation>
@@ -11528,7 +11533,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>No se pudo abrir URL &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location line="+445"/>
+        <location line="+450"/>
         <source>TAS Recording</source>
         <translation>Grabación TAS</translation>
     </message>
@@ -11991,7 +11996,17 @@ Add Kaichii to the applications menu? You can change this later in Configure &gt
 ¿Añadir Kaichii al menú de aplicaciones? Puedes cambiarlo más tarde en Configurar &gt; Interfaz.</translation>
     </message>
     <message>
-        <location line="+138"/>
+        <location line="+43"/>
+        <source>Switch 2 games on this computer</source>
+        <translation>Juegos de Switch 2 en este equipo</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>This notice is shown once. Configure &gt; Performance shows it again, and measures this computer with Test this computer.</source>
+        <translation>Este aviso se muestra una sola vez. Configurar &gt; Rendimiento lo vuelve a mostrar y mide este equipo con Probar este equipo.</translation>
+    </message>
+    <message>
+        <location line="+115"/>
         <source>Derivation Components Missing</source>
         <translation>Componentes de derivación ausentes</translation>
     </message>
@@ -12056,7 +12071,7 @@ Would you like to bypass this and exit anyway?</source>
 ¿Quieres ignorarlo y salir de todos modos?</translation>
     </message>
     <message>
-        <location line="+97"/>
+        <location line="+99"/>
         <source>ADVANCED</source>
         <translation>AVANZADO</translation>
     </message>
@@ -12070,7 +12085,7 @@ Would you like to bypass this and exit anyway?</source>
         <translation type="vanished">Reinicie Eden para aplicar el motor X11.</translation>
     </message>
     <message>
-        <location line="-296"/>
+        <location line="-298"/>
         <source>Slow</source>
         <translation>Lento</translation>
     </message>
@@ -15073,6 +15088,29 @@ Si eliges &quot;Desde Kaichii&quot;, se borrarán las partidas guardadas anterio
         <location filename="../../src/yuzu/set_play_time_dialog.cpp" line="+49"/>
         <source>Total play time reached maximum.</source>
         <translation>Se ha alcanzado el límite total de tiempo de juego.</translation>
+    </message>
+</context>
+<context>
+    <name>Switch2GpuNotice</name>
+    <message>
+        <location filename="../../src/qt_common/config/switch2_gpu_notice.cpp" line="+17"/>
+        <source>%1 draws on the processor instead of a graphics card, which usually means the graphics driver is missing or not working: every game runs very slowly, Switch games too. Install or update the driver for your graphics card.</source>
+        <translation>%1 dibuja con el procesador en vez de con una tarjeta gráfica, lo que suele significar que falta el driver de la gráfica o que no funciona: todos los juegos van muy lentos, también los de Switch. Instala o actualiza el driver de tu tarjeta gráfica.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>%1 is integrated graphics. Switch games run well on it, but Switch 2 games ask much more of the graphics: they take long to load and usually run at a few frames per second, even with the Performance preset. They need a dedicated graphics card, such as an NVIDIA GeForce RTX or an AMD Radeon RX.</source>
+        <translation>%1 es una gráfica integrada. Los juegos de Switch funcionan bien con ella, pero los de Switch 2 piden mucho más a la gráfica: tardan en cargar y suelen ir a pocas imágenes por segundo, incluso con el ajuste Rendimiento. Necesitan una tarjeta gráfica dedicada, como una NVIDIA GeForce RTX o una AMD Radeon RX.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>%1 measured %2 % of the reference computer&apos;s graphics speed. Switch games run well on it, but Switch 2 games need about half that computer&apos;s speed or more: here they will likely run at a few frames per second, even with the Performance preset.</source>
+        <translation>%1 ha medido el %2 % de la velocidad gráfica del equipo de referencia. Los juegos de Switch funcionan bien con ella, pero los de Switch 2 necesitan más o menos la mitad de la velocidad de ese equipo: aquí lo más probable es que vayan a pocas imágenes por segundo, incluso con el ajuste Rendimiento.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>This computer also has %1: choose it under Configure &gt; Graphics &gt; Device to play Switch 2 games.</source>
+        <translation>Este equipo también tiene %1: elígela en Configurar &gt; Gráficos &gt; Dispositivo para jugar a juegos de Switch 2.</translation>
     </message>
 </context>
 <context>

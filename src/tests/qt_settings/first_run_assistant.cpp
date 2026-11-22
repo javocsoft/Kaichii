@@ -60,6 +60,7 @@ class FirstRunAssistantTest : public QObject {
 
 private slots:
     void RecommendsThePresetForThisComputer();
+    void WarnsAboutSwitch2GamesOnIntegratedGraphics();
     void KeepsTheSettingsWithoutAGraphicsCard();
     void AddsFoldersAndKeysThroughTheWindow();
     void AsksForTheConsoleMode();
@@ -78,6 +79,23 @@ void FirstRunAssistantTest::RecommendsThePresetForThisComputer() {
     FindByText<QRadioButton>(assistant, QStringLiteral("Keep my current settings"))
         ->setChecked(true);
     QCOMPARE(assistant.ChosenPreset(), std::nullopt);
+}
+
+void FirstRunAssistantTest::WarnsAboutSwitch2GamesOnIntegratedGraphics() {
+    FakeWindow window;
+    {
+        FirstRunAssistant assistant(nullptr, EntryMachine(), {}, false, window.Hooks());
+        QVERIFY(assistant.findChild<QLabel*>(QStringLiteral("switch2GpuNotice")) == nullptr);
+    }
+    Settings::HostProfile laptop = EntryMachine();
+    laptop.gpu_name = "Intel(R) Iris(R) Xe Graphics";
+    laptop.gpu_integrated = true;
+    FirstRunAssistant assistant(nullptr, laptop, {}, false, window.Hooks());
+    const auto* const notice = assistant.findChild<QLabel*>(QStringLiteral("switch2GpuNotice"));
+    QVERIFY(notice != nullptr);
+    QVERIFY(notice->text().contains(QStringLiteral("Switch 2 games")));
+    // The preset is still recommended: Switch games play well with it.
+    QCOMPARE(assistant.ChosenPreset(), Settings::PerformancePreset::Performance);
 }
 
 void FirstRunAssistantTest::KeepsTheSettingsWithoutAGraphicsCard() {

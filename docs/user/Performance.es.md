@@ -31,6 +31,24 @@ Ocarina of Time, Rendimiento además omite la pasada de nitidez del juego.
   ello. Cierra antes cualquier juego.
 - En *Configurar juego > Rendimiento* de un juego, la misma página ajusta solo ese juego.
 
+### Gráficos integrados y juegos de Switch 2
+
+Los juegos de Switch funcionan bien con gráficos integrados, como la Intel Iris Xe de muchos
+portátiles. Los de Switch 2 piden mucho más a la tarjeta gráfica: con gráficos integrados tardan en
+cargar y suelen ir a pocas imágenes por segundo, incluso con *Rendimiento*. Necesitan una tarjeta
+dedicada, como una NVIDIA GeForce RTX o una AMD Radeon RX.
+
+Kaichii lo avisa en *Configurar > Rendimiento*, en el asistente del primer arranque y una vez por
+tarjeta gráfica al iniciar un juego de Switch 2. Tras *Probar este equipo*, decide la medición: por
+debajo de la mitad de la velocidad gráfica del equipo de referencia el aviso aparece con cualquier
+tarjeta, y una GPU integrada rápida que la supere no lo recibe. En un portátil con gráficos
+integrados y tarjeta dedicada, el aviso nombra la dedicada: elígela en *Configurar > Gráficos >
+Dispositivo*.
+
+Si *Gráficos* muestra *llvmpipe* u otro renderizador por software, Kaichii está dibujando con el
+procesador porque falta el driver de la gráfica o no funciona: entonces todos los juegos van muy
+lentos, también los de Switch, y el aviso pide instalar o actualizar el driver.
+
 ## Optimizar para este juego
 
 Para describir un problema con tus palabras y recibir una propuesta que puedes revisar y deshacer,
