@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <cstring>
 #include <functional>
@@ -52,6 +53,10 @@ struct GpuSplitTestAccess {
 
     static u64 NearWrap() {
         return GpuSplit::RingWords - 1;
+    }
+
+    static bool FrontWaitRegistered(const GpuSplit& split) {
+        return split.front_waiting.load();
     }
 
     static u64 Execute(GpuSplit& split, u64 position, u64 available) {
@@ -722,6 +727,55 @@ TEST_CASE("Full split drains preserve aliased uploads, partial coverage and queu
     REQUIRE(f.memory.Read<u32>(gpu_address) == 1);
     REQUIRE(f.memory.Read<u32>(gpu_address + 0x1000) == 70);
     REQUIRE(f.memory.Read<u32>(alias + 4) == 60);
+}
+
+// The front spun or yielded while the ring was full, and spun while everything was consumed but
+// the back's idle hook still ran: a core kept busy beside a CPU-bound game. It now sleeps on
+// front_wake (zortos293/Lichii#2237, part of yuri2301/Eglantine 91485a37a2).
+TEST_CASE("Split front parks while waiting for ring space or the idle hook",
+          "[video_core][gpu_split_dependencies]") {
+    using Access = VideoCommon::GpuSplitTestAccess;
+    Fixture f;
+    f.system.Initialize();
+    auto split = std::make_unique<VideoCommon::GpuSplit>();
+    std::atomic<bool> release{};
+    bool slept = false;
+    const auto unblock = [&] {
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds{2};
+        while (!(slept = Access::FrontWaitRegistered(*split)) &&
+               std::chrono::steady_clock::now() < deadline) {
+            std::this_thread::sleep_for(std::chrono::milliseconds{1});
+        }
+        release.store(true);
+        release.notify_one();
+    };
+
+    SECTION("full ring") {
+        Access::Start(*split, f.system);
+        auto* const flag = &release;
+        split->Defer([flag] { flag->wait(false); });
+        std::jthread unblock_back{unblock};
+        // Two words per call at least: this fills the ring while the back is held.
+        for (size_t i = 0; i < Access::NearWrap() / 2 + 16; ++i) {
+            split->Defer([] {});
+        }
+        unblock_back.join();
+        CHECK(slept);
+        split->Drain();
+        split->Stop();
+    }
+
+    SECTION("idle hook") {
+        split->SetIdleHook(
+            [](void* arg) { static_cast<std::atomic<bool>*>(arg)->wait(false); }, &release);
+        Access::Start(*split, f.system);
+        split->Defer([] {});
+        std::jthread unblock_hook{unblock};
+        split->Drain();
+        unblock_hook.join();
+        CHECK(slept);
+        split->Stop();
+    }
 }
 
 TEST_CASE("Split consumption does not complete deferred downstream callbacks",
