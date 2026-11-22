@@ -678,7 +678,7 @@ static void EmitFPMulAdd(BlockOfCode& code, EmitContext& ctx, IR::Inst* inst, bo
                 if (needs_rounding_correction) {
                     // x64 rounds before flushing to zero
                     // AArch64 rounds after flushing to zero
-                    // This difference of behaviour is noticable if something would round to a smallest normalized number
+                    // This difference of behaviour is noticeable if something would round to a smallest normalized number
                     code.lea(rsp, ptr[rsp - 8]);
                     ABI_PushCallerSaveRegistersAndAdjustStackExcept(code, HostLocXmmIdx(result.getIdx()));
                     code.movq(code.ABI_PARAM1, operand1);
@@ -705,7 +705,7 @@ static void EmitFPMulAdd(BlockOfCode& code, EmitContext& ctx, IR::Inst* inst, bo
                     code.L(nan);
 
                     // AArch64 preferentially returns the first SNaN over the first QNaN
-                    // For x64 vfmadd231ss, x64 returns the first of {op2, op3, op1} that is a NaN, irregardless of signalling state
+                    // For x64 vfmadd231ss, x64 returns the first of {op2, op3, op1} that is a NaN, regardless of signalling state
 
                     Xbyak::Label has_nan, indeterminate, op1_snan, op1_done, op2_done, op3_done;
 
@@ -1047,7 +1047,7 @@ void EmitX64::EmitFPRecipStepFused64(EmitContext& ctx, IR::Inst* inst) {
 }
 
 /// @brief An assembly thunk for the general rounding of FP
-/// Conciously making this be a template, because the cost of comparing "fsize" for every
+/// Consciously making this be a template, because the cost of comparing "fsize" for every
 /// round is not worth it. Remember we are making only 3 copies (u16,u32,u64)
 /// Extra args layout:
 /// 0-7    rounding_mode
@@ -1145,7 +1145,7 @@ static void EmitFPRSqrtEstimate(BlockOfCode& code, EmitContext& ctx, IR::Inst* i
         ICODE(mov)(result, code.Const(xword, FP::FPValue<FPT, false, 0, 1>()));
         FCODE(divs)(result, value);
 
-        ICODE(padd)(result, code.Const(xword, fsize == 32 ? 0x00004000 : 0x0000'0800'0000'0000));
+        ICODE(padd)(result, code.Const(xword, fsize == 32 ? 0x00004000 : 0x0000'0800'0000'0000)); // codespell:ignore padd
         code.pand(result, xmm0);
 
         code.L(*end);
