@@ -20,6 +20,12 @@ struct HostProfile {
     std::string gpu_name;
     u32 gpu_vendor_id = 0;    ///< PCI vendor id: 0x10DE NVIDIA, 0x1002 AMD, 0x8086 Intel
     bool gpu_integrated = false;
+    /// A software renderer such as llvmpipe, which draws on the processor: usually a missing or
+    /// broken graphics driver. Counts as integrated too.
+    bool gpu_software = false;
+    /// A dedicated GPU in this machine other than the one rendering, when that one is integrated:
+    /// laptops with both can render with the slower. Empty when there is none.
+    std::string other_dedicated_gpu_name;
     u64 gpu_memory_bytes = 0; ///< The largest device-local heap
     u32 cpu_threads = 0;
     u64 ram_bytes = 0;
@@ -65,6 +71,24 @@ inline constexpr std::array AllPerformancePresets{
 [[nodiscard]] HardwareTier ComputeTier(double gpu_ratio);
 
 [[nodiscard]] PerformancePreset RecommendedPreset(const HostProfile& host);
+
+/// The share of the reference machine's measured GPU compute Switch 2 games need to be playable:
+/// at half resolution the reference runs Ocarina of Time at about 30 fps, so below half its speed
+/// they run at 15 fps or less. Switch games ask far less of the GPU.
+inline constexpr double Switch2PlayableGpuRatio = 0.5;
+
+/// Why Switch 2 games will likely run too slowly to play on the host's GPU, if they will.
+enum class Switch2GpuConcern : u8 {
+    None,
+    Software,   ///< A software renderer: every game runs very slowly, Switch games too
+    Integrated, ///< Integrated graphics or a software renderer, not measured
+    Measured,   ///< The hardware test measured it below Switch2PlayableGpuRatio
+};
+
+/// A software renderer always is. Otherwise a measurement decides when there is one, so fast
+/// integrated GPUs that were measured aren't flagged; without one, every integrated GPU is. An
+/// undetected GPU isn't.
+[[nodiscard]] Switch2GpuConcern Switch2GpuConcernFor(const HostProfile& host);
 
 /// One setting a preset sets, and the value it sets, as the setting serializes it.
 struct PresetEntry {

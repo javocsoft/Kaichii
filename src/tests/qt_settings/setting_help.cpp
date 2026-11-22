@@ -4,6 +4,8 @@
 #include <array>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include <QApplication>
 #include <QCheckBox>
@@ -21,6 +23,7 @@
 #include "common/settings.h"
 #include "qt_common/config/setting_help.h"
 #include "qt_common/config/shared_translation.h"
+#include "qt_common/config/switch2_gpu_notice.h"
 #include "qt_common/config/uisettings.h"
 #include "qt_common/util/vk.h"
 #include "yuzu/configuration/per_game_summary.h"
@@ -57,6 +60,7 @@ private slots:
     void HelpTextNamesEffectsAndValues();
     void PanelFollowsPointerAndFocus();
     void SoftwareRenderersShareSystemMemory();
+    void IntegratedGraphicsWarnAboutSwitch2Games();
     void GraphicsSectionsPlaceEveryGraphicsSetting();
     void SearchFoldsCaseAndAccents();
     void OrganizerMovesAndGatesRows();
@@ -210,6 +214,49 @@ void SettingHelpTest::SoftwareRenderersShareSystemMemory() {
     software.gpu_memory_bytes = u64{31} << 30;
     software.gpu_integrated = VkDeviceInfo::SharesSystemMemory(VK_PHYSICAL_DEVICE_TYPE_CPU);
     QCOMPARE(Settings::ClassifyHost(software), Settings::HardwareTier::Entry);
+}
+
+void SettingHelpTest::IntegratedGraphicsWarnAboutSwitch2Games() {
+    using VkDeviceInfo::Record;
+    std::vector<Record> records;
+    records.emplace_back("Intel(R) Iris(R) Xe Graphics (Intel open-source Mesa driver)",
+                         std::vector<VkPresentModeKHR>{}, false);
+    records.back().device_name = "Intel(R) Iris(R) Xe Graphics";
+    records.back().integrated = true;
+    records.emplace_back("NVIDIA GeForce RTX 3050 Laptop GPU (NVIDIA)",
+                         std::vector<VkPresentModeKHR>{}, false);
+    records.back().device_name = "NVIDIA GeForce RTX 3050 Laptop GPU";
+
+    // Rendering with the integrated GPU of a laptop that has both: the notice names the other.
+    const Settings::HostProfile on_integrated = VkDeviceInfo::DetectHostProfile(records, 0);
+    QCOMPARE(on_integrated.other_dedicated_gpu_name,
+             std::string{"NVIDIA GeForce RTX 3050 Laptop GPU"});
+    const QString notice = QtCommon::Switch2GpuNotice(on_integrated);
+    QVERIFY(notice.startsWith(QStringLiteral("Intel(R) Iris(R) Xe Graphics is integrated")));
+    QVERIFY(notice.contains(QStringLiteral("Switch games run well")));
+    QVERIFY(notice.contains(QStringLiteral("also has NVIDIA GeForce RTX 3050 Laptop GPU")));
+
+    // Rendering with the dedicated one: nothing to say.
+    const Settings::HostProfile on_dedicated = VkDeviceInfo::DetectHostProfile(records, 1);
+    QVERIFY(on_dedicated.other_dedicated_gpu_name.empty());
+    QVERIFY(QtCommon::Switch2GpuNotice(on_dedicated).isEmpty());
+
+    // A laptop with integrated graphics only.
+    records.pop_back();
+    const Settings::HostProfile alone = VkDeviceInfo::DetectHostProfile(records, 0);
+    QVERIFY(alone.other_dedicated_gpu_name.empty());
+    QVERIFY(!QtCommon::Switch2GpuNotice(alone).contains(QStringLiteral("also has")));
+
+    // A software renderer is about the driver, not about Switch 2 games alone.
+    Settings::HostProfile software = EntryMachine();
+    software.gpu_name = "llvmpipe (LLVM 20.1.2, 256 bits)";
+    software.gpu_integrated = software.gpu_software = true;
+    QVERIFY(QtCommon::Switch2GpuNotice(software).contains(QStringLiteral("Switch games too")));
+
+    // A measured dedicated card below the bar says how fast it measured.
+    Settings::HostProfile slow = EntryMachine();
+    slow.measured_gpu_ratio = 0.3;
+    QVERIFY(QtCommon::Switch2GpuNotice(slow).contains(QStringLiteral("measured 30 %")));
 }
 
 void SettingHelpTest::GraphicsSectionsPlaceEveryGraphicsSetting() {

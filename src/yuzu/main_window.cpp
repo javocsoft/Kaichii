@@ -43,6 +43,7 @@
 #include "bootmanager.h"
 #include "loading_screen.h"
 #include "qt_common/util/vk.h"
+#include "qt_common/config/switch2_gpu_notice.h"
 #include "ryujinx_dialog.h"
 #include "set_play_time_dialog.h"
 #include "util/util.h"
@@ -2251,6 +2252,7 @@ void MainWindow::BootGame(const QString& filename, Service::AM::FrontendAppletPa
         LOG_INFO(Config, "Applied recommended MKW settings after per-game configuration");
     }
     Settings::LogSettings();
+    ShowSwitch2GpuNotice(title_id);
 
     if (UISettings::values.select_user_on_boot && !user_flag_cmd_line) {
         const Core::Frontend::ProfileSelectParameters parameters{
@@ -5504,6 +5506,28 @@ void MainWindow::SyncDesktopIntegration([[maybe_unused]] bool ask) {
                     data_home.toStdString());
     }
 #endif
+}
+
+void MainWindow::ShowSwitch2GpuNotice(u64 program_id) {
+    if (!QtCommon::IsSwitch2Program(program_id) || vk_device_records.empty()) {
+        return;
+    }
+    const auto host = VkDeviceInfo::DetectHostProfile(
+        vk_device_records, Settings::values.vulkan_device.GetValue());
+    const QString notice = QtCommon::Switch2GpuNotice(host);
+    if (notice.isEmpty()) {
+        return;
+    }
+    LOG_WARNING(Frontend, "Switch 2 game on {}: likely too slow to play ({})", host.gpu_name,
+                host.measured_gpu_ratio > 0.0 ? "measured" : "integrated graphics");
+    if (UISettings::values.switch2_gpu_notice_gpu.GetValue() == host.gpu_name) {
+        return;
+    }
+    UISettings::values.switch2_gpu_notice_gpu = host.gpu_name;
+    QMessageBox::information(this, tr("Switch 2 games on this computer"),
+                             notice + QStringLiteral("\n\n") +
+                                 tr("This notice is shown once. Configure > Performance shows it "
+                                    "again, and measures this computer with Test this computer."));
 }
 
 void MainWindow::ShowFirstRunAssistant() {

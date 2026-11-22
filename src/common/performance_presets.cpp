@@ -128,6 +128,20 @@ PerformancePreset RecommendedPreset(const HostProfile& host) {
     return PerformancePreset::Balanced;
 }
 
+Switch2GpuConcern Switch2GpuConcernFor(const HostProfile& host) {
+    if (host.gpu_name.empty()) {
+        return Switch2GpuConcern::None;
+    }
+    if (host.gpu_software) {
+        return Switch2GpuConcern::Software;
+    }
+    if (host.measured_gpu_ratio > 0.0) {
+        return host.measured_gpu_ratio < Switch2PlayableGpuRatio ? Switch2GpuConcern::Measured
+                                                                 : Switch2GpuConcern::None;
+    }
+    return host.gpu_integrated ? Switch2GpuConcern::Integrated : Switch2GpuConcern::None;
+}
+
 std::vector<PresetEntry> PerformancePresetEntries(Values& target, PerformancePreset preset,
                                                   const HostProfile& host) {
     const PresetValues preset_values = ValuesOf(preset);
