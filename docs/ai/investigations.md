@@ -23,6 +23,7 @@ Some are superseded, as their own headers say. They describe the tree at the tim
 |---|---|
 | Lichii fixes reviewed on 2026-11-15 | [Ports, tests and exclusions](lichii-ports-2026-11-15.md) |
 | Lichii fixes reviewed on 2026-11-17 | [Frame presentation, texture ownership, VP9 and Windows page permissions](lichii-ports-2026-11-17.md) |
+| Lichii and Fritchii fixes reviewed on 2026-11-22 | [JIT rounding, saves, play time, updates, depth bias and a GPU command hang](lichii-ports-2026-11-22.md) |
 | Ocarina mesh pipeline keys (2026-11-18) | [Static vertex input A/B and alias port](mesh-pipeline-input-2026-11-18.md) |
 | Switch Sports Resort output stage buffer read (2026-11-18) | [Instruction port and test limits](stage-buffer-output-2026-11-18.md) |
 | Boot blockers, first Switch 2 bring-up | `docs/nx2/notes.md` |
