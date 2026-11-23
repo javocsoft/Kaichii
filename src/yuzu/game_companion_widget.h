@@ -20,7 +20,7 @@ class QToolButton;
 class QCloseEvent;
 
 struct GameCompanionAppearance {
-    enum class Motif { None, GoldenTriangles, SlateRings, ZonaiSpiral };
+    enum class Motif { None, GoldenTriangles, SlateRings, ZonaiSpiral, Glitch };
 
     GameCompanion::Text title;
     GameCompanion::Text eyebrow;
@@ -35,6 +35,8 @@ struct GameCompanionAppearance {
     [[nodiscard]] static GameCompanionAppearance Ocarina();
     [[nodiscard]] static GameCompanionAppearance BreathOfTheWild();
     [[nodiscard]] static GameCompanionAppearance TearsOfTheKingdom();
+    [[nodiscard]] static GameCompanionAppearance AxiomVerge();
+    [[nodiscard]] static GameCompanionAppearance AxiomVerge2();
     [[nodiscard]] static GameCompanionAppearance For(const GameCompanion::Game& game);
 };
 

@@ -304,7 +304,8 @@ const Game& Ocarina() {
 }
 
 const Game* FindGame(u64 program_id) {
-    for (const Game* game : {&Ocarina(), &BreathOfTheWild(), &TearsOfTheKingdom()}) {
+    for (const Game* game :
+         {&Ocarina(), &BreathOfTheWild(), &TearsOfTheKingdom(), &AxiomVerge(), &AxiomVerge2()}) {
         if (game->program_id == program_id) {
             return game;
         }
@@ -322,7 +323,7 @@ const Entry* FindEntry(const Game& game, std::string_view id) {
 }
 
 const Entry* EntryForScene(const Game& game, std::string_view scene) {
-    return scene.empty() ? nullptr : game.entry_for_scene(scene);
+    return scene.empty() || !game.entry_for_scene ? nullptr : game.entry_for_scene(scene);
 }
 
 const Entry* OcarinaEntryForScene(std::string_view scene) {

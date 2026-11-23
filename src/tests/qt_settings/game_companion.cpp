@@ -35,6 +35,8 @@ private slots:
     void breathOfTheWildPanelShowsItsTopics();
     void tearsOfTheKingdomHasItsOwnCatalog();
     void tearsOfTheKingdomScenesSuggestShrinesAndTemples();
+    void axiomVergeGamesHaveSeparateCatalogs();
+    void axiomVergePanelsNameTheirOwnTopics();
 };
 
 void GameCompanionTest::onlyTheSwitch2RemakeIsSupported() {
@@ -43,6 +45,8 @@ void GameCompanionTest::onlyTheSwitch2RemakeIsSupported() {
     QCOMPARE(GameCompanion::FindGame(0x01007EF00011E000ULL), &GameCompanion::BreathOfTheWild());
     QCOMPARE(GameCompanion::FindGame(0x0400486024DEC000ULL), &GameCompanion::Ocarina());
     QCOMPARE(GameCompanion::FindGame(0x0100F2C0115B6000ULL), &GameCompanion::TearsOfTheKingdom());
+    QCOMPARE(GameCompanion::FindGame(0x0100052004384000ULL), &GameCompanion::AxiomVerge());
+    QCOMPARE(GameCompanion::FindGame(0x01002FC010240000ULL), &GameCompanion::AxiomVerge2());
     QVERIFY(!GameCompanion::SupportsGame(0x0100000000000000ULL));
     QVERIFY(!GameCompanion::SupportsGame(0));
 }
@@ -96,6 +100,7 @@ void GameCompanionTest::catalogHasSourcesAndNoDuplicateEntries() {
         case GameCompanion::Kind::All:
         case GameCompanion::Kind::Remake:
         case GameCompanion::Kind::Ability:
+        case GameCompanion::Kind::Guide:
             break;
         }
     }
@@ -461,6 +466,79 @@ void GameCompanionTest::tearsOfTheKingdomScenesSuggestShrinesAndTemples() {
     QVERIFY(label->text().contains(QStringLiteral("Templo del Espíritu")));
     widget.SetDetectedScene(QStringLiteral("MainField"));
     QVERIFY(panel->isHidden());
+}
+
+void GameCompanionTest::axiomVergeGamesHaveSeparateCatalogs() {
+    using GameCompanion::Kind;
+    for (const auto* game : {&GameCompanion::AxiomVerge(), &GameCompanion::AxiomVerge2()}) {
+        std::set<std::string> ids;
+        std::set<Kind> kinds;
+        int spoilers = 0;
+        for (const auto& entry : game->entries()) {
+            QVERIFY2(ids.insert(std::string{entry.id}).second, entry.id.data());
+            QVERIFY(!entry.title.en.empty() && !entry.title.es.empty());
+            QVERIFY(!entry.summary.en.empty() && !entry.summary.es.empty());
+            QVERIFY(!entry.detail.en.empty() && !entry.detail.es.empty());
+            QVERIFY(entry.source_url.starts_with("https://axiom-verge.fandom.com/wiki/"));
+            QVERIFY(std::ranges::find(game->kinds, entry.kind) != game->kinds.end());
+            kinds.insert(entry.kind);
+            spoilers += entry.spoiler ? 1 : 0;
+        }
+        QVERIFY(ids.size() >= 50);
+        QVERIFY(spoilers >= 2);
+        QCOMPARE(kinds.size(), game->kinds.size() - 1);
+        // The companion only informs: no scene ever suggests a card.
+        QVERIFY(game->entry_for_scene == nullptr);
+        QVERIFY(GameCompanion::EntryForScene(*game, "MainField") == nullptr);
+    }
+    const auto& first = GameCompanion::AxiomVerge();
+    const auto& second = GameCompanion::AxiomVerge2();
+    for (const char* id : {"eribu", "mar_uru", "elsenova", "xedur", "axiom_disruptor",
+                           "address_disruptor", "passcodes", "secret_worlds", "trace_identity"}) {
+        QVERIFY2(GameCompanion::FindEntry(first, id), id);
+    }
+    for (const char* id : {"the_glacier", "anunna_gorge", "indra", "amashilama", "mushhus",
+                           "hacking", "infection_warning", "breach_world", "link_av1"}) {
+        QVERIFY2(GameCompanion::FindEntry(second, id), id);
+    }
+    // Each game keeps to its own world.
+    QVERIFY(!GameCompanion::FindEntry(first, "indra"));
+    QVERIFY(!GameCompanion::FindEntry(second, "elsenova"));
+    QVERIFY(GameCompanion::FindEntry(first, "trace_identity")->spoiler);
+    QVERIFY(GameCompanion::FindEntry(second, "story_full")->spoiler);
+    auto results = GameCompanion::Search(first, QStringLiteral("clon"), Kind::All, false);
+    QVERIFY(std::ranges::none_of(results,
+                                 [](const auto* entry) { return entry->id == "trace_identity"; }));
+    results = GameCompanion::Search(second, QStringLiteral("hackeo"), Kind::Guide, false);
+    QVERIFY(std::ranges::any_of(results, [](const auto* entry) { return entry->id == "hacking"; }));
+}
+
+void GameCompanionTest::axiomVergePanelsNameTheirOwnTopics() {
+    GameCompanionWidget widget{GameCompanion::AxiomVerge(), false};
+    auto* const hero = widget.findChild<QWidget*>(QStringLiteral("companionHero"));
+    auto* const category = widget.findChild<QComboBox*>(QStringLiteral("companionCategory"));
+    auto* const panel = widget.findChild<QWidget*>(QStringLiteral("companionContext"));
+    QVERIFY(hero && category && panel);
+    QVERIFY(hero->accessibleName().startsWith(QStringLiteral("Axiom Verge")));
+    QStringList topics;
+    for (int index = 0; index < category->count(); ++index) {
+        topics << category->itemText(index);
+    }
+    QVERIFY(topics.contains(QStringLiteral("Weapons")));
+    QVERIFY(topics.contains(QStringLiteral("Tools and upgrades")));
+    QVERIFY(topics.contains(QStringLiteral("Tips and mechanics")));
+    QVERIFY(topics.contains(QStringLiteral("Story and lore")));
+    QVERIFY(!topics.contains(QStringLiteral("Zelda timeline")));
+    QVERIFY(!topics.contains(QStringLiteral("Dungeons")));
+    widget.SetDetectedScene(QStringLiteral("Anything"));
+    QVERIFY(panel->isHidden());
+
+    GameCompanionWidget second{GameCompanion::AxiomVerge2(), true};
+    auto* const second_category = second.findChild<QComboBox*>(QStringLiteral("companionCategory"));
+    QVERIFY(second_category);
+    QCOMPARE(second_category->itemText(
+                 second_category->findData(static_cast<int>(GameCompanion::Kind::Ability))),
+             QStringLiteral("Arms (habilidades)"));
 }
 
 QTEST_MAIN(GameCompanionTest)

@@ -1,12 +1,14 @@
 # Game Companion
 
-El Game Companion es un panel de consulta **opcional y sin conexión** para tres juegos:
+El Game Companion es un panel de consulta **opcional y sin conexión** para cinco juegos:
 
 - **The Legend of Zelda: Ocarina of Time de Switch 2** (ID de programa `0400486024DEC000`).
 - **The Legend of Zelda: Breath of the Wild de Switch** (ID de programa `01007EF00011E000`); más
   abajo tienes su [apartado](#breath-of-the-wild).
 - **The Legend of Zelda: Tears of the Kingdom de Switch** (ID de programa `0100F2C0115B6000`); más
   abajo tienes su [apartado](#tears-of-the-kingdom).
+- **Axiom Verge** (ID de programa `0100052004384000`) y **Axiom Verge 2** (`01002FC010240000`) de
+  Switch; más abajo tienes su [apartado](#axiom-verge-1-y-2).
 
 Ábrelo desde **Ver > Mostrar Game Companion** mientras uno de ellos esté seleccionado o en marcha,
 o haz clic derecho sobre el juego en la biblioteca y elige **Abrir Game Companion**. Cada juego
@@ -88,3 +90,18 @@ la parte final del castillo de Hyrule, la de ese lugar. Al volver al mundo abier
 desaparece. El Subsuelo no se sugiere, porque el juego lee sus datos incluso con Link en el cielo.
 Con los spoilers desactivados permanecen ocultas las revelaciones posteriores: Sonia, Mineru, el
 Dragón de Luz, el Templo del Espíritu y su jefe, Ganon Fantasma y los combates finales.
+
+## Axiom Verge 1 y 2
+
+Los dos juegos son crípticos a propósito, así que sus fichas explican más que las de Zelda: cada
+zona indica su jefe y lo que esconde, cada arma y herramienta dice dónde está y para qué sirve, y el
+tema *Consejos y mecánicas* cubre los glitches (corrupción), los códigos, los mundos secretos, el
+hackeo, las habilidades, los puntos de guardado y el orden habitual de avance. El tema *Historia y
+trasfondo* explica el mundo y el argumento; las grandes revelaciones, la historia completa y las
+teorías que unen los dos juegos son spoilers y quedan ocultas hasta marcar *Mostrar spoilers de la
+historia*.
+
+Las fichas se escribieron a partir de la [wiki de Axiom Verge](https://axiom-verge.fandom.com/wiki/Axiom_Verge_Wiki),
+que cubre los dos juegos; cada ficha usa solo las páginas, o partes de páginas, de su propio juego.
+Los nombres de lugares, armas y herramientas se mantienen en inglés, como en los juegos. Estos dos
+compañeros solo informan: no intentan seguir dónde estás en el juego.

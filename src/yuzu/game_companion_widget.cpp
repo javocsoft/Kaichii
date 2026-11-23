@@ -104,6 +104,19 @@ protected:
             painter.setBrush(appearance.gold);
             painter.drawEllipse(center, 3, 3);
         }
+        if (appearance.motif == GameCompanionAppearance::Motif::Glitch) {
+            // Rows of offset blocks, like a corrupted scanline.
+            painter.setOpacity(0.5);
+            painter.setPen(Qt::NoPen);
+            painter.setBrush(appearance.gold);
+            constexpr int rows[][3] = {{0, 34, 8}, {12, 18, 6}, {4, 46, 8}, {20, 26, 6},
+                                       {8, 40, 8}, {28, 14, 6}};
+            for (int row = 0; row < 6; ++row) {
+                const qreal y = 24 + row * 13;
+                painter.drawRect(QRectF(width() - 104 + rows[row][0], y, rows[row][1],
+                                        rows[row][2]));
+            }
+        }
         if (appearance.motif == GameCompanionAppearance::Motif::GoldenTriangles) {
             painter.setOpacity(0.3);
             painter.setPen(Qt::NoPen);
@@ -240,12 +253,36 @@ GameCompanionAppearance GameCompanionAppearance::TearsOfTheKingdom() {
             Motif::ZonaiSpiral};
 }
 
+GameCompanionAppearance GameCompanionAppearance::AxiomVerge() {
+    return {{"Axiom Verge", "Axiom Verge"},
+            {"Sudra field guide", "Guía de Sudra"},
+            {"Areas, weapons, bosses and the story of Sudra",
+             "Zonas, armas, jefes y la historia de Sudra"},
+            {"Search Sudra...", "Buscar en Sudra..."},
+            QColor("#2a1b39"), QColor("#e2559c"), QColor("#efedf2"), QColor("#25212b"),
+            Motif::Glitch};
+}
+
+GameCompanionAppearance GameCompanionAppearance::AxiomVerge2() {
+    return {{"Axiom Verge 2", "Axiom Verge 2"},
+            {"Kiengir field guide", "Guía de Kiengir"},
+            {"Lands, Arms, the Breach and the story of Kiengir",
+             "Tierras, Arms, la Brecha y la historia de Kiengir"},
+            {"Search Kiengir...", "Buscar en Kiengir..."},
+            QColor("#1d2d4a"), QColor("#d9b25f"), QColor("#eff0ec"), QColor("#22252c"),
+            Motif::Glitch};
+}
+
 GameCompanionAppearance GameCompanionAppearance::For(const GameCompanion::Game& game) {
     switch (game.program_id) {
     case GameCompanion::BreathOfTheWildProgramId:
         return BreathOfTheWild();
     case GameCompanion::TearsOfTheKingdomProgramId:
         return TearsOfTheKingdom();
+    case GameCompanion::AxiomVergeProgramId:
+        return AxiomVerge();
+    case GameCompanion::AxiomVerge2ProgramId:
+        return AxiomVerge2();
     default:
         return Ocarina();
     }
@@ -475,11 +512,17 @@ QString GameCompanionWidget::KindName(GameCompanion::Kind kind) const {
     case GameCompanion::Kind::Item:
         return GameCompanion::Localize(game.items_topic, spanish);
     case GameCompanion::Kind::Ability:
-        return tr("Runes and abilities");
+        return game.abilities_topic.en.empty()
+                   ? tr("Runes and abilities")
+                   : GameCompanion::Localize(game.abilities_topic, spanish);
+    case GameCompanion::Kind::Guide:
+        return tr("Tips and mechanics");
     case GameCompanion::Kind::Remake:
         return tr("Switch 2 changes");
     case GameCompanion::Kind::Timeline:
-        return tr("Zelda timeline");
+        return game.timeline_topic.en.empty()
+                   ? tr("Zelda timeline")
+                   : GameCompanion::Localize(game.timeline_topic, spanish);
     }
     return {};
 }

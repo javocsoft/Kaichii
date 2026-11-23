@@ -67,6 +67,8 @@ Users report game bugs with Kaichii logs (`eden_log.txt`, `eden_log.txt.old`). E
 | 010015100B514000 | Super Mario Bros. Wonder (Switch 2 Edition; Switch 1 program) |
 | 01007EF00011E000 | The Legend of Zelda: Breath of the Wild (Switch) |
 | 0100F2C0115B6000 | The Legend of Zelda: Tears of the Kingdom (Switch) |
+| 0100052004384000 | Axiom Verge (Switch) |
+| 01002FC010240000 | Axiom Verge 2 (Switch) |
 
 Add ids here when a report identifies a new game.
 
