@@ -141,10 +141,12 @@ void TranslationTest::TranslatesTheGameCompanion() {
     for (const auto& [context, source] : {
              std::pair{"GameCompanionWidget", "Show story spoilers"},
              std::pair{"GameCompanionWidget", "Read source"},
-             std::pair{"GameCompanionWidget", "Items and songs"},
+             std::pair{"GameCompanionWidget", "Runes and abilities"},
+             std::pair{"GameCompanionWidget", "Close card"},
              std::pair{"GameCompanionWidget", "Zelda timeline"},
              std::pair{"GameList", "Open Game Companion"},
              std::pair{"MainWindow", "Show Game &Companion"},
+             std::pair{"MainWindow", "Game Companion · %1"},
          }) {
         const QString translated = Spanish(context, source);
         QVERIFY2(!translated.isEmpty(), source);

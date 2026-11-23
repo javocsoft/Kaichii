@@ -11,6 +11,7 @@
 
 namespace Loader {
 class AppLoader;
+class SceneTracker;
 } // namespace Loader
 
 namespace Service::FileSystem {
@@ -59,6 +60,7 @@ private:
 
     ContentProvider& content_provider;
     Service::FileSystem::FileSystemController& filesystem_controller;
+    std::shared_ptr<Loader::SceneTracker> scene_tracker;
 };
 
 } // namespace FileSys

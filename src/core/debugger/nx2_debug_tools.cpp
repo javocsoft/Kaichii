@@ -235,8 +235,7 @@ json Status(ToolState& state, const json& params) {
     const auto frame_gen = state.system.IsPoweredOn()
                                ? state.system.GPU().Renderer().GetFrameGenStatus()
                                : VideoCore::FrameGenStatus{};
-    const auto companion_scene = state.program_id == 0x0400486024DEC000ULL && after > 0 &&
-                                         state.system.IsPoweredOn()
+    const auto companion_scene = state.system.IsPoweredOn()
                                      ? state.system.GetAppLoader().GetLastLoadedScene()
                                      : std::string{};
     return {
@@ -681,18 +680,24 @@ json RunInput(ToolState& state, const std::vector<InputStep>& steps, const json&
         throw std::runtime_error{"neither player 1 nor the handheld controller is connected"};
     }
     const int timeout = Param<int>(params, "timeout_s", static_cast<int>(total / 20 + 10), 1, 900);
-    const u64 start = g_nx2_present_count.load(std::memory_order_relaxed) + 1;
+    // Switch 2 games count their presents; Switch games run on a 60 Hz wall clock instead.
+    const bool presents = Settings::CurrentProgramIsSwitch2();
+    const auto begin = std::chrono::steady_clock::now();
+    const auto frame_now = [presents, begin] {
+        return presents ? g_nx2_present_count.load(std::memory_order_relaxed)
+                        : WallClockFrames(std::chrono::steady_clock::now() - begin);
+    };
+    const u64 start = frame_now() + 1;
     const auto script = std::make_shared<const std::vector<InputStep>>(steps);
-    controller->SetInputInjector([script, start] {
-        return InputAt(*script, start, g_nx2_present_count.load(std::memory_order_relaxed));
+    controller->SetInputInjector([script, start, frame_now] {
+        return InputAt(*script, start, frame_now());
     });
     SCOPE_EXIT {
         controller->SetInputInjector({});
     };
-    const auto begin = std::chrono::steady_clock::now();
     const auto deadline = begin + std::chrono::seconds{timeout};
     for (;;) {
-        const u64 now = g_nx2_present_count.load(std::memory_order_relaxed);
+        const u64 now = frame_now();
         if (now >= start + total) {
             break;
         }
@@ -968,6 +973,10 @@ InputStep ParseInputStep(const json& step) {
     result.input.left = stick("left_stick");
     result.input.right = stick("right_stick");
     return result;
+}
+
+u64 WallClockFrames(std::chrono::nanoseconds elapsed) {
+    return elapsed.count() <= 0 ? 0 : static_cast<u64>(elapsed.count() * 60 / 1'000'000'000);
 }
 
 std::optional<HID::InjectedInput> InputAt(std::span<const InputStep> steps, u64 start, u64 now) {

@@ -70,6 +70,24 @@ protected:
         for (int radius : {90, 126, 162}) {
             painter.drawEllipse(QPointF(width() - 20, 28), radius, radius);
         }
+        if (appearance.motif == GameCompanionAppearance::Motif::SlateRings) {
+            // An abstract rune dial: two rings, an inner disc and eight ticks.
+            painter.setOpacity(0.42);
+            const QPointF center(width() - 58, 54);
+            painter.setPen(QPen(appearance.gold, 2));
+            painter.setBrush(Qt::NoBrush);
+            painter.drawEllipse(center, 30, 30);
+            painter.drawEllipse(center, 19, 19);
+            painter.setBrush(appearance.gold);
+            painter.drawEllipse(center, 6, 6);
+            for (int tick = 0; tick < 8; ++tick) {
+                painter.save();
+                painter.translate(center);
+                painter.rotate(tick * 45.0);
+                painter.drawLine(QPointF(0, -34), QPointF(0, -40));
+                painter.restore();
+            }
+        }
         if (appearance.motif == GameCompanionAppearance::Motif::GoldenTriangles) {
             painter.setOpacity(0.3);
             painter.setPen(Qt::NoPen);
@@ -186,9 +204,28 @@ GameCompanionAppearance GameCompanionAppearance::Ocarina() {
             Motif::GoldenTriangles};
 }
 
-GameCompanionWidget::GameCompanionWidget(bool spanish_, QWidget* parent,
-                                         GameCompanionAppearance appearance_)
-    : QWidget(parent), spanish{spanish_}, appearance{std::move(appearance_)} {
+GameCompanionAppearance GameCompanionAppearance::BreathOfTheWild() {
+    return {{"Breath of the Wild", "Breath of the Wild"},
+            {"Hyrule field guide", "Guía de Hyrule"},
+            {"Regions, people and secrets of a wild Hyrule",
+             "Regiones, gentes y secretos de un Hyrule salvaje"},
+            {"Search Hyrule...", "Buscar en Hyrule..."},
+            QColor("#1d3946"), QColor("#7fcfd6"), QColor("#eef1ec"), QColor("#22292c"),
+            Motif::SlateRings};
+}
+
+GameCompanionAppearance GameCompanionAppearance::For(const GameCompanion::Game& game) {
+    return game.program_id == GameCompanion::BreathOfTheWildProgramId ? BreathOfTheWild()
+                                                                      : Ocarina();
+}
+
+GameCompanionWidget::GameCompanionWidget(const GameCompanion::Game& game_, bool spanish_,
+                                         QWidget* parent)
+    : GameCompanionWidget(game_, spanish_, parent, GameCompanionAppearance::For(game_)) {}
+
+GameCompanionWidget::GameCompanionWidget(const GameCompanion::Game& game_, bool spanish_,
+                                         QWidget* parent, GameCompanionAppearance appearance_)
+    : QWidget(parent), game{game_}, spanish{spanish_}, appearance{std::move(appearance_)} {
     setObjectName(QStringLiteral("companionRoot"));
     setAttribute(Qt::WA_StyledBackground);
     setStyleSheet(QStringLiteral(R"(
@@ -347,7 +384,7 @@ GameCompanionWidget::GameCompanionWidget(bool spanish_, QWidget* parent,
 void GameCompanionWidget::SetLanguage(bool spanish_) {
     spanish = spanish_;
     static_cast<CompanionHero*>(hero)->SetLanguage(spanish);
-    intro->setText(tr("Explore Hyrule by topic. Loaded scenes may suggest a card."));
+    intro->setText(GameCompanion::Localize(game.intro, spanish));
     search->setPlaceholderText(GameCompanion::Localize(appearance.search_hint, spanish));
     spoilers->setText(tr("Show story spoilers"));
     context_open->setText(tr("Open card"));
@@ -356,11 +393,7 @@ void GameCompanionWidget::SetLanguage(bool spanish_) {
     const auto selected = static_cast<GameCompanion::Kind>(category->currentData().toInt());
     const QSignalBlocker blocker(category);
     category->clear();
-    for (const auto kind : {GameCompanion::Kind::All, GameCompanion::Kind::Place,
-                            GameCompanion::Kind::Character, GameCompanion::Kind::Enemy,
-                            GameCompanion::Kind::Boss, GameCompanion::Kind::Dungeon,
-                            GameCompanion::Kind::Item, GameCompanion::Kind::Remake,
-                            GameCompanion::Kind::Timeline}) {
+    for (const auto kind : game.kinds) {
         category->addItem(KindName(kind), static_cast<int>(kind));
     }
     category->setCurrentIndex(category->findData(static_cast<int>(selected)));
@@ -373,7 +406,7 @@ void GameCompanionWidget::SetDetectedScene(QString scene) {
     }
     detected_scene = std::move(scene);
     dismissed_scene.clear();
-    scene_entry = GameCompanion::EntryForScene(detected_scene.toStdString());
+    scene_entry = GameCompanion::EntryForScene(game, detected_scene.toStdString());
     RefreshContext();
 }
 
@@ -408,7 +441,9 @@ QString GameCompanionWidget::KindName(GameCompanion::Kind kind) const {
     case GameCompanion::Kind::Dungeon:
         return tr("Dungeons");
     case GameCompanion::Kind::Item:
-        return tr("Items and songs");
+        return GameCompanion::Localize(game.items_topic, spanish);
+    case GameCompanion::Kind::Ability:
+        return tr("Runes and abilities");
     case GameCompanion::Kind::Remake:
         return tr("Switch 2 changes");
     case GameCompanion::Kind::Timeline:
@@ -420,7 +455,7 @@ QString GameCompanionWidget::KindName(GameCompanion::Kind kind) const {
 void GameCompanionWidget::RefreshList() {
     const QString previous = CurrentEntryId();
     const auto kind = static_cast<GameCompanion::Kind>(category->currentData().toInt());
-    const auto matches = GameCompanion::Search(search->text(), kind, spoilers->isChecked());
+    const auto matches = GameCompanion::Search(game, search->text(), kind, spoilers->isChecked());
     const QSignalBlocker blocker(results);
     results->clear();
     int previous_row = -1;
@@ -444,7 +479,7 @@ void GameCompanionWidget::RefreshList() {
 }
 
 void GameCompanionWidget::RefreshDetail() {
-    const auto* const entry = GameCompanion::FindEntry(CurrentEntryId().toStdString());
+    const auto* const entry = GameCompanion::FindEntry(game, CurrentEntryId().toStdString());
     if (!entry || (entry->spoiler && !spoilers->isChecked())) {
         detail->clear();
         detail_panel->hide();

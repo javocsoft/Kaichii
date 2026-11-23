@@ -63,6 +63,9 @@ class QHBoxLayout;
 class WaitTreeWidget;
 class PerformanceOverlay;
 class GameCompanionDock;
+namespace GameCompanion {
+struct Game;
+}
 class GameCompanionWidget;
 #ifdef HAS_RESHADE
 class ConfigurePostProcessing;
@@ -422,6 +425,8 @@ private slots:
     void OnToggleStatusBar();
     void OnTogglePerfOverlay();
     void OnToggleGameCompanion();
+    void SetCompanionGame(const GameCompanion::Game& game);
+    void UpdateCompanionTitle();
 #ifdef HAS_RESHADE
     void OnPostProcessingShaders();
 #endif

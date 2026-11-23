@@ -9,8 +9,10 @@
 #include <functional>
 #include <iosfwd>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -197,6 +199,18 @@ bool IsMissingKeyStatus(ResultStatus status);
 ResultStatus GetContainerProgramStatus(FileSys::VirtualFile file, FileType type);
 
 /// Interface for loading an application
+/// The last scene a supported game read from its RomFS, for the Game Companion. RomFS reads come
+/// from the file system threads; the frontend polls it.
+class SceneTracker {
+public:
+    void Note(std::string_view scene);
+    [[nodiscard]] std::string Last() const;
+
+private:
+    mutable std::mutex mutex;
+    std::string last;
+};
+
 class AppLoader {
 public:
     YUZU_NON_COPYABLE(AppLoader);
@@ -317,8 +331,18 @@ public:
         return ResultStatus::ErrorNotImplemented;
     }
 
-    [[nodiscard]] virtual std::string GetLastLoadedScene() const {
-        return {};
+    [[nodiscard]] std::string GetLastLoadedScene() const {
+        return scene_tracker->Last();
+    }
+
+    [[nodiscard]] const std::shared_ptr<SceneTracker>& GetSceneTracker() const {
+        return scene_tracker;
+    }
+
+    /// Loaders that wrap another one (NSP, XCI, NAX) give it their tracker: the inner loader opens
+    /// the RomFS, and the frontend asks the outer one.
+    void UseSceneTracker(std::shared_ptr<SceneTracker> tracker) {
+        scene_tracker = std::move(tracker);
     }
 
     /**
@@ -394,6 +418,7 @@ public:
 protected:
     FileSys::VirtualFile file;
     bool is_loaded = false;
+    std::shared_ptr<SceneTracker> scene_tracker = std::make_shared<SceneTracker>();
 };
 
 /**

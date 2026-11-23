@@ -1,9 +1,14 @@
 # Game Companion
 
-The Game Companion is an optional, offline reference panel for **The Legend of Zelda: Ocarina of
-Time on Switch 2** (program ID `0400486024DEC000`). Open it from **View > Show Game Companion**
-while that game is selected or running, or right-click the game in the library and choose
-**Open Game Companion**. It is off by default. Drag its title bar to move or float it; close it
+The Game Companion is an optional, offline reference panel for two games:
+
+- **The Legend of Zelda: Ocarina of Time on Switch 2** (program ID `0400486024DEC000`).
+- **The Legend of Zelda: Breath of the Wild on Switch** (program ID `01007EF00011E000`); see
+  [Breath of the Wild](#breath-of-the-wild) below.
+
+Open it from **View > Show Game Companion** while one of them is selected or running, or
+right-click the game in the library and choose **Open Game Companion**. Each game has its own
+cards, topics and colors, and the panel switches when you change game. It is off by default. Drag its title bar to move or float it; close it
 with its × button or the View menu.
 
 Search for places, characters, enemies, bosses, dungeons, items, songs, remake changes and the
@@ -44,3 +49,19 @@ wiki](https://zelda.fandom.com/wiki/The_Legend_of_Zelda:_Ocarina_of_Time) provid
 context, and the [remake page](https://zelda.fandom.com/wiki/The_Legend_of_Zelda:_Ocarina_of_Time_(Switch_2))
 records some edition-specific changes. Each card links to its source. Tactics from the original
 game are presented as guidance where they have not yet been checked in the remake.
+
+## Breath of the Wild
+
+The Breath of the Wild cards cover regions and settlements, characters, enemies, bosses, the
+Divine Beasts and shrines, equipment, the Sheikah Slate's runes and the Champions' abilities,
+the Expansion Pass, the Nintendo Switch 2 Edition, and the story of the Great Calamity. Every card
+is written for Kaichii and links to the [Zelda Wiki](https://zeldawiki.wiki/wiki/The_Legend_of_Zelda:_Breath_of_the_Wild)
+article it was checked against. Spanish titles use the Spanish edition's names where they are well
+known.
+
+Scene suggestions work with `.nsp` and `.xci` files, with or without the update. Entering a shrine
+suggests the *Shrines of Trials* card (the game does not say which shrine by itself), and entering
+a Divine Beast suggests that beast's card. The suggestion goes away when Link is back in the open
+world. Regions are not suggested: the open world streams around Link wherever he goes, so a
+loaded map section is not a reliable place name. With spoilers off, King Rhoam, Dark Beast Ganon,
+the Blights and the expansion's final boss stay hidden.

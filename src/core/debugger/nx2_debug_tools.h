@@ -92,6 +92,9 @@ struct InputStep {
 /// nothing before start and from the end of the last step on.
 [[nodiscard]] std::optional<HID::InjectedInput> InputAt(std::span<const InputStep> steps, u64 start,
                                                        u64 now);
+/// Frames of a 60 Hz clock in `elapsed`: scripted input's clock for Switch games, whose presents
+/// go through nvnflinger and are not counted.
+[[nodiscard]] u64 WallClockFrames(std::chrono::nanoseconds elapsed);
 /// Guest-present intervals within [begin_ns, end_ns], using only retained ring timestamps.
 [[nodiscard]] nlohmann::json ReadFrameTimes(u64 before, u64 after, u64 begin_ns, u64 end_ns,
                                           double refresh_hz);

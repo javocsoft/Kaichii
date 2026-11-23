@@ -288,8 +288,32 @@ std::span<const Entry> OcarinaEntries() {
     return all;
 }
 
-const Entry* FindEntry(std::string_view id) {
-    for (const Entry& entry : OcarinaEntries()) {
+const Game& Ocarina() {
+    static constexpr std::array kinds{Kind::All,  Kind::Place,   Kind::Character,
+                                      Kind::Enemy, Kind::Boss,   Kind::Dungeon,
+                                      Kind::Item, Kind::Remake, Kind::Timeline};
+    static const Game game{OcarinaSwitch2ProgramId,
+                           {"Ocarina of Time", "Ocarina of Time"},
+                           {"Explore Hyrule by topic. Loaded scenes may suggest a card.",
+                            "Explora Hyrule por temas. Los escenarios cargados pueden sugerir una ficha."},
+                           {"Items and songs", "Objetos y canciones"},
+                           OcarinaEntries,
+                           kinds,
+                           OcarinaEntryForScene};
+    return game;
+}
+
+const Game* FindGame(u64 program_id) {
+    for (const Game* game : {&Ocarina(), &BreathOfTheWild()}) {
+        if (game->program_id == program_id) {
+            return game;
+        }
+    }
+    return nullptr;
+}
+
+const Entry* FindEntry(const Game& game, std::string_view id) {
+    for (const Entry& entry : game.entries()) {
         if (entry.id == id) {
             return &entry;
         }
@@ -297,7 +321,11 @@ const Entry* FindEntry(std::string_view id) {
     return nullptr;
 }
 
-const Entry* EntryForScene(std::string_view scene) {
+const Entry* EntryForScene(const Game& game, std::string_view scene) {
+    return scene.empty() ? nullptr : game.entry_for_scene(scene);
+}
+
+const Entry* OcarinaEntryForScene(std::string_view scene) {
     for (const std::string_view suffix : {"_Adult_Alternative", "_Adult", "_Child"}) {
         if (scene.ends_with(suffix)) {
             scene.remove_suffix(suffix.size());
@@ -361,7 +389,7 @@ const Entry* EntryForScene(std::string_view scene) {
     };
     for (const auto& mapping : known) {
         if (scene == mapping.scene) {
-            return FindEntry(mapping.entry);
+            return FindEntry(Ocarina(), mapping.entry);
         }
     }
     return nullptr;
@@ -372,10 +400,10 @@ QString Localize(Text text, bool spanish) {
     return QString::fromUtf8(value.data(), static_cast<qsizetype>(value.size()));
 }
 
-std::vector<const Entry*> Search(QString query, Kind kind, bool spoilers) {
+std::vector<const Entry*> Search(const Game& game, QString query, Kind kind, bool spoilers) {
     const QStringList terms = Fold(query.simplified()).split(QLatin1Char(' '), Qt::SkipEmptyParts);
     std::vector<const Entry*> matches;
-    for (const Entry& entry : OcarinaEntries()) {
+    for (const Entry& entry : game.entries()) {
         if ((!spoilers && entry.spoiler) || (kind != Kind::All && entry.kind != kind)) {
             continue;
         }
