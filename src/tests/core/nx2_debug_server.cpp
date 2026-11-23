@@ -439,6 +439,16 @@ TEST_CASE("Debug input steps follow the present count exactly", "[core][nx2_debu
     REQUIRE_FALSE(Core::Nx2Debug::InputAt(steps, 10, 14));
 }
 
+TEST_CASE("Debug input for Switch games counts 60 Hz frames of wall time", "[core][nx2_debug_server]") {
+    using namespace std::chrono_literals;
+    REQUIRE(Core::Nx2Debug::WallClockFrames(-5ms) == 0);
+    REQUIRE(Core::Nx2Debug::WallClockFrames(0ns) == 0);
+    REQUIRE(Core::Nx2Debug::WallClockFrames(16ms) == 0);
+    REQUIRE(Core::Nx2Debug::WallClockFrames(17ms) == 1);
+    REQUIRE(Core::Nx2Debug::WallClockFrames(1s) == 60);
+    REQUIRE(Core::Nx2Debug::WallClockFrames(900s) == 54000);
+}
+
 TEST_CASE("Injected input merges buttons and replaces sticks while installed", "[core][nx2_debug_server]") {
     Core::HID::EmulatedController controller{Core::HID::NpadIdType::Player1};
     REQUIRE(controller.GetNpadButtons().raw == Core::HID::NpadButton::None);

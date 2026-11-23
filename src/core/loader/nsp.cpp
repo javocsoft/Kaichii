@@ -51,6 +51,7 @@ AppLoader_NSP::AppLoader_NSP(const FileSys::VirtualFile& file_,
         secondary_loader = std::make_unique<AppLoader_NCA>(
             nsp->GetNCAFile(nsp->GetProgramTitleID(), FileSys::ContentRecordType::Program));
     }
+    secondary_loader->UseSceneTracker(scene_tracker);
 }
 
 AppLoader_NSP::~AppLoader_NSP() = default;

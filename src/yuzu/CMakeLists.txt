@@ -39,6 +39,7 @@ add_executable(yuzu
     game_companion_catalog.cpp
     game_companion_catalog.h
     game_companion_bestiary.cpp
+    game_companion_botw.cpp
     game_companion_world.cpp
     game_companion_items.cpp
     game_companion_widget.cpp

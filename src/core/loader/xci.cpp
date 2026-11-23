@@ -27,6 +27,7 @@ AppLoader_XCI::AppLoader_XCI(const FileSys::VirtualFile& file_,
                              std::size_t program_index)
     : AppLoader(file_), xci(std::make_unique<FileSys::XCI>(file_, program_id, program_index)),
       nca_loader(std::make_unique<AppLoader_NCA>(xci->GetProgramNCAFile())) {
+    nca_loader->UseSceneTracker(scene_tracker);
     if (xci->GetStatus() != ResultStatus::Success) {
         return;
     }

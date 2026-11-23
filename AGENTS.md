@@ -65,6 +65,7 @@ Users report game bugs with Kaichii logs (`eden_log.txt`, `eden_log.txt.old`). E
 | 0400486024DEC000 | The Legend of Zelda: Ocarina of Time |
 | 0400245021D2C000 | Yoshi and the Mysterious Book |
 | 010015100B514000 | Super Mario Bros. Wonder (Switch 2 Edition; Switch 1 program) |
+| 01007EF00011E000 | The Legend of Zelda: Breath of the Wild (Switch) |
 
 Add ids here when a report identifies a new game.
 

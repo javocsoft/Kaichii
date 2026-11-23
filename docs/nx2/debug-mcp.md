@@ -155,8 +155,10 @@ server is on but idle, its thread sleeps in `epoll`/IOCP.
 `Core::g_nx2_present_count` (`src/core/core.cpp:78`) over a short window (up to 30 s). It does not
 call `GetAndResetPerfStats`, which would reset the Qt status bar's counters. For Ocarina of Time,
 `companion_scene` reports the
-latest scene inferred from a scene parameter or baked scene resource read; it is empty for
-other games. `frame_ms` gives the intervals between presents in that window: `count`, `median`,
+latest scene inferred from a scene parameter or baked scene resource read. For Breath of the Wild
+it is `DungeonNNN` (a shrine), `Remains*` (a Divine Beast) or `MainField` (the open world), from
+the packs and map sections the game reads (`src/core/loader/companion_scenes.cpp`). It is empty
+for other games. `frame_ms` gives the intervals between presents in that window: `count`, `median`,
 `p90`, `p99`, `max` and
 `over_100ms`, plus `fence_mean` and `fence_max`, the time each present waited for a GPU fence
 (`nx2:vi2` stores both per present in `Core::g_nx2_present_times` and `g_nx2_present_fence_ns`, a
@@ -308,7 +310,9 @@ How the reads are safe:
 ### Input (implemented)
 
 **`input`** `{buttons?, left_stick?, right_stick?, frames, timeout_s?}` holds the buttons and
-sticks for `frames` presented frames and then releases them. It returns when they are done.
+sticks for `frames` presented frames and then releases them. Switch games present through
+nvnflinger, which `g_nx2_present_count` does not count, so for them a frame is 1/60 s of wall
+time (`WallClockFrames`). It returns when they are done.
 **`input_sequence`** `{steps: [{buttons?, left_stick?, right_stick?, frames}, ...], timeout_s?}`
 runs the steps back to back, at most 1000 steps and 36000 frames per call. A step with no
 buttons and no sticks injects nothing, so it works as a pause between moves.

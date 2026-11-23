@@ -16,13 +16,15 @@
 #include "core/file_sys/romfs_factory.h"
 #include "core/hle/kernel/k_process.h"
 #include "core/hle/service/filesystem/filesystem.h"
+#include "core/loader/companion_scenes.h"
 #include "core/loader/loader.h"
 
 namespace FileSys {
 
 RomFSFactory::RomFSFactory(Loader::AppLoader& app_loader, ContentProvider& provider,
                            Service::FileSystem::FileSystemController& controller)
-    : content_provider{provider}, filesystem_controller{controller} {
+    : content_provider{provider}, filesystem_controller{controller},
+      scene_tracker{app_loader.GetSceneTracker()} {
     // Load the RomFS from the app
     if (app_loader.ReadRomFS(file) != Loader::ResultStatus::Success) {
         LOG_WARNING(Service_FS, "Unable to read base RomFS");
@@ -50,7 +52,11 @@ VirtualFile RomFSFactory::OpenCurrentProcess(u64 current_process_title_id) const
     const auto nca = content_provider.GetEntry(current_process_title_id, type);
     const PatchManager patch_manager{current_process_title_id, filesystem_controller,
                                      content_provider};
-    return patch_manager.PatchRomFS(nca.get(), file, ContentRecordType::Program, packed_update_raw);
+    auto romfs =
+        patch_manager.PatchRomFS(nca.get(), file, ContentRecordType::Program, packed_update_raw);
+    // A packed game's files are found in the final image, after its update and mods.
+    return WatchRomFSReads(std::move(romfs),
+                           Loader::CompanionSceneObserver(current_process_title_id, scene_tracker));
 }
 
 VirtualFile RomFSFactory::OpenPatchedRomFS(u64 title_id, ContentRecordType type) const {

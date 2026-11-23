@@ -20,7 +20,7 @@ class QToolButton;
 class QCloseEvent;
 
 struct GameCompanionAppearance {
-    enum class Motif { None, GoldenTriangles };
+    enum class Motif { None, GoldenTriangles, SlateRings };
 
     GameCompanion::Text title;
     GameCompanion::Text eyebrow;
@@ -33,14 +33,21 @@ struct GameCompanionAppearance {
     Motif motif{Motif::None};
 
     [[nodiscard]] static GameCompanionAppearance Ocarina();
+    [[nodiscard]] static GameCompanionAppearance BreathOfTheWild();
+    [[nodiscard]] static GameCompanionAppearance For(const GameCompanion::Game& game);
 };
 
 class GameCompanionWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    explicit GameCompanionWidget(bool spanish, QWidget* parent = nullptr,
-                                 GameCompanionAppearance appearance = GameCompanionAppearance::Ocarina());
+    explicit GameCompanionWidget(const GameCompanion::Game& game, bool spanish,
+                                 QWidget* parent = nullptr);
+    GameCompanionWidget(const GameCompanion::Game& game, bool spanish, QWidget* parent,
+                        GameCompanionAppearance appearance);
+    [[nodiscard]] const GameCompanion::Game& GetGame() const {
+        return game;
+    }
     void SetLanguage(bool spanish);
     void SelectEntry(QString id);
     [[nodiscard]] QString CurrentEntryId() const;
@@ -55,6 +62,7 @@ private:
     void RefreshContext();
     [[nodiscard]] QString KindName(GameCompanion::Kind kind) const;
 
+    const GameCompanion::Game& game;
     bool spanish;
     GameCompanionAppearance appearance;
     QWidget* hero;

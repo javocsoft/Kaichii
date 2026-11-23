@@ -1,9 +1,14 @@
 # Game Companion
 
-El Game Companion es un panel de consulta **opcional y sin conexión** para **The Legend of Zelda:
-Ocarina of Time de Switch 2** (ID de programa `0400486024DEC000`). Ábrelo desde **Ver > Mostrar
-Game Companion** mientras el juego esté seleccionado o en marcha, o haz clic derecho sobre el juego
-en la biblioteca y elige **Abrir Game Companion**. Viene desactivado. Puedes arrastrar el título
+El Game Companion es un panel de consulta **opcional y sin conexión** para dos juegos:
+
+- **The Legend of Zelda: Ocarina of Time de Switch 2** (ID de programa `0400486024DEC000`).
+- **The Legend of Zelda: Breath of the Wild de Switch** (ID de programa `01007EF00011E000`); más
+  abajo tienes su [apartado](#breath-of-the-wild).
+
+Ábrelo desde **Ver > Mostrar Game Companion** mientras uno de ellos esté seleccionado o en marcha,
+o haz clic derecho sobre el juego en la biblioteca y elige **Abrir Game Companion**. Cada juego
+tiene sus fichas, temas y colores, y el panel cambia al cambiar de juego. Viene desactivado. Puedes arrastrar el título
 para moverlo o dejarlo como ventana independiente; ciérralo con × o desde el menú Ver.
 
 Busca lugares, personajes, enemigos, jefes, mazmorras, objetos, canciones, cambios del remake y
@@ -46,3 +51,20 @@ original](https://zelda.fandom.com/wiki/The_Legend_of_Zelda:_Ocarina_of_Time) ap
 histórico; la [página del remake](https://zelda.fandom.com/wiki/The_Legend_of_Zelda:_Ocarina_of_Time_(Switch_2))
 recoge algunos cambios de la edición. Cada ficha enlaza a su fuente. Las tácticas del juego
 original se presentan como orientación cuando aún no hay una comprobación específica del remake.
+
+## Breath of the Wild
+
+Las fichas de Breath of the Wild cubren regiones y poblados, personajes, enemigos, jefes, las
+Bestias Divinas y los santuarios, el equipo, las runas de la tableta sheikah y los poderes de los
+campeones, el pase de expansión, la Edición Nintendo Switch 2 y la historia del Gran Cataclismo.
+Todas están redactadas para Kaichii y enlazan al artículo de [Zelda Wiki](https://zeldawiki.wiki/wiki/The_Legend_of_Zelda:_Breath_of_the_Wild)
+con el que se comprobaron. Los títulos en español usan los nombres de la edición española cuando
+son conocidos.
+
+Las sugerencias de escenario funcionan con archivos `.nsp` y `.xci`, con o sin la actualización.
+Al entrar en un santuario se sugiere la ficha *Santuarios* (el juego no indica por sí solo cuál
+es), y al entrar en una Bestia Divina, la ficha de esa bestia. La sugerencia desaparece cuando Link
+vuelve al mundo abierto. No se sugieren regiones: el mundo abierto se carga alrededor de Link vaya
+donde vaya, así que una sección de mapa cargada no es un nombre de lugar fiable. Con los spoilers
+desactivados, el rey Rhoam, la Bestia Oscura Ganon, los espectros de Ganon y el jefe final de la
+expansión permanecen ocultos.

@@ -26,7 +26,9 @@ FileType IdentifyTypeImpl(const FileSys::NAX& nax) {
 
 AppLoader_NAX::AppLoader_NAX(const FileSys::VirtualFile& file_)
     : AppLoader(file_), nax(std::make_unique<FileSys::NAX>(file_)),
-      nca_loader(std::make_unique<AppLoader_NCA>(nax->GetDecrypted())) {}
+      nca_loader(std::make_unique<AppLoader_NCA>(nax->GetDecrypted())) {
+    nca_loader->UseSceneTracker(scene_tracker);
+}
 
 AppLoader_NAX::~AppLoader_NAX() = default;
 

@@ -979,10 +979,8 @@ void MainWindow::InitializeWidgets() {
     ui->horizontalLayout->addWidget(game_list);
 
     companion_dock = new GameCompanionDock(this);
-    companion_dock->setWindowTitle(tr("Game Companion · Ocarina of Time"));
-    companion_widget = new GameCompanionWidget(CompanionUsesSpanish(), companion_dock);
-    companion_dock->setWidget(companion_widget);
     companion_dock->setMinimumWidth(340);
+    SetCompanionGame(GameCompanion::Ocarina());
     addDockWidget(Qt::RightDockWidgetArea, companion_dock);
     companion_dock->hide();
     connect(companion_dock, &GameCompanionDock::ClosedByUser, this, [this] {
@@ -991,10 +989,15 @@ void MainWindow::InitializeWidgets() {
         companion_widget->HideSpoilers();
     });
     connect(&status_bar_update_timer, &QTimer::timeout, this, [this] {
-        if (!emulation_running || !companion_dock->isVisible() ||
-            !GameCompanion::SupportsGame(QtCommon::system->GetApplicationProcessProgramID())) {
+        if (!emulation_running || !companion_dock->isVisible()) {
             return;
         }
+        const auto* const game =
+            GameCompanion::FindGame(QtCommon::system->GetApplicationProcessProgramID());
+        if (!game) {
+            return;
+        }
+        SetCompanionGame(*game);
         companion_widget->SetDetectedScene(
             QString::fromStdString(QtCommon::system->GetAppLoader().GetLastLoadedScene()));
     });
@@ -1586,6 +1589,7 @@ void MainWindow::ConnectWidgetEvents() {
         if (!GameCompanion::SupportsGame(program_id)) {
             return;
         }
+        SetCompanionGame(*GameCompanion::FindGame(program_id));
         UISettings::values.show_oot_companion = true;
         ui->action_Show_Game_Companion->setEnabled(true);
         ui->action_Show_Game_Companion->setChecked(true);
@@ -4385,7 +4389,11 @@ void MainWindow::UpdateGameActions() {
     } else if (const auto selected = game_list->SelectedGame()) {
         program_id = selected->program_id;
     }
-    const bool supported = GameCompanion::SupportsGame(program_id);
+    const auto* const companion_game = GameCompanion::FindGame(program_id);
+    const bool supported = companion_game != nullptr;
+    if (supported) {
+        SetCompanionGame(*companion_game);
+    }
     ui->action_Show_Game_Companion->setEnabled(supported);
     const bool show = supported && UISettings::values.show_oot_companion.GetValue();
     ui->action_Show_Game_Companion->setChecked(show);
@@ -4649,6 +4657,26 @@ void MainWindow::OnToggleStatusBar() {
 void MainWindow::OnTogglePerfOverlay() {
     if (perf_overlay)
         perf_overlay->setVisible(ui->action_Show_Performance_Overlay->isChecked());
+}
+
+void MainWindow::SetCompanionGame(const GameCompanion::Game& game) {
+    if (companion_widget && &companion_widget->GetGame() == &game) {
+        return;
+    }
+    // Each game has its own cards, topics and look, so its panel is built anew.
+    auto* const widget = new GameCompanionWidget(game, CompanionUsesSpanish(), companion_dock);
+    companion_dock->setWidget(widget);
+    if (companion_widget) {
+        companion_widget->deleteLater();
+    }
+    companion_widget = widget;
+    UpdateCompanionTitle();
+}
+
+void MainWindow::UpdateCompanionTitle() {
+    companion_dock->setWindowTitle(
+        tr("Game Companion · %1")
+            .arg(GameCompanion::Localize(companion_widget->GetGame().title, CompanionUsesSpanish())));
 }
 
 void MainWindow::OnToggleGameCompanion() {
@@ -6227,7 +6255,7 @@ void MainWindow::OnLanguageChanged(const QString& locale) {
     UISettings::values.language = locale.toStdString();
     LoadTranslation();
     ui->retranslateUi(this);
-    companion_dock->setWindowTitle(tr("Game Companion · Ocarina of Time"));
+    UpdateCompanionTitle();
     companion_widget->SetLanguage(CompanionUsesSpanish());
     multiplayer_state->retranslateUi();
     UpdateWindowTitle();

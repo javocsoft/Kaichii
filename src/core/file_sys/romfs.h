@@ -24,4 +24,8 @@ VirtualDir ExtractRomFS(const VirtualFile& file);
 VirtualFile CreateRomFS(const VirtualDir& dir, VirtualDir ext = nullptr,
                         RomFSReadObserver observer = {});
 
+// Wraps a RomFS image so that a read touching a file `observer` accepts calls its on_read with that
+// file's path ("/dir/name"). Returns `romfs` itself when no file is accepted.
+VirtualFile WatchRomFSReads(VirtualFile romfs, const RomFSReadObserver& observer);
+
 } // namespace FileSys

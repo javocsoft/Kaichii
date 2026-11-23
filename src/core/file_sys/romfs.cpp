@@ -4,9 +4,12 @@
 // SPDX-FileCopyrightText: Copyright 2018 yuzu Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "common/common_types.h"
 #include "common/logging.h"
@@ -151,6 +154,72 @@ void ProcessDirectory(RomFSTraversalContext& ctx, u32 this_dir_offset,
         this_dir_offset = entry->first.sibling;
     }
 }
+struct WatchedRange {
+    u64 begin;
+    u64 end;
+    std::string path;
+};
+
+void CollectWatchedRanges(const VirtualDir& dir, const std::string& prefix,
+                          const RomFSReadObserver& observer, std::vector<WatchedRange>& out) {
+    for (const auto& file : dir->GetFiles()) {
+        auto path = prefix + "/" + file->GetName();
+        // ExtractRomFS makes every file an OffsetVfsFile into the image.
+        if (file->GetSize() != 0 && observer.accepts(path)) {
+            const u64 begin = static_cast<const OffsetVfsFile*>(file.get())->GetOffset();
+            out.push_back({begin, begin + file->GetSize(), std::move(path)});
+        }
+    }
+    for (const auto& subdir : dir->GetSubdirectories()) {
+        CollectWatchedRanges(subdir, prefix + "/" + subdir->GetName(), observer, out);
+    }
+}
+
+// A RomFS image whose reads report the watched files they touch. Games read the image as one
+// storage, so the files are found by offset.
+class WatchedRomFSFile final : public VfsFile {
+public:
+    WatchedRomFSFile(VirtualFile source_, std::vector<WatchedRange> ranges_,
+                     std::function<void(std::string_view)> on_read_)
+        : source{std::move(source_)}, ranges{std::move(ranges_)}, on_read{std::move(on_read_)} {}
+
+    std::string GetName() const override { return source->GetName(); }
+    std::size_t GetSize() const override { return source->GetSize(); }
+    bool Resize(std::size_t size) override { return source->Resize(size); }
+    VirtualDir GetContainingDirectory() const override { return source->GetContainingDirectory(); }
+    bool IsWritable() const override { return source->IsWritable(); }
+    bool IsReadable() const override { return source->IsReadable(); }
+    std::size_t Read(u8* data, std::size_t size, std::size_t offset) const override {
+        const auto count = source->Read(data, size, offset);
+        if (count == 0) {
+            return count;
+        }
+        const u64 end = offset + count;
+        auto it = std::upper_bound(ranges.begin(), ranges.end(), u64{offset},
+                                   [](u64 value, const WatchedRange& range) {
+                                       return value < range.begin;
+                                   });
+        if (it != ranges.begin()) {
+            --it;
+        }
+        for (; it != ranges.end() && it->begin < end; ++it) {
+            if (it->end > offset) {
+                on_read(it->path);
+            }
+        }
+        return count;
+    }
+    std::size_t Write(const u8* data, std::size_t size, std::size_t offset) override {
+        return source->Write(data, size, offset);
+    }
+    bool Rename(std::string_view name) override { return source->Rename(name); }
+
+private:
+    VirtualFile source;
+    std::vector<WatchedRange> ranges;
+    std::function<void(std::string_view)> on_read;
+};
+
 } // Anonymous namespace
 
 VirtualDir ExtractRomFS(const VirtualFile& file) {
@@ -192,6 +261,24 @@ VirtualFile CreateRomFS(const VirtualDir& dir, VirtualDir ext, RomFSReadObserver
 
     RomFSBuildContext ctx{dir, std::move(ext)};
     return ConcatenatedVfsFile::MakeConcatenatedFile(0, dir->GetName(), ctx.Build(observer));
+}
+
+VirtualFile WatchRomFSReads(VirtualFile romfs, const RomFSReadObserver& observer) {
+    if (!romfs || !observer.accepts || !observer.on_read) {
+        return romfs;
+    }
+    const auto root = ExtractRomFS(romfs);
+    if (!root) {
+        return romfs;
+    }
+    std::vector<WatchedRange> ranges;
+    CollectWatchedRanges(root, {}, observer, ranges);
+    if (ranges.empty()) {
+        return romfs;
+    }
+    std::ranges::sort(ranges, {}, &WatchedRange::begin);
+    return std::make_shared<WatchedRomFSFile>(std::move(romfs), std::move(ranges),
+                                              observer.on_read);
 }
 
 } // namespace FileSys

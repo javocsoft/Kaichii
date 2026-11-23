@@ -12,7 +12,8 @@
 
 #include "core/file_sys/romfs.h"
 #include "core/file_sys/vfs/vfs_vector.h"
-#include "core/loader/nup.h"
+#include "core/loader/companion_scenes.h"
+#include "core/loader/loader.h"
 
 namespace {
 
@@ -107,6 +108,90 @@ TEST_CASE("Ocarina scene is recognized from scene and baked tile reads", "[core]
     CHECK(OcarinaSceneFromRomFSPath("/Bake/Scene/LostWood_Child_G_x_1.bkres.zs").empty());
     CHECK(OcarinaSceneFromRomFSPath("/Bake/Scene/Other/LostWood_Child_G_0_1.bkres.zs")
               .empty());
+}
+
+TEST_CASE("Breath of the Wild scene is recognized from shrine, beast and map reads",
+          "[core][romfs]") {
+    using Loader::BreathOfTheWildSceneFromRomFSPath;
+
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/Dungeon005.pack") == "Dungeon005");
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/Dungeon119.pack") == "Dungeon119");
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/RemainsWind.pack") == "RemainsWind");
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/RemainsElectric.pack") == "RemainsElectric");
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Map/MainField/D-6/D-6_Dynamic.smubin") ==
+          "MainField");
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/Bootup.pack").empty());  // codespell:ignore bootup
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/TitleBG.pack").empty());
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/Dungeon5.pack").empty());
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/DungeonABC.pack").empty());
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Pack/Dungeon005.pack.bak").empty());
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/Actor/Pack/Dungeon005.pack").empty());
+    CHECK(BreathOfTheWildSceneFromRomFSPath("/NavMesh/MainField/16-23.shknm2").empty());
+}
+
+TEST_CASE("Companion scenes are watched only for games with a companion", "[core][romfs]") {
+    const auto tracker = std::make_shared<Loader::SceneTracker>();
+    CHECK_FALSE(Loader::CompanionSceneObserver(0x0100000000000000ULL, tracker).accepts);
+    const auto observer = Loader::CompanionSceneObserver(Loader::BreathOfTheWildProgramId, tracker);
+    REQUIRE(observer.accepts);
+    CHECK(observer.accepts("/Pack/RemainsFire.pack"));
+    CHECK_FALSE(observer.accepts("/Pack/Bootup.pack"));  // codespell:ignore bootup
+    observer.on_read("/Pack/RemainsFire.pack");
+    CHECK(tracker->Last() == "RemainsFire");
+    observer.on_read("/Map/MainField/E-6/E-6_Dynamic.smubin");
+    CHECK(tracker->Last() == "MainField");
+}
+
+TEST_CASE("RomFS read watcher finds the files a packed image's reads touch", "[core][romfs]") {
+    const auto base = Dir("", {File("other.bin", Pattern(0x40))},
+                          {Dir("Pack", {File("Dungeon005.pack", Pattern(0x300)),
+                                        File("RemainsWind.pack", Pattern(0x200)),
+                                        File("Bootup.pack", Pattern(0x100))})});  // codespell:ignore bootup
+    const auto image = FileSys::CreateRomFS(base);
+    REQUIRE(image != nullptr);
+    std::vector<std::string> observed;
+    FileSys::RomFSReadObserver observer{
+        .accepts = [](std::string_view path) {
+            return path == "/Pack/Dungeon005.pack" || path == "/Pack/RemainsWind.pack";
+        },
+        .on_read = [&observed](std::string_view path) { observed.emplace_back(path); },
+    };
+    const auto watched = FileSys::WatchRomFSReads(image, observer);
+    REQUIRE(watched != image);
+    CHECK(watched->GetSize() == image->GetSize());
+
+    // The game parses the tables itself, then reads files by offset.
+    const auto root = FileSys::ExtractRomFS(watched);
+    REQUIRE(root != nullptr);
+    CHECK(observed.empty());
+    const auto pack = root->GetSubdirectory("Pack");
+    CHECK(pack->GetFile("Bootup.pack")->ReadAllBytes() == Pattern(0x100));  // codespell:ignore bootup
+    CHECK(root->GetFile("other.bin")->ReadAllBytes() == Pattern(0x40));
+    CHECK(observed.empty());
+    std::vector<u8> middle(0x10);
+    CHECK(pack->GetFile("Dungeon005.pack")->Read(middle.data(), middle.size(), 0x150) == 0x10);
+    REQUIRE(observed.size() == 1);
+    CHECK(observed.front() == "/Pack/Dungeon005.pack");
+    CHECK(pack->GetFile("RemainsWind.pack")->ReadAllBytes() == Pattern(0x200));
+    REQUIRE(observed.size() == 2);
+    CHECK(observed.back() == "/Pack/RemainsWind.pack");
+
+    // One read across the whole image touches both watched files, in order.
+    observed.clear();
+    CHECK(watched->ReadAllBytes() == image->ReadAllBytes());
+    CHECK(observed.size() == 2);
+}
+
+TEST_CASE("RomFS read watcher leaves an image alone when no file is watched", "[core][romfs]") {
+    const auto image = FileSys::CreateRomFS(Dir("", {File("a.bin", {1, 2, 3})}));
+    REQUIRE(image != nullptr);
+    FileSys::RomFSReadObserver none{
+        .accepts = [](std::string_view) { return false; },
+        .on_read = [](std::string_view) {},
+    };
+    CHECK(FileSys::WatchRomFSReads(image, none) == image);
+    CHECK(FileSys::WatchRomFSReads(image, {}) == image);
+    CHECK(FileSys::WatchRomFSReads(nullptr, none) == nullptr);
 }
 
 TEST_CASE("RomFS keeps a tree through building and extraction", "[core][romfs]") {
