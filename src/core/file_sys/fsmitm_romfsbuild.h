@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include "common/common_types.h"
+#include "core/file_sys/romfs.h"
 #include "core/file_sys/vfs/vfs.h"
 
 namespace FileSys {
@@ -22,7 +23,7 @@ public:
     ~RomFSBuildContext();
 
     // This finalizes the context.
-    std::vector<std::pair<u64, VirtualFile>> Build();
+    std::vector<std::pair<u64, VirtualFile>> Build(const RomFSReadObserver& observer = {});
 
 private:
     VirtualDir base;

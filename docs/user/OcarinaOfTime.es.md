@@ -3,6 +3,9 @@
 La edición de Switch 2 (ID de programa `0400486024DEC000`) es el juego con el que se ajusta y se
 mide Kaichii. Viene como paquete NUP, así que no necesita claves ni firmware.
 
+Para consultar lugares y personajes mientras juegas, abre el [Game Companion](GameCompanion.es.md)
+opcional desde el menú Ver o con clic derecho sobre el juego.
+
 ## Ajustes recomendados
 
 - **Con una tarjeta de 4 GB, el ajuste Rendimiento.** Dibuja a la mitad de resolución, reescala con

@@ -5,6 +5,7 @@
 // their strings under the context they ask for, and Qt's buttons follow the interface language.
 
 #include <algorithm>
+#include <utility>
 
 #include <QApplication>
 #include <QDialogButtonBox>
@@ -50,6 +51,7 @@ private slots:
     void ClearsQtWithoutItsCatalog();
     void TranslatesTheGameSummary();
     void TranslatesTheAssistantButtons();
+    void TranslatesTheGameCompanion();
     void OpensTheGuideInTheInterfaceLanguage();
 
 private:
@@ -132,6 +134,22 @@ void TranslationTest::TranslatesTheAssistantButtons() {
     const QString next = assistant.button(QWizard::NextButton)->text();
     QVERIFY(next != QStringLiteral("&Next >"));
     QCOMPARE(next, qt.translate("QWizard", "&Next >"));
+}
+
+void TranslationTest::TranslatesTheGameCompanion() {
+    Install(QStringLiteral("es"));
+    for (const auto& [context, source] : {
+             std::pair{"GameCompanionWidget", "Show story spoilers"},
+             std::pair{"GameCompanionWidget", "Read source"},
+             std::pair{"GameCompanionWidget", "Items and songs"},
+             std::pair{"GameCompanionWidget", "Zelda timeline"},
+             std::pair{"GameList", "Open Game Companion"},
+             std::pair{"MainWindow", "Show Game &Companion"},
+         }) {
+        const QString translated = Spanish(context, source);
+        QVERIFY2(!translated.isEmpty(), source);
+        QCOMPARE(QCoreApplication::translate(context, source), translated);
+    }
 }
 
 void TranslationTest::OpensTheGuideInTheInterfaceLanguage() {

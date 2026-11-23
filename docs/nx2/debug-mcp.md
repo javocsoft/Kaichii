@@ -153,8 +153,11 @@ server is on but idle, its thread sleeps in `epoll`/IOCP.
 **`status`** `{fps_window_ms?}`. It reads the title and program id that `Load` saw, the build from
 `Common::g_build_fullname` and `g_scm_rev`, and `System::IsPaused`. It measures fps from
 `Core::g_nx2_present_count` (`src/core/core.cpp:78`) over a short window (up to 30 s). It does not
-call `GetAndResetPerfStats`, which would reset the Qt status bar's counters. `frame_ms` gives the
-intervals between the presents in that window: `count`, `median`, `p90`, `p99`, `max` and
+call `GetAndResetPerfStats`, which would reset the Qt status bar's counters. For Ocarina of Time,
+`companion_scene` reports the
+latest scene inferred from a scene parameter or baked scene resource read; it is empty for
+other games. `frame_ms` gives the intervals between presents in that window: `count`, `median`,
+`p90`, `p99`, `max` and
 `over_100ms`, plus `fence_mean` and `fence_max`, the time each present waited for a GPU fence
 (`nx2:vi2` stores both per present in `Core::g_nx2_present_times` and `g_nx2_present_fence_ns`, a
 ring of the last 4096). It is null when fewer than three presents fell in the window. `frame_gen_state` (0 pending, 1 running, 2 and above: why it cannot run, as `VideoCore::FrameGenState`) and `frame_gen_generated` (frames generated so far) tell whether frame generation works: `fps` counts the game's own presents only. `video_memory_used`, `video_memory_budget` and `video_memory_host` (bytes) are the device memory in use, the driver's budget, and what is allocated in system memory instead, where images go once video memory is full. `cached_pipelines_built_late` counts graphics pipelines the disk cache held that a draw needed before any was built (at boot or by the background prebuild): the shaders the shader preload would have built.

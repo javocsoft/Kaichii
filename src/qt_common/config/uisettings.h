@@ -264,6 +264,7 @@ struct Values {
 
     // perf overlay
     Setting<bool> show_perf_overlay{linkage, false, "show_perf_overlay", Category::UiGameList};
+    Setting<bool> show_oot_companion{linkage, false, "show_oot_companion", Category::UiGameList};
     /// Where the user left it, from the main window's top left corner.
     Setting<int> perf_overlay_x{linkage, Common::DefaultOverlayOffset.x, "perf_overlay_x",
                                 Category::UiGameList};

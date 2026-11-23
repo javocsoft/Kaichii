@@ -40,6 +40,7 @@
 #include "yuzu/game/game_grid.h"
 #include "yuzu/game/game_list.h"
 #include "yuzu/game/game_tree.h"
+#include "yuzu/game_companion_catalog.h"
 #include "yuzu/game/search_field.h"
 #include "yuzu/game/smooth_scroll.h"
 #include "yuzu/menu_levels.h"
@@ -613,6 +614,12 @@ void GameList::AddGamePopup(QMenu& context_menu, u64 program_id, const std::stri
     QAction* properties = context_menu.addAction(tr("Configure Game"));
     QAction* optimize = context_menu.addAction(tr("Optimize for This Game..."));
     QAction* ai_optimize = context_menu.addAction(tr("Ask AI to tune this game..."));
+    QAction* companion = nullptr;
+    if (GameCompanion::SupportsGame(program_id)) {
+        companion = context_menu.addAction(tr("Open Game Companion"));
+        companion->setEnabled(!system.IsPoweredOn() ||
+                              system.GetApplicationProcessProgramID() == program_id);
+    }
     if (program_id != 0 && program_id == reportable_program_id) {
         auto* report = context_menu.addAction(tr("Submit compatibility report…"));
         connect(report, &QAction::triggered, this,
@@ -739,6 +746,10 @@ void GameList::AddGamePopup(QMenu& context_menu, u64 program_id, const std::stri
     connect(ai_optimize, &QAction::triggered, this, [this, path, program_id] {
         emit AiOptimizeGameRequested(QString::fromStdString(path), program_id);
     });
+    if (companion) {
+        connect(companion, &QAction::triggered, this,
+                [this, program_id] { emit GameCompanionRequested(program_id); });
+    }
 
     connect(ryujinx, &QAction::triggered, this,
             [this, program_id]() { emit LinkToRyujinxRequested(program_id); });

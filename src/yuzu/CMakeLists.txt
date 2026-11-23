@@ -36,6 +36,13 @@ add_executable(yuzu
     ai_report_draft_dialog.h
     ai_request.cpp
     ai_request.h
+    game_companion_catalog.cpp
+    game_companion_catalog.h
+    game_companion_bestiary.cpp
+    game_companion_world.cpp
+    game_companion_items.cpp
+    game_companion_widget.cpp
+    game_companion_widget.h
     button_spinner.cpp
     button_spinner.h
     ai_optimize_dialog.cpp

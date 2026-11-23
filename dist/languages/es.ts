@@ -9267,6 +9267,101 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
     </message>
 </context>
 <context>
+    <name>GameCompanionWidget</name>
+    <message>
+        <location filename="../../src/yuzu/game_companion_widget.cpp" line="+344"/>
+        <source>Explore Hyrule by topic. Loaded scenes may suggest a card.</source>
+        <translation>Explora Hyrule por temas. Los escenarios cargados pueden sugerir una ficha.</translation>
+    </message>
+    <message>
+        <location line="+90"/>
+        <source>Explore · %1 entries</source>
+        <translation>Explora · %1 entradas</translation>
+    </message>
+    <message>
+        <location line="-49"/>
+        <source>Recently loaded: %1</source>
+        <translation>Último escenario cargado: %1</translation>
+    </message>
+    <message>
+        <location line="-38"/>
+        <location line="+37"/>
+        <source>Open card</source>
+        <translation>Ver ficha</translation>
+    </message>
+    <message>
+        <location line="-54"/>
+        <source>Opened</source>
+        <translation>Ficha abierta</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Show story spoilers</source>
+        <translation>Mostrar spoilers de la historia</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <location line="+1"/>
+        <source>Close card</source>
+        <translation>Cerrar ficha</translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>All topics</source>
+        <translation>Todos los temas</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Places</source>
+        <translation>Lugares</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Characters</source>
+        <translation>Personajes</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Enemies</source>
+        <translation>Enemigos</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Bosses</source>
+        <translation>Jefes</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Dungeons</source>
+        <translation>Mazmorras</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Items and songs</source>
+        <translation>Objetos y canciones</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Switch 2 changes</source>
+        <translation>Cambios de Switch 2</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Zelda timeline</source>
+        <translation>Cronología de Zelda</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>No matching topic. Try another search or category.</source>
+        <translation>No hay temas coincidentes. Prueba otra búsqueda o categoría.</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Read source</source>
+        <translation>Leer fuente</translation>
+    </message>
+</context>
+<context>
     <name>GameCovers</name>
     <message>
         <location filename="../../src/yuzu/game/game_covers.cpp" line="+524"/>
@@ -9292,7 +9387,12 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
 <context>
     <name>GameList</name>
     <message>
-        <location filename="../../src/yuzu/game/game_list.cpp" line="+615"/>
+        <location filename="../../src/yuzu/game/game_list.cpp" line="+619"/>
+        <source>Open Game Companion</source>
+        <translation>Abrir compañero de juego</translation>
+    </message>
+    <message>
+        <location line="-3"/>
         <source>Ask AI to tune this game...</source>
         <translation>Pedir a la IA que ajuste este juego...</translation>
     </message>
@@ -9458,12 +9558,12 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation>Optimizar para este juego...</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Submit compatibility report…</source>
         <translation>Enviar informe de compatibilidad…</translation>
     </message>
     <message>
-        <location line="+134"/>
+        <location line="+138"/>
         <source>Scan Subfolders</source>
         <translation>Escanear subdirectorios</translation>
     </message>
@@ -10212,7 +10312,23 @@ o haz clic para buscarlo</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/yuzu/main.ui" line="+523"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+982"/>
+        <location line="+5248"/>
+        <source>Game Companion · Ocarina of Time</source>
+        <translation>Compañero de juego · Ocarina of Time</translation>
+    </message>
+    <message>
+        <location filename="../../src/yuzu/main.ui" line="+767"/>
+        <source>Show Game &amp;Companion</source>
+        <translation>Mostrar &amp;compañero de juego</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Open the offline companion for a supported game</source>
+        <translation>Abrir el compañero sin conexión de un juego compatible</translation>
+    </message>
+    <message>
+        <location line="-246"/>
         <source>Ask AI to tune current game...</source>
         <translation>Pedir a la IA que ajuste el juego actual...</translation>
     </message>
@@ -10222,18 +10338,18 @@ o haz clic para buscarlo</translation>
         <translation>Pedir a la IA que ajuste este equipo...</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main_window.cpp" line="+2535"/>
-        <location line="+1848"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-3652"/>
+        <location line="+1864"/>
         <source>AI settings assistant</source>
         <translation>Asistente de ajustes con IA</translation>
     </message>
     <message>
-        <location line="-1847"/>
+        <location line="-1863"/>
         <source>Stop the running game before tuning another game.</source>
         <translation>Detén el juego en marcha antes de ajustar otro juego.</translation>
     </message>
     <message>
-        <location line="+1848"/>
+        <location line="+1864"/>
         <source>Stop the game before tuning settings for the whole computer.</source>
         <translation>Detén el juego antes de ajustar la configuración de todo el equipo.</translation>
     </message>
@@ -10263,7 +10379,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation type="vanished">Rendimiento</translation>
     </message>
     <message>
-        <location line="-2320"/>
+        <location line="-2336"/>
         <source>Not enough memory to start the game</source>
         <translation>No hay memoria suficiente para iniciar el juego</translation>
     </message>
@@ -10300,7 +10416,7 @@ Puede cambiarlo cuando quiera en Configurar, Rendimiento.</translation>
         <translation>%1&lt;br&gt;Puede que el archivo esté dañado o incompleto: vuelve a volcarlo desde tu consola. &lt;a href=&apos;%2&apos;&gt;La guía&lt;/a&gt; tiene más ayuda.</translation>
     </message>
     <message>
-        <location line="+1269"/>
+        <location line="+1270"/>
         <source>This folder doesn&apos;t hold a game extracted into files (a &apos;main&apos; file).
 
 To add a folder with your games to the game list, use File &gt; Add Games Folder.</source>
@@ -10330,7 +10446,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">yuzu</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/main.ui" line="-478"/>
+        <location filename="../../src/yuzu/main.ui" line="-479"/>
         <source>&amp;File</source>
         <translation>&amp;Archivo</translation>
     </message>
@@ -10409,7 +10525,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Reiniciar el tamaño de la ventana a 1080p</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>&amp;Multiplayer</source>
         <translation>&amp;Multijugador</translation>
     </message>
@@ -10469,7 +10585,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+8"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-1500"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-1501"/>
         <source>&amp;Pause</source>
         <translation>&amp;Pausar</translation>
     </message>
@@ -10488,8 +10604,8 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">&amp;Acerca de Eden</translation>
     </message>
     <message>
-        <location line="-304"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="+3913"/>
+        <location line="-305"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="+3941"/>
         <location line="+106"/>
         <location line="+12"/>
         <source>Kaichii</source>
@@ -10501,7 +10617,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Abrir carpetas de &amp;Kaichii</translation>
     </message>
     <message>
-        <location line="+225"/>
+        <location line="+226"/>
         <source>Add &amp;Games Folder...</source>
         <translation>Añadir carpeta de &amp;juegos...</translation>
     </message>
@@ -10822,7 +10938,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>En las vistas de carátulas y cajas, muestra los juegos de Switch 2 y los de Switch en dos secciones</translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+59"/>
         <source>&amp;Full Cover View</source>
         <translation>Vista en &amp;cajas</translation>
     </message>
@@ -10836,7 +10952,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation type="vanished">&amp;Dependencias de Eden</translation>
     </message>
     <message>
-        <location line="-154"/>
+        <location line="-165"/>
         <source>&amp;Data Manager</source>
         <translation>Gestor de &amp;datos</translation>
     </message>
@@ -10857,7 +10973,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
     </message>
     <message>
         <location line="+5"/>
-        <location filename="../../src/yuzu/main_window.cpp" line="-4857"/>
+        <location filename="../../src/yuzu/main_window.cpp" line="-4926"/>
         <location filename="../../src/qt_common/config/shared_translation.h" line="+50"/>
         <source>None</source>
         <translation>Nada</translation>
@@ -10873,7 +10989,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Mostrar superposición de &amp;rendimiento</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+16"/>
         <source>Post-Processing &amp;Shaders...</source>
         <translation>&amp;Shaders de posprocesado...</translation>
     </message>
@@ -10913,7 +11029,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>Tamaño completo (256x256)</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+151"/>
         <source>Broken Vulkan Installation Detected</source>
         <translation>Detectada instalación fallida de Vulkan</translation>
     </message>
@@ -10947,7 +11063,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
 (Puede ser activado en las ajustes de depuración.)</translation>
     </message>
     <message>
-        <location line="+114"/>
+        <location line="+135"/>
         <source>The amount of shaders currently being built</source>
         <translation>La cantidad de sombreadores que se están contruyendo actualmente</translation>
     </message>
@@ -10997,7 +11113,7 @@ Para añadir una carpeta con tus juegos a la lista, usa Archivo &gt; Añadir car
         <translation>&amp;Limpiar archivos recientes</translation>
     </message>
     <message>
-        <location line="+481"/>
+        <location line="+495"/>
         <source>Restore Previous Version...</source>
         <translation>Restaurar la versión anterior...</translation>
     </message>
@@ -11115,25 +11231,25 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+183"/>
-        <location line="+2653"/>
+        <location line="+2680"/>
         <source>(64-bit)</source>
         <translation>(64-bit)</translation>
     </message>
     <message>
-        <location line="-2653"/>
-        <location line="+2653"/>
+        <location line="-2680"/>
+        <location line="+2680"/>
         <source>(32-bit)</source>
         <translation>(32-bit)</translation>
     </message>
     <message>
-        <location line="-2652"/>
-        <location line="+2654"/>
+        <location line="-2679"/>
+        <location line="+2681"/>
         <source>%1 %2</source>
         <comment>%1 is the title name. %2 indicates if the title is 64-bit or 32-bit</comment>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location line="-2641"/>
+        <location line="-2668"/>
         <source>To optimize this game, play to a demanding place, then press %1 (Emulation &gt; Optimize for This Game).</source>
         <translation>Para optimizar este juego, juega hasta una zona exigente y pulsa %1 (Emulación &gt; Optimizar para este juego).</translation>
     </message>
@@ -11153,7 +11269,7 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
         <translation>Cerrando el programa...</translation>
     </message>
     <message>
-        <location line="+217"/>
+        <location line="+218"/>
         <source>Save Data</source>
         <translation>Datos de guardado</translation>
     </message>
@@ -11297,12 +11413,12 @@ Se aplican a Mario Kart World hasta que se cierre Kaichii. Tus ajustes guardados
     </message>
     <message>
         <location line="+9"/>
-        <location line="+2323"/>
+        <location line="+2350"/>
         <source>Select Directory</source>
         <translation>Seleccionar directorio</translation>
     </message>
     <message>
-        <location line="-2297"/>
+        <location line="-2324"/>
         <location line="+132"/>
         <source>Add to the game list?</source>
         <translation>¿Añadir a la lista de juegos?</translation>
@@ -11510,7 +11626,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>Archivo &quot;%1&quot; no encontrado</translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+137"/>
         <source>OK</source>
         <translation>Aceptar</translation>
     </message>
@@ -11553,7 +11669,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>El mando del modo portátil no puede usarse en el modo sobremesa. El mando pro será seleccionado en su lugar.</translation>
     </message>
     <message>
-        <location line="+214"/>
+        <location line="+228"/>
         <location line="+51"/>
         <source>Amiibo</source>
         <translation>Amiibo</translation>
@@ -11606,7 +11722,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>Ha ocurrido un error desconocido</translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+131"/>
         <source>Convert to NUP</source>
         <translation>Convertir a NUP</translation>
     </message>
@@ -11767,7 +11883,7 @@ Por favor, use solo esta función para instalar actualizaciones y contenido desc
         <translation>No se pudo buscar actualizaciones: GitHub respondió con HTTP %1.</translation>
     </message>
     <message>
-        <location line="+116"/>
+        <location line="+117"/>
         <source>TAS state: Running %1/%2</source>
         <translation>Estado de TAS: Ejecutando %1/%2</translation>
     </message>

@@ -3,6 +3,9 @@
 The Switch 2 edition (program ID `0400486024DEC000`) is the game Kaichii is tuned and measured
 with. It comes as a NUP package, so it needs no keys or firmware.
 
+For background on places and characters while playing, open the optional
+[Game Companion](GameCompanion.md) from the View menu or the game's right-click menu.
+
 ## Recommended settings
 
 - **On a card with 4 GB, the Performance preset.** It draws at half resolution, upscales with FSR,

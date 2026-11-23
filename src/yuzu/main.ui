@@ -167,6 +167,7 @@
     <addaction name="action_Show_Filter_Bar"/>
     <addaction name="action_Show_Status_Bar"/>
     <addaction name="action_Show_Performance_Overlay"/>
+    <addaction name="action_Show_Game_Companion"/>
     <addaction name="action_Post_Processing_Shaders"/>
     <addaction name="separator"/>
     <addaction name="menu_Reset_Window_Size"/>
@@ -756,6 +757,17 @@
    </property>
    <property name="text">
     <string>Show &amp;Performance Overlay</string>
+   </property>
+  </action>
+  <action name="action_Show_Game_Companion">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Game &amp;Companion</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the offline companion for a supported game</string>
    </property>
   </action>
   <action name="action_Post_Processing_Shaders">

@@ -317,6 +317,10 @@ public:
         return ResultStatus::ErrorNotImplemented;
     }
 
+    [[nodiscard]] virtual std::string GetLastLoadedScene() const {
+        return {};
+    }
+
     /**
      * Get the raw update of the application, should it come packed with one
      *

@@ -49,6 +49,8 @@
 #include "util/util.h"
 #include "yuzu/first_run_assistant.h"
 #include "yuzu/game/game_list.h"
+#include "yuzu/game_companion_catalog.h"
+#include "yuzu/game_companion_widget.h"
 #include "yuzu/menu_levels.h"
 #include "yuzu/auto_optimize_dialog.h"
 #include "yuzu/ai_optimize_dialog.h"
@@ -369,6 +371,12 @@ constexpr std::array<std::pair<u32, const char*>, 5> default_game_icon_sizes{
 
 QString GetTranslatedGameIconSize(size_t index) {
     return QCoreApplication::translate("MainWindow", default_game_icon_sizes[index].second);
+}
+
+bool CompanionUsesSpanish() {
+    const std::string& chosen = UISettings::values.language.GetValue();
+    const QString locale = chosen.empty() ? QLocale::system().name() : QString::fromStdString(chosen);
+    return locale.startsWith(QLatin1String("es"), Qt::CaseInsensitive);
 }
 
 } // namespace
@@ -970,6 +978,27 @@ void MainWindow::InitializeWidgets() {
                              *QtCommon::system, this);
     ui->horizontalLayout->addWidget(game_list);
 
+    companion_dock = new GameCompanionDock(this);
+    companion_dock->setWindowTitle(tr("Game Companion · Ocarina of Time"));
+    companion_widget = new GameCompanionWidget(CompanionUsesSpanish(), companion_dock);
+    companion_dock->setWidget(companion_widget);
+    companion_dock->setMinimumWidth(340);
+    addDockWidget(Qt::RightDockWidgetArea, companion_dock);
+    companion_dock->hide();
+    connect(companion_dock, &GameCompanionDock::ClosedByUser, this, [this] {
+        UISettings::values.show_oot_companion = false;
+        ui->action_Show_Game_Companion->setChecked(false);
+        companion_widget->HideSpoilers();
+    });
+    connect(&status_bar_update_timer, &QTimer::timeout, this, [this] {
+        if (!emulation_running || !companion_dock->isVisible() ||
+            !GameCompanion::SupportsGame(QtCommon::system->GetApplicationProcessProgramID())) {
+            return;
+        }
+        companion_widget->SetDetectedScene(
+            QString::fromStdString(QtCommon::system->GetAppLoader().GetLastLoadedScene()));
+    });
+
     game_list_placeholder = new GameListPlaceholder(this);
     ui->horizontalLayout->addWidget(game_list_placeholder);
     game_list_placeholder->setVisible(false);
@@ -1468,6 +1497,7 @@ void MainWindow::RestoreUIState() {
         showNormal();
     }
     restoreState(UISettings::values.state);
+    companion_dock->hide();
     render_window->setWindowFlags(render_window->windowFlags() & ~Qt::FramelessWindowHint);
     render_window->restoreGeometry(UISettings::values.renderwindow_geometry);
 
@@ -1492,6 +1522,7 @@ void MainWindow::RestoreUIState() {
 
     ui->action_Show_Performance_Overlay->setChecked(
         UISettings::values.show_perf_overlay.GetValue());
+    ui->action_Show_Game_Companion->setChecked(false);
     if (perf_overlay)
         perf_overlay->setVisible(ui->action_Show_Performance_Overlay->isChecked());
     Debugger::ToggleConsole();
@@ -1551,6 +1582,17 @@ void MainWindow::ConnectWidgetEvents() {
     connect(game_list, &GameList::BootGame, this, &MainWindow::BootGameFromList);
     connect(game_list, &GameList::OptimizeGameRequested, this, &MainWindow::OnOptimizeGameFromList);
     connect(game_list, &GameList::SelectedGameChanged, this, &MainWindow::UpdateGameActions);
+    connect(game_list, &GameList::GameCompanionRequested, this, [this](u64 program_id) {
+        if (!GameCompanion::SupportsGame(program_id)) {
+            return;
+        }
+        UISettings::values.show_oot_companion = true;
+        ui->action_Show_Game_Companion->setEnabled(true);
+        ui->action_Show_Game_Companion->setChecked(true);
+        companion_dock->show();
+        companion_dock->raise();
+        companion_widget->FocusSearch();
+    });
     connect(ui->menu_Emulation, &QMenu::aboutToShow, this, &MainWindow::UpdateGameActions);
     connect(game_list, &GameList::AiOptimizeGameRequested, this,
             &MainWindow::OnAiOptimizeGameFromList);
@@ -1638,6 +1680,7 @@ void MainWindow::ConnectMenuEvents() {
     connect_menu(ui->action_Show_Filter_Bar, &MainWindow::OnToggleFilterBar);
     connect_menu(ui->action_Show_Status_Bar, &MainWindow::OnToggleStatusBar);
     connect_menu(ui->action_Show_Performance_Overlay, &MainWindow::OnTogglePerfOverlay);
+    connect_menu(ui->action_Show_Game_Companion, &MainWindow::OnToggleGameCompanion);
 #ifdef HAS_RESHADE
     connect_menu(ui->action_Post_Processing_Shaders, &MainWindow::OnPostProcessingShaders);
 #else
@@ -2681,6 +2724,7 @@ void MainWindow::OnEmulationStopped() {
     }
 
     emulation_running = false;
+    companion_widget->SetDetectedScene({});
 
     game_list->SetReportableProgramId(report_session ? report_session->program_id : 0);
 
@@ -3688,6 +3732,7 @@ void MainWindow::OnLoadComplete() {
 
     connect(perf_overlay, &PerformanceOverlay::closed, perf_overlay,
             [this]() { ui->action_Show_Performance_Overlay->setChecked(false); });
+    UpdateGameActions();
 }
 
 void MainWindow::OnExecuteProgram(std::size_t program_index) {
@@ -4334,6 +4379,20 @@ void MainWindow::UpdateGameActions() {
     ui->action_Configure_Current_Game->setEnabled(game);
     ui->action_Optimize_Current_Game->setEnabled(game);
     ui->action_AI_Optimize_Current_Game->setEnabled(game);
+    u64 program_id = 0;
+    if (emulation_running) {
+        program_id = QtCommon::system->GetApplicationProcessProgramID();
+    } else if (const auto selected = game_list->SelectedGame()) {
+        program_id = selected->program_id;
+    }
+    const bool supported = GameCompanion::SupportsGame(program_id);
+    ui->action_Show_Game_Companion->setEnabled(supported);
+    const bool show = supported && UISettings::values.show_oot_companion.GetValue();
+    ui->action_Show_Game_Companion->setChecked(show);
+    companion_dock->setVisible(show);
+    if (!show) {
+        companion_widget->HideSpoilers();
+    }
 }
 
 void MainWindow::OnConfigurePerGame() {
@@ -4590,6 +4649,17 @@ void MainWindow::OnToggleStatusBar() {
 void MainWindow::OnTogglePerfOverlay() {
     if (perf_overlay)
         perf_overlay->setVisible(ui->action_Show_Performance_Overlay->isChecked());
+}
+
+void MainWindow::OnToggleGameCompanion() {
+    const bool show = ui->action_Show_Game_Companion->isChecked();
+    UISettings::values.show_oot_companion = show;
+    companion_dock->setVisible(show);
+    if (show) {
+        companion_widget->FocusSearch();
+    } else {
+        companion_widget->HideSpoilers();
+    }
 }
 
 #ifdef HAS_RESHADE
@@ -5144,6 +5214,7 @@ void MainWindow::OnApplicationChanged(u64 program_id) {
     // Switch to record playtime for the running program
     if (play_time_manager)
         play_time_manager->SetProgramId(program_id);
+    UpdateGameActions();
 }
 
 void MainWindow::UpdateWindowTitle(std::string_view title_name, std::string_view title_version,
@@ -6156,6 +6227,8 @@ void MainWindow::OnLanguageChanged(const QString& locale) {
     UISettings::values.language = locale.toStdString();
     LoadTranslation();
     ui->retranslateUi(this);
+    companion_dock->setWindowTitle(tr("Game Companion · Ocarina of Time"));
+    companion_widget->SetLanguage(CompanionUsesSpanish());
     multiplayer_state->retranslateUi();
     UpdateWindowTitle();
     // The status bar's buttons are named in code, so retranslateUi leaves them as they were.
