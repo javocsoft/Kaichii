@@ -15,6 +15,7 @@ namespace GameCompanion {
 
 constexpr u64 OcarinaSwitch2ProgramId = 0x0400486024DEC000ULL;
 constexpr u64 BreathOfTheWildProgramId = 0x01007EF00011E000ULL;
+constexpr u64 TearsOfTheKingdomProgramId = 0x0100F2C0115B6000ULL;
 
 enum class Kind { All, Place, Character, Enemy, Boss, Dungeon, Item, Remake, Timeline, Ability };
 
@@ -46,6 +47,7 @@ struct Game {
 
 [[nodiscard]] const Game& Ocarina();
 [[nodiscard]] const Game& BreathOfTheWild();
+[[nodiscard]] const Game& TearsOfTheKingdom();
 [[nodiscard]] const Game* FindGame(u64 program_id);
 [[nodiscard]] inline bool SupportsGame(u64 program_id) {
     return FindGame(program_id) != nullptr;
@@ -56,8 +58,10 @@ struct Game {
 [[nodiscard]] std::span<const Entry> WorldEntries();
 [[nodiscard]] std::span<const Entry> ItemEntries();
 [[nodiscard]] std::span<const Entry> BreathOfTheWildEntries();
+[[nodiscard]] std::span<const Entry> TearsOfTheKingdomEntries();
 [[nodiscard]] const Entry* OcarinaEntryForScene(std::string_view scene);
 [[nodiscard]] const Entry* BreathOfTheWildEntryForScene(std::string_view scene);
+[[nodiscard]] const Entry* TearsOfTheKingdomEntryForScene(std::string_view scene);
 
 [[nodiscard]] const Entry* FindEntry(const Game& game, std::string_view id);
 [[nodiscard]] const Entry* EntryForScene(const Game& game, std::string_view scene);

@@ -33,6 +33,8 @@ private slots:
     void breathOfTheWildHasItsOwnCatalog();
     void breathOfTheWildScenesSuggestShrinesAndBeasts();
     void breathOfTheWildPanelShowsItsTopics();
+    void tearsOfTheKingdomHasItsOwnCatalog();
+    void tearsOfTheKingdomScenesSuggestShrinesAndTemples();
 };
 
 void GameCompanionTest::onlyTheSwitch2RemakeIsSupported() {
@@ -40,6 +42,7 @@ void GameCompanionTest::onlyTheSwitch2RemakeIsSupported() {
     QVERIFY(GameCompanion::SupportsGame(0x01007EF00011E000ULL));
     QCOMPARE(GameCompanion::FindGame(0x01007EF00011E000ULL), &GameCompanion::BreathOfTheWild());
     QCOMPARE(GameCompanion::FindGame(0x0400486024DEC000ULL), &GameCompanion::Ocarina());
+    QCOMPARE(GameCompanion::FindGame(0x0100F2C0115B6000ULL), &GameCompanion::TearsOfTheKingdom());
     QVERIFY(!GameCompanion::SupportsGame(0x0100000000000000ULL));
     QVERIFY(!GameCompanion::SupportsGame(0));
 }
@@ -391,6 +394,73 @@ void GameCompanionTest::breathOfTheWildPanelShowsItsTopics() {
     QVERIFY(category->itemText(category->findData(static_cast<int>(GameCompanion::Kind::Item)))
                 == QStringLiteral("Equipo y objetos"));
     QVERIFY(widget.CurrentEntryId().isEmpty());
+}
+
+void GameCompanionTest::tearsOfTheKingdomHasItsOwnCatalog() {
+    using GameCompanion::Kind;
+    const auto& game = GameCompanion::TearsOfTheKingdom();
+    std::set<std::string> ids;
+    std::set<Kind> kinds;
+    for (const auto& entry : game.entries()) {
+        QVERIFY2(ids.insert(std::string{entry.id}).second, entry.id.data());
+        QVERIFY(!entry.title.en.empty() && !entry.title.es.empty());
+        QVERIFY(!entry.summary.en.empty() && !entry.summary.es.empty());
+        QVERIFY(!entry.detail.en.empty() && !entry.detail.es.empty());
+        QVERIFY(entry.source_url.starts_with("https://zelda.fandom.com/wiki/"));
+        QVERIFY(std::ranges::find(game.kinds, entry.kind) != game.kinds.end());
+        kinds.insert(entry.kind);
+    }
+    QVERIFY(ids.size() >= 80);
+    QCOMPARE(kinds.size(), game.kinds.size() - 1);
+    for (const char* id : {"great_sky_island", "depths", "wind_temple", "water_temple",
+                           "fire_temple", "lightning_temple", "spirit_temple", "shrines_of_light",
+                           "lightroots", "ultrahand", "fuse", "ascend", "recall", "autobuild"}) {
+        QVERIFY2(GameCompanion::FindEntry(game, id), id);
+    }
+    QVERIFY(!GameCompanion::FindEntry(game, "vah_ruta"));
+
+    auto results = GameCompanion::Search(game, QStringLiteral("Ultramano"), Kind::Ability, false);
+    QVERIFY(std::ranges::any_of(results, [](const auto* entry) { return entry->id == "ultrahand"; }));
+    results = GameCompanion::Search(game, QStringLiteral("dragon"), Kind::All, false);
+    QVERIFY(std::ranges::none_of(results,
+                                 [](const auto* entry) { return entry->id == "light_dragon"; }));
+    results = GameCompanion::Search(game, QStringLiteral("dragon"), Kind::All, true);
+    QVERIFY(std::ranges::any_of(results,
+                                [](const auto* entry) { return entry->id == "light_dragon"; }));
+}
+
+void GameCompanionTest::tearsOfTheKingdomScenesSuggestShrinesAndTemples() {
+    const auto& game = GameCompanion::TearsOfTheKingdom();
+    QVERIFY(GameCompanion::EntryForScene(game, "Dungeon060")->id == "shrines_of_light");
+    QVERIFY(GameCompanion::EntryForScene(game, "Dungeon151")->id == "shrines_of_light");
+    QVERIFY(GameCompanion::EntryForScene(game, "LargeDungeonWind")->id == "wind_temple");
+    QVERIFY(GameCompanion::EntryForScene(game, "LargeDungeonWater")->id == "water_temple");
+    QVERIFY(GameCompanion::EntryForScene(game, "LargeDungeonFire")->id == "fire_temple");
+    QVERIFY(GameCompanion::EntryForScene(game, "LargeDungeonThunder")->id == "lightning_temple");
+    QVERIFY(GameCompanion::EntryForScene(game, "LargeDungeonSoul")->id == "spirit_temple");
+    QVERIFY(GameCompanion::EntryForScene(game, "LargeDungeonHyruleCastle")->id == "hyrule_castle");
+    QVERIFY(GameCompanion::EntryForScene(game, "MainField") == nullptr);
+    QVERIFY(GameCompanion::EntryForScene(game, "OpeningField") == nullptr);
+    QVERIFY(GameCompanion::EntryForScene(game, "TitleScene") == nullptr);
+
+    GameCompanionWidget widget{game, true};
+    auto* const hero = widget.findChild<QWidget*>(QStringLiteral("companionHero"));
+    auto* const panel = widget.findChild<QWidget*>(QStringLiteral("companionContext"));
+    auto* const label = widget.findChild<QLabel*>(QStringLiteral("companionContextLabel"));
+    auto* const spoilers = widget.findChild<QCheckBox*>(QStringLiteral("companionSpoilers"));
+    QVERIFY(hero && panel && label && spoilers);
+    QVERIFY(hero->accessibleName().startsWith(QStringLiteral("Tears of the Kingdom")));
+    widget.SetDetectedScene(QStringLiteral("Dungeon060"));
+    QVERIFY(!panel->isHidden());
+    QVERIFY(label->text().contains(QStringLiteral("Santuarios")));
+    // The Spirit Temple is a spoiler: no suggestion until spoilers are shown.
+    widget.SetDetectedScene(QStringLiteral("LargeDungeonSoul"));
+    QVERIFY(panel->isHidden());
+    spoilers->setChecked(true);
+    QVERIFY(!panel->isHidden());
+    QVERIFY(label->text().contains(QStringLiteral("Templo del Espíritu")));
+    widget.SetDetectedScene(QStringLiteral("MainField"));
+    QVERIFY(panel->isHidden());
 }
 
 QTEST_MAIN(GameCompanionTest)

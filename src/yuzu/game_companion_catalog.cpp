@@ -304,7 +304,7 @@ const Game& Ocarina() {
 }
 
 const Game* FindGame(u64 program_id) {
-    for (const Game* game : {&Ocarina(), &BreathOfTheWild()}) {
+    for (const Game* game : {&Ocarina(), &BreathOfTheWild(), &TearsOfTheKingdom()}) {
         if (game->program_id == program_id) {
             return game;
         }

@@ -1,10 +1,12 @@
 # Game Companion
 
-El Game Companion es un panel de consulta **opcional y sin conexión** para dos juegos:
+El Game Companion es un panel de consulta **opcional y sin conexión** para tres juegos:
 
 - **The Legend of Zelda: Ocarina of Time de Switch 2** (ID de programa `0400486024DEC000`).
 - **The Legend of Zelda: Breath of the Wild de Switch** (ID de programa `01007EF00011E000`); más
   abajo tienes su [apartado](#breath-of-the-wild).
+- **The Legend of Zelda: Tears of the Kingdom de Switch** (ID de programa `0100F2C0115B6000`); más
+  abajo tienes su [apartado](#tears-of-the-kingdom).
 
 Ábrelo desde **Ver > Mostrar Game Companion** mientras uno de ellos esté seleccionado o en marcha,
 o haz clic derecho sobre el juego en la biblioteca y elige **Abrir Game Companion**. Cada juego
@@ -68,3 +70,21 @@ vuelve al mundo abierto. No se sugieren regiones: el mundo abierto se carga alre
 donde vaya, así que una sección de mapa cargada no es un nombre de lugar fiable. Con los spoilers
 desactivados, el rey Rhoam, la Bestia Oscura Ganon, los espectros de Ganon y el jefe final de la
 expansión permanecen ocultos.
+
+## Tears of the Kingdom
+
+Las fichas de Tears of the Kingdom cubren la Gran Isla de los Albores y las demás islas del cielo,
+la superficie y el Subsuelo, los personajes y los nuevos sabios, los enemigos, los jefes de los
+templos, los cinco templos, los santuarios, las raíces de luz y las torres de observación, los
+dispositivos zonai y la tableta Prunia, los nuevos poderes de Link, el temblor que levantó el
+castillo, la fundación de Hyrule y la Edición Nintendo Switch 2. Se comprobaron con la
+[Zelda Wiki de Fandom](https://zelda.fandom.com/wiki/The_Legend_of_Zelda:_Tears_of_the_Kingdom) y
+la [wiki de Fextralife](https://zeldatearsofthekingdom.wiki.fextralife.com/Zelda_Tears_of_The_Kingdom_Wiki),
+y cada ficha enlaza a su artículo de Fandom.
+
+El juego nombra el escenario que carga, así que las sugerencias son fiables: al entrar en
+cualquiera de sus 152 santuarios se sugiere la ficha *Santuarios*, y al entrar en un templo o en
+la parte final del castillo de Hyrule, la de ese lugar. Al volver al mundo abierto la sugerencia
+desaparece. El Subsuelo no se sugiere, porque el juego lee sus datos incluso con Link en el cielo.
+Con los spoilers desactivados permanecen ocultas las revelaciones posteriores: Sonia, Mineru, el
+Dragón de Luz, el Templo del Espíritu y su jefe, Ganon Fantasma y los combates finales.
