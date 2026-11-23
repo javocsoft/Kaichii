@@ -94,6 +94,21 @@ std::string_view BreathOfTheWildSceneFromRomFSPath(std::string_view path) {
     return {};
 }
 
+std::string_view TearsOfTheKingdomSceneFromRomFSPath(std::string_view path) {
+    if (!path.starts_with(ScenePrefix) || !path.ends_with(SceneSuffix) ||
+        path.size() <= ScenePrefix.size() + SceneSuffix.size()) {
+        return {};
+    }
+    const auto name =
+        path.substr(ScenePrefix.size(), path.size() - ScenePrefix.size() - SceneSuffix.size());
+    // Every shrine also loads the shared shrine base, and the distant view loads with the world;
+    // neither is where Link is.
+    if (!IsSceneName(name) || name == "SmallDungeonBase" || name == "DistanceView") {
+        return {};
+    }
+    return name;
+}
+
 FileSys::RomFSReadObserver CompanionSceneObserver(u64 program_id,
                                                   std::shared_ptr<SceneTracker> tracker) {
     std::string_view (*scene_of)(std::string_view) = nullptr;
@@ -101,6 +116,8 @@ FileSys::RomFSReadObserver CompanionSceneObserver(u64 program_id,
         scene_of = OcarinaSceneFromRomFSPath;
     } else if (program_id == BreathOfTheWildProgramId) {
         scene_of = BreathOfTheWildSceneFromRomFSPath;
+    } else if (program_id == TearsOfTheKingdomProgramId) {
+        scene_of = TearsOfTheKingdomSceneFromRomFSPath;
     }
     if (!scene_of || !tracker) {
         return {};

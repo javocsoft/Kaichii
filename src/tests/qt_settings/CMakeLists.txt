@@ -66,6 +66,7 @@ add_executable(game_companion_tests game_companion.cpp
                ../../yuzu/game_companion_catalog.cpp ../../yuzu/game_companion_catalog.h
                ../../yuzu/game_companion_bestiary.cpp
                ../../yuzu/game_companion_botw.cpp
+               ../../yuzu/game_companion_totk.cpp
                ../../yuzu/game_companion_world.cpp
                ../../yuzu/game_companion_items.cpp
                ../../yuzu/game_companion_widget.cpp ../../yuzu/game_companion_widget.h)

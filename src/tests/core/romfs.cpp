@@ -129,6 +129,26 @@ TEST_CASE("Breath of the Wild scene is recognized from shrine, beast and map rea
     CHECK(BreathOfTheWildSceneFromRomFSPath("/NavMesh/MainField/16-23.shknm2").empty());
 }
 
+TEST_CASE("Tears of the Kingdom scene is recognized from scene parameter reads", "[core][romfs]") {
+    using Loader::TearsOfTheKingdomSceneFromRomFSPath;
+    constexpr auto param = [](std::string_view name) {
+        return std::string{"/Banc/GameBancParam/"} + std::string{name} +
+               ".game__banc__GameBancParam.bgyml";
+    };
+    // Scene names read from the game while loading a shrine save, the open world and the title.
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath(param("Dungeon060")) == "Dungeon060");
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath(param("LargeDungeonWind")) == "LargeDungeonWind");
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath(param("MainField")) == "MainField");
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath(param("TitleScene")) == "TitleScene");
+    // The shared shrine base follows every shrine; it must not replace the shrine.
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath(param("SmallDungeonBase")).empty());
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath(param("DistanceView")).empty());
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath("/Banc/SmallDungeon/Dungeon060_Static.bcett.byml.zs")
+              .empty());
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath("/Banc/MinusField/A-1_Static.bcett.byml.zs").empty());
+    CHECK(TearsOfTheKingdomSceneFromRomFSPath(param("Bad/Name")).empty());
+}
+
 TEST_CASE("Companion scenes are watched only for games with a companion", "[core][romfs]") {
     const auto tracker = std::make_shared<Loader::SceneTracker>();
     CHECK_FALSE(Loader::CompanionSceneObserver(0x0100000000000000ULL, tracker).accepts);
@@ -140,6 +160,13 @@ TEST_CASE("Companion scenes are watched only for games with a companion", "[core
     CHECK(tracker->Last() == "RemainsFire");
     observer.on_read("/Map/MainField/E-6/E-6_Dynamic.smubin");
     CHECK(tracker->Last() == "MainField");
+
+    const auto tears = Loader::CompanionSceneObserver(Loader::TearsOfTheKingdomProgramId, tracker);
+    REQUIRE(tears.accepts);
+    CHECK(tears.accepts("/Banc/GameBancParam/Dungeon060.game__banc__GameBancParam.bgyml"));
+    CHECK_FALSE(tears.accepts("/Banc/GameBancParam/SmallDungeonBase.game__banc__GameBancParam.bgyml"));
+    tears.on_read("/Banc/GameBancParam/Dungeon060.game__banc__GameBancParam.bgyml");
+    CHECK(tracker->Last() == "Dungeon060");
 }
 
 TEST_CASE("RomFS read watcher finds the files a packed image's reads touch", "[core][romfs]") {

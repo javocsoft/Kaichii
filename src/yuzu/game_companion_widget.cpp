@@ -88,6 +88,22 @@ protected:
                 painter.restore();
             }
         }
+        if (appearance.motif == GameCompanionAppearance::Motif::ZonaiSpiral) {
+            // An abstract emblem: a ring around a spiral of shrinking arcs.
+            painter.setOpacity(0.45);
+            const QPointF center(width() - 58, 54);
+            painter.setPen(QPen(appearance.gold, 2));
+            painter.setBrush(Qt::NoBrush);
+            painter.drawEllipse(center, 32, 32);
+            for (int turn = 0; turn < 4; ++turn) {
+                const qreal radius = 24 - turn * 6;
+                painter.drawArc(QRectF(center.x() - radius, center.y() - radius, radius * 2,
+                                       radius * 2),
+                                (turn * 90) * 16, 270 * 16);
+            }
+            painter.setBrush(appearance.gold);
+            painter.drawEllipse(center, 3, 3);
+        }
         if (appearance.motif == GameCompanionAppearance::Motif::GoldenTriangles) {
             painter.setOpacity(0.3);
             painter.setPen(Qt::NoPen);
@@ -214,9 +230,25 @@ GameCompanionAppearance GameCompanionAppearance::BreathOfTheWild() {
             Motif::SlateRings};
 }
 
+GameCompanionAppearance GameCompanionAppearance::TearsOfTheKingdom() {
+    return {{"Tears of the Kingdom", "Tears of the Kingdom"},
+            {"Hyrule field guide", "Guía de Hyrule"},
+            {"The skies, the surface and the Depths of Hyrule",
+             "Los cielos, la superficie y el Subsuelo de Hyrule"},
+            {"Search Hyrule...", "Buscar en Hyrule..."},
+            QColor("#1f3a30"), QColor("#8fdcae"), QColor("#eef1e8"), QColor("#232a24"),
+            Motif::ZonaiSpiral};
+}
+
 GameCompanionAppearance GameCompanionAppearance::For(const GameCompanion::Game& game) {
-    return game.program_id == GameCompanion::BreathOfTheWildProgramId ? BreathOfTheWild()
-                                                                      : Ocarina();
+    switch (game.program_id) {
+    case GameCompanion::BreathOfTheWildProgramId:
+        return BreathOfTheWild();
+    case GameCompanion::TearsOfTheKingdomProgramId:
+        return TearsOfTheKingdom();
+    default:
+        return Ocarina();
+    }
 }
 
 GameCompanionWidget::GameCompanionWidget(const GameCompanion::Game& game_, bool spanish_,

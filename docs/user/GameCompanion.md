@@ -1,10 +1,12 @@
 # Game Companion
 
-The Game Companion is an optional, offline reference panel for two games:
+The Game Companion is an optional, offline reference panel for three games:
 
 - **The Legend of Zelda: Ocarina of Time on Switch 2** (program ID `0400486024DEC000`).
 - **The Legend of Zelda: Breath of the Wild on Switch** (program ID `01007EF00011E000`); see
   [Breath of the Wild](#breath-of-the-wild) below.
+- **The Legend of Zelda: Tears of the Kingdom on Switch** (program ID `0100F2C0115B6000`); see
+  [Tears of the Kingdom](#tears-of-the-kingdom) below.
 
 Open it from **View > Show Game Companion** while one of them is selected or running, or
 right-click the game in the library and choose **Open Game Companion**. Each game has its own
@@ -65,3 +67,20 @@ a Divine Beast suggests that beast's card. The suggestion goes away when Link is
 world. Regions are not suggested: the open world streams around Link wherever he goes, so a
 loaded map section is not a reliable place name. With spoilers off, King Rhoam, Dark Beast Ganon,
 the Blights and the expansion's final boss stay hidden.
+
+## Tears of the Kingdom
+
+The Tears of the Kingdom cards cover the Great Sky Island and the other sky islands, the surface
+and the Depths, characters and the new sages, enemies, the temples' bosses, the five temples,
+shrines, Lightroots and Skyview Towers, Zonai devices and the Purah Pad, Link's new abilities,
+the Upheaval, the founding of Hyrule and the Nintendo Switch 2 Edition. They were checked against
+the [Zelda Wiki on Fandom](https://zelda.fandom.com/wiki/The_Legend_of_Zelda:_Tears_of_the_Kingdom)
+and [Fextralife's wiki](https://zeldatearsofthekingdom.wiki.fextralife.com/Zelda_Tears_of_The_Kingdom_Wiki),
+and each card links to its Fandom article.
+
+The game names the scene it loads, so suggestions are reliable: entering any of its 152 shrines
+suggests the *Shrines of Light* card, and entering a temple or the final part of Hyrule Castle
+suggests that card. Back in the open world the suggestion goes away. The Depths are not
+suggested, because the game reads Depths data even while Link is in the sky. With spoilers off,
+the later revelations stay hidden: Sonia, Mineru, the Light Dragon, the Spirit Temple and its
+boss, Phantom Ganon and the final battles.

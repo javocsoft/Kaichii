@@ -157,8 +157,9 @@ call `GetAndResetPerfStats`, which would reset the Qt status bar's counters. For
 `companion_scene` reports the
 latest scene inferred from a scene parameter or baked scene resource read. For Breath of the Wild
 it is `DungeonNNN` (a shrine), `Remains*` (a Divine Beast) or `MainField` (the open world), from
-the packs and map sections the game reads (`src/core/loader/companion_scenes.cpp`). It is empty
-for other games. `frame_ms` gives the intervals between presents in that window: `count`, `median`,
+the packs and map sections the game reads (`src/core/loader/companion_scenes.cpp`). For Tears of
+the Kingdom it is the scene parameter's name, as for Ocarina of Time: `DungeonNNN`,
+`LargeDungeon*`, `MainField`. It is empty for other games. `frame_ms` gives the intervals between presents in that window: `count`, `median`,
 `p90`, `p99`, `max` and
 `over_100ms`, plus `fence_mean` and `fence_max`, the time each present waited for a GPU fence
 (`nx2:vi2` stores both per present in `Core::g_nx2_present_times` and `g_nx2_present_fence_ns`, a
