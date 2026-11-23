@@ -62,6 +62,18 @@ target_link_libraries(game_pictures_tests PRIVATE qt_common frontend_common comm
 add_test(NAME game_pictures COMMAND game_pictures_tests)
 set_tests_properties(game_pictures PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
+add_executable(game_companion_tests game_companion.cpp
+               ../../yuzu/game_companion_catalog.cpp ../../yuzu/game_companion_catalog.h
+               ../../yuzu/game_companion_bestiary.cpp
+               ../../yuzu/game_companion_world.cpp
+               ../../yuzu/game_companion_items.cpp
+               ../../yuzu/game_companion_widget.cpp ../../yuzu/game_companion_widget.h)
+target_compile_features(game_companion_tests PRIVATE cxx_std_20)
+target_include_directories(game_companion_tests PRIVATE ../..)
+target_link_libraries(game_companion_tests PRIVATE Qt6::Widgets Qt6::Test)
+add_test(NAME game_companion COMMAND game_companion_tests)
+set_tests_properties(game_companion PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
 # The first-run assistant: the preset it proposes and what it asks the main window to do.
 add_executable(first_run_assistant_tests
     first_run_assistant.cpp

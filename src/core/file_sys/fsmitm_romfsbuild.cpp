@@ -81,6 +81,36 @@ struct RomFSBuildFileContext {
     VirtualFile source;
 };
 
+class ObservedRomFSFile final : public VfsFile {
+public:
+    ObservedRomFSFile(VirtualFile source_, std::string path_,
+                      std::function<void(std::string_view)> on_read_)
+        : source{std::move(source_)}, path{std::move(path_)}, on_read{std::move(on_read_)} {}
+
+    std::string GetName() const override { return source->GetName(); }
+    std::size_t GetSize() const override { return source->GetSize(); }
+    bool Resize(std::size_t size) override { return source->Resize(size); }
+    VirtualDir GetContainingDirectory() const override { return source->GetContainingDirectory(); }
+    bool IsWritable() const override { return source->IsWritable(); }
+    bool IsReadable() const override { return source->IsReadable(); }
+    std::size_t Read(u8* data, std::size_t size, std::size_t offset) const override {
+        const auto count = source->Read(data, size, offset);
+        if (count != 0) {
+            on_read(path);
+        }
+        return count;
+    }
+    std::size_t Write(const u8* data, std::size_t size, std::size_t offset) override {
+        return source->Write(data, size, offset);
+    }
+    bool Rename(std::string_view name) override { return source->Rename(name); }
+
+private:
+    VirtualFile source;
+    std::string path;
+    std::function<void(std::string_view)> on_read;
+};
+
 static u32 romfs_calc_path_hash(u32 parent, std::string_view path, u32 start,
                                 std::size_t path_len) {
     u32 hash = parent ^ 123456789;
@@ -202,7 +232,8 @@ RomFSBuildContext::RomFSBuildContext(VirtualDir base_, VirtualDir ext_)
 
 RomFSBuildContext::~RomFSBuildContext() = default;
 
-std::vector<std::pair<u64, VirtualFile>> RomFSBuildContext::Build() {
+std::vector<std::pair<u64, VirtualFile>> RomFSBuildContext::Build(
+    const RomFSReadObserver& observer) {
     const u64 dir_hash_table_entry_count = romfs_get_hash_table_count(num_dirs);
     const u64 file_hash_table_entry_count = romfs_get_hash_table_count(num_files);
     dir_hash_table_size = 4 * dir_hash_table_entry_count;
@@ -308,7 +339,12 @@ std::vector<std::pair<u64, VirtualFile>> RomFSBuildContext::Build() {
 
         cur_entry.name_size = name_size;
 
-        out.emplace_back(cur_file->offset + ROMFS_FILEPARTITION_OFS, std::move(cur_file->source));
+        VirtualFile content = std::move(cur_file->source);
+        if (observer.accepts && observer.on_read && observer.accepts(cur_file->path)) {
+            content = std::make_shared<ObservedRomFSFile>(std::move(content), cur_file->path,
+                                                          observer.on_read);
+        }
+        out.emplace_back(cur_file->offset + ROMFS_FILEPARTITION_OFS, std::move(content));
         std::memcpy(file_table.data() + cur_file->entry_offset, &cur_entry, sizeof(RomFSFileEntry));
         std::memset(file_table.data() + cur_file->entry_offset + sizeof(RomFSFileEntry), 0,
                     Common::AlignUp(cur_entry.name_size, 4));

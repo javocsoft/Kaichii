@@ -3,9 +3,17 @@
 
 #pragma once
 
+#include <functional>
+#include <string_view>
+
 #include "core/file_sys/vfs/vfs.h"
 
 namespace FileSys {
+
+struct RomFSReadObserver {
+    std::function<bool(std::string_view)> accepts;
+    std::function<void(std::string_view)> on_read;
+};
 
 // Converts a RomFS binary blob to VFS Filesystem
 // Returns nullptr on failure
@@ -13,6 +21,7 @@ VirtualDir ExtractRomFS(const VirtualFile& file);
 
 // Converts a VFS filesystem into a RomFS binary
 // Returns nullptr on failure
-VirtualFile CreateRomFS(const VirtualDir& dir, VirtualDir ext = nullptr);
+VirtualFile CreateRomFS(const VirtualDir& dir, VirtualDir ext = nullptr,
+                        RomFSReadObserver observer = {});
 
 } // namespace FileSys

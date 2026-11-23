@@ -12,6 +12,7 @@
 
 #include "core/file_sys/romfs.h"
 #include "core/file_sys/vfs/vfs_vector.h"
+#include "core/loader/nup.h"
 
 namespace {
 
@@ -90,6 +91,24 @@ std::vector<u8> Pattern(std::size_t size) {
 
 } // namespace
 
+TEST_CASE("Ocarina scene is recognized from scene and baked tile reads", "[core][romfs]") {
+    using Loader::OcarinaSceneFromRomFSPath;
+
+    CHECK(OcarinaSceneFromRomFSPath(
+              "/Banc/GameBancParam/LostWood_Child.game__banc__GameBancParam.bgyml") ==
+          "LostWood_Child");
+    CHECK(OcarinaSceneFromRomFSPath("/Bake/Scene/KokiriForest_Child_G_3_2.bkres.zs") ==
+          "KokiriForest_Child");
+    CHECK(OcarinaSceneFromRomFSPath("/Bake/Scene/LostWood_Child_G_0_1.bkres.zs") ==
+          "LostWood_Child");
+    CHECK(OcarinaSceneFromRomFSPath("/Tex/RBake_Scene_KokiriForest_Adult_G_3_2_d0.bntx.zs")
+              .empty());
+    CHECK(OcarinaSceneFromRomFSPath("/Bake/Scene/LostWood_Child_G_.bkres.zs").empty());
+    CHECK(OcarinaSceneFromRomFSPath("/Bake/Scene/LostWood_Child_G_x_1.bkres.zs").empty());
+    CHECK(OcarinaSceneFromRomFSPath("/Bake/Scene/Other/LostWood_Child_G_0_1.bkres.zs")
+              .empty());
+}
+
 TEST_CASE("RomFS keeps a tree through building and extraction", "[core][romfs]") {
     // Larger than the builder's 16-byte alignment and block padding, on purpose.
     const auto big = Pattern(0x12345);
@@ -123,6 +142,35 @@ TEST_CASE("RomFS keeps an empty file", "[core][romfs]") {
     REQUIRE(root->GetFile("empty") != nullptr);
     CHECK(root->GetFile("empty")->GetSize() == 0);
     CHECK(root->GetFile("after")->ReadAllBytes() == std::vector<u8>{9});
+}
+
+TEST_CASE("RomFS observer reports only reads of selected payloads", "[core][romfs]") {
+    const auto base = Dir("", {}, {Dir("Banc", {}, {Dir("GameBancParam", {
+        File("KokiriForest_Child.game__banc__GameBancParam.bgyml", {1, 2, 3}),
+        File("prefetched.bin", {4, 5})})})});
+    std::vector<std::string> observed;
+    FileSys::RomFSReadObserver observer{
+        .accepts = [](std::string_view path) {
+            return path.ends_with(".game__banc__GameBancParam.bgyml");
+        },
+        .on_read = [&observed](std::string_view path) { observed.emplace_back(path); },
+    };
+    const auto root = FileSys::ExtractRomFS(FileSys::CreateRomFS(base, nullptr, observer));
+    REQUIRE(root != nullptr);
+    CHECK(observed.empty());
+    const auto param = root->GetSubdirectory("Banc")
+                           ->GetSubdirectory("GameBancParam")
+                           ->GetFile("KokiriForest_Child.game__banc__GameBancParam.bgyml");
+    CHECK(root->GetSubdirectory("Banc")
+              ->GetSubdirectory("GameBancParam")
+              ->GetFile("prefetched.bin")
+              ->ReadAllBytes() == std::vector<u8>{4, 5});
+    CHECK(observed.empty());
+    REQUIRE(param != nullptr);
+    CHECK(param->ReadAllBytes() == std::vector<u8>{1, 2, 3});
+    REQUIRE(observed.size() == 1);
+    CHECK(observed.front() ==
+          "/Banc/GameBancParam/KokiriForest_Child.game__banc__GameBancParam.bgyml");
 }
 
 TEST_CASE("RomFS mod layer removes and patches files", "[core][romfs]") {

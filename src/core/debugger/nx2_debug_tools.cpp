@@ -28,6 +28,7 @@
 #include "core/debugger/nx2_debug_tools.h"
 #include "core/frontend/framebuffer_layout.h"
 #include "core/hle/kernel/k_process.h"
+#include "core/loader/loader.h"
 #include "core/memory.h"
 #include "hid_core/hid_core.h"
 #include "video_core/gpu.h"
@@ -234,9 +235,14 @@ json Status(ToolState& state, const json& params) {
     const auto frame_gen = state.system.IsPoweredOn()
                                ? state.system.GPU().Renderer().GetFrameGenStatus()
                                : VideoCore::FrameGenStatus{};
+    const auto companion_scene = state.program_id == 0x0400486024DEC000ULL && after > 0 &&
+                                         state.system.IsPoweredOn()
+                                     ? state.system.GetAppLoader().GetLastLoadedScene()
+                                     : std::string{};
     return {
         {"title", state.title},
         {"program_id", fmt::format("{:016X}", state.program_id)},
+        {"companion_scene", companion_scene},
         {"build", std::string{Common::g_build_fullname}},
         {"scm_rev", std::string{Common::g_scm_rev}},
         {"switch2", Settings::CurrentProgramIsSwitch2()},

@@ -186,12 +186,12 @@ VirtualDir ExtractRomFS(const VirtualFile& file) {
     return root_container->GetSubdirectory("");
 }
 
-VirtualFile CreateRomFS(const VirtualDir& dir, VirtualDir ext) {
+VirtualFile CreateRomFS(const VirtualDir& dir, VirtualDir ext, RomFSReadObserver observer) {
     if (dir == nullptr)
         return nullptr;
 
     RomFSBuildContext ctx{dir, std::move(ext)};
-    return ConcatenatedVfsFile::MakeConcatenatedFile(0, dir->GetName(), ctx.Build());
+    return ConcatenatedVfsFile::MakeConcatenatedFile(0, dir->GetName(), ctx.Build(observer));
 }
 
 } // namespace FileSys

@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <mutex>
 
 #include "common/logging.h"
 #include "common/string_util.h"
@@ -21,9 +22,29 @@
 
 namespace Loader {
 
+struct SceneTracker {
+    std::mutex mutex;
+    std::string last_scene;
+};
+
 namespace {
 
 using FileSys::NupContainer;
+
+constexpr u64 OcarinaSwitch2ProgramId = 0x0400486024DEC000ULL;
+constexpr std::string_view ScenePrefix = "/Banc/GameBancParam/";
+constexpr std::string_view SceneSuffix = ".game__banc__GameBancParam.bgyml";
+constexpr std::string_view BakeScenePrefix = "/Bake/Scene/";
+constexpr std::string_view BakeSceneSuffix = ".bkres.zs";
+
+bool IsSceneName(std::string_view name) {
+    return !name.empty() && name.find('/') == std::string_view::npos &&
+           std::all_of(name.begin(), name.end(), [](char character) {
+               return (character >= 'A' && character <= 'Z') ||
+                      (character >= 'a' && character <= 'z') ||
+                      (character >= '0' && character <= '9') || character == '_';
+           });
+}
 
 // NACP stores 16 uncompressed language entries; map BCP-47 tags onto them.
 struct LanguageSlot {
@@ -102,6 +123,31 @@ std::string DecodeVersion(u32 version) {
 
 } // namespace
 
+std::string_view OcarinaSceneFromRomFSPath(std::string_view path) {
+    if (path.starts_with(ScenePrefix) && path.ends_with(SceneSuffix) &&
+        path.size() > ScenePrefix.size() + SceneSuffix.size()) {
+        const auto name = path.substr(ScenePrefix.size(),
+                                      path.size() - ScenePrefix.size() - SceneSuffix.size());
+        return IsSceneName(name) ? name : std::string_view{};
+    }
+    if (path.starts_with(BakeScenePrefix) && path.ends_with(BakeSceneSuffix)) {
+        const auto name_start = path.substr(BakeScenePrefix.size());
+        const auto grid = name_start.find("_G_");
+        if (grid != std::string_view::npos && grid > 0) {
+            const auto name = name_start.substr(0, grid);
+            const auto tile = name_start.substr(grid + 3,
+                                                name_start.size() - grid - 3 - BakeSceneSuffix.size());
+            if (IsSceneName(name) && !tile.empty() && tile.find('/') == std::string_view::npos &&
+                std::all_of(tile.begin(), tile.end(), [](char character) {
+                    return (character >= '0' && character <= '9') || character == '_';
+                })) {
+                return name;
+            }
+        }
+    }
+    return {};
+}
+
 AppLoader_NUP::AppLoader_NUP(FileSys::VirtualFile file_)
     : AppLoader(std::move(file_)), nup(std::make_unique<NupContainer>(file)) {
     if (nup->GetStatus() != ResultStatus::Success) {
@@ -133,6 +179,9 @@ AppLoader_NUP::AppLoader_NUP(FileSys::VirtualFile file_)
 
     const auto& program = nup->GetPackages()[*program_index];
     base_title_id = program.title_id;
+    if (base_title_id == OcarinaSwitch2ProgramId) {
+        scene_tracker = std::make_shared<SceneTracker>();
+    }
 
     NupContainer::PackageInfo meta;
     meta.title_id = program.title_id;
@@ -259,11 +308,33 @@ ResultStatus AppLoader_NUP::ReadRomFS(FileSys::VirtualFile& out_file) {
     if (merged == nullptr) {
         return ResultStatus::ErrorNoRomFS;
     }
-    out_file = FileSys::CreateRomFS(merged);
+    FileSys::RomFSReadObserver observer;
+    if (scene_tracker) {
+        observer.accepts = [](std::string_view path) {
+            return !OcarinaSceneFromRomFSPath(path).empty();
+        };
+        observer.on_read = [tracker = scene_tracker](std::string_view path) {
+            const auto scene = OcarinaSceneFromRomFSPath(path);
+            std::lock_guard lock(tracker->mutex);
+            if (tracker->last_scene != scene) {
+                tracker->last_scene = scene;
+                LOG_DEBUG(Loader, "Companion scene loaded: {} ({})", scene, path);
+            }
+        };
+    }
+    out_file = FileSys::CreateRomFS(merged, nullptr, std::move(observer));
     if (out_file == nullptr) {
         return ResultStatus::ErrorNoRomFS;
     }
     return ResultStatus::Success;
+}
+
+std::string AppLoader_NUP::GetLastLoadedScene() const {
+    if (!scene_tracker) {
+        return {};
+    }
+    std::lock_guard lock(scene_tracker->mutex);
+    return scene_tracker->last_scene;
 }
 
 bool AppLoader_NUP::IsRomFSUpdatable() const {

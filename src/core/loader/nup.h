@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "core/file_sys/nup_container.h"
 #include "core/loader/loader.h"
@@ -16,6 +17,10 @@ class NupContainer;
 } // namespace FileSys
 
 namespace Loader {
+
+struct SceneTracker;
+
+[[nodiscard]] std::string_view OcarinaSceneFromRomFSPath(std::string_view path);
 
 /// Loads a NUP (NX Package) container: loose ExeFS/RomFS trees for a base
 /// program plus its updates in one file. The newest update package is layered
@@ -43,6 +48,7 @@ public:
     ResultStatus VerifyIntegrity(std::function<bool(size_t, size_t)> progress_callback) override;
 
     ResultStatus ReadRomFS(FileSys::VirtualFile& out_file) override;
+    [[nodiscard]] std::string GetLastLoadedScene() const override;
     bool IsRomFSUpdatable() const override;
     ResultStatus ReadProgramId(u64& out_program_id) override;
     ResultStatus ReadProgramIds(std::vector<u64>& out_program_ids) override;
@@ -53,6 +59,7 @@ public:
 
 private:
     std::unique_ptr<FileSys::NupContainer> nup;
+    std::shared_ptr<SceneTracker> scene_tracker;
     std::unique_ptr<AppLoader> secondary_loader;
 
     std::unique_ptr<FileSys::NACP> nacp_file;

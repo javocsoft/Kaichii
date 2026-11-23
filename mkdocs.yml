@@ -104,6 +104,7 @@ nav:
       - AI settings assistant: AIOptimization.md
   - Games:
       - "The Legend of Zelda: Ocarina of Time": OcarinaOfTime.md
+      - Game Companion: GameCompanion.md
       - Compatibility list: Compatibility.md
       - Sending a report: CompatibilityReports.md
   - Troubleshooting: Troubleshooting.md
