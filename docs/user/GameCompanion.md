@@ -1,12 +1,14 @@
 # Game Companion
 
-The Game Companion is an optional, offline reference panel for three games:
+The Game Companion is an optional, offline reference panel for five games:
 
 - **The Legend of Zelda: Ocarina of Time on Switch 2** (program ID `0400486024DEC000`).
 - **The Legend of Zelda: Breath of the Wild on Switch** (program ID `01007EF00011E000`); see
   [Breath of the Wild](#breath-of-the-wild) below.
 - **The Legend of Zelda: Tears of the Kingdom on Switch** (program ID `0100F2C0115B6000`); see
   [Tears of the Kingdom](#tears-of-the-kingdom) below.
+- **Axiom Verge** (program ID `0100052004384000`) and **Axiom Verge 2** (`01002FC010240000`) on
+  Switch; see [Axiom Verge 1 and 2](#axiom-verge-1-and-2) below.
 
 Open it from **View > Show Game Companion** while one of them is selected or running, or
 right-click the game in the library and choose **Open Game Companion**. Each game has its own
@@ -84,3 +86,17 @@ suggests that card. Back in the open world the suggestion goes away. The Depths 
 suggested, because the game reads Depths data even while Link is in the sky. With spoilers off,
 the later revelations stay hidden: Sonia, Mineru, the Light Dragon, the Spirit Temple and its
 boss, Phantom Ganon and the final battles.
+
+## Axiom Verge 1 and 2
+
+Both games are cryptic by design, so their cards explain more than the Zelda ones: each area lists
+its boss and what it hides, every weapon and tool says where it is and what it is good for, and a
+*Tips and mechanics* topic covers glitches (corruption), passcodes, Secret Worlds, hacking, skills,
+save points and the usual order of progress. The *Story and lore* topic explains the world and
+the plot; the big revelations, the full story and the theories that link the two games are spoilers,
+hidden until you tick *Show story spoilers*.
+
+The cards were written from the [Axiom Verge Wiki](https://axiom-verge.fandom.com/wiki/Axiom_Verge_Wiki),
+which covers both games; each card uses only the pages, or parts of pages, about its own game.
+Names of places, weapons and tools stay in English, as the games show them. These two companions
+only inform: they do not try to follow where you are in the game.

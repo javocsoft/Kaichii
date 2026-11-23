@@ -9273,12 +9273,12 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation type="vanished">Explora Hyrule por temas. Los escenarios cargados pueden sugerir una ficha.</translation>
     </message>
     <message>
-        <location filename="../../src/yuzu/game_companion_widget.cpp" line="+475"/>
+        <location filename="../../src/yuzu/game_companion_widget.cpp" line="+550"/>
         <source>Explore · %1 entries</source>
         <translation>Explora · %1 entradas</translation>
     </message>
     <message>
-        <location line="-51"/>
+        <location line="-57"/>
         <source>Recently loaded: %1</source>
         <translation>Último escenario cargado: %1</translation>
     </message>
@@ -9335,9 +9335,14 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation>Mazmorras</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Runes and abilities</source>
         <translation>Runas y habilidades</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Tips and mechanics</source>
+        <translation>Consejos y mecánicas</translation>
     </message>
     <message>
         <source>Items and songs</source>
@@ -9349,12 +9354,12 @@ Por favor, vaya a Configuración -&gt; Sistema -&gt; Red y selecciona una interf
         <translation>Cambios de Switch 2</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Zelda timeline</source>
         <translation>Cronología de Zelda</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+27"/>
         <source>No matching topic. Try another search or category.</source>
         <translation>No hay temas coincidentes. Prueba otra búsqueda o categoría.</translation>
     </message>

@@ -143,6 +143,7 @@ void TranslationTest::TranslatesTheGameCompanion() {
              std::pair{"GameCompanionWidget", "Read source"},
              std::pair{"GameCompanionWidget", "Runes and abilities"},
              std::pair{"GameCompanionWidget", "Close card"},
+             std::pair{"GameCompanionWidget", "Tips and mechanics"},
              std::pair{"GameCompanionWidget", "Zelda timeline"},
              std::pair{"GameList", "Open Game Companion"},
              std::pair{"MainWindow", "Show Game &Companion"},
